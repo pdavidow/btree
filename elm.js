@@ -8145,15 +8145,47 @@ var _elm_lang$html$Html_Attributes$classList = function (list) {
 };
 var _elm_lang$html$Html_Attributes$style = _elm_lang$virtual_dom$VirtualDom$style;
 
+var _user$project$BTree$isElement = F2(
+	function (a, tree) {
+		var _p0 = tree;
+		if (_p0.ctor === 'Empty') {
+			return false;
+		} else {
+			return _elm_lang$core$Native_Utils.eq(_p0._0, a) ? true : (A2(_user$project$BTree$isElement, a, _p0._1) || A2(_user$project$BTree$isElement, a, _p0._2));
+		}
+	});
+var _user$project$BTree$flatten = function (tree) {
+	var _p1 = tree;
+	if (_p1.ctor === 'Empty') {
+		return {ctor: '[]'};
+	} else {
+		return {
+			ctor: '::',
+			_0: _p1._0,
+			_1: A2(
+				_elm_lang$core$Basics_ops['++'],
+				_user$project$BTree$flatten(_p1._1),
+				_user$project$BTree$flatten(_p1._2))
+		};
+	}
+};
+var _user$project$BTree$sum = function (tree) {
+	var _p2 = tree;
+	if (_p2.ctor === 'Empty') {
+		return 0;
+	} else {
+		return (_p2._0 + _user$project$BTree$sum(_p2._1)) + _user$project$BTree$sum(_p2._2);
+	}
+};
 var _user$project$BTree$depth = function (tree) {
-	var _p0 = tree;
-	if (_p0.ctor === 'Empty') {
+	var _p3 = tree;
+	if (_p3.ctor === 'Empty') {
 		return 0;
 	} else {
 		return 1 + A2(
 			_elm_lang$core$Basics$max,
-			_user$project$BTree$depth(_p0._1),
-			_user$project$BTree$depth(_p0._2));
+			_user$project$BTree$depth(_p3._1),
+			_user$project$BTree$depth(_p3._2));
 	}
 };
 var _user$project$BTree$Node = F3(
@@ -8161,33 +8193,45 @@ var _user$project$BTree$Node = F3(
 		return {ctor: 'Node', _0: a, _1: b, _2: c};
 	});
 var _user$project$BTree$Empty = {ctor: 'Empty'};
-var _user$project$BTree$empty = _user$project$BTree$Empty;
 var _user$project$BTree$singleton = function (v) {
 	return A3(_user$project$BTree$Node, v, _user$project$BTree$Empty, _user$project$BTree$Empty);
 };
 var _user$project$BTree$insert = F2(
 	function (x, tree) {
-		var _p1 = tree;
-		if (_p1.ctor === 'Empty') {
+		var _p4 = tree;
+		if (_p4.ctor === 'Empty') {
 			return _user$project$BTree$singleton(x);
 		} else {
-			var _p4 = _p1._0;
-			var _p3 = _p1._2;
-			var _p2 = _p1._1;
-			return (_elm_lang$core$Native_Utils.cmp(x, _p4) > 0) ? A3(
+			var _p7 = _p4._0;
+			var _p6 = _p4._2;
+			var _p5 = _p4._1;
+			return (_elm_lang$core$Native_Utils.cmp(x, _p7) > 0) ? A3(
 				_user$project$BTree$Node,
-				_p4,
-				_p2,
-				A2(_user$project$BTree$insert, x, _p3)) : ((_elm_lang$core$Native_Utils.cmp(x, _p4) < 0) ? A3(
+				_p7,
+				_p5,
+				A2(_user$project$BTree$insert, x, _p6)) : ((_elm_lang$core$Native_Utils.cmp(x, _p7) < 0) ? A3(
 				_user$project$BTree$Node,
-				_p4,
-				A2(_user$project$BTree$insert, x, _p2),
-				_p3) : tree);
+				_p7,
+				A2(_user$project$BTree$insert, x, _p5),
+				_p6) : tree);
 		}
 	});
 var _user$project$BTree$fromList = function (xs) {
-	return A3(_elm_lang$core$List$foldl, _user$project$BTree$insert, _user$project$BTree$empty, xs);
+	return A3(_elm_lang$core$List$foldl, _user$project$BTree$insert, _user$project$BTree$Empty, xs);
 };
+var _user$project$BTree$map = F2(
+	function (f, tree) {
+		var _p8 = tree;
+		if (_p8.ctor === 'Empty') {
+			return _user$project$BTree$Empty;
+		} else {
+			return A3(
+				_user$project$BTree$Node,
+				f(_p8._0),
+				A2(_user$project$BTree$map, f, _p8._1),
+				A2(_user$project$BTree$map, f, _p8._2));
+		}
+	});
 
 var _user$project$Main$update = F2(
 	function (msg, model) {
@@ -8211,24 +8255,40 @@ var _user$project$Main$display = F2(
 				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$Main$tree = _user$project$BTree$fromList(
+var _user$project$Main$niceTree = _user$project$BTree$fromList(
 	{
 		ctor: '::',
-		_0: _elm_lang$core$Native_Utils.chr('a'),
+		_0: 2,
 		_1: {
 			ctor: '::',
-			_0: _elm_lang$core$Native_Utils.chr('b'),
+			_0: 1,
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$core$Native_Utils.chr('c'),
+				_0: 3.8,
+				_1: {ctor: '[]'}
+			}
+		}
+	});
+var _user$project$Main$deepTree = _user$project$BTree$fromList(
+	{
+		ctor: '::',
+		_0: 1,
+		_1: {
+			ctor: '::',
+			_0: 2,
+			_1: {
+				ctor: '::',
+				_0: 3,
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$core$Native_Utils.chr('d'),
+					_0: 4.2,
 					_1: {ctor: '[]'}
 				}
 			}
 		}
 	});
+var _user$project$Main$emptyTree = _user$project$BTree$fromList(
+	{ctor: '[]'});
 var _user$project$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -8246,13 +8306,95 @@ var _user$project$Main$view = function (model) {
 			ctor: '::',
 			_0: A2(
 				_user$project$Main$display,
-				'depth',
-				_user$project$BTree$depth(_user$project$Main$tree)),
-			_1: {ctor: '[]'}
+				'depth deepTree',
+				_user$project$BTree$depth(_user$project$Main$deepTree)),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_user$project$Main$display,
+					'depth niceTree',
+					_user$project$BTree$depth(_user$project$Main$niceTree)),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_user$project$Main$display,
+						'incremented',
+						A2(
+							_user$project$BTree$map,
+							function (n) {
+								return n + 1;
+							},
+							_user$project$Main$niceTree)),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_user$project$Main$display,
+							'sum emptyTree',
+							_user$project$BTree$sum(_user$project$Main$emptyTree)),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_user$project$Main$display,
+								'sum deepTree',
+								_user$project$BTree$sum(_user$project$Main$deepTree)),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_user$project$Main$display,
+									'sum niceTree',
+									_user$project$BTree$sum(_user$project$Main$niceTree)),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_user$project$Main$display,
+										'flatten emptyTree',
+										_user$project$BTree$flatten(_user$project$Main$emptyTree)),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_user$project$Main$display,
+											'flatten deepTree',
+											_user$project$BTree$flatten(_user$project$Main$deepTree)),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_user$project$Main$display,
+												'flatten niceTree',
+												_user$project$BTree$flatten(_user$project$Main$niceTree)),
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_user$project$Main$display,
+													'isElement 1 emptyTree',
+													A2(_user$project$BTree$isElement, 1, _user$project$Main$emptyTree)),
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_user$project$Main$display,
+														'isElement 1 niceTree',
+														A2(_user$project$BTree$isElement, 1, _user$project$Main$niceTree)),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_user$project$Main$display,
+															'isElement 11 niceTree',
+															A2(_user$project$BTree$isElement, 11, _user$project$Main$niceTree)),
+														_1: {ctor: '[]'}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		});
 };
 var _user$project$Main$main = _elm_lang$html$Html$beginnerProgram(
-	{model: '', view: _user$project$Main$view, update: _user$project$Main$update})();
+	{model: 'initialModel', view: _user$project$Main$view, update: _user$project$Main$update})();
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};

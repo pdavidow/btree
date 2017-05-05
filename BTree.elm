@@ -7,11 +7,6 @@ type BTree a
     | Node a (BTree a) (BTree a)
 
 
-empty : BTree a
-empty =
-    Empty
-
-
 singleton : a -> BTree a
 singleton v =
     Node v Empty Empty
@@ -36,7 +31,7 @@ insert x tree =
 
 fromList : List comparable -> BTree comparable
 fromList xs =
-    List.foldl insert empty xs
+    List.foldl insert Empty xs
 
 
 depth : BTree a -> Int
@@ -45,4 +40,36 @@ depth tree =
       Empty -> 0
       Node v left right ->
           1 + max (depth left) (depth right)
+
+
+map : (a -> b) -> BTree a -> BTree b
+map f tree =
+    case tree of
+      Empty -> Empty
+      Node v left right ->
+          Node (f v) (map f left) (map f right)
+
+
+sum : BTree number -> number
+sum tree =
+    case tree of
+      Empty -> 0
+      Node number left right ->
+          number + (sum left) + (sum right)
+
+flatten : BTree a -> List a
+flatten tree =
+    case tree of
+      Empty -> []
+      Node v left right ->
+        v :: ((flatten left) ++ (flatten right))
+
+isElement : a -> BTree a -> Bool
+isElement a tree =
+    case tree of
+      Empty -> False
+      Node v left right ->
+        if v == a then True
+        else (isElement a left) || (isElement a right)
+
 
