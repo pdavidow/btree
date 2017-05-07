@@ -1,3 +1,5 @@
+-- elm-test
+
 module Tests exposing (..)
 
 import BTree exposing (..)
@@ -209,5 +211,78 @@ all =
                         tree = fromList list
                     in
                         Expect.equal (False) (isElement 4 tree)
+            ]
+        , describe "fold"
+            [ test "of empty" <|
+                \() ->
+                    let
+                        func = (*)
+                        seed = 3
+                        tree = Empty
+                    in
+                        Expect.equal (seed) (fold func seed tree)
+
+            , test "of singleton" <|
+                \() ->
+                    let
+                        func = (*)
+                        seed = 3
+                        v = 5
+                        tree = singleton v
+                    in
+                        Expect.equal (func seed v) (fold func seed tree)
+            , test "of 3 value nodes" <|
+                \() ->
+                    let
+                        func = (*)
+                        seed = 3
+                        list = [4, 5, 6]
+                        tree = fromList list
+                    in
+                        Expect.equal (List.foldl func seed list) (fold func seed tree) -- same with List.foldr
+            , test "of 'Sum all of the elements of a tree'" <|
+                \() ->
+                    let
+                        func = (+)
+                        seed = 3
+                        list = [4, 7, 5, 6, 1]
+                        tree = fromList list
+                    in
+                        Expect.equal (List.foldl func seed list) (fold func seed tree) -- same with List.foldr
+            , test "of 'Flatten a tree into a list'" <|
+                \() ->
+                    let
+                        func v acc = v :: acc
+                        seed = []
+                        list = [4, 7, 5, 6, 1]
+                        tree = fromList list
+                    in
+                        Expect.equal (List.sort (flatten tree)) (List.sort (fold func seed tree))
+            , test "of 'Check to see if an element is in a given tree', yes found" <|
+                \() ->
+                    let
+                        func v acc =
+                            if acc.isFound then acc
+                            else if acc.el == v then {acc | isFound = True}
+                            else acc
+                        el = 5
+                        seed = {el = el, isFound = False}
+                        list = [4, 7, 5, 6, 1]
+                        tree = fromList list
+                    in
+                        Expect.equal (isElement el tree) (fold func seed tree).isFound
+            , test "of 'Check to see if an element is in a given tree', not found" <|
+                \() ->
+                    let
+                        func v acc =
+                            if acc.isFound then acc
+                            else if acc.el == v then {acc | isFound = True}
+                            else acc
+                        el = 50
+                        seed = {el = el, isFound = False}
+                        list = [4, 7, 5, 6, 1]
+                        tree = fromList list
+                    in
+                        Expect.equal (isElement el tree) (fold func seed tree).isFound
             ]
         ]

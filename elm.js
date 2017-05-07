@@ -8145,47 +8145,70 @@ var _elm_lang$html$Html_Attributes$classList = function (list) {
 };
 var _elm_lang$html$Html_Attributes$style = _elm_lang$virtual_dom$VirtualDom$style;
 
+var _user$project$BTree$fold = F3(
+	function (func, acc, tree) {
+		fold:
+		while (true) {
+			var _p0 = tree;
+			if (_p0.ctor === 'Empty') {
+				return acc;
+			} else {
+				var leftAcc = A3(
+					_user$project$BTree$fold,
+					func,
+					A2(func, _p0._0, acc),
+					_p0._1);
+				var _v1 = func,
+					_v2 = leftAcc,
+					_v3 = _p0._2;
+				func = _v1;
+				acc = _v2;
+				tree = _v3;
+				continue fold;
+			}
+		}
+	});
 var _user$project$BTree$isElement = F2(
 	function (a, tree) {
-		var _p0 = tree;
-		if (_p0.ctor === 'Empty') {
+		var _p1 = tree;
+		if (_p1.ctor === 'Empty') {
 			return false;
 		} else {
-			return _elm_lang$core$Native_Utils.eq(_p0._0, a) ? true : (A2(_user$project$BTree$isElement, a, _p0._1) || A2(_user$project$BTree$isElement, a, _p0._2));
+			return _elm_lang$core$Native_Utils.eq(_p1._0, a) ? true : (A2(_user$project$BTree$isElement, a, _p1._1) || A2(_user$project$BTree$isElement, a, _p1._2));
 		}
 	});
 var _user$project$BTree$flatten = function (tree) {
-	var _p1 = tree;
-	if (_p1.ctor === 'Empty') {
+	var _p2 = tree;
+	if (_p2.ctor === 'Empty') {
 		return {ctor: '[]'};
 	} else {
 		return {
 			ctor: '::',
-			_0: _p1._0,
+			_0: _p2._0,
 			_1: A2(
 				_elm_lang$core$Basics_ops['++'],
-				_user$project$BTree$flatten(_p1._1),
-				_user$project$BTree$flatten(_p1._2))
+				_user$project$BTree$flatten(_p2._1),
+				_user$project$BTree$flatten(_p2._2))
 		};
 	}
 };
 var _user$project$BTree$sum = function (tree) {
-	var _p2 = tree;
-	if (_p2.ctor === 'Empty') {
-		return 0;
-	} else {
-		return (_p2._0 + _user$project$BTree$sum(_p2._1)) + _user$project$BTree$sum(_p2._2);
-	}
-};
-var _user$project$BTree$depth = function (tree) {
 	var _p3 = tree;
 	if (_p3.ctor === 'Empty') {
 		return 0;
 	} else {
+		return (_p3._0 + _user$project$BTree$sum(_p3._1)) + _user$project$BTree$sum(_p3._2);
+	}
+};
+var _user$project$BTree$depth = function (tree) {
+	var _p4 = tree;
+	if (_p4.ctor === 'Empty') {
+		return 0;
+	} else {
 		return 1 + A2(
 			_elm_lang$core$Basics$max,
-			_user$project$BTree$depth(_p3._1),
-			_user$project$BTree$depth(_p3._2));
+			_user$project$BTree$depth(_p4._1),
+			_user$project$BTree$depth(_p4._2));
 	}
 };
 var _user$project$BTree$Node = F3(
@@ -8198,38 +8221,38 @@ var _user$project$BTree$singleton = function (v) {
 };
 var _user$project$BTree$insert = F2(
 	function (x, tree) {
-		var _p4 = tree;
-		if (_p4.ctor === 'Empty') {
+		var _p5 = tree;
+		if (_p5.ctor === 'Empty') {
 			return _user$project$BTree$singleton(x);
 		} else {
-			var _p7 = _p4._0;
-			var _p6 = _p4._2;
-			var _p5 = _p4._1;
-			return (_elm_lang$core$Native_Utils.cmp(x, _p7) > 0) ? A3(
+			var _p8 = _p5._0;
+			var _p7 = _p5._2;
+			var _p6 = _p5._1;
+			return (_elm_lang$core$Native_Utils.cmp(x, _p8) > 0) ? A3(
 				_user$project$BTree$Node,
-				_p7,
-				_p5,
-				A2(_user$project$BTree$insert, x, _p6)) : ((_elm_lang$core$Native_Utils.cmp(x, _p7) < 0) ? A3(
+				_p8,
+				_p6,
+				A2(_user$project$BTree$insert, x, _p7)) : ((_elm_lang$core$Native_Utils.cmp(x, _p8) < 0) ? A3(
 				_user$project$BTree$Node,
-				_p7,
-				A2(_user$project$BTree$insert, x, _p5),
-				_p6) : tree);
+				_p8,
+				A2(_user$project$BTree$insert, x, _p6),
+				_p7) : tree);
 		}
 	});
 var _user$project$BTree$fromList = function (xs) {
 	return A3(_elm_lang$core$List$foldl, _user$project$BTree$insert, _user$project$BTree$Empty, xs);
 };
 var _user$project$BTree$map = F2(
-	function (f, tree) {
-		var _p8 = tree;
-		if (_p8.ctor === 'Empty') {
+	function (func, tree) {
+		var _p9 = tree;
+		if (_p9.ctor === 'Empty') {
 			return _user$project$BTree$Empty;
 		} else {
 			return A3(
 				_user$project$BTree$Node,
-				f(_p8._0),
-				A2(_user$project$BTree$map, f, _p8._1),
-				A2(_user$project$BTree$map, f, _p8._2));
+				func(_p9._0),
+				A2(_user$project$BTree$map, func, _p9._1),
+				A2(_user$project$BTree$map, func, _p9._2));
 		}
 	});
 
