@@ -102,19 +102,19 @@ all =
             [ test "of empty" <|
                 \() ->
                     Empty
-                        |> map (\a -> (a + 1))
+                        |> map (\n -> n + 1)
                         |> Expect.equal Empty
             , test "of singleton" <|
                 \() ->
-                    1
+                    3
                         |> singleton
-                        |> map (\a -> (a + 1))
+                        |> map (\n -> n - 1)
                         |> Expect.equal (singleton 2)
             , test "of 3 levels" <|
                 \() ->
                     [1, 2, 3]
                         |> fromList
-                        |> map (\a -> (a * a))
+                        |> map (\n -> n ^ 2)
                         |> Expect.equal (fromList [1, 4, 9])
             ]
         , describe "sum"
