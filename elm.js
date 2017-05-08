@@ -8168,6 +8168,33 @@ var _user$project$BTree$fold = F3(
 			}
 		}
 	});
+var _user$project$BTree$sumUsingFold = function (tree) {
+	var seed = 0;
+	var func = F2(
+		function (x, y) {
+			return x + y;
+		});
+	return A3(_user$project$BTree$fold, func, seed, tree);
+};
+var _user$project$BTree$flattenUsingFold = function (tree) {
+	var seed = {ctor: '[]'};
+	var func = F2(
+		function (x, y) {
+			return {ctor: '::', _0: x, _1: y};
+		});
+	return A3(_user$project$BTree$fold, func, seed, tree);
+};
+var _user$project$BTree$isElementUsingFold = F2(
+	function (a, tree) {
+		var seed = {a: a, isFound: false};
+		var func = F2(
+			function (v, acc) {
+				return acc.isFound ? acc : (_elm_lang$core$Native_Utils.eq(acc.a, v) ? _elm_lang$core$Native_Utils.update(
+					acc,
+					{isFound: true}) : acc);
+			});
+		return A3(_user$project$BTree$fold, func, seed, tree).isFound;
+	});
 var _user$project$BTree$isElement = F2(
 	function (a, tree) {
 		var _p1 = tree;

@@ -96,3 +96,33 @@ fold func acc tree =
                 leftAcc = fold func (func v acc) left
             in
                 fold func leftAcc right
+
+
+sumUsingFold : BTree number -> number
+sumUsingFold tree =
+    let
+        func = (+)
+        seed = 0
+    in
+        fold func seed tree
+
+
+flattenUsingFold : BTree a -> List a
+flattenUsingFold tree =
+    let
+        func = (::)
+        seed = []
+    in
+        fold func seed tree
+
+
+isElementUsingFold : a -> BTree a -> Bool
+isElementUsingFold a tree =
+    let
+        func v acc =
+            if acc.isFound then acc
+            else if acc.a == v then {acc | isFound = True}
+            else acc
+        seed = {a = a, isFound = False}
+    in
+        (fold func seed tree).isFound

@@ -243,46 +243,35 @@ all =
             , test "of 'Sum all of the elements of a tree'" <|
                 \() ->
                     let
-                        func = (+)
-                        seed = 3
-                        list = [4, 7, 5, 6, 1]
-                        tree = fromList list
+                        tree = fromList [4, 7, 5, 6, 1]
                     in
-                        Expect.equal (List.foldl func seed list) (fold func seed tree) -- same with List.foldr
+                        Expect.equal (sum tree) (sumUsingFold tree)
             , test "of 'Flatten a tree into a list'" <|
                 \() ->
                     let
-                        func v acc = v :: acc
-                        seed = []
-                        list = [4, 7, 5, 6, 1]
-                        tree = fromList list
+                        tree = fromList [4, 7, 5, 6, 1]
                     in
-                        Expect.equal (List.sort (flatten tree)) (List.sort (fold func seed tree))
+                        Expect.equal (List.sort (flatten tree)) (List.sort (flattenUsingFold tree))
+            , test "of 'Check to see if an element is in a given tree', empty tree" <|
+                \() ->
+                    let
+                        a = 5
+                        tree = Empty
+                    in
+                        Expect.equal (isElement a tree) (isElementUsingFold a tree)
             , test "of 'Check to see if an element is in a given tree', yes found" <|
                 \() ->
                     let
-                        func v acc =
-                            if acc.isFound then acc
-                            else if acc.el == v then {acc | isFound = True}
-                            else acc
-                        el = 5
-                        seed = {el = el, isFound = False}
-                        list = [4, 7, 5, 6, 1]
-                        tree = fromList list
+                        a = 5
+                        tree = fromList [4, 7, 5, 6, 1]
                     in
-                        Expect.equal (isElement el tree) (fold func seed tree).isFound
+                        Expect.equal (isElement a tree) (isElementUsingFold a tree)
             , test "of 'Check to see if an element is in a given tree', not found" <|
                 \() ->
                     let
-                        func v acc =
-                            if acc.isFound then acc
-                            else if acc.el == v then {acc | isFound = True}
-                            else acc
-                        el = 50
-                        seed = {el = el, isFound = False}
-                        list = [4, 7, 5, 6, 1]
-                        tree = fromList list
+                        a = 50
+                        tree = fromList [4, 7, 5, 6, 1]
                     in
-                        Expect.equal (isElement el tree) (fold func seed tree).isFound
+                        Expect.equal (isElement a tree) (isElementUsingFold a tree)
             ]
         ]
