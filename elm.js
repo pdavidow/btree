@@ -8398,51 +8398,91 @@ var _user$project$BTree$map = F2(
 		}
 	});
 
-var _user$project$Main$initialModel = _user$project$BTree$fromList(
-	{
-		ctor: '::',
-		_0: 1,
-		_1: {
+var _user$project$Main$intFromInput = function (string) {
+	return A2(
+		_elm_lang$core$Result$withDefault,
+		0,
+		_elm_lang$core$String$toInt(string));
+};
+var _user$project$Main$modelWithMappedTree = F2(
+	function (func, model) {
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				tree: A2(_user$project$BTree$map, func, model.tree)
+			});
+	});
+var _user$project$Main$initialModel = {
+	tree: _user$project$BTree$fromList(
+		{
 			ctor: '::',
-			_0: 2,
+			_0: 1,
 			_1: {
 				ctor: '::',
-				_0: 3,
-				_1: {ctor: '[]'}
+				_0: 2,
+				_1: {
+					ctor: '::',
+					_0: 3,
+					_1: {ctor: '[]'}
+				}
 			}
-		}
-	});
+		}),
+	delta: 1,
+	exponent: 2
+};
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
 		switch (_p0.ctor) {
-			case 'Reset':
-				return _user$project$Main$initialModel;
 			case 'Increment':
 				return A2(
-					_user$project$BTree$map,
+					_user$project$Main$modelWithMappedTree,
 					function (n) {
-						return n + 1;
+						return n + model.delta;
 					},
 					model);
 			case 'Decrement':
 				return A2(
-					_user$project$BTree$map,
+					_user$project$Main$modelWithMappedTree,
 					function (n) {
-						return n - 1;
+						return n - model.delta;
 					},
 					model);
-			default:
+			case 'Raise':
 				return A2(
-					_user$project$BTree$map,
+					_user$project$Main$modelWithMappedTree,
 					function (n) {
-						return Math.pow(n, 2);
+						return Math.pow(n, model.exponent);
 					},
 					model);
+			case 'Delta':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						delta: _user$project$Main$intFromInput(_p0._0)
+					});
+			case 'Exponent':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						exponent: _user$project$Main$intFromInput(_p0._0)
+					});
+			default:
+				return _user$project$Main$initialModel;
 		}
 	});
+var _user$project$Main$Model = F3(
+	function (a, b, c) {
+		return {tree: a, exponent: b, delta: c};
+	});
 var _user$project$Main$Reset = {ctor: 'Reset'};
-var _user$project$Main$Square = {ctor: 'Square'};
+var _user$project$Main$Exponent = function (a) {
+	return {ctor: 'Exponent', _0: a};
+};
+var _user$project$Main$Delta = function (a) {
+	return {ctor: 'Delta', _0: a};
+};
+var _user$project$Main$Raise = {ctor: 'Raise'};
 var _user$project$Main$Decrement = {ctor: 'Decrement'};
 var _user$project$Main$Increment = {ctor: 'Increment'};
 var _user$project$Main$view = function (model) {
@@ -8483,76 +8523,124 @@ var _user$project$Main$view = function (model) {
 						_elm_lang$html$Html$button,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Square),
+							_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Raise),
 							_1: {ctor: '[]'}
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('^2'),
+							_0: _elm_lang$html$Html$text('^exp'),
 							_1: {ctor: '[]'}
 						}),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$button,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Reset),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text('Reset'),
-								_1: {ctor: '[]'}
-							}),
+						_0: _elm_lang$html$Html$text('Delta: '),
 						_1: {
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$div,
-								{ctor: '[]'},
+								_elm_lang$html$Html$input,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text(
-										_elm_lang$core$Basics$toString(model)),
-									_1: {ctor: '[]'}
-								}),
+									_0: _elm_lang$html$Html_Attributes$type_('number'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$value(
+											_elm_lang$core$Basics$toString(model.delta)),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$Delta),
+											_1: {ctor: '[]'}
+										}
+									}
+								},
+								{ctor: '[]'}),
 							_1: {
 								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$hr,
-									{ctor: '[]'},
-									{ctor: '[]'}),
+								_0: _elm_lang$html$Html$text('Exponent: '),
 								_1: {
 									ctor: '::',
 									_0: A2(
-										_elm_lang$html$Html$div,
-										{ctor: '[]'},
+										_elm_lang$html$Html$input,
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text(
-												A2(
-													_elm_lang$core$Basics_ops['++'],
-													'Depth: ',
-													_elm_lang$core$Basics$toString(
-														_user$project$BTree$depth(model)))),
-											_1: {ctor: '[]'}
-										}),
+											_0: _elm_lang$html$Html_Attributes$type_('number'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$value(
+													_elm_lang$core$Basics$toString(model.exponent)),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$Exponent),
+													_1: {ctor: '[]'}
+												}
+											}
+										},
+										{ctor: '[]'}),
 									_1: {
 										ctor: '::',
 										_0: A2(
-											_elm_lang$html$Html$div,
-											{ctor: '[]'},
+											_elm_lang$html$Html$button,
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text(
-													A2(
-														_elm_lang$core$Basics_ops['++'],
-														'Sum: ',
-														_elm_lang$core$Basics$toString(
-															_user$project$BTree$sum(model)))),
+												_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Reset),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text('reset'),
 												_1: {ctor: '[]'}
 											}),
-										_1: {ctor: '[]'}
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$div,
+												{ctor: '[]'},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text(
+														_elm_lang$core$Basics$toString(model)),
+													_1: {ctor: '[]'}
+												}),
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$hr,
+													{ctor: '[]'},
+													{ctor: '[]'}),
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$div,
+														{ctor: '[]'},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text(
+																A2(
+																	_elm_lang$core$Basics_ops['++'],
+																	'Depth: ',
+																	_elm_lang$core$Basics$toString(
+																		_user$project$BTree$depth(model.tree)))),
+															_1: {ctor: '[]'}
+														}),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_elm_lang$html$Html$div,
+															{ctor: '[]'},
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html$text(
+																	A2(
+																		_elm_lang$core$Basics_ops['++'],
+																		'Sum: ',
+																		_elm_lang$core$Basics$toString(
+																			_user$project$BTree$sum(model.tree)))),
+																_1: {ctor: '[]'}
+															}),
+														_1: {ctor: '[]'}
+													}
+												}
+											}
+										}
 									}
 								}
 							}
