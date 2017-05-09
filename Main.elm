@@ -2,7 +2,7 @@
 
 module Main exposing (..)
 
-import Html exposing (Html, button, div, text)
+import Html exposing (Html, button, div, text, hr)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (style)
 
@@ -11,6 +11,8 @@ import BTree exposing (..)
 
 
 type alias Model = BTree Int
+
+
 type Msg = Increment | Decrement | Square | Reset
 
 
@@ -22,6 +24,9 @@ view model =
     , button [ onClick Square ] [ text "^2" ]
     , button [ onClick Reset ] [ text "Reset" ]
     , div [] [ text (toString model) ]
+    , hr [] []
+    , div [] [ text ("Depth: " ++ toString (depth model)) ]
+    , div [] [ text ("Sum: " ++ toString (sum model)) ]
     ]
 
 
