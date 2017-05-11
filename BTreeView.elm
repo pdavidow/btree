@@ -11,7 +11,7 @@ import Collage exposing (group, segment, traced, rotate, move, scale, circle, fi
 import Element
 import Html exposing (Html)
 import Text exposing (fromString, style, defaultStyle)
-
+import Arithmetic as Math exposing (isEven)
 
 treeDiagram : TD.Tree (Maybe Int) -> Html msg
 treeDiagram tdTree =
@@ -23,18 +23,13 @@ treeDiagram tdTree =
                 tdTree
 
 
-isEven : Int -> Bool
-isEven n =
-    n % 2 == 0
-
-
 drawNode : Maybe Int -> Form
 drawNode n =
     case n of
         Just n ->
             let
                 color =
-                    if isEven n
+                    if Math.isEven n
                     then green
                     else orange
             in
