@@ -6,14 +6,14 @@ module BTreeView exposing (..)
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
 
-import Color exposing (red, black, white)
+import Color exposing (green, orange, black, white)
 import Collage exposing (group, segment, traced, rotate, move, scale, circle, filled, outlined, text, rect, polygon, moveY, defaultLine, Form, LineStyle)
 import Element
 import Html exposing (Html)
 import Text exposing (fromString, style, defaultStyle)
 
 
-treeDiagram : TD.Tree (Maybe a) -> Html msg
+treeDiagram : TD.Tree (Maybe Int) -> Html msg
 treeDiagram tdTree =
     Element.toHtml <|
             draw
@@ -25,7 +25,7 @@ treeDiagram tdTree =
 
 isEven : Int -> Bool
 isEven n =
-    rem (n / 2) == 0
+    n % 2 == 0
 
 
 drawNode : Maybe Int -> Form
@@ -35,8 +35,8 @@ drawNode n =
             let
                 color =
                     if isEven n
-                    then red
-                    else black
+                    then green
+                    else orange
             in
                 group
                     [ circle 27 |> filled color
@@ -46,8 +46,8 @@ drawNode n =
 
         Nothing ->
             group
-                [ rect 50 35 |> filled black
-                , fromString "Nil" |> style treeNilStyle |> text |> moveY 2
+                [ rect 75 35 |> filled black
+                , fromString "Nothing" |> style treeNilStyle |> text |> moveY 2
                 ]
                 |> moveY 5
 

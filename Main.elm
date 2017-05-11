@@ -38,14 +38,14 @@ view model =
     [ button [ onClick Increment ] [ text "+" ]
     , button [ onClick Decrement ] [ text "-" ]
     , button [ onClick Raise ] [ text "^exp" ]
-    , text "Delta: ", input [ type_ "number", A.max "1", value (toString model.delta), onInput Delta ] []
+    , text "Delta: ", input [ type_ "number", A.min "1", value (toString model.delta), onInput Delta ] []
     , text "Exponent: ", input [ type_ "number", A.min "1", value (toString model.exponent), onInput Exponent ] []
     , button [ onClick Reset ] [ text "reset" ]
     , div [] [ text (toString model) ]
-    , treeDiagram (asDiagramTree model.tree)
     , hr [] []
     , div [] [ text ("Depth: " ++ toString (depth model.tree)) ]
     , div [] [ text ("Sum: " ++ toString (sum model.tree)) ]
+    , treeDiagram (asDiagramTree model.tree)
     ]
 
 
