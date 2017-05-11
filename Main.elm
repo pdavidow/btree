@@ -6,7 +6,7 @@ module Main exposing (..)
 
 import Html exposing (Html, button, div, text, hr, input)
 import Html.Events exposing (onClick, onInput)
-import Html.Attributes  as A exposing (style, type_, value)
+import Html.Attributes as A exposing (style, type_, value)
 
 
 import BTree exposing (..)
@@ -37,7 +37,7 @@ view model =
     [ button [ onClick Increment ] [ text "+" ]
     , button [ onClick Decrement ] [ text "-" ]
     , button [ onClick Raise ] [ text "^exp" ]
-    , text "Delta: ", input [ type_ "number", A.min "1", value (toString model.delta), onInput Delta ] []
+    , text "Delta: ", input [ type_ "number", A.max "1", value (toString model.delta), onInput Delta ] []
     , text "Exponent: ", input [ type_ "number", A.min "1", value (toString model.exponent), onInput Exponent ] []
     , button [ onClick Reset ] [ text "reset" ]
     , div [] [ text (toString model) ]

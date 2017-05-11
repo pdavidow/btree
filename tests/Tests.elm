@@ -3,6 +3,7 @@
 module Tests exposing (..)
 
 import BTree exposing (..)
+import TreeDiagram as TD exposing (node)
 
 import Test exposing (..)
 import Expect
@@ -273,5 +274,16 @@ all =
                         tree = fromList [4, 7, 5, 6, 1]
                     in
                         Expect.equal (isElement a tree) (isElementUsingFold a tree)
+            ]
+         , describe "asDiagramTree" -- not much of a test because constructors are not exposed
+            [ test "of empty" <|
+                \() ->
+                    Expect.equal (TD.node Nothing []) (asDiagramTree Empty)
+            , test "of singleton" <|
+                \() ->
+                    Expect.equal (TD.node (Just 1) [(TD.node Nothing []), (TD.node Nothing [])]) (asDiagramTree (singleton 1))
+            , test "of 2 values" <|
+                \() ->
+                    Expect.equal (TD.node (Just 1) [(TD.node Nothing []), (TD.node (Just 2) [(TD.node Nothing []), (TD.node Nothing [])])]) (asDiagramTree (fromList [1,2]))
             ]
         ]

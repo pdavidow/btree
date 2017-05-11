@@ -2,6 +2,9 @@
 
 module BTree exposing (..)
 
+import TreeDiagram exposing (node, Tree)
+
+
 type BTree a
     = Empty
     | Node a (BTree a) (BTree a)
@@ -126,3 +129,13 @@ isElementUsingFold a tree =
         seed = {a = a, isFound = False}
     in
         (fold func seed tree).isFound
+
+
+asDiagramTree: BTree a -> TreeDiagram.Tree (Maybe a)
+asDiagramTree btree =
+    case btree of
+        Empty ->
+            TreeDiagram.node Nothing []
+
+        Node v left right ->
+            TreeDiagram.node (Just v)[asDiagramTree left, asDiagramTree right]
