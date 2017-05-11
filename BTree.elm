@@ -2,7 +2,7 @@
 
 module BTree exposing (..)
 
-import TreeDiagram exposing (node, Tree)
+import TreeDiagram as TD exposing (node, Tree)
 
 
 type BTree a
@@ -131,11 +131,11 @@ isElementUsingFold a tree =
         (fold func seed tree).isFound
 
 
-asDiagramTree: BTree a -> TreeDiagram.Tree (Maybe a)
+asDiagramTree : BTree a -> TD.Tree (Maybe a)
 asDiagramTree btree =
     case btree of
         Empty ->
-            TreeDiagram.node Nothing []
+            TD.node Nothing []
 
         Node v left right ->
-            TreeDiagram.node (Just v)[asDiagramTree left, asDiagramTree right]
+            TD.node (Just v)[asDiagramTree left, asDiagramTree right]
