@@ -45,7 +45,7 @@ view model =
     , hr [] []
     , div [] [ text ("Depth: " ++ toString (depth model.tree)) ]
     , div [] [ text ("Sum: " ++ toString (sum model.tree)) ]
-    , treeDiagram (asDiagramTree model.tree)
+    , treeDiagram (toDiagramTree model.tree)
     ]
 
 

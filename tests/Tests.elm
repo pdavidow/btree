@@ -275,15 +275,15 @@ all =
                     in
                         Expect.equal (isElement a tree) (isElementUsingFold a tree)
             ]
-         , describe "asDiagramTree" -- not much of a test because constructors are not exposed
-            [ test "of empty" <|
+         , describe "toDiagramTree" -- not much of a test because constructors are not exposed
+            [ test "of mpty" <|
                 \() ->
-                    Expect.equal (TD.node Nothing []) (asDiagramTree Empty)
+                    Expect.equal (TD.node Nothing []) (toDiagramTree Empty)
             , test "of singleton" <|
                 \() ->
-                    Expect.equal (TD.node (Just 1) [(TD.node Nothing []), (TD.node Nothing [])]) (asDiagramTree (singleton 1))
+                    Expect.equal (TD.node (Just 1) [(TD.node Nothing []), (TD.node Nothing [])]) (toDiagramTree (singleton 1))
             , test "of 2 values" <|
                 \() ->
-                    Expect.equal (TD.node (Just 1) [(TD.node Nothing []), (TD.node (Just 2) [(TD.node Nothing []), (TD.node Nothing [])])]) (asDiagramTree (fromList [1,2]))
+                    Expect.equal (TD.node (Just 1) [(TD.node Nothing []), (TD.node (Just 2) [(TD.node Nothing []), (TD.node Nothing [])])]) (toDiagramTree (fromList [1,2]))
             ]
         ]
