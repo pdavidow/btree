@@ -7,7 +7,7 @@ import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
 
 import Color exposing (green, orange, black, white)
-import Collage exposing (group, segment, traced, rotate, move, scale, circle, filled, outlined, text, rect, polygon, moveY, defaultLine, Form, LineStyle)
+import Collage exposing (group, segment, traced, rotate, move, scale, circle, filled, outlined, text, rect, polygon, moveY, defaultLine, Form, toForm, LineStyle)
 import Element
 import Html exposing (Html)
 import Text exposing (fromString, style, defaultStyle)
@@ -40,11 +40,7 @@ drawNode n =
                     ]
 
         Nothing ->
-            group
-                [ rect 75 35 |> filled black
-                , fromString "Nothing" |> style treeNilStyle |> text |> moveY 2
-                ]
-                |> moveY 5
+            toForm Element.empty
 
 
 drawEdge : ( Float, Float ) -> Form
