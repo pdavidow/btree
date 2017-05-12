@@ -131,11 +131,11 @@ isElementUsingFold a tree =
         (fold func seed tree).isFound
 
 
-toDiagramTree : BTree a -> TD.Tree (Maybe a)
-toDiagramTree btree =
+toTreeDiagramTree : BTree a -> TD.Tree (Maybe a)
+toTreeDiagramTree btree =
     case btree of
         Empty ->
             TD.node Nothing []
 
         Node v left right ->
-            TD.node (Just v)[toDiagramTree left, toDiagramTree right]
+            TD.node (Just v)[toTreeDiagramTree left, toTreeDiagramTree right]

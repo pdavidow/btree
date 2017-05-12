@@ -2,16 +2,25 @@
 
 module BTreeView exposing (..)
 
-
+import BTree exposing (BTree, toTreeDiagramTree)
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
 
-import Color exposing (green, orange, black, white)
+import Color exposing (Color, green, orange, black, white)
 import Collage exposing (group, segment, traced, rotate, move, scale, circle, filled, outlined, text, rect, polygon, moveY, defaultLine, Form, toForm, LineStyle)
 import Element
 import Html exposing (Html)
 import Text exposing (fromString, style, defaultStyle)
-import Arithmetic as Math exposing (isEven)
+import Arithmetic exposing (isEven)
+
+
+bTreeDiagram : BTree Int -> Html msg
+bTreeDiagram bTree =
+    let
+        tdTree = toTreeDiagramTree bTree
+    in
+        treeDiagram tdTree
+
 
 treeDiagram : TD.Tree (Maybe Int) -> Html msg
 treeDiagram tdTree =
@@ -23,21 +32,22 @@ treeDiagram tdTree =
                 tdTree
 
 
+colorizer : Int -> Color
+colorizer n =
+    if Arithmetic.isEven n
+        then green
+        else orange
+
+
 drawNode : Maybe Int -> Form
-drawNode n =
-    case n of
+drawNode maybeishN =
+    case maybeishN of
         Just n ->
-            let
-                color =
-                    if Math.isEven n
-                    then green
-                    else orange
-            in
-                group
-                    [ circle 27 |> filled color
-                    , circle 27 |> outlined treeLineStyle
-                    , toString n |> fromString |> style treeNodeStyle |> text |> moveY 4
-                    ]
+            group
+                [ circle 27 |> filled (colorizer n)
+                , circle 27 |> outlined treeLineStyle
+                , toString n |> fromString |> style treeNodeStyle |> text |> moveY 4
+                ]
 
         Nothing ->
             toForm Element.empty

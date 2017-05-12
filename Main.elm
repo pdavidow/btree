@@ -10,7 +10,7 @@ import Html.Attributes as A exposing (style, type_, value)
 
 
 import BTree exposing (..)
-import BTreeView exposing (treeDiagram)
+import BTreeView exposing (bTreeDiagram)
 ------------------------------------------------
 
 
@@ -45,7 +45,7 @@ view model =
     , hr [] []
     , div [] [ text ("Depth: " ++ toString (depth model.tree)) ]
     , div [] [ text ("Sum: " ++ toString (sum model.tree)) ]
-    , treeDiagram (toDiagramTree model.tree)
+    , bTreeDiagram model.tree
     ]
 
 
