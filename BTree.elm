@@ -110,6 +110,20 @@ sumUsingFold tree =
         fold func seed tree
 
 
+sumInt : BTree Int -> Int
+sumInt tree =
+    sumUsingFold tree
+
+
+sumString : BTree String -> String
+sumString tree =
+    let
+        func = (++)
+        seed = ""
+    in
+        fold func seed tree
+
+
 flattenUsingFold : BTree a -> List a
 flattenUsingFold tree =
     let

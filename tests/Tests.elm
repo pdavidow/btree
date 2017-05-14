@@ -137,6 +137,25 @@ all =
                         |> sum
                         |> Expect.equal 6
             ]
+        , describe "sumString"
+            [ test "of empty" <|
+                \() ->
+                    Empty
+                        |> sumString
+                        |> Expect.equal ""
+            , test "of singleton" <|
+                \() ->
+                    "abc"
+                        |> singleton
+                        |> sumString
+                        |> Expect.equal "abc"
+            , test "of 3 levels" <|
+                \() ->
+                    ["abc", "def", "ghi"]
+                        |> fromList
+                        |> sumString
+                        |> Expect.equal "ghidefabc"
+            ]
         , describe "flatten"
             [ test "of empty" <|
                 \() ->

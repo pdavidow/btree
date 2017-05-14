@@ -1,6 +1,7 @@
 {--
 elm-make Main.elm --output elm.js
 --}
+-- You could have a union type called DrawableTree that is either an Int tree or a String tree
 
 module Main exposing (..)
 
@@ -9,21 +10,25 @@ import Html.Events exposing (onClick, onInput)
 import Html.Attributes as A exposing (style, type_, value)
 
 
+import BTreeUniformContent exposing (BTreeUniformContent(..))
+import BTreeUniformContent exposing (..)
 import BTree exposing (..)
-import BTreeView exposing (bTreeDiagram)
+import BTreeView exposing (bTreeUniformContentDiagram)
 ------------------------------------------------
 
 
 type alias Model =
-    { tree : BTree Int
-    , exponent : Int
+    { intTree : BTreeUniformContent
+    , stringTree : BTreeUniformContent
     , delta : Int
+    , exponent : Int
     }
 
 
 initialModel: Model
 initialModel =
-    { tree = fromList [1, 2, 3]
+    { intTree = BTreeInt (fromList [1, 2, 3])
+    , stringTree = BTreeString (fromList ["a", "b", "c"])
     , delta = 1
     , exponent = 2
     }
@@ -43,9 +48,12 @@ view model =
     , button [ onClick Reset ] [ text "reset" ]
     , div [] [ text (toString model) ]
     , hr [] []
-    , div [] [ text ("Depth: " ++ toString (depth model.tree)) ]
-    , div [] [ text ("Sum: " ++ toString (sum model.tree)) ]
-    , bTreeDiagram model.tree
+    , div [] [ text ("Depth intTree: " ++ toString (BTreeUniformContent.depth model.intTree)) ]
+    , div [] [ text ("Depth stringTree: " ++ toString (BTreeUniformContent.depth model.stringTree)) ]
+    , div [] [ text ("SumInt intTree: " ++ toString (BTreeUniformContent.sumInt model.intTree)) ]
+    , div [] [ text ("SumString stringTree: " ++ toString (BTreeUniformContent.sumString model.stringTree)) ]
+    , bTreeUniformContentDiagram model.intTree
+    , bTreeUniformContentDiagram model.stringTree
     ]
 
 
@@ -53,13 +61,22 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         Increment ->
-            modelWithMappedTree (\n -> n + model.delta) model
+            {model
+                | intTree = incrementNodes model.intTree model.delta
+                , stringTree = incrementNodes model.stringTree model.delta
+            }
 
         Decrement ->
-            modelWithMappedTree (\n -> n - model.delta) model
+            {model
+                | intTree = decrementNodes model.intTree model.delta
+                , stringTree = decrementNodes model.stringTree model.delta
+            }
 
         Raise ->
-            modelWithMappedTree (\n -> n ^ model.exponent) model
+            {model
+                | intTree = exponentizeNodes model.intTree model.exponent
+                , stringTree = exponentizeNodes model.stringTree model.exponent
+            }
 
         Delta s ->
             {model | delta = intFromInput s}
@@ -69,11 +86,6 @@ update msg model =
 
         Reset ->
             initialModel
-
-
-modelWithMappedTree : (Int -> Int) -> Model -> Model
-modelWithMappedTree func model =
-    {model | tree = map func model.tree}
 
 
 intFromInput : String -> Int

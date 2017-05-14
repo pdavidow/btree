@@ -3,6 +3,7 @@
 module BTreeView exposing (..)
 
 import BTree exposing (BTree, toTreeDiagramTree)
+import BTreeUniformContent exposing (BTreeUniformContent(..))
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
 
@@ -14,7 +15,18 @@ import Text exposing (fromString, style, defaultStyle)
 import Arithmetic exposing (isEven)
 
 
-bTreeDiagram : BTree Int -> Html msg
+-- Can this be simplified with pattern matching?
+bTreeUniformContentDiagram : BTreeUniformContent -> Html msg
+bTreeUniformContentDiagram btreeUniformContent =
+    case btreeUniformContent of
+        BTreeInt btree ->
+            bTreeDiagram btree
+
+        BTreeString btree ->
+            bTreeDiagram btree
+
+
+bTreeDiagram : BTree a -> Html msg
 bTreeDiagram bTree =
     let
         tdTree = toTreeDiagramTree bTree
@@ -22,7 +34,7 @@ bTreeDiagram bTree =
         treeDiagram tdTree
 
 
-treeDiagram : TD.Tree (Maybe Int) -> Html msg
+treeDiagram : TD.Tree (Maybe a) -> Html msg
 treeDiagram tdTree =
     Element.toHtml <|
             draw
@@ -39,12 +51,12 @@ colorizer n =
         else orange
 
 
-drawNode : Maybe Int -> Form
+drawNode : Maybe a -> Form
 drawNode maybeishN =
     case maybeishN of
         Just n ->
             group
-                [ circle 27 |> filled (colorizer n)
+                [ circle 27 |> filled black -- (colorizer n)
                 , circle 27 |> outlined treeLineStyle
                 , toString n |> fromString |> style treeNodeStyle |> text |> moveY 4
                 ]
