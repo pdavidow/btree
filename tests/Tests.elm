@@ -3,9 +3,10 @@
 module Tests exposing (..)
 
 import BTree exposing (..)
+import BTree exposing (NodeTag(..))
 import TreeDiagram as TD exposing (node)
 import BTreeUniformType exposing (toTaggedBTree, incrementNodes, decrementNodes, raiseNodes)
-import BTreeUniformType exposing (BTreeUniformType(..), NodeTag(..))
+import BTreeUniformType exposing (BTreeUniformType(..))
 
 import Test exposing (..)
 import Expect

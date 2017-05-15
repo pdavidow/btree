@@ -1,15 +1,12 @@
 module BTreeUniformType exposing (..)
 
+import BTree exposing (NodeTag(..))
 import BTree exposing (BTree, map, depth, sumInt, sumString)
+
 
 type BTreeUniformType
     = BTreeInt (BTree Int)
     | BTreeString (BTree String)
-
-
-type NodeTag
-    = IntNode Int
-    | StringNode String
 
 
 toTaggedBTree : BTreeUniformType -> BTree NodeTag

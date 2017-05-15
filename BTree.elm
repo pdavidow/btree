@@ -10,6 +10,11 @@ type BTree a
     | Node a (BTree a) (BTree a)
 
 
+type NodeTag
+    = IntNode Int
+    | StringNode String
+
+
 singleton : a -> BTree a
 singleton v =
     Node v Empty Empty

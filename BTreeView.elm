@@ -3,7 +3,8 @@
 module BTreeView exposing (..)
 
 import BTree exposing (BTree, toTreeDiagramTree)
-import BTreeUniformType exposing (BTreeUniformType(..), NodeTag(..))
+import BTree exposing (NodeTag(..))
+import BTreeUniformType exposing (BTreeUniformType(..))
 import BTreeUniformType exposing (toTaggedBTree)
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)

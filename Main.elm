@@ -1,20 +1,26 @@
+{--
+elm-make Main.elm --output elm.js
+--}
+
 module Main exposing (..)
 
 import Html exposing (Html, button, div, text, hr, input)
 import Html.Events exposing (onClick, onInput)
 import Html.Attributes as A exposing (style, type_, value)
 
-
 import BTreeUniformType exposing (BTreeUniformType(..))
 import BTreeUniformType exposing (..)
+import BTreeVariedType exposing (BTreeVariedType, incrementNodes, decrementNodes, raiseNodes)
 import BTree exposing (..)
-import BTreeView exposing (bTreeUniformTypeDiagram)
+import BTree exposing (NodeTag(..))
+import BTreeView exposing (bTreeUniformTypeDiagram, bTreeDiagram)
 ------------------------------------------------
 
 
 type alias Model =
     { intTree : BTreeUniformType
     , stringTree : BTreeUniformType
+    , intStringTree : BTreeVariedType
     , delta : Int
     , exponent : Int
     }
@@ -24,6 +30,7 @@ initialModel: Model
 initialModel =
     { intTree = BTreeInt (fromList [1, 2, 3])
     , stringTree = BTreeString (fromList ["a", "bb", "ccc"])
+    , intStringTree = Node (StringNode "a") (singleton (IntNode 1)) (Node (StringNode "bb") (singleton (IntNode 2)) (Node (StringNode "ccc") (singleton (IntNode 3)) Empty))
     , delta = 1
     , exponent = 2
     }
@@ -49,6 +56,7 @@ view model =
     , div [] [ text ("SumString stringTree: " ++ toString (BTreeUniformType.sumString model.stringTree)) ]
     , bTreeUniformTypeDiagram model.intTree
     , bTreeUniformTypeDiagram model.stringTree
+    , bTreeDiagram model.intStringTree
     ]
 
 
@@ -56,21 +64,25 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         Increment ->
+            -- put delta first for partial applicatpn
             {model
-                | intTree = incrementNodes model.intTree model.delta
-                , stringTree = incrementNodes model.stringTree model.delta
+                | intTree = BTreeUniformType.incrementNodes model.intTree model.delta
+                , stringTree = BTreeUniformType.incrementNodes model.stringTree model.delta
+                , intStringTree = BTreeVariedType.incrementNodes model.delta model.intStringTree
             }
 
         Decrement ->
             {model
-                | intTree = decrementNodes model.intTree model.delta
-                , stringTree = decrementNodes model.stringTree model.delta
+                | intTree = BTreeUniformType.decrementNodes model.intTree model.delta
+                , stringTree = BTreeUniformType.decrementNodes model.stringTree model.delta
+                , intStringTree = BTreeVariedType.decrementNodes model.delta model.intStringTree
             }
 
         Raise ->
             {model
-                | intTree = raiseNodes model.intTree model.exponent
-                , stringTree = raiseNodes model.stringTree model.exponent
+                | intTree = BTreeUniformType.raiseNodes model.intTree model.exponent
+                , stringTree = BTreeUniformType.raiseNodes model.stringTree model.exponent
+                , intStringTree = BTreeVariedType.raiseNodes model.exponent model.intStringTree
             }
 
         Delta s ->
