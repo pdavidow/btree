@@ -27,7 +27,7 @@ type alias Model =
 initialModel: Model
 initialModel =
     { intTree = BTreeInt (fromList [1, 2, 3])
-    , stringTree = BTreeString (fromList ["a", "b", "c"])
+    , stringTree = BTreeString (fromList ["a", "bb", "ccc"])
     , delta = 1
     , exponent = 2
     }

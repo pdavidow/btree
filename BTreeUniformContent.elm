@@ -59,7 +59,7 @@ raiseNodes bTreeUniformContent exp =
     case bTreeUniformContent of
         BTreeInt bTree ->
             let
-                func = \n -> n^exp
+                func = \n -> n ^ exp
             in
                 BTreeInt (map func bTree)
 
