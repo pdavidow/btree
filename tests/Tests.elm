@@ -4,7 +4,7 @@ module Tests exposing (..)
 
 import BTree exposing (..)
 import TreeDiagram as TD exposing (node)
-import BTreeUniformContent exposing (toTaggedBTree)
+import BTreeUniformContent exposing (toTaggedBTree, incrementNodes, decrementNodes, raiseNodes)
 import BTreeUniformContent exposing (BTreeUniformContent(..), NodeTag(..))
 
 import Test exposing (..)
@@ -318,4 +318,38 @@ all =
                 \() ->
                     Expect.equal (Node (StringNode "a") Empty (singleton (StringNode "b"))) (toTaggedBTree (BTreeString (fromList ["a", "b"])))
             ]
+         , describe "BTreeUniformContent.incrementNodes"
+            [ test "of empty" <|
+                \() ->
+                    Expect.equal (BTreeInt Empty) (incrementNodes (BTreeInt Empty) 1)
+            , test "of singleton" <|
+                \() ->
+                    Expect.equal (BTreeInt (singleton 11)) (incrementNodes (BTreeInt (singleton 10)) 1)
+            , test "of 2 values" <|
+                \() ->
+                    Expect.equal (BTreeString (Node "a +3" Empty (singleton "b +3"))) (incrementNodes (BTreeString (fromList ["a", "b"])) 3)
+            ]
+         , describe "BTreeUniformContent.decrementNodes"
+            [ test "of empty" <|
+                \() ->
+                    Expect.equal (BTreeInt Empty) (decrementNodes (BTreeInt Empty) 1)
+            , test "of singleton" <|
+                \() ->
+                    Expect.equal (BTreeInt (singleton 9)) (decrementNodes (BTreeInt (singleton 10)) 1)
+            , test "of 2 values" <|
+                \() ->
+                    Expect.equal (BTreeString (Node "a -3" Empty (singleton "b -3"))) (decrementNodes (BTreeString (fromList ["a", "b"])) 3)
+            ]
+         , describe "BTreeUniformContent.raiseNodes"
+            [ test "of empty" <|
+                \() ->
+                    Expect.equal (BTreeInt Empty) (decrementNodes (BTreeInt Empty) 1)
+            , test "of singleton" <|
+                \() ->
+                    Expect.equal (BTreeInt (singleton 8)) (raiseNodes (BTreeInt (singleton 2)) 3)
+            , test "of 2 values" <|
+                \() ->
+                    Expect.equal (BTreeString (Node "a ^3" Empty (singleton "b ^3"))) (raiseNodes (BTreeString (fromList ["a", "b"])) 3)
+            ]
         ]
+
