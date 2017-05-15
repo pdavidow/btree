@@ -7,13 +7,13 @@ type BTreeUniformContent
     | BTreeString (BTree String)
 
 
-type NodeWrapper
+type NodeTag
     = IntNode Int
     | StringNode String
 
 
-toWrappedBTree : BTreeUniformContent -> BTree NodeWrapper
-toWrappedBTree bTreeUniformContent =
+toTaggedBTree : BTreeUniformContent -> BTree NodeTag
+toTaggedBTree bTreeUniformContent =
     case bTreeUniformContent of
         BTreeInt bTree ->
             map IntNode bTree

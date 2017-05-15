@@ -1,7 +1,3 @@
-{--
-elm-make Main.elm --output elm.js
---}
-
 module Main exposing (..)
 
 import Html exposing (Html, button, div, text, hr, input)

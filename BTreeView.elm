@@ -3,8 +3,8 @@
 module BTreeView exposing (..)
 
 import BTree exposing (BTree, toTreeDiagramTree)
-import BTreeUniformContent exposing (BTreeUniformContent(..), NodeWrapper(..))
-import BTreeUniformContent exposing (toWrappedBTree)
+import BTreeUniformContent exposing (BTreeUniformContent(..), NodeTag(..))
+import BTreeUniformContent exposing (toTaggedBTree)
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
 
@@ -18,15 +18,15 @@ import Arithmetic exposing (isEven)
 
 bTreeUniformContentDiagram : BTreeUniformContent -> Html msg
 bTreeUniformContentDiagram bTreeUniformContent =
-    bTreeDiagram (toWrappedBTree bTreeUniformContent)
+    bTreeDiagram (toTaggedBTree bTreeUniformContent)
 
 
-bTreeDiagram : BTree NodeWrapper -> Html msg
+bTreeDiagram : BTree NodeTag -> Html msg
 bTreeDiagram bTree =
     treeDiagram (toTreeDiagramTree bTree)
 
 
-treeDiagram : TD.Tree (Maybe NodeWrapper) -> Html msg
+treeDiagram : TD.Tree (Maybe NodeTag) -> Html msg
 treeDiagram tdTree =
     Element.toHtml <|
             draw
@@ -36,11 +36,11 @@ treeDiagram tdTree =
                 tdTree
 
 
-drawNode : Maybe NodeWrapper -> Form
-drawNode maybeishNodeWrapper =
-    case maybeishNodeWrapper of
-        Just nodeWrapper ->
-            case nodeWrapper of
+drawNode : Maybe NodeTag -> Form
+drawNode maybeishNodeTag =
+    case maybeishNodeTag of
+        Just nodeTag ->
+            case nodeTag of
                 IntNode i ->
                     let
                         stringLength = String.length (toString i)
