@@ -1,7 +1,6 @@
 {--
 elm-make Main.elm --output elm.js
 --}
--- You could have a union type called DrawableTree that is either an Int tree or a String tree
 
 module Main exposing (..)
 
@@ -74,8 +73,8 @@ update msg model =
 
         Raise ->
             {model
-                | intTree = exponentizeNodes model.intTree model.exponent
-                , stringTree = exponentizeNodes model.stringTree model.exponent
+                | intTree = raiseNodes model.intTree model.exponent
+                , stringTree = raiseNodes model.stringTree model.exponent
             }
 
         Delta s ->

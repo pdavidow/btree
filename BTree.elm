@@ -146,8 +146,8 @@ isElementUsingFold a tree =
 
 
 toTreeDiagramTree : BTree a -> TD.Tree (Maybe a)
-toTreeDiagramTree btree =
-    case btree of
+toTreeDiagramTree bTree =
+    case bTree of
         Empty ->
             TD.node Nothing []
 

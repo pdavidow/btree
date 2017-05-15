@@ -7,79 +7,95 @@ type BTreeUniformContent
     | BTreeString (BTree String)
 
 
+type NodeWrapper
+    = IntNode Int
+    | StringNode String
+
+
+toWrappedBTree : BTreeUniformContent -> BTree NodeWrapper
+toWrappedBTree bTreeUniformContent =
+    case bTreeUniformContent of
+        BTreeInt bTree ->
+            map IntNode bTree
+
+        BTreeString bTree ->
+            map StringNode bTree
+
+
 incrementNodes : BTreeUniformContent -> Int -> BTreeUniformContent
-incrementNodes btreeUniformContent delta =
-    case btreeUniformContent of
-        BTreeInt btree ->
+incrementNodes bTreeUniformContent delta =
+    case bTreeUniformContent of
+        BTreeInt bTree ->
             let
                 func = \n -> n + delta
             in
-                BTreeInt (map func btree)
+                BTreeInt (map func bTree)
 
-        BTreeString btree ->
+        BTreeString bTree ->
             let
-                func = \s -> s ++ " inc" ++ (toString delta)
+                func = \s -> s ++ " +" ++ (toString delta)
             in
-                BTreeString (map func btree)
+                BTreeString (map func bTree)
 
 
 decrementNodes : BTreeUniformContent -> Int -> BTreeUniformContent
-decrementNodes btreeUniformContent delta =
-    case btreeUniformContent of
-        BTreeInt btree ->
+decrementNodes bTreeUniformContent delta =
+    case bTreeUniformContent of
+        BTreeInt bTree ->
             let
                 func = \n -> n - delta
             in
-                BTreeInt (map func btree)
+                BTreeInt (map func bTree)
 
-        BTreeString btree ->
+        BTreeString bTree ->
             let
-                func = \s -> s ++ " dec" ++ (toString delta)
+                func = \s -> s ++ " -" ++ (toString delta)
             in
-                BTreeString (map func btree)
+                BTreeString (map func bTree)
 
 
-exponentizeNodes : BTreeUniformContent -> Int -> BTreeUniformContent
-exponentizeNodes btreeUniformContent exp =
-    case btreeUniformContent of
-        BTreeInt btree ->
+raiseNodes : BTreeUniformContent -> Int -> BTreeUniformContent
+raiseNodes bTreeUniformContent exp =
+    case bTreeUniformContent of
+        BTreeInt bTree ->
             let
                 func = \n -> n^exp
             in
-                BTreeInt (map func btree)
+                BTreeInt (map func bTree)
 
-        BTreeString btree ->
+        BTreeString bTree ->
             let
-                func = \s -> s ++ " exp" ++ (toString exp)
+                func = \s -> s ++ " ^" ++ (toString exp)
             in
-                BTreeString (map func btree)
+                BTreeString (map func bTree)
 
 
 -- Can this be simplified with pattern matching?
 depth : BTreeUniformContent -> Int
-depth btreeUniformContent =
-    case btreeUniformContent of
-        BTreeInt btree ->
-            BTree.depth btree
+depth bTreeUniformContent =
+    case bTreeUniformContent of
+        BTreeInt bTree ->
+            BTree.depth bTree
 
-        BTreeString btree ->
-            BTree.depth btree
+        BTreeString bTree ->
+            BTree.depth bTree
 
 
 sumInt : BTreeUniformContent -> Int
-sumInt btreeUniformContent =
-    case btreeUniformContent of
-        BTreeInt btree ->
-            BTree.sumInt btree
+sumInt bTreeUniformContent =
+    case bTreeUniformContent of
+        BTreeInt bTree ->
+            BTree.sumInt bTree
 
-        BTreeString btree ->
+        BTreeString bTree ->
             0
 
 
 sumString : BTreeUniformContent -> String
-sumString btreeUniformContent =
-    case btreeUniformContent of
-        BTreeInt btree ->
+sumString bTreeUniformContent =
+    case bTreeUniformContent of
+        BTreeInt bTree ->
             ""
-        BTreeString btree ->
-            BTree.sumString btree
+
+        BTreeString bTree ->
+            BTree.sumString bTree

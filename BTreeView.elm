@@ -3,38 +3,30 @@
 module BTreeView exposing (..)
 
 import BTree exposing (BTree, toTreeDiagramTree)
-import BTreeUniformContent exposing (BTreeUniformContent(..))
+import BTreeUniformContent exposing (BTreeUniformContent(..), NodeWrapper(..))
+import BTreeUniformContent exposing (toWrappedBTree)
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
 
-import Color exposing (Color, green, orange, black, white)
-import Collage exposing (group, segment, traced, rotate, move, scale, circle, filled, outlined, text, rect, polygon, moveY, defaultLine, Form, toForm, LineStyle)
+import Color exposing (Color, green, orange, black, white, yellow, blue)
+import Collage exposing (group, segment, traced, rotate, move, scale, oval, rect, filled, outlined, text, rect, polygon, moveY, defaultLine, Form, toForm, LineStyle)
 import Element
 import Html exposing (Html)
 import Text exposing (fromString, style, defaultStyle)
 import Arithmetic exposing (isEven)
 
 
--- Can this be simplified with pattern matching?
 bTreeUniformContentDiagram : BTreeUniformContent -> Html msg
-bTreeUniformContentDiagram btreeUniformContent =
-    case btreeUniformContent of
-        BTreeInt btree ->
-            bTreeDiagram btree
-
-        BTreeString btree ->
-            bTreeDiagram btree
+bTreeUniformContentDiagram bTreeUniformContent =
+    bTreeDiagram (toWrappedBTree bTreeUniformContent)
 
 
-bTreeDiagram : BTree a -> Html msg
+bTreeDiagram : BTree NodeWrapper -> Html msg
 bTreeDiagram bTree =
-    let
-        tdTree = toTreeDiagramTree bTree
-    in
-        treeDiagram tdTree
+    treeDiagram (toTreeDiagramTree bTree)
 
 
-treeDiagram : TD.Tree (Maybe a) -> Html msg
+treeDiagram : TD.Tree (Maybe NodeWrapper) -> Html msg
 treeDiagram tdTree =
     Element.toHtml <|
             draw
@@ -44,22 +36,46 @@ treeDiagram tdTree =
                 tdTree
 
 
-colorizer : Int -> Color
-colorizer n =
-    if Arithmetic.isEven n
-        then green
-        else orange
+drawNode : Maybe NodeWrapper -> Form
+drawNode maybeishNodeWrapper =
+    case maybeishNodeWrapper of
+        Just nodeWrapper ->
+            case nodeWrapper of
+                IntNode i ->
+                    let
+                        stringLength = String.length (toString i)
+                        width = toFloat (50 + (20 * stringLength))
+                        height = 50
 
+                        colorizer : Int -> Color
+                        colorizer i =
+                            if Arithmetic.isEven i
+                                then green
+                                else orange
+                    in
+                        group
+                            [ oval width height |> filled (colorizer i)
+                            , oval width height |> outlined treeLineStyle
+                            , toString i |> fromString |> style treeNodeStyle |> text |> moveY 4
+                            ]
 
-drawNode : Maybe a -> Form
-drawNode maybeishN =
-    case maybeishN of
-        Just n ->
-            group
-                [ circle 27 |> filled black -- (colorizer n)
-                , circle 27 |> outlined treeLineStyle
-                , toString n |> fromString |> style treeNodeStyle |> text |> moveY 4
-                ]
+                StringNode s ->
+                    let
+                        stringLength = String.length s
+                        width = toFloat (50 + (10 * stringLength))
+                        height = 50
+
+                        colorizer : String -> Color
+                        colorizer s =
+                            if Arithmetic.isEven stringLength
+                                then yellow
+                                else blue
+                    in
+                        group
+                            [ rect width height |> filled (colorizer s)
+                            , rect width height |> outlined treeLineStyle
+                            , s |> fromString |> style treeNodeStyle |> text |> moveY 4
+                            ]
 
         Nothing ->
             toForm Element.empty
