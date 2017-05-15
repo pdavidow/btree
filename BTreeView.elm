@@ -3,8 +3,8 @@
 module BTreeView exposing (..)
 
 import BTree exposing (BTree, toTreeDiagramTree)
-import BTreeUniformContent exposing (BTreeUniformContent(..), NodeTag(..))
-import BTreeUniformContent exposing (toTaggedBTree)
+import BTreeUniformType exposing (BTreeUniformType(..), NodeTag(..))
+import BTreeUniformType exposing (toTaggedBTree)
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
 
@@ -16,9 +16,9 @@ import Text exposing (fromString, style, defaultStyle)
 import Arithmetic exposing (isEven)
 
 
-bTreeUniformContentDiagram : BTreeUniformContent -> Html msg
-bTreeUniformContentDiagram bTreeUniformContent =
-    bTreeDiagram (toTaggedBTree bTreeUniformContent)
+bTreeUniformTypeDiagram : BTreeUniformType -> Html msg
+bTreeUniformTypeDiagram bTreeUniformType =
+    bTreeDiagram (toTaggedBTree bTreeUniformType)
 
 
 bTreeDiagram : BTree NodeTag -> Html msg

@@ -4,8 +4,8 @@ module Tests exposing (..)
 
 import BTree exposing (..)
 import TreeDiagram as TD exposing (node)
-import BTreeUniformContent exposing (toTaggedBTree, incrementNodes, decrementNodes, raiseNodes)
-import BTreeUniformContent exposing (BTreeUniformContent(..), NodeTag(..))
+import BTreeUniformType exposing (toTaggedBTree, incrementNodes, decrementNodes, raiseNodes)
+import BTreeUniformType exposing (BTreeUniformType(..), NodeTag(..))
 
 import Test exposing (..)
 import Expect
@@ -318,7 +318,7 @@ all =
                 \() ->
                     Expect.equal (Node (StringNode "a") Empty (singleton (StringNode "b"))) (toTaggedBTree (BTreeString (fromList ["a", "b"])))
             ]
-         , describe "BTreeUniformContent.incrementNodes"
+         , describe "BTreeUniformType.incrementNodes"
             [ test "of empty" <|
                 \() ->
                     Expect.equal (BTreeInt Empty) (incrementNodes (BTreeInt Empty) 1)
@@ -329,7 +329,7 @@ all =
                 \() ->
                     Expect.equal (BTreeString (Node "a +3" Empty (singleton "b +3"))) (incrementNodes (BTreeString (fromList ["a", "b"])) 3)
             ]
-         , describe "BTreeUniformContent.decrementNodes"
+         , describe "BTreeUniformType.decrementNodes"
             [ test "of empty" <|
                 \() ->
                     Expect.equal (BTreeInt Empty) (decrementNodes (BTreeInt Empty) 1)
@@ -340,7 +340,7 @@ all =
                 \() ->
                     Expect.equal (BTreeString (Node "a -3" Empty (singleton "b -3"))) (decrementNodes (BTreeString (fromList ["a", "b"])) 3)
             ]
-         , describe "BTreeUniformContent.raiseNodes"
+         , describe "BTreeUniformType.raiseNodes"
             [ test "of empty" <|
                 \() ->
                     Expect.equal (BTreeInt Empty) (decrementNodes (BTreeInt Empty) 1)

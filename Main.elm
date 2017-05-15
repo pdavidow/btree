@@ -5,16 +5,16 @@ import Html.Events exposing (onClick, onInput)
 import Html.Attributes as A exposing (style, type_, value)
 
 
-import BTreeUniformContent exposing (BTreeUniformContent(..))
-import BTreeUniformContent exposing (..)
+import BTreeUniformType exposing (BTreeUniformType(..))
+import BTreeUniformType exposing (..)
 import BTree exposing (..)
-import BTreeView exposing (bTreeUniformContentDiagram)
+import BTreeView exposing (bTreeUniformTypeDiagram)
 ------------------------------------------------
 
 
 type alias Model =
-    { intTree : BTreeUniformContent
-    , stringTree : BTreeUniformContent
+    { intTree : BTreeUniformType
+    , stringTree : BTreeUniformType
     , delta : Int
     , exponent : Int
     }
@@ -43,12 +43,12 @@ view model =
     , button [ onClick Reset ] [ text "reset" ]
     , div [] [ text (toString model) ]
     , hr [] []
-    , div [] [ text ("Depth intTree: " ++ toString (BTreeUniformContent.depth model.intTree)) ]
-    , div [] [ text ("Depth stringTree: " ++ toString (BTreeUniformContent.depth model.stringTree)) ]
-    , div [] [ text ("SumInt intTree: " ++ toString (BTreeUniformContent.sumInt model.intTree)) ]
-    , div [] [ text ("SumString stringTree: " ++ toString (BTreeUniformContent.sumString model.stringTree)) ]
-    , bTreeUniformContentDiagram model.intTree
-    , bTreeUniformContentDiagram model.stringTree
+    , div [] [ text ("Depth intTree: " ++ toString (BTreeUniformType.depth model.intTree)) ]
+    , div [] [ text ("Depth stringTree: " ++ toString (BTreeUniformType.depth model.stringTree)) ]
+    , div [] [ text ("SumInt intTree: " ++ toString (BTreeUniformType.sumInt model.intTree)) ]
+    , div [] [ text ("SumString stringTree: " ++ toString (BTreeUniformType.sumString model.stringTree)) ]
+    , bTreeUniformTypeDiagram model.intTree
+    , bTreeUniformTypeDiagram model.stringTree
     ]
 
 

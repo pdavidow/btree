@@ -1,8 +1,8 @@
-module BTreeUniformContent exposing (..)
+module BTreeUniformType exposing (..)
 
 import BTree exposing (BTree, map, depth, sumInt, sumString)
 
-type BTreeUniformContent
+type BTreeUniformType
     = BTreeInt (BTree Int)
     | BTreeString (BTree String)
 
@@ -12,9 +12,9 @@ type NodeTag
     | StringNode String
 
 
-toTaggedBTree : BTreeUniformContent -> BTree NodeTag
-toTaggedBTree bTreeUniformContent =
-    case bTreeUniformContent of
+toTaggedBTree : BTreeUniformType -> BTree NodeTag
+toTaggedBTree bTreeUniformType =
+    case bTreeUniformType of
         BTreeInt bTree ->
             map IntNode bTree
 
@@ -22,9 +22,9 @@ toTaggedBTree bTreeUniformContent =
             map StringNode bTree
 
 
-incrementNodes : BTreeUniformContent -> Int -> BTreeUniformContent
-incrementNodes bTreeUniformContent delta =
-    case bTreeUniformContent of
+incrementNodes : BTreeUniformType -> Int -> BTreeUniformType
+incrementNodes bTreeUniformType delta =
+    case bTreeUniformType of
         BTreeInt bTree ->
             let
                 func = \n -> n + delta
@@ -38,9 +38,9 @@ incrementNodes bTreeUniformContent delta =
                 BTreeString (map func bTree)
 
 
-decrementNodes : BTreeUniformContent -> Int -> BTreeUniformContent
-decrementNodes bTreeUniformContent delta =
-    case bTreeUniformContent of
+decrementNodes : BTreeUniformType -> Int -> BTreeUniformType
+decrementNodes bTreeUniformType delta =
+    case bTreeUniformType of
         BTreeInt bTree ->
             let
                 func = \n -> n - delta
@@ -54,9 +54,9 @@ decrementNodes bTreeUniformContent delta =
                 BTreeString (map func bTree)
 
 
-raiseNodes : BTreeUniformContent -> Int -> BTreeUniformContent
-raiseNodes bTreeUniformContent exp =
-    case bTreeUniformContent of
+raiseNodes : BTreeUniformType -> Int -> BTreeUniformType
+raiseNodes bTreeUniformType exp =
+    case bTreeUniformType of
         BTreeInt bTree ->
             let
                 func = \n -> n ^ exp
@@ -70,10 +70,9 @@ raiseNodes bTreeUniformContent exp =
                 BTreeString (map func bTree)
 
 
--- Can this be simplified with pattern matching?
-depth : BTreeUniformContent -> Int
-depth bTreeUniformContent =
-    case bTreeUniformContent of
+depth : BTreeUniformType -> Int
+depth bTreeUniformType =
+    case bTreeUniformType of
         BTreeInt bTree ->
             BTree.depth bTree
 
@@ -81,9 +80,9 @@ depth bTreeUniformContent =
             BTree.depth bTree
 
 
-sumInt : BTreeUniformContent -> Int
-sumInt bTreeUniformContent =
-    case bTreeUniformContent of
+sumInt : BTreeUniformType -> Int
+sumInt bTreeUniformType =
+    case bTreeUniformType of
         BTreeInt bTree ->
             BTree.sumInt bTree
 
@@ -91,9 +90,9 @@ sumInt bTreeUniformContent =
             0
 
 
-sumString : BTreeUniformContent -> String
-sumString bTreeUniformContent =
-    case bTreeUniformContent of
+sumString : BTreeUniformType -> String
+sumString bTreeUniformType =
+    case bTreeUniformType of
         BTreeInt bTree ->
             ""
 
