@@ -66,23 +66,20 @@ depth btreeUniformContent =
             BTree.depth btree
 
 
--- Is this the best we can do?
 sumInt : BTreeUniformContent -> Int
 sumInt btreeUniformContent =
     case btreeUniformContent of
         BTreeInt btree ->
             BTree.sumInt btree
 
-        _ ->
+        BTreeString btree ->
             0
 
 
--- Is this the best we can do?
 sumString : BTreeUniformContent -> String
 sumString btreeUniformContent =
     case btreeUniformContent of
+        BTreeInt btree ->
+            ""
         BTreeString btree ->
             BTree.sumString btree
-
-        _ ->
-            ""
