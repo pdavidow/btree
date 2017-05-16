@@ -24,6 +24,10 @@ type alias Model =
     , intStringTree : BTreeVariedType
     , delta : Int
     , exponent : Int
+    , maxRandomInt : Int
+    , minListLength : Int
+    , maxListLength : Int
+    , randomIntListLength : Int
     }
 
 
@@ -34,6 +38,10 @@ initialModel =
     , intStringTree = Node (StringNode "a") (singleton (IntNode 1)) (Node (StringNode "bb") (singleton (IntNode 2)) (Node (StringNode "ccc") (singleton (IntNode 3)) Empty))
     , delta = 1
     , exponent = 2
+    , maxRandomInt = 99
+    , minListLength = 1
+    , maxListLength = 9
+    , randomIntListLength = 0
     }
 
 
@@ -52,6 +60,7 @@ type Msg =
     | ReceiveRandomIntList (List Int)
     | RequestRandomDelta
     | ReceiveRandomDelta Int
+    | ReceiveRandomIntListLength Int
     | Reset
 
 
@@ -111,7 +120,17 @@ update msg model =
             }, Cmd.none)
 
         RequestRandomIntList ->
-            (model, Random.generate ReceiveRandomIntList (Random.list 5 (Random.int 0 100)))
+            -- todo: Use andThen here?
+            let
+                generator = (Random.int model.minListLength model.maxListLength)
+            in
+                (model, Random.generate ReceiveRandomIntListLength generator)
+
+        ReceiveRandomIntListLength length ->
+            let
+                generator = Random.list length (Random.int 1 model.maxRandomInt)
+            in
+                (model, Random.generate ReceiveRandomIntList generator)
 
         RequestRandomDelta ->
             (model, Random.generate ReceiveRandomDelta (Random.int 1 100))
