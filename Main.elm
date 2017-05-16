@@ -33,14 +33,14 @@ type alias Model =
 
 initialModel: Model
 initialModel =
-    { intTree = BTreeInt (fromList [1, 2, 3])
+    { intTree = BTreeInt (fromList [3, 2, 1])
     , stringTree = BTreeString (fromList ["a", "bb", "ccc"])
     , intStringTree = Node (StringNode "a") (singleton (IntNode 1)) (Node (StringNode "bb") (singleton (IntNode 2)) (Node (StringNode "ccc") (singleton (IntNode 3)) Empty))
     , delta = 1
     , exponent = 2
     , maxRandomInt = 99
     , minListLength = 1
-    , maxListLength = 9
+    , maxListLength = 12
     , randomIntListLength = 0
     }
 
@@ -54,6 +54,7 @@ type Msg =
       Increment
     | Decrement
     | Raise
+    | SortIntList
     | Delta String
     | Exponent String
     | RequestRandomIntList
@@ -70,6 +71,7 @@ view model =
     [ button [ onClick Increment ] [ text "+" ]
     , button [ onClick Decrement ] [ text "-" ]
     , button [ onClick Raise ] [ text "^exp" ]
+    , button [ onClick SortIntList ] [ text "SortIntTree" ]
     , text "Delta: ", input [ type_ "number", A.min "1", value (toString model.delta), onInput Delta ] []
     , text "Exponent: ", input [ type_ "number", A.min "1", value (toString model.exponent), onInput Exponent ] []
     , button [ onClick RequestRandomIntList ] [ text "RandomIntTree" ]
@@ -109,6 +111,11 @@ update msg model =
                 | intTree = BTreeUniformType.raiseNodes model.exponent model.intTree
                 , stringTree = BTreeUniformType.raiseNodes model.exponent model.stringTree
                 , intStringTree = BTreeVariedType.raiseNodes model.exponent model.intStringTree
+            }, Cmd.none)
+
+        SortIntList ->
+            ({model
+                | intTree = BTreeUniformType.sort model.intTree
             }, Cmd.none)
 
         Delta s ->

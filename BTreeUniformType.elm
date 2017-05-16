@@ -1,7 +1,7 @@
 module BTreeUniformType exposing (..)
 
 import BTree exposing (NodeTag(..))
-import BTree exposing (BTree, map, depth, sumInt, sumString)
+import BTree exposing (BTree, map, depth, sumInt, sumString, sort)
 import ValueOps exposing (..)
 
 
@@ -78,3 +78,12 @@ sumString bTreeUniformType =
 
         BTreeString bTree ->
             BTree.sumString bTree
+
+sort : BTreeUniformType -> BTreeUniformType
+sort bTreeUniformType =
+    case bTreeUniformType of
+        BTreeInt bTree ->
+            BTreeInt (BTree.sort bTree)
+
+        BTreeString bTree ->
+            BTreeString (BTree.sort bTree)

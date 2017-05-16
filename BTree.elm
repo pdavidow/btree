@@ -158,3 +158,8 @@ toTreeDiagramTree bTree =
 
         Node v left right ->
             TD.node (Just v)[toTreeDiagramTree left, toTreeDiagramTree right]
+
+
+sort: BTree comparable -> BTree comparable
+sort btree =
+    fromList (List.sort (flatten btree))
