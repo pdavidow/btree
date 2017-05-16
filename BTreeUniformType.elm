@@ -2,6 +2,7 @@ module BTreeUniformType exposing (..)
 
 import BTree exposing (NodeTag(..))
 import BTree exposing (BTree, map, depth, sumInt, sumString)
+import ValueOps exposing (..)
 
 
 type BTreeUniformType
@@ -23,48 +24,30 @@ incrementNodes : Int -> BTreeUniformType -> BTreeUniformType
 incrementNodes delta bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            let
-                func = \n -> n + delta
-            in
-                BTreeInt (map func bTree)
+            BTreeInt (map (ValueOps.incrementInt delta) bTree)
 
         BTreeString bTree ->
-            let
-                func = \s -> s ++ " +" ++ (toString delta)
-            in
-                BTreeString (map func bTree)
+            BTreeString (map (ValueOps.incrementString delta) bTree)
 
 
 decrementNodes : Int -> BTreeUniformType -> BTreeUniformType
 decrementNodes delta bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            let
-                func = \n -> n - delta
-            in
-                BTreeInt (map func bTree)
+            BTreeInt (map (ValueOps.decrementInt delta) bTree)
 
         BTreeString bTree ->
-            let
-                func = \s -> s ++ " -" ++ (toString delta)
-            in
-                BTreeString (map func bTree)
+            BTreeString (map (ValueOps.decrementString delta) bTree)
 
 
 raiseNodes : Int -> BTreeUniformType -> BTreeUniformType
 raiseNodes exp bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            let
-                func = \n -> n ^ exp
-            in
-                BTreeInt (map func bTree)
+            BTreeInt (map (ValueOps.raiseInt exp) bTree)
 
         BTreeString bTree ->
-            let
-                func = \s -> s ++ " ^" ++ (toString exp)
-            in
-                BTreeString (map func bTree)
+            BTreeString (map (ValueOps.raiseString exp) bTree)
 
 
 depth : BTreeUniformType -> Int

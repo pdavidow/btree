@@ -2,6 +2,7 @@ module BTreeVariedType exposing (..)
 
 import BTree exposing (BTree, map)
 import BTree exposing (NodeTag(..))
+import ValueOps exposing (..)
 
 
 type alias BTreeVariedType = BTree NodeTag
@@ -16,10 +17,10 @@ incrementNode : Int -> NodeTag -> NodeTag
 incrementNode delta nodeTag =
     case nodeTag of
         IntNode i ->
-            IntNode (i + delta)
+            IntNode (ValueOps.incrementInt delta i)
 
         StringNode s ->
-            StringNode (s ++ " +" ++ (toString delta))
+            StringNode (ValueOps.incrementString delta s)
 
 
 decrementNodes : Int -> BTreeVariedType -> BTreeVariedType
@@ -31,10 +32,10 @@ decrementNode : Int -> NodeTag -> NodeTag
 decrementNode delta nodeTag =
     case nodeTag of
         IntNode i ->
-            IntNode (i - delta)
+            IntNode (ValueOps.decrementInt delta i)
 
         StringNode s ->
-            StringNode (s ++ " -" ++ (toString delta))
+            StringNode (ValueOps.decrementString delta s)
 
 
 raiseNodes : Int -> BTreeVariedType -> BTreeVariedType
@@ -46,7 +47,7 @@ raiseNode : Int -> NodeTag -> NodeTag
 raiseNode exp nodeTag =
     case nodeTag of
         IntNode i ->
-            IntNode (i ^ exp)
+            IntNode (ValueOps.raiseInt exp i)
 
         StringNode s ->
-            StringNode (s ++ " ^" ++ (toString exp))
+            StringNode (ValueOps.raiseString exp s)
