@@ -48,6 +48,8 @@ type Msg =
     | Raise
     | Delta String
     | Exponent String
+    | RequestRandomIntList
+    | ReceiveRandomIntList (List Int)
     | RequestRandomDelta
     | ReceiveRandomDelta Int
     | Reset
@@ -61,6 +63,7 @@ view model =
     , button [ onClick Raise ] [ text "^exp" ]
     , text "Delta: ", input [ type_ "number", A.min "1", value (toString model.delta), onInput Delta ] []
     , text "Exponent: ", input [ type_ "number", A.min "1", value (toString model.exponent), onInput Exponent ] []
+    , button [ onClick RequestRandomIntList ] [ text "RandomIntTree" ]
     , button [ onClick RequestRandomDelta ] [ text "RandomDelta" ]
     , button [ onClick Reset ] [ text "reset" ]
     , div [] [ text (toString model) ]
@@ -107,8 +110,15 @@ update msg model =
             ({model | exponent = intFromInput s
             }, Cmd.none)
 
+        RequestRandomIntList ->
+            (model, Random.generate ReceiveRandomIntList (Random.list 5 (Random.int 0 100)))
+
         RequestRandomDelta ->
             (model, Random.generate ReceiveRandomDelta (Random.int 1 100))
+
+        ReceiveRandomIntList list ->
+            ({model | intTree = BTreeInt (fromList list)
+            }, Cmd.none)
 
         ReceiveRandomDelta i ->
             ({model | delta = i
