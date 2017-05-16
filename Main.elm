@@ -64,24 +64,23 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         Increment ->
-            -- put delta first for partial applicatpn
             {model
-                | intTree = BTreeUniformType.incrementNodes model.intTree model.delta
-                , stringTree = BTreeUniformType.incrementNodes model.stringTree model.delta
+                | intTree = BTreeUniformType.incrementNodes model.delta model.intTree
+                , stringTree = BTreeUniformType.incrementNodes model.delta model.stringTree
                 , intStringTree = BTreeVariedType.incrementNodes model.delta model.intStringTree
             }
 
         Decrement ->
             {model
-                | intTree = BTreeUniformType.decrementNodes model.intTree model.delta
-                , stringTree = BTreeUniformType.decrementNodes model.stringTree model.delta
+                | intTree = BTreeUniformType.decrementNodes model.delta model.intTree
+                , stringTree = BTreeUniformType.decrementNodes model.delta model.stringTree
                 , intStringTree = BTreeVariedType.decrementNodes model.delta model.intStringTree
             }
 
         Raise ->
             {model
-                | intTree = BTreeUniformType.raiseNodes model.intTree model.exponent
-                , stringTree = BTreeUniformType.raiseNodes model.stringTree model.exponent
+                | intTree = BTreeUniformType.raiseNodes model.exponent model.intTree
+                , stringTree = BTreeUniformType.raiseNodes model.exponent model.stringTree
                 , intStringTree = BTreeVariedType.raiseNodes model.exponent model.intStringTree
             }
 

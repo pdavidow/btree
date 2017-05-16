@@ -19,8 +19,8 @@ toTaggedBTree bTreeUniformType =
             map StringNode bTree
 
 
-incrementNodes : BTreeUniformType -> Int -> BTreeUniformType
-incrementNodes bTreeUniformType delta =
+incrementNodes : Int -> BTreeUniformType -> BTreeUniformType
+incrementNodes delta bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
             let
@@ -35,8 +35,8 @@ incrementNodes bTreeUniformType delta =
                 BTreeString (map func bTree)
 
 
-decrementNodes : BTreeUniformType -> Int -> BTreeUniformType
-decrementNodes bTreeUniformType delta =
+decrementNodes : Int -> BTreeUniformType -> BTreeUniformType
+decrementNodes delta bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
             let
@@ -51,8 +51,8 @@ decrementNodes bTreeUniformType delta =
                 BTreeString (map func bTree)
 
 
-raiseNodes : BTreeUniformType -> Int -> BTreeUniformType
-raiseNodes bTreeUniformType exp =
+raiseNodes : Int -> BTreeUniformType -> BTreeUniformType
+raiseNodes exp bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
             let
