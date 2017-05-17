@@ -27,7 +27,6 @@ type alias Model =
     , maxRandomInt : Int
     , minListLength : Int
     , maxListLength : Int
-    , randomIntListLength : Int
     }
 
 
@@ -41,7 +40,6 @@ initialModel =
     , maxRandomInt = 99
     , minListLength = 1
     , maxListLength = 12
-    , randomIntListLength = 0
     }
 
 
@@ -61,7 +59,6 @@ type Msg =
     | ReceiveRandomIntList (List Int)
     | RequestRandomDelta
     | ReceiveRandomDelta Int
-    | ReceiveRandomIntListLength Int
     | Reset
 
 
@@ -127,17 +124,21 @@ update msg model =
             }, Cmd.none)
 
         RequestRandomIntList ->
-            -- todo: Use andThen here?
             let
-                generator = (Random.int model.minListLength model.maxListLength)
-            in
-                (model, Random.generate ReceiveRandomIntListLength generator)
+                randomIntList : Int -> Random.Generator (List Int)
+                randomIntList length =
+                    Random.list length (Random.int 1 model.maxRandomInt)
 
-        ReceiveRandomIntListLength length ->
-            let
-                generator = Random.list length (Random.int 1 model.maxRandomInt)
+                generatorListLength : Random.Generator Int
+                generatorListLength =
+                    Random.int model.minListLength model.maxListLength
+
+                generatorIntList : Random.Generator (List Int)
+                generatorIntList =
+                    --andThen : (a -> Generator b) -> Generator a -> Generator b
+                    Random.andThen randomIntList generatorListLength
             in
-                (model, Random.generate ReceiveRandomIntList generator)
+                (model, Random.generate ReceiveRandomIntList generatorIntList)
 
         RequestRandomDelta ->
             (model, Random.generate ReceiveRandomDelta (Random.int 1 100))
