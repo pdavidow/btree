@@ -1,4 +1,16 @@
-module ValueOps exposing (..)
+--module ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
+module ValueOps exposing (..) --todo
+
+type alias Mappers =
+    { int : Int -> Int -> Int
+    , string : Int -> String -> String
+    }
+
+
+incrementMappers = Mappers incrementInt incrementString
+decrementMappers = Mappers decrementInt decrementString
+raiseMappers = Mappers raiseInt raiseString
+
 
 incrementInt : Int -> Int -> Int
 incrementInt delta i =

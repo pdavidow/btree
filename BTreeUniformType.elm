@@ -2,7 +2,7 @@ module BTreeUniformType exposing (..)
 
 import BTree exposing (NodeTag(..))
 import BTree exposing (BTree, map, depth, sumInt, sumString, sort)
-import ValueOps exposing (..)
+import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
 
 
 type BTreeUniformType
@@ -20,34 +20,29 @@ toTaggedBTree bTreeUniformType =
             map StringNode bTree
 
 
-incrementNodes : Int -> BTreeUniformType -> BTreeUniformType
-incrementNodes delta bTreeUniformType =
+mapUniformTree : Int -> Mappers -> BTreeUniformType -> BTreeUniformType
+mapUniformTree i mappers bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            BTreeInt (map (ValueOps.incrementInt delta) bTree)
+            BTreeInt (map (mappers.int i) bTree)
 
         BTreeString bTree ->
-            BTreeString (map (ValueOps.incrementString delta) bTree)
+            BTreeString (map (mappers.string i) bTree)
+
+
+incrementNodes : Int -> BTreeUniformType -> BTreeUniformType
+incrementNodes delta bTreeUniformType =
+    mapUniformTree delta incrementMappers bTreeUniformType
 
 
 decrementNodes : Int -> BTreeUniformType -> BTreeUniformType
 decrementNodes delta bTreeUniformType =
-    case bTreeUniformType of
-        BTreeInt bTree ->
-            BTreeInt (map (ValueOps.decrementInt delta) bTree)
-
-        BTreeString bTree ->
-            BTreeString (map (ValueOps.decrementString delta) bTree)
+    mapUniformTree delta decrementMappers bTreeUniformType
 
 
 raiseNodes : Int -> BTreeUniformType -> BTreeUniformType
 raiseNodes exp bTreeUniformType =
-    case bTreeUniformType of
-        BTreeInt bTree ->
-            BTreeInt (map (ValueOps.raiseInt exp) bTree)
-
-        BTreeString bTree ->
-            BTreeString (map (ValueOps.raiseString exp) bTree)
+    mapUniformTree exp raiseMappers bTreeUniformType
 
 
 depth : BTreeUniformType -> Int
