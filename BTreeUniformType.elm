@@ -21,13 +21,13 @@ toTaggedBTree bTreeUniformType =
 
 
 mapUniformTree : Int -> Mappers -> BTreeUniformType -> BTreeUniformType
-mapUniformTree i mappers bTreeUniformType =
+mapUniformTree operand mappers bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            BTreeInt (map (mappers.int i) bTree)
+            BTreeInt (map (mappers.int operand) bTree)
 
         BTreeString bTree ->
-            BTreeString (map (mappers.string i) bTree)
+            BTreeString (map (mappers.string operand) bTree)
 
 
 incrementNodes : Int -> BTreeUniformType -> BTreeUniformType

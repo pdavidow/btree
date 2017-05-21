@@ -1,5 +1,4 @@
---module ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
-module ValueOps exposing (..) --todo
+module ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
 
 type alias Mappers =
     { int : Int -> Int -> Int
