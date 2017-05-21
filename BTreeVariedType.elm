@@ -11,6 +11,7 @@ type alias BTreeVariedType = BTree NodeTag
 toStringLength : BTreeVariedType -> BTreeVariedType
 toStringLength bTree =
     let
+        func : NodeTag -> NodeTag
         func nodeTag = case nodeTag of
             IntNode i -> -- no op
                 IntNode i
@@ -21,19 +22,19 @@ toStringLength bTree =
         map func bTree
 
 
-mapFunc : Int -> Mappers -> NodeTag -> NodeTag
-mapFunc operand mappers nodeTag =
-    case nodeTag of
-        IntNode i ->
-            IntNode (mappers.int operand i)
-
-        StringNode s ->
-            StringNode (mappers.string operand s)
-
-
 mapVariedTree : Int -> Mappers -> BTreeVariedType -> BTreeVariedType
 mapVariedTree operand mappers bTree =
-    map (mapFunc operand mappers) bTree
+    let
+        func : Int -> Mappers -> NodeTag -> NodeTag
+        func operand mappers nodeTag =
+            case nodeTag of
+                IntNode i ->
+                    IntNode (mappers.int operand i)
+
+                StringNode s ->
+                    StringNode (mappers.string operand s)
+    in
+        map (func operand mappers) bTree
 
 
 incrementNodes : Int -> BTreeVariedType -> BTreeVariedType
