@@ -8,19 +8,24 @@ import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMapp
 type alias BTreeVariedType = BTree NodeTag
 
 
+toStringLength : BTreeVariedType -> BTreeVariedType
+toStringLength bTree =
+    bTree --todo
+
+
+func : Int -> Mappers -> NodeTag -> NodeTag
+func operand mappers nodeTag =
+    case nodeTag of
+        IntNode i ->
+            IntNode (mappers.int operand i)
+
+        StringNode s ->
+            StringNode (mappers.string operand s)
+
+
 mapVariedTree : Int -> Mappers -> BTreeVariedType -> BTreeVariedType
 mapVariedTree operand mappers bTree =
-    let
-        func operand mappers nodeTag =
-            case nodeTag of
-                IntNode i ->
-                    IntNode (mappers.int operand i)
-
-                StringNode s ->
-                    StringNode (mappers.string operand s)
-    in
-        map (func operand mappers) bTree
-
+    map (func operand mappers) bTree
 
 
 incrementNodes : Int -> BTreeVariedType -> BTreeVariedType

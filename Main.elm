@@ -5,7 +5,7 @@ elm-make Main.elm --output elm.js
 module Main exposing (..)
 
 import Html exposing (Html, button, div, text, hr, input)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, onMouseDown, onMouseUp)
 import Html.Attributes as A exposing (style, type_, value)
 import Random
 
@@ -22,6 +22,8 @@ type alias Model =
     { intTree : BTreeUniformType
     , stringTree : BTreeUniformType
     , intStringTree : BTreeVariedType
+    , stringTreeCache : BTreeUniformType
+    , intStringTreeCache : BTreeVariedType
     , delta : Int
     , exponent : Int
     , maxRandomInt : Int
@@ -35,6 +37,8 @@ initialModel =
     { intTree = BTreeInt (fromList [3, 2, 1])
     , stringTree = BTreeString (fromList ["a", "bb", "ccc"])
     , intStringTree = Node (StringNode "a") (singleton (IntNode 1)) (Node (StringNode "bb") (singleton (IntNode 2)) (Node (StringNode "ccc") (singleton (IntNode 3)) Empty))
+    , stringTreeCache = BTreeInt Empty
+    , intStringTreeCache = Empty
     , delta = 1
     , exponent = 2
     , maxRandomInt = 99
@@ -59,16 +63,19 @@ type Msg =
     | ReceiveRandomIntList (List Int)
     | RequestRandomDelta
     | ReceiveRandomDelta Int
+    | StartShowStringLength
+    | StopShowStringLength
     | Reset
 
 
 view : Model -> Html Msg
 view model =
-  div []
+    div []
     [ button [ onClick Increment ] [ text "+" ]
     , button [ onClick Decrement ] [ text "-" ]
     , button [ onClick Raise ] [ text "^exp" ]
     , button [ onClick SortIntList ] [ text "SortIntTree" ]
+    , button [ onMouseDown StartShowStringLength, onMouseUp StopShowStringLength ] [ text "StringLength" ]
     , text "Delta: ", input [ type_ "number", A.min "1", value (toString model.delta), onInput Delta ] []
     , text "Exponent: ", input [ type_ "number", A.min "1", value (toString model.exponent), onInput Exponent ] []
     , button [ onClick RequestRandomIntList ] [ text "RandomIntTree" ]
@@ -149,6 +156,21 @@ update msg model =
 
         ReceiveRandomDelta i ->
             ({model | delta = i
+            }, Cmd.none)
+
+        StartShowStringLength ->
+            ({model
+                | stringTreeCache = model.stringTree
+                , intStringTreeCache = model.intStringTree
+                , stringTree = BTreeUniformType.toStringLength model.stringTree
+                , intStringTree = BTreeVariedType.toStringLength model.intStringTree
+            }, Cmd.none)
+
+
+        StopShowStringLength ->
+            ({model
+                | stringTree = model.stringTreeCache
+                , intStringTree = model.intStringTreeCache
             }, Cmd.none)
 
         Reset ->

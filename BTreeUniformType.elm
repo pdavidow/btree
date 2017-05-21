@@ -20,6 +20,16 @@ toTaggedBTree bTreeUniformType =
             map StringNode bTree
 
 
+toStringLength : BTreeUniformType -> BTreeUniformType
+toStringLength bTreeUniformType =
+    case bTreeUniformType of
+        BTreeInt bTree -> -- no op
+            BTreeInt bTree
+
+        BTreeString bTree ->
+            BTreeInt (map String.length bTree)
+
+
 mapUniformTree : Int -> Mappers -> BTreeUniformType -> BTreeUniformType
 mapUniformTree operand mappers bTreeUniformType =
     case bTreeUniformType of
