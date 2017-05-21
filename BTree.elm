@@ -13,6 +13,7 @@ type BTree a
 type NodeTag
     = IntNode Int
     | StringNode String
+    | BoolNode Bool
 
 
 singleton : a -> BTree a

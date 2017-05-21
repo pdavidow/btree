@@ -1,14 +1,16 @@
 module ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
+import Arithmetic exposing (isEven)
 
 type alias Mappers =
     { int : Int -> Int -> Int
     , string : Int -> String -> String
+    , bool: Int -> Bool -> Bool
     }
 
 
-incrementMappers = Mappers incrementInt incrementString
-decrementMappers = Mappers decrementInt decrementString
-raiseMappers = Mappers raiseInt raiseString
+incrementMappers = Mappers incrementInt incrementString incrementBool
+decrementMappers = Mappers decrementInt decrementString decrementBool
+raiseMappers = Mappers raiseInt raiseString raiseBool
 
 
 incrementInt : Int -> Int -> Int
@@ -39,3 +41,27 @@ decrementString delta s =
 raiseString : Int -> String -> String
 raiseString delta s =
     s ++ " ^" ++ (toString delta)
+
+
+incrementBool : Int -> Bool -> Bool
+incrementBool delta b =
+    if (Arithmetic.isEven delta) then
+        b
+    else
+        not b
+
+
+decrementBool : Int -> Bool -> Bool
+decrementBool delta b =
+    if (Arithmetic.isEven delta) then
+        b
+    else
+        not b
+
+
+raiseBool : Int -> Bool -> Bool
+raiseBool delta b =
+    if (Arithmetic.isEven delta) then
+        b
+    else
+        not b

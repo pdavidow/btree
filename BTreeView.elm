@@ -9,8 +9,8 @@ import BTreeUniformType exposing (toTaggedBTree)
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
 
-import Color exposing (Color, green, orange, black, white, yellow, blue)
-import Collage exposing (group, segment, traced, rotate, move, scale, oval, rect, filled, outlined, text, rect, polygon, moveY, defaultLine, Form, toForm, LineStyle)
+import Color exposing (Color, green, orange, black, white, yellow, blue, lightCharcoal)
+import Collage exposing (group, segment, traced, rotate, move, scale, oval, rect, ngon, filled, outlined, text, rect, polygon, moveY, defaultLine, Form, toForm, LineStyle)
 import Element
 import Html exposing (Html)
 import Text exposing (fromString, style, defaultStyle)
@@ -76,6 +76,26 @@ drawNode maybeishNodeTag =
                             [ rect width height |> filled (colorizer s)
                             , rect width height |> outlined treeLineStyle
                             , s |> fromString |> style treeNodeStyle |> text |> moveY 4
+                            ]
+
+                BoolNode b ->
+                    let
+                        displayString : Bool -> String
+                        displayString bool =
+                            if bool
+                                then "T"
+                                else "F"
+
+                        colorizer : Bool -> Color
+                        colorizer bool =
+                            if bool
+                                then lightCharcoal
+                                else black
+                    in
+                        group
+                            [ ngon 6 30 |> filled (colorizer b)
+                            , ngon 6 30 |> outlined treeLineStyle
+                            , displayString b |> fromString |> style treeNodeStyle |> text |> moveY 4
                             ]
 
         Nothing ->

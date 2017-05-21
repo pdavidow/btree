@@ -22,6 +22,7 @@ type alias Model =
     { intTree : BTreeUniformType
     , stringTree : BTreeUniformType
     , intStringTree : BTreeVariedType
+    , intTreeCache : BTreeUniformType
     , stringTreeCache : BTreeUniformType
     , intStringTreeCache : BTreeVariedType
     , delta : Int
@@ -37,7 +38,8 @@ initialModel =
     { intTree = BTreeInt (fromList [3, 2, 1])
     , stringTree = BTreeString (fromList ["a", "bb", "ccc"])
     , intStringTree = Node (StringNode "a") (singleton (IntNode 1)) (Node (StringNode "bb") (singleton (IntNode 2)) (Node (StringNode "ccc") (singleton (IntNode 3)) Empty))
-    , stringTreeCache = BTreeInt Empty
+    , intTreeCache = BTreeInt Empty
+    , stringTreeCache = BTreeString Empty
     , intStringTreeCache = Empty
     , delta = 1
     , exponent = 2
@@ -65,6 +67,8 @@ type Msg =
     | ReceiveRandomDelta Int
     | StartShowStringLength
     | StopShowStringLength
+    | StartShowIsIntPrime
+    | StopShowIsIntPrime
     | Reset
 
 
@@ -75,6 +79,7 @@ view model =
     , button [ onClick Decrement ] [ text "-" ]
     , button [ onClick Raise ] [ text "^exp" ]
     , button [ onClick SortIntList ] [ text "SortIntTree" ]
+    , button [ onMouseDown StartShowIsIntPrime, onMouseUp StopShowIsIntPrime ] [ text "IsIntPrime" ]
     , button [ onMouseDown StartShowStringLength, onMouseUp StopShowStringLength ] [ text "StringLength" ]
     , text "Delta: ", input [ type_ "number", A.min "1", value (toString model.delta), onInput Delta ] []
     , text "Exponent: ", input [ type_ "number", A.min "1", value (toString model.exponent), onInput Exponent ] []
@@ -156,6 +161,20 @@ update msg model =
 
         ReceiveRandomDelta i ->
             ({model | delta = i
+            }, Cmd.none)
+
+        StartShowIsIntPrime ->
+            ({model
+                | intTreeCache = model.intTree
+                , intStringTreeCache = model.intStringTree
+                , intTree = BTreeUniformType.toIsIntPrime model.intTree
+                , intStringTree = BTreeVariedType.toIsIntPrime model.intStringTree
+            }, Cmd.none)
+
+        StopShowIsIntPrime ->
+            ({model
+                | intTree = model.intTreeCache
+                , intStringTree = model.intStringTreeCache
             }, Cmd.none)
 
         StartShowStringLength ->
