@@ -8,46 +8,31 @@ import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMapp
 type alias BTreeVariedType = BTree NodeTag
 
 
+mapVariedTree : Int -> Mappers -> BTreeVariedType -> BTreeVariedType
+mapVariedTree operand mappers bTree =
+    let
+        func operand mappers nodeTag =
+            case nodeTag of
+                IntNode i ->
+                    IntNode (mappers.int operand i)
+
+                StringNode s ->
+                    StringNode (mappers.string operand s)
+    in
+        map (func operand mappers) bTree
+
+
+
 incrementNodes : Int -> BTreeVariedType -> BTreeVariedType
 incrementNodes delta bTree =
-    map (incrementNode delta incrementMappers) bTree
-
-
-incrementNode : Int -> Mappers -> NodeTag -> NodeTag
-incrementNode delta mappers nodeTag =
-    case nodeTag of
-        IntNode i ->
-            IntNode (mappers.int delta i)
-
-        StringNode s ->
-            StringNode (mappers.string delta s)
+    mapVariedTree delta incrementMappers bTree
 
 
 decrementNodes : Int -> BTreeVariedType -> BTreeVariedType
 decrementNodes delta bTree =
-    map (decrementNode delta decrementMappers) bTree
-
-
-decrementNode : Int -> Mappers -> NodeTag -> NodeTag
-decrementNode delta mappers nodeTag =
-    case nodeTag of
-        IntNode i ->
-            IntNode (mappers.int delta i)
-
-        StringNode s ->
-            StringNode (mappers.string delta s)
+    mapVariedTree delta decrementMappers bTree
 
 
 raiseNodes : Int -> BTreeVariedType -> BTreeVariedType
 raiseNodes exp bTree =
-    map (raiseNode exp raiseMappers) bTree
-
-
-raiseNode : Int -> Mappers -> NodeTag -> NodeTag
-raiseNode exp mappers nodeTag =
-    case nodeTag of
-        IntNode i ->
-            IntNode (mappers.int exp i)
-
-        StringNode s ->
-            StringNode (mappers.string exp s)
+    mapVariedTree exp raiseMappers bTree
