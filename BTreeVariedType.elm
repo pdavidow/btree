@@ -6,11 +6,11 @@ import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMapp
 import Arithmetic exposing (isPrime)
 
 
-type BTreeVariedType = BTreeVariedTypeValue (BTree NodeTag)
+type BTreeVariedType = BTreeVaried (BTree NodeTag)
 
 
 toStringLength : BTreeVariedType -> BTreeVariedType
-toStringLength (BTreeVariedTypeValue bTree) =
+toStringLength (BTreeVaried bTree) =
     let
         func : NodeTag -> NodeTag
         func nodeTag = case nodeTag of
@@ -23,11 +23,11 @@ toStringLength (BTreeVariedTypeValue bTree) =
             BoolNode b -> -- no op
                 BoolNode b
     in
-        BTreeVariedTypeValue (map func bTree)
+        BTreeVaried (map func bTree)
 
 
 toIsIntPrime : BTreeVariedType -> BTreeVariedType
-toIsIntPrime (BTreeVariedTypeValue bTree) =
+toIsIntPrime (BTreeVaried bTree) =
     let
         func : NodeTag -> NodeTag
         func nodeTag = case nodeTag of
@@ -40,11 +40,11 @@ toIsIntPrime (BTreeVariedTypeValue bTree) =
             BoolNode b -> -- no op
                 BoolNode b
     in
-        BTreeVariedTypeValue (map func bTree)
+        BTreeVaried (map func bTree)
 
 
 mapVariedTree : Int -> Mappers -> BTreeVariedType -> BTreeVariedType
-mapVariedTree operand mappers (BTreeVariedTypeValue bTree) =
+mapVariedTree operand mappers (BTreeVaried bTree) =
     let
         func : Int -> Mappers -> NodeTag -> NodeTag
         func operand mappers nodeTag =
@@ -58,19 +58,19 @@ mapVariedTree operand mappers (BTreeVariedTypeValue bTree) =
                 BoolNode b ->
                     BoolNode (mappers.bool operand b)
     in
-        BTreeVariedTypeValue (map (func operand mappers) bTree)
+        BTreeVaried (map (func operand mappers) bTree)
 
 
 incrementNodes : Int -> BTreeVariedType -> BTreeVariedType
-incrementNodes delta bTreeVariedTypeValue =
-    mapVariedTree delta incrementMappers bTreeVariedTypeValue
+incrementNodes delta bTreeVaried =
+    mapVariedTree delta incrementMappers bTreeVaried
 
 
 decrementNodes : Int -> BTreeVariedType -> BTreeVariedType
-decrementNodes delta bTreeVariedTypeValue =
-    mapVariedTree delta decrementMappers bTreeVariedTypeValue
+decrementNodes delta bTreeVaried =
+    mapVariedTree delta decrementMappers bTreeVaried
 
 
 raiseNodes : Int -> BTreeVariedType -> BTreeVariedType
-raiseNodes exp bTreeVariedTypeValue =
-    mapVariedTree exp raiseMappers bTreeVariedTypeValue
+raiseNodes exp bTreeVaried =
+    mapVariedTree exp raiseMappers bTreeVaried

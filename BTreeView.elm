@@ -23,7 +23,7 @@ bTreeUniformTypeDiagram bTreeUniformType =
 
 
 bTreeVariedTypeDiagram : BTreeVariedType -> Html msg
-bTreeVariedTypeDiagram (BTreeVariedTypeValue taggedBTree) =
+bTreeVariedTypeDiagram (BTreeVaried taggedBTree) =
     bTreeDiagram taggedBTree
 
 
