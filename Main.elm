@@ -21,6 +21,7 @@ import BTreeView exposing (bTreeUniformTypeDiagram, bTreeDiagram)
 type alias Model =
     { intTree : BTreeUniformType
     , stringTree : BTreeUniformType
+    , boolTree : BTreeUniformType
     , intStringTree : BTreeVariedType
     , intTreeCache : BTreeUniformType
     , stringTreeCache : BTreeUniformType
@@ -37,6 +38,7 @@ initialModel: Model
 initialModel =
     { intTree = BTreeInt (fromList [3, 2, 1])
     , stringTree = BTreeString (fromList ["a", "bb", "ccc"])
+    , boolTree = BTreeBool (Node True Empty (singleton False))
     , intStringTree = Node (StringNode "a") (singleton (IntNode 1)) (Node (StringNode "bb") (singleton (IntNode 2)) (Node (StringNode "ccc") (singleton (IntNode 3)) Empty))
     , intTreeCache = BTreeInt Empty
     , stringTreeCache = BTreeString Empty
@@ -86,7 +88,7 @@ view model =
     , button [ onClick RequestRandomIntList ] [ text "RandomIntTree" ]
     , button [ onClick RequestRandomDelta ] [ text "RandomDelta" ]
     , button [ onClick Reset ] [ text "reset" ]
-    , div [] [ text (toString model) ]
+    -- , div [] [ text (toString model) ]
     , hr [] []
     , div [] [ text ("Depth intTree: " ++ toString (BTreeUniformType.depth model.intTree)) ]
     , div [] [ text ("Depth stringTree: " ++ toString (BTreeUniformType.depth model.stringTree)) ]
@@ -94,6 +96,7 @@ view model =
     , div [] [ text ("SumString stringTree: " ++ toString (BTreeUniformType.sumString model.stringTree)) ]
     , bTreeUniformTypeDiagram model.intTree
     , bTreeUniformTypeDiagram model.stringTree
+    , bTreeUniformTypeDiagram model.boolTree
     , bTreeDiagram model.intStringTree
     ]
 
@@ -105,6 +108,7 @@ update msg model =
             ({model
                     | intTree = BTreeUniformType.incrementNodes model.delta model.intTree
                     , stringTree = BTreeUniformType.incrementNodes model.delta model.stringTree
+                    , boolTree = BTreeUniformType.incrementNodes model.delta model.boolTree
                     , intStringTree = BTreeVariedType.incrementNodes model.delta model.intStringTree
             }, Cmd.none)
 
@@ -112,6 +116,7 @@ update msg model =
             ({model
                 | intTree = BTreeUniformType.decrementNodes model.delta model.intTree
                 , stringTree = BTreeUniformType.decrementNodes model.delta model.stringTree
+                , boolTree = BTreeUniformType.decrementNodes model.delta model.boolTree
                 , intStringTree = BTreeVariedType.decrementNodes model.delta model.intStringTree
             }, Cmd.none)
 
@@ -119,6 +124,7 @@ update msg model =
             ({model
                 | intTree = BTreeUniformType.raiseNodes model.exponent model.intTree
                 , stringTree = BTreeUniformType.raiseNodes model.exponent model.stringTree
+                , boolTree = BTreeUniformType.raiseNodes model.delta model.boolTree
                 , intStringTree = BTreeVariedType.raiseNodes model.exponent model.intStringTree
             }, Cmd.none)
 
