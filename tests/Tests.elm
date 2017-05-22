@@ -7,7 +7,7 @@ import BTree exposing (NodeTag(..))
 import TreeDiagram as TD exposing (node)
 import BTreeUniformType exposing (toTaggedBTree, incrementNodes, decrementNodes, raiseNodes)
 import BTreeUniformType exposing (BTreeUniformType(..))
-import BTreeVariedType exposing (incrementNodes, decrementNodes, raiseNodes)
+import BTreeVariedType exposing (BTreeVariedType(..), incrementNodes, decrementNodes, raiseNodes)
 
 import Test exposing (..)
 import Expect
@@ -385,35 +385,35 @@ all =
          , describe "BTreeVariedType.incrementNodes"
             [ test "of empty" <|
                 \() ->
-                    Expect.equal (Empty) (BTreeVariedType.incrementNodes 1 (Empty))
+                    Expect.equal (BTreeVariedTypeValue Empty) (BTreeVariedType.incrementNodes 1 (BTreeVariedTypeValue Empty))
             , test "of singleton" <|
                 \() ->
-                    Expect.equal (singleton (IntNode 11)) (BTreeVariedType.incrementNodes 1 (singleton (IntNode 10)))
+                    Expect.equal (BTreeVariedTypeValue (singleton (IntNode 11))) (BTreeVariedType.incrementNodes 1 (BTreeVariedTypeValue (singleton (IntNode 10))))
             , test "of 3 values" <|
                 \() ->
-                    Expect.equal (Node (StringNode "a +3") (singleton (IntNode 4)) (singleton (BoolNode False))) (BTreeVariedType.incrementNodes 3 (Node (StringNode "a") (singleton (IntNode 1)) (singleton (BoolNode True))))
+                    Expect.equal (BTreeVariedTypeValue (Node (StringNode "a +3") (singleton (IntNode 4)) (singleton (BoolNode False)))) (BTreeVariedType.incrementNodes 3 (BTreeVariedTypeValue (Node (StringNode "a") (singleton (IntNode 1)) (singleton (BoolNode True)))))
             ]
          , describe "BTreeVariedType.decrementNodes"
             [ test "of empty" <|
                 \() ->
-                    Expect.equal (Empty) (BTreeVariedType.decrementNodes 1 (Empty))
+                    Expect.equal (BTreeVariedTypeValue Empty) (BTreeVariedType.decrementNodes 1 (BTreeVariedTypeValue Empty))
             , test "of singleton" <|
                 \() ->
-                    Expect.equal (singleton (IntNode 9)) (BTreeVariedType.decrementNodes 1 (singleton (IntNode 10)))
+                    Expect.equal (BTreeVariedTypeValue (singleton (IntNode 9))) (BTreeVariedType.decrementNodes 1 (BTreeVariedTypeValue (singleton (IntNode 10))))
             , test "of 3 values" <|
                 \() ->
-                    Expect.equal (Node (StringNode "a -4") (singleton (IntNode -3)) (singleton (BoolNode True))) (BTreeVariedType.decrementNodes 4 (Node (StringNode "a") (singleton (IntNode 1)) (singleton (BoolNode True))))
+                    Expect.equal (BTreeVariedTypeValue (Node (StringNode "a -4") (singleton (IntNode -3)) (singleton (BoolNode True)))) (BTreeVariedType.decrementNodes 4 (BTreeVariedTypeValue (Node (StringNode "a") (singleton (IntNode 1)) (singleton (BoolNode True)))))
             ]
          , describe "BTreeVariedType.raiseNodes"
             [ test "of empty" <|
                 \() ->
-                    Expect.equal (Empty) (BTreeVariedType.raiseNodes 1 (Empty))
+                    Expect.equal (BTreeVariedTypeValue Empty) (BTreeVariedType.raiseNodes 1 (BTreeVariedTypeValue Empty))
             , test "of singleton" <|
                 \() ->
-                    Expect.equal (singleton (IntNode 8)) (BTreeVariedType.raiseNodes 3 (singleton (IntNode 2)))
+                    Expect.equal (BTreeVariedTypeValue (singleton (IntNode 8))) (BTreeVariedType.raiseNodes 3 (BTreeVariedTypeValue (singleton (IntNode 2))))
             , test "of 3 values" <|
                 \() ->
-                    Expect.equal (Node (StringNode "a ^3") (singleton (IntNode 125)) (singleton (BoolNode False))) (BTreeVariedType.raiseNodes 3 (Node (StringNode "a") (singleton (IntNode 5)) (singleton (BoolNode True))))
+                    Expect.equal (BTreeVariedTypeValue (Node (StringNode "a ^3") (singleton (IntNode 125)) (singleton (BoolNode False)))) (BTreeVariedType.raiseNodes 3 (BTreeVariedTypeValue (Node (StringNode "a") (singleton (IntNode 5)) (singleton (BoolNode True)))))
             ]
          , describe "BTreeUniformType.toStringLength"
             [ test "of empty BTreeString" <|
@@ -476,24 +476,24 @@ all =
          , describe "BTreeVariedType.toStringLength"
             [ test "of empty" <|
                 \() ->
-                    Expect.equal (Empty) (BTreeVariedType.toStringLength (Empty))
+                    Expect.equal (BTreeVariedTypeValue Empty) (BTreeVariedType.toStringLength (BTreeVariedTypeValue Empty))
             , test "of singleton" <|
                 \() ->
-                    Expect.equal (singleton (IntNode 3)) (BTreeVariedType.toStringLength (singleton (StringNode "abc")))
+                    Expect.equal (BTreeVariedTypeValue (singleton (IntNode 3))) (BTreeVariedType.toStringLength (BTreeVariedTypeValue (singleton (StringNode "abc"))))
             , test "of 3 values" <|
                 \() ->
-                    Expect.equal (Node (IntNode 5) (singleton (IntNode 1)) (singleton (BoolNode True))) (BTreeVariedType.toStringLength (Node (StringNode "abcde") (singleton (IntNode 1)) (singleton (BoolNode True))))
+                    Expect.equal (BTreeVariedTypeValue (Node (IntNode 5) (singleton (IntNode 1)) (singleton (BoolNode True)))) (BTreeVariedType.toStringLength (BTreeVariedTypeValue (Node (StringNode "abcde") (singleton (IntNode 1)) (singleton (BoolNode True)))))
             ]
          , describe "BTreeVariedType.toIsIntPrime"
             [ test "of empty" <|
                 \() ->
-                    Expect.equal (Empty) (BTreeVariedType.toIsIntPrime (Empty))
+                    Expect.equal (BTreeVariedTypeValue Empty) (BTreeVariedType.toIsIntPrime (BTreeVariedTypeValue Empty))
             , test "of singleton" <|
                 \() ->
-                    Expect.equal (singleton (BoolNode False)) (BTreeVariedType.toIsIntPrime (singleton (IntNode 1)))
+                    Expect.equal (BTreeVariedTypeValue (singleton (BoolNode False))) (BTreeVariedType.toIsIntPrime (BTreeVariedTypeValue (singleton (IntNode 1))))
             , test "of 3 values" <|
                 \() ->
-                    Expect.equal (Node (StringNode "abcde") (singleton (BoolNode True)) (singleton (BoolNode True))) (BTreeVariedType.toIsIntPrime (Node (StringNode "abcde") (singleton (IntNode 11)) (singleton (BoolNode True))))
+                    Expect.equal (BTreeVariedTypeValue (Node (StringNode "abcde") (singleton (BoolNode True)) (singleton (BoolNode True)))) (BTreeVariedType.toIsIntPrime (BTreeVariedTypeValue (Node (StringNode "abcde") (singleton (IntNode 11)) (singleton (BoolNode True)))))
             ]
         ]
 

@@ -11,10 +11,10 @@ import Random
 
 import BTreeUniformType exposing (BTreeUniformType(..))
 import BTreeUniformType exposing (..)
-import BTreeVariedType exposing (BTreeVariedType, incrementNodes, decrementNodes, raiseNodes)
-import BTree exposing (..)
+import BTreeVariedType exposing (BTreeVariedType(..), incrementNodes, decrementNodes, raiseNodes)
 import BTree exposing (NodeTag(..))
-import BTreeView exposing (bTreeUniformTypeDiagram, bTreeDiagram)
+import BTree exposing (..)
+import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram)
 ------------------------------------------------
 
 
@@ -39,10 +39,10 @@ initialModel =
     { intTree = BTreeInt (fromList [3, 2, 1])
     , stringTree = BTreeString (fromList ["a", "bb", "ccc"])
     , boolTree = BTreeBool (Node True Empty (singleton False))
-    , intStringBoolTree = Node (StringNode "a") (singleton (IntNode 1)) (Node (BoolNode False) (singleton (BoolNode True)) (Node (StringNode "ccc") (singleton (IntNode 3)) Empty))
+    , intStringBoolTree = BTreeVariedTypeValue (Node (StringNode "a") (singleton (IntNode 1)) (Node (BoolNode False) (singleton (BoolNode True)) (Node (StringNode "ccc") (singleton (IntNode 3)) Empty)))
     , intTreeCache = BTreeInt Empty
     , stringTreeCache = BTreeString Empty
-    , intStringBoolTreeCache = Empty
+    , intStringBoolTreeCache = BTreeVariedTypeValue Empty
     , delta = 1
     , exponent = 2
     , maxRandomInt = 99
@@ -97,7 +97,7 @@ view model =
     , bTreeUniformTypeDiagram model.intTree
     , bTreeUniformTypeDiagram model.stringTree
     , bTreeUniformTypeDiagram model.boolTree
-    , bTreeDiagram model.intStringBoolTree
+    , bTreeVariedTypeDiagram model.intStringBoolTree
     ]
 
 

@@ -1,11 +1,11 @@
 -- https://github.com/brenden/elm-tree-diagram/blob/master/examples/canvas/RedBlackTree.elm
 
-module BTreeView exposing (..)
+module BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram)
 
 import BTree exposing (BTree, toTreeDiagramTree)
 import BTree exposing (NodeTag(..))
-import BTreeUniformType exposing (BTreeUniformType(..))
-import BTreeUniformType exposing (toTaggedBTree)
+import BTreeUniformType exposing (BTreeUniformType(..), toTaggedBTree)
+import BTreeVariedType exposing (BTreeVariedType(..))
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
 
@@ -20,6 +20,11 @@ import Arithmetic exposing (isEven)
 bTreeUniformTypeDiagram : BTreeUniformType -> Html msg
 bTreeUniformTypeDiagram bTreeUniformType =
     bTreeDiagram (toTaggedBTree bTreeUniformType)
+
+
+bTreeVariedTypeDiagram : BTreeVariedType -> Html msg
+bTreeVariedTypeDiagram (BTreeVariedTypeValue taggedBTree) =
+    bTreeDiagram taggedBTree
 
 
 bTreeDiagram : BTree NodeTag -> Html msg

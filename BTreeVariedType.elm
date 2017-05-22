@@ -6,11 +6,11 @@ import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMapp
 import Arithmetic exposing (isPrime)
 
 
-type alias BTreeVariedType = BTree NodeTag
+type BTreeVariedType = BTreeVariedTypeValue (BTree NodeTag)
 
 
 toStringLength : BTreeVariedType -> BTreeVariedType
-toStringLength bTree =
+toStringLength (BTreeVariedTypeValue bTree) =
     let
         func : NodeTag -> NodeTag
         func nodeTag = case nodeTag of
@@ -23,11 +23,11 @@ toStringLength bTree =
             BoolNode b -> -- no op
                 BoolNode b
     in
-        map func bTree
+        BTreeVariedTypeValue (map func bTree)
 
 
 toIsIntPrime : BTreeVariedType -> BTreeVariedType
-toIsIntPrime bTree =
+toIsIntPrime (BTreeVariedTypeValue bTree) =
     let
         func : NodeTag -> NodeTag
         func nodeTag = case nodeTag of
@@ -40,11 +40,11 @@ toIsIntPrime bTree =
             BoolNode b -> -- no op
                 BoolNode b
     in
-        map func bTree
+        BTreeVariedTypeValue (map func bTree)
 
 
 mapVariedTree : Int -> Mappers -> BTreeVariedType -> BTreeVariedType
-mapVariedTree operand mappers bTree =
+mapVariedTree operand mappers (BTreeVariedTypeValue bTree) =
     let
         func : Int -> Mappers -> NodeTag -> NodeTag
         func operand mappers nodeTag =
@@ -58,19 +58,19 @@ mapVariedTree operand mappers bTree =
                 BoolNode b ->
                     BoolNode (mappers.bool operand b)
     in
-        map (func operand mappers) bTree
+        BTreeVariedTypeValue (map (func operand mappers) bTree)
 
 
 incrementNodes : Int -> BTreeVariedType -> BTreeVariedType
-incrementNodes delta bTree =
-    mapVariedTree delta incrementMappers bTree
+incrementNodes delta bTreeVariedTypeValue =
+    mapVariedTree delta incrementMappers bTreeVariedTypeValue
 
 
 decrementNodes : Int -> BTreeVariedType -> BTreeVariedType
-decrementNodes delta bTree =
-    mapVariedTree delta decrementMappers bTree
+decrementNodes delta bTreeVariedTypeValue =
+    mapVariedTree delta decrementMappers bTreeVariedTypeValue
 
 
 raiseNodes : Int -> BTreeVariedType -> BTreeVariedType
-raiseNodes exp bTree =
-    mapVariedTree exp raiseMappers bTree
+raiseNodes exp bTreeVariedTypeValue =
+    mapVariedTree exp raiseMappers bTreeVariedTypeValue
