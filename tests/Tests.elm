@@ -473,5 +473,27 @@ all =
                 \() ->
                     Expect.equal (BTreeBool (Node True Empty (singleton False))) (BTreeUniformType.toIsIntPrime (BTreeBool (Node True Empty (singleton False))))
             ]
+         , describe "BTreeVariedType.toStringLength"
+            [ test "of empty" <|
+                \() ->
+                    Expect.equal (Empty) (BTreeVariedType.toStringLength (Empty))
+            , test "of singleton" <|
+                \() ->
+                    Expect.equal (singleton (IntNode 3)) (BTreeVariedType.toStringLength (singleton (StringNode "abc")))
+            , test "of 3 values" <|
+                \() ->
+                    Expect.equal (Node (IntNode 5) (singleton (IntNode 1)) (singleton (BoolNode True))) (BTreeVariedType.toStringLength (Node (StringNode "abcde") (singleton (IntNode 1)) (singleton (BoolNode True))))
+            ]
+         , describe "BTreeVariedType.toIsIntPrime"
+            [ test "of empty" <|
+                \() ->
+                    Expect.equal (Empty) (BTreeVariedType.toIsIntPrime (Empty))
+            , test "of singleton" <|
+                \() ->
+                    Expect.equal (singleton (BoolNode False)) (BTreeVariedType.toIsIntPrime (singleton (IntNode 1)))
+            , test "of 3 values" <|
+                \() ->
+                    Expect.equal (Node (StringNode "abcde") (singleton (BoolNode True)) (singleton (BoolNode True))) (BTreeVariedType.toIsIntPrime (Node (StringNode "abcde") (singleton (IntNode 11)) (singleton (BoolNode True))))
+            ]
         ]
 

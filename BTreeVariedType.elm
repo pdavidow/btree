@@ -31,7 +31,7 @@ toIsIntPrime bTree =
     let
         func : NodeTag -> NodeTag
         func nodeTag = case nodeTag of
-            IntNode i -> -- no op
+            IntNode i ->
                 BoolNode (Arithmetic.isPrime i)
 
             StringNode s -> -- no op
