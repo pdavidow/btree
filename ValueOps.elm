@@ -39,8 +39,8 @@ decrementString delta s =
 
 
 raiseString : Int -> String -> String
-raiseString delta s =
-    s ++ " ^" ++ (toString delta)
+raiseString exp s =
+    s ++ " ^" ++ (toString exp)
 
 
 incrementBool : Int -> Bool -> Bool
@@ -60,8 +60,8 @@ decrementBool delta b =
 
 
 raiseBool : Int -> Bool -> Bool
-raiseBool delta b =
-    if (Arithmetic.isEven delta) then
+raiseBool exp b =
+    if (Arithmetic.isEven exp) then
         b
     else
         not b

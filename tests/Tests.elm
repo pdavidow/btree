@@ -413,7 +413,7 @@ all =
                     Expect.equal (singleton (IntNode 8)) (BTreeVariedType.raiseNodes 3 (singleton (IntNode 2)))
             , test "of 3 values" <|
                 \() ->
-                    Expect.equal (Node (StringNode "a ^2") (singleton (IntNode 25)) (singleton (BoolNode True))) (BTreeVariedType.raiseNodes 2 (Node (StringNode "a") (singleton (IntNode 5)) (singleton (BoolNode True))))
+                    Expect.equal (Node (StringNode "a ^3") (singleton (IntNode 125)) (singleton (BoolNode False))) (BTreeVariedType.raiseNodes 3 (Node (StringNode "a") (singleton (IntNode 5)) (singleton (BoolNode True))))
             ]
          , describe "BTreeUniformType.toStringLength"
             [ test "of empty BTreeString" <|
