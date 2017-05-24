@@ -2,11 +2,13 @@
 elm-make Main.elm --output elm.js
 --}
 
+-- html layout based on https://github.com/rtfeldman/elm-spa-example/blob/bb1293e78d058b7e2dcf04ca3bf2c9beffeb74ce/src/Page/Home.elm
+
 module Main exposing (..)
 
-import Html exposing (Html, button, div, text, hr, input)
+import Html exposing (Html, button, div, text, hr, input, h3, h4, h5, p)
 import Html.Events exposing (onClick, onInput, onMouseDown, onMouseUp)
-import Html.Attributes as A exposing (style, type_, value)
+import Html.Attributes as A exposing (class, style, type_, value)
 import Random
 
 import BTreeUniformType exposing (BTreeUniformType(..))
@@ -76,16 +78,20 @@ type Msg =
 
 view : Model -> Html Msg
 view model =
-    div []
-    [ button [ onClick Increment ] [ text "Increment by Delta" ]
-    , button [ onClick Decrement ] [ text "Decrement by Delta" ]
-    , button [ onClick Raise ] [ text "Raise to Exponent" ]
-    , button [ onClick SortIntList ] [ text "Sort IntTree" ]
-    , button [ onMouseDown StartShowIsIntPrime, onMouseUp StopShowIsIntPrime ] [ text "Is Int Prime?" ]
-    , button [ onMouseDown StartShowStringLength, onMouseUp StopShowStringLength ] [ text "String Length" ]
-    , button [ onClick RequestRandomIntList ] [ text "Random IntTree" ]
-    , button [ onClick RequestRandomDelta ] [ text "Random Delta" ]
-    , button [ onClick Reset ] [ text "Reset" ]
+    div [ class "home-page" ]
+        [ viewBanner
+        , div [ class "container page" ]
+            [ div []
+                [ button [ onClick Increment ] [ text "Increment by Delta" ]
+                , button [ onClick Decrement ] [ text "Decrement by Delta" ]
+                , button [ onClick Raise ] [ text "Raise to Exponent" ]
+                , button [ onClick SortIntList ] [ text "Sort IntTree" ]
+                , button [ onMouseDown StartShowIsIntPrime, onMouseUp StopShowIsIntPrime ] [ text "Is Int Prime?" ]
+                , button [ onMouseDown StartShowStringLength, onMouseUp StopShowStringLength ] [ text "String Length" ]
+                , button [ onClick RequestRandomIntList ] [ text "Random IntTree" ]
+                , button [ onClick RequestRandomDelta ] [ text "Random Delta" ]
+                , button [ onClick Reset ] [ text "Reset" ]
+                ]
     , hr [] []
     , text "Delta: ", input [ type_ "number", A.min "1", value (toString model.delta), onInput Delta ] []
     , text "Exponent: ", input [ type_ "number", A.min "1", value (toString model.exponent), onInput Exponent ] []
@@ -96,15 +102,23 @@ view model =
     , div [] [ text ("SumInt intTree: " ++ toString (BTreeUniformType.sumInt model.intTree)) ]
     , div [] [ text ("SumString stringTree: " ++ toString (BTreeUniformType.sumString model.stringTree)) ]
     , hr [] []
-    , text "Int Tree: ", bTreeUniformTypeDiagram model.intTree
+    , h5 [] [text "Int Tree"], bTreeUniformTypeDiagram model.intTree
     , hr [] []
-    , text "String Tree: ", bTreeUniformTypeDiagram model.stringTree
+    , h5 [] [text "String Tree"], bTreeUniformTypeDiagram model.stringTree
     , hr [] []
-    , text "Bool Tree: ", bTreeUniformTypeDiagram model.boolTree
+    , h5 [] [text "Bool Tree"], bTreeUniformTypeDiagram model.boolTree
     , hr [] []
-    , text "Int/String/Bool Tree: ", bTreeVariedTypeDiagram model.intStringBoolTree
+    , h5 [] [text "Int/String/Bool Tree"], bTreeVariedTypeDiagram model.intStringBoolTree
+            ]
     ]
 
+viewBanner : Html msg
+viewBanner =
+    div [ class "banner" ]
+        [ div [ class "container" ]
+            [ h3 [ class "logo-font" ] [ text "Binary-Tree Playground" ]
+            ]
+        ]
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
