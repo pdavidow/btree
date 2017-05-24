@@ -77,27 +77,32 @@ type Msg =
 view : Model -> Html Msg
 view model =
     div []
-    [ button [ onClick Increment ] [ text "+" ]
-    , button [ onClick Decrement ] [ text "-" ]
-    , button [ onClick Raise ] [ text "^exp" ]
-    , button [ onClick SortIntList ] [ text "SortIntTree" ]
-    , button [ onMouseDown StartShowIsIntPrime, onMouseUp StopShowIsIntPrime ] [ text "IsIntPrime" ]
-    , button [ onMouseDown StartShowStringLength, onMouseUp StopShowStringLength ] [ text "StringLength" ]
+    [ button [ onClick Increment ] [ text "Increment by Delta" ]
+    , button [ onClick Decrement ] [ text "Decrement by Delta" ]
+    , button [ onClick Raise ] [ text "Raise to Exponent" ]
+    , button [ onClick SortIntList ] [ text "Sort IntTree" ]
+    , button [ onMouseDown StartShowIsIntPrime, onMouseUp StopShowIsIntPrime ] [ text "Is Int Prime?" ]
+    , button [ onMouseDown StartShowStringLength, onMouseUp StopShowStringLength ] [ text "String Length" ]
+    , button [ onClick RequestRandomIntList ] [ text "Random IntTree" ]
+    , button [ onClick RequestRandomDelta ] [ text "Random Delta" ]
+    , button [ onClick Reset ] [ text "Reset" ]
+    , hr [] []
     , text "Delta: ", input [ type_ "number", A.min "1", value (toString model.delta), onInput Delta ] []
     , text "Exponent: ", input [ type_ "number", A.min "1", value (toString model.exponent), onInput Exponent ] []
-    , button [ onClick RequestRandomIntList ] [ text "RandomIntTree" ]
-    , button [ onClick RequestRandomDelta ] [ text "RandomDelta" ]
-    , button [ onClick Reset ] [ text "reset" ]
     -- , div [] [ text (toString model) ]
     , hr [] []
     , div [] [ text ("Depth intTree: " ++ toString (BTreeUniformType.depth model.intTree)) ]
     , div [] [ text ("Depth stringTree: " ++ toString (BTreeUniformType.depth model.stringTree)) ]
     , div [] [ text ("SumInt intTree: " ++ toString (BTreeUniformType.sumInt model.intTree)) ]
     , div [] [ text ("SumString stringTree: " ++ toString (BTreeUniformType.sumString model.stringTree)) ]
-    , bTreeUniformTypeDiagram model.intTree
-    , bTreeUniformTypeDiagram model.stringTree
-    , bTreeUniformTypeDiagram model.boolTree
-    , bTreeVariedTypeDiagram model.intStringBoolTree
+    , hr [] []
+    , text "Int Tree: ", bTreeUniformTypeDiagram model.intTree
+    , hr [] []
+    , text "String Tree: ", bTreeUniformTypeDiagram model.stringTree
+    , hr [] []
+    , text "Bool Tree: ", bTreeUniformTypeDiagram model.boolTree
+    , hr [] []
+    , text "Int/String/Bool Tree: ", bTreeVariedTypeDiagram model.intStringBoolTree
     ]
 
 
