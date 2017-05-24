@@ -92,23 +92,23 @@ view model =
                 , button [ onClick RequestRandomDelta ] [ text "Random Delta" ]
                 , button [ onClick Reset ] [ text "Reset" ]
                 ]
-    , hr [] []
-    , text "Delta: ", input [ type_ "number", A.min "1", value (toString model.delta), onInput Delta ] []
-    , text "Exponent: ", input [ type_ "number", A.min "1", value (toString model.exponent), onInput Exponent ] []
-    -- , div [] [ text (toString model) ]
-    , hr [] []
-    , div [] [ text ("Depth intTree: " ++ toString (BTreeUniformType.depth model.intTree)) ]
-    , div [] [ text ("Depth stringTree: " ++ toString (BTreeUniformType.depth model.stringTree)) ]
-    , div [] [ text ("SumInt intTree: " ++ toString (BTreeUniformType.sumInt model.intTree)) ]
-    , div [] [ text ("SumString stringTree: " ++ toString (BTreeUniformType.sumString model.stringTree)) ]
-    , hr [] []
-    , h5 [] [text "Int Tree"], bTreeUniformTypeDiagram model.intTree
-    , hr [] []
-    , h5 [] [text "String Tree"], bTreeUniformTypeDiagram model.stringTree
-    , hr [] []
-    , h5 [] [text "Bool Tree"], bTreeUniformTypeDiagram model.boolTree
-    , hr [] []
-    , h5 [] [text "Int/String/Bool Tree"], bTreeVariedTypeDiagram model.intStringBoolTree
+            , hr [] []
+            , text "Delta: ", input [ type_ "number", A.min "1", value (toString model.delta), onInput Delta ] []
+            , text "Exponent: ", input [ type_ "number", A.min "1", value (toString model.exponent), onInput Exponent ] []
+            -- , div [] [ text (toString model) ]
+            , hr [] []
+            , div [] [ text ("Depth intTree: " ++ toString (BTreeUniformType.depth model.intTree)) ]
+            , div [] [ text ("Depth stringTree: " ++ toString (BTreeUniformType.depth model.stringTree)) ]
+            , div [] [ text ("SumInt intTree: " ++ toString (BTreeUniformType.sumInt model.intTree)) ]
+            , div [] [ text ("SumString stringTree: " ++ toString (BTreeUniformType.sumString model.stringTree)) ]
+            , hr [] []
+            , h5 [] [text "Int Tree"], bTreeUniformTypeDiagram model.intTree
+            , hr [] []
+            , h5 [] [text "String Tree"], bTreeUniformTypeDiagram model.stringTree
+            , hr [] []
+            , h5 [] [text "Bool Tree"], bTreeUniformTypeDiagram model.boolTree
+            , hr [] []
+            , h5 [] [text "Int/String/Bool Tree"], bTreeVariedTypeDiagram model.intStringBoolTree
             ]
     ]
 
