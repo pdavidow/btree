@@ -50,8 +50,8 @@ drawNode maybeishNodeTag =
                 IntNode i ->
                     let
                         stringLength = String.length (toString i)
-                        width = toFloat (50 + (20 * stringLength))
-                        height = 50
+                        width = toFloat (30 + (10 * stringLength))
+                        height = 30
 
                         colorizer : Int -> Color
                         colorizer i =
@@ -68,8 +68,8 @@ drawNode maybeishNodeTag =
                 StringNode s ->
                     let
                         stringLength = String.length s
-                        width = toFloat (50 + (10 * stringLength))
-                        height = 50
+                        width = toFloat (30 + (10 * stringLength))
+                        height = 30
 
                         colorizer : String -> Color
                         colorizer s =
@@ -98,8 +98,8 @@ drawNode maybeishNodeTag =
                                 else black
                     in
                         group
-                            [ ngon 6 30 |> filled (colorizer b)
-                            , ngon 6 30 |> outlined treeLineStyle
+                            [ ngon 6 20 |> filled (colorizer b)
+                            , ngon 6 20 |> outlined treeLineStyle
                             , displayString b |> fromString |> style treeNodeStyle |> text |> moveY 4
                             ]
 
@@ -111,7 +111,7 @@ drawEdge : ( Float, Float ) -> Form
 drawEdge ( x, y ) =
     let
         arrowOffset =
-            42
+            30
 
         theta =
             atan (y / x)
@@ -123,13 +123,13 @@ drawEdge ( x, y ) =
                 pi + theta
 
         dist =
-            sqrt (x ^ 2 + y ^ 2)
+            (sqrt (x ^ 2 + y ^ 2)) - 15
 
         scale =
-            (dist - arrowOffset) / dist
+            ((dist - arrowOffset) / dist)
 
         to =
-            ( scale * x, scale * y )
+            (scale * x, scale * y)
     in
         group
             [ segment ( 0, 0 ) to |> traced treeLineStyle
@@ -141,7 +141,7 @@ treeNodeStyle : Text.Style
 treeNodeStyle =
     { defaultStyle
         | color = white
-        , height = Just 30
+        , height = Just 15
         , typeface = [ "Times New Roman", "serif" ]
     }
 
@@ -153,9 +153,9 @@ treeNilStyle =
 
 treeLineStyle : LineStyle
 treeLineStyle =
-    { defaultLine | width = 2 }
+    { defaultLine | width = 1 }
 
 
 arrow : Form
 arrow =
-    polygon [ ( -1, 1 ), ( 1, 0 ), ( -1, -1 ), ( -0.5, 0 ) ] |> filled black |> scale 10
+    polygon [ ( -1, 1 ), ( 1, 0 ), ( -1, -1 ), ( -0.5, 0 ) ] |> filled black |> scale 4
