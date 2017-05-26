@@ -116,14 +116,14 @@ sumString bTreeUniformType =
         BTreeBool bTree ->
             ""
 
-sort : BTreeUniformType -> BTreeUniformType
+sort : BTreeUniformType -> Maybe BTreeUniformType
 sort bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            BTreeInt (BTree.sort bTree)
+            Just (BTreeInt (BTree.sort bTree))
 
         BTreeString bTree ->
-            BTreeString (BTree.sort bTree)
+            Just (BTreeString (BTree.sort bTree))
 
-        BTreeBool bTree -> -- no op
-            BTreeBool bTree
+        BTreeBool bTree ->
+            Nothing

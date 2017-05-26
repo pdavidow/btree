@@ -23,6 +23,7 @@ import Material.Scheme
 import Material
 
 import Random
+import Pivot exposing (withRollback)
 
 import BTreeUniformType exposing (BTreeUniformType(..))
 import BTreeUniformType exposing (..)
@@ -274,7 +275,7 @@ update msg model =
 
         SortIntTree ->
             ({model
-                | intTree = BTreeUniformType.sort model.intTree
+                | intTree = withRollback BTreeUniformType.sort model.intTree
             }, Cmd.none)
 
         Delta s ->
