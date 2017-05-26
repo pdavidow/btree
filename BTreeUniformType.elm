@@ -91,30 +91,31 @@ depth bTreeUniformType =
             BTree.depth bTree
 
 
-sumInt : BTreeUniformType -> Int
+sumInt : BTreeUniformType -> Maybe Int
 sumInt bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            BTree.sumInt bTree
+            Just (BTree.sumInt bTree)
 
         BTreeString bTree ->
-            0
+            Nothing
 
         BTreeBool bTree ->
-            0
+            Nothing
 
 
-sumString : BTreeUniformType -> String
+sumString : BTreeUniformType -> Maybe String
 sumString bTreeUniformType =
     case bTreeUniformType of
-        BTreeInt bTree ->
-            ""
-
         BTreeString bTree ->
-            BTree.sumString bTree
+            Just (BTree.sumString bTree)
+
+        BTreeInt bTree ->
+            Nothing
 
         BTreeBool bTree ->
-            ""
+            Nothing
+
 
 sort : BTreeUniformType -> Maybe BTreeUniformType
 sort bTreeUniformType =

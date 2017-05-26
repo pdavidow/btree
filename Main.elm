@@ -24,6 +24,7 @@ import Material
 
 import Random
 import Pivot exposing (withRollback)
+import Maybe.Extra exposing (unwrap)
 
 import BTreeUniformType exposing (BTreeUniformType(..))
 import BTreeUniformType exposing (..)
@@ -31,6 +32,7 @@ import BTreeVariedType exposing (BTreeVariedType(..), incrementNodes, decrementN
 import BTree exposing (NodeTag(..))
 import BTree exposing (..)
 import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram)
+import Constants exposing (nothingString)
 ------------------------------------------------
 
 
@@ -113,14 +115,14 @@ view model =
                 }
 
 
-inputs : Model -> List (Html.Html Msg)
+inputs : Model -> List (Html Msg)
 inputs model =
     [ b [] [text "Delta: "], input [ A.type_ "number", A.min "1", value (toString model.delta), A.style [("width", "3%")], onInput Delta ] []
     , b [] [text "Exp: "], input [ A.type_ "number", A.min "1", value (toString model.exponent), A.style [("width", "3%")], onInput Exponent ] []
     ]
 
 
-actionButtons : Model -> List (Html.Html Msg)
+actionButtons : Model -> List (Html Msg)
 actionButtons model =
     [ Button.render Mdl [0] model.mdl
         [ Button.flat
@@ -208,11 +210,25 @@ viewStatus model =
         ]
     , Chip.span []
         [ Chip.content []
-            [ text ("Sum Int-Tree: " ++ toString (BTreeUniformType.sumInt model.intTree)) ]
+            ( let
+                string = unwrap
+                    nothingString
+                    toString
+                    (BTreeUniformType.sumInt model.intTree)
+              in
+                [ text ("Sum Int-Tree: " ++ string) ]
+            )
         ]
     , Chip.span []
         [ Chip.content []
-            [ text ("Sum String-Tree: " ++ toString (BTreeUniformType.sumString model.stringTree)) ]
+            ( let
+                string = unwrap
+                    nothingString
+                    identity
+                    (BTreeUniformType.sumString model.stringTree)
+              in
+                [ text ("Sum String-Tree: " ++ string) ]
+            )
         ]
     ]
 
