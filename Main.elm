@@ -181,6 +181,36 @@ viewHeader model =
         ]
 
 
+viewStatus: Model -> List (Html.Html msg)
+viewStatus model =
+    [ Chip.span []
+        [ Chip.content []
+            [ text ("Depth Int-Tree: " ++ toString (BTreeUniformType.depth model.intTree)) ]
+        ]
+    , Chip.span []
+        [ Chip.content []
+            [ text ("Depth String-Tree: " ++ toString (BTreeUniformType.depth model.stringTree)) ]
+        ]
+    , Chip.span []
+        [ Chip.content []
+            [ text ("Sum Int-Tree: " ++ toString (BTreeUniformType.sumInt model.intTree)) ]
+        ]
+    , Chip.span []
+        [ Chip.content []
+            [ text ("Sum String-Tree: " ++ toString (BTreeUniformType.sumString model.stringTree)) ]
+        ]
+    ]
+
+
+viewTrees: Model -> List (Html.Html msg)
+viewTrees model =
+    [ bTreeUniformTypeDiagram model.intTree
+    , bTreeUniformTypeDiagram model.stringTree
+    , bTreeUniformTypeDiagram model.boolTree
+    , bTreeVariedTypeDiagram model.intStringBoolTree
+    ]
+
+
 viewBody : Model -> Html Msg
 viewBody model =
     grid [ ]
@@ -190,34 +220,14 @@ viewBody model =
             , Options.css "align-items" "center"
             , Options.cs "mdl-grid"
             ]
-            [ Chip.span []
-                [ Chip.content []
-                    [ text ("Depth Int-Tree: " ++ toString (BTreeUniformType.depth model.intTree)) ]
-                ]
-            , Chip.span []
-                [ Chip.content []
-                    [ text ("Depth String-Tree: " ++ toString (BTreeUniformType.depth model.stringTree)) ]
-                ]
-            , Chip.span []
-                [ Chip.content []
-                    [ text ("Sum Int-Tree: " ++ toString (BTreeUniformType.sumInt model.intTree)) ]
-                ]
-            , Chip.span []
-                [ Chip.content []
-                    [ text ("Sum String-Tree: " ++ toString (BTreeUniformType.sumString model.stringTree)) ]
-                ]
-            ]
+            (viewStatus model)
         , cell
             [ size All 12
             , Elevation.e2
             , Options.css "align-items" "center"
             , Options.cs "mdl-grid"
             ]
-            [ bTreeUniformTypeDiagram model.intTree
-            , bTreeUniformTypeDiagram model.stringTree
-            , bTreeUniformTypeDiagram model.boolTree
-            , bTreeVariedTypeDiagram model.intStringBoolTree
-            ]
+            (viewTrees model)
         ]
 
 
