@@ -525,5 +525,65 @@ all =
                 \() ->
                     Expect.equal Nothing (BTreeUniformType.sort (BTreeBool (Node True Empty (singleton False))))
             ]
+         , describe "BTreeUniformType.sumInt"
+            [ test "of empty BTreeString" <|
+                \() ->
+                    Expect.equal Nothing (BTreeUniformType.sumInt (BTreeString Empty))
+            , test "of singleton BTreeString" <|
+                \() ->
+                    Expect.equal Nothing (BTreeUniformType.sumInt(BTreeString (singleton "a")))
+            , test "of 2 values BTreeString" <|
+                \() ->
+                    Expect.equal Nothing (BTreeUniformType.sumInt (BTreeString (Node "b" Empty (singleton "a"))))
+            , test "of empty BTreeInt" <|
+                \() ->
+                    Expect.equal (Just 0) (BTreeUniformType.sumInt (BTreeInt Empty))
+            , test "of singleton BTreeInt" <|
+                \() ->
+                    Expect.equal (Just 1) (BTreeUniformType.sumInt(BTreeInt (singleton 1)))
+            , test "of 2 values BTreeInt" <|
+                \() ->
+                    Expect.equal (Just 3) (BTreeUniformType.sumInt (BTreeInt (Node 2 Empty (singleton 1))))
+
+            , test "of empty BTreeBool" <|
+                \() ->
+                    Expect.equal Nothing (BTreeUniformType.sumInt (BTreeBool Empty))
+            , test "of singleton BTreeBool" <|
+                \() ->
+                    Expect.equal Nothing (BTreeUniformType.sumInt(BTreeBool (singleton True)))
+            , test "of 2 values BTreeBool" <|
+                \() ->
+                    Expect.equal Nothing (BTreeUniformType.sumInt (BTreeBool (Node True Empty (singleton False))))
+            ]
+         , describe "BTreeUniformType.sumString"
+            [ test "of empty BTreeString" <|
+                \() ->
+                    Expect.equal (Just "") (BTreeUniformType.sumString (BTreeString Empty))
+            , test "of singleton BTreeString" <|
+                \() ->
+                    Expect.equal (Just "a") (BTreeUniformType.sumString(BTreeString (singleton "a")))
+            , test "of 2 values BTreeString" <|
+                \() ->
+                    Expect.equal (Just "ab") (BTreeUniformType.sumString (BTreeString (Node "b" Empty (singleton "a"))))
+            , test "of empty BTreeInt" <|
+                \() ->
+                    Expect.equal Nothing (BTreeUniformType.sumString (BTreeInt Empty))
+            , test "of singleton BTreeInt" <|
+                \() ->
+                    Expect.equal Nothing (BTreeUniformType.sumString(BTreeInt (singleton 1)))
+            , test "of 2 values BTreeInt" <|
+                \() ->
+                    Expect.equal Nothing (BTreeUniformType.sumString (BTreeInt (Node 2 Empty (singleton 1))))
+
+            , test "of empty BTreeBool" <|
+                \() ->
+                    Expect.equal Nothing (BTreeUniformType.sumString (BTreeBool Empty))
+            , test "of singleton BTreeBool" <|
+                \() ->
+                    Expect.equal Nothing (BTreeUniformType.sumString(BTreeBool (singleton True)))
+            , test "of 2 values BTreeBool" <|
+                \() ->
+                    Expect.equal Nothing (BTreeUniformType.sumString (BTreeBool (Node True Empty (singleton False))))
+            ]
         ]
 
