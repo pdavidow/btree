@@ -112,6 +112,65 @@ view model =
                 }
 
 
+--inputs : Model -> List (Html.Html Main.Msg)
+inputs model =
+    [ b [] [text "Delta: "], input [ A.type_ "number", A.min "1", value (toString model.delta), A.style [("width", "3%")], onInput Delta ] []
+    , b [] [text "Exp: "], input [ A.type_ "number", A.min "1", value (toString model.exponent), A.style [("width", "3%")], onInput Exponent ] []
+    ]
+
+
+--actionButtons : Model -> List (Html.Html Main.Msg)
+actionButtons model =
+    [ Button.render Mdl [0] model.mdl
+        [ Button.flat
+        , Options.onClick Increment
+        ]
+        [ text "+ Delta"]
+    , Button.render Mdl [0] model.mdl
+        [ Button.flat
+        , Options.onClick Decrement
+        ]
+        [ text "- Delta"]
+    , Button.render Mdl [0] model.mdl
+        [ Button.flat
+        , Options.onClick Raise
+        ]
+        [ text "^ Exp"]
+    , Button.render Mdl [0] model.mdl
+        [ Button.flat
+        , Options.onClick SortIntTree
+        ]
+        [ text "Sort Int-Tree"]
+    , Button.render Mdl [0] model.mdl
+        [ Button.colored
+        , Options.onMouseDown StartShowIsIntPrime
+        , Options.onMouseUp StopShowIsIntPrime
+        ]
+        [ text "Prime?"]
+    , Button.render Mdl [0] model.mdl
+        [ Button.colored
+        , Options.onMouseDown StartShowStringLength
+        , Options.onMouseUp StopShowStringLength
+        ]
+        [ text "String Length"]
+    , Button.render Mdl [0] model.mdl
+        [ Button.accent
+        , Options.onClick RequestRandomIntList
+        ]
+        [ text "Random Int-Tree"]
+    , Button.render Mdl [0] model.mdl
+        [ Button.accent
+        , Options.onClick RequestRandomDelta
+        ]
+        [ text "Random Delta"]
+    , Button.render Mdl [0] model.mdl
+        [ Button.raised
+        , Options.onClick Reset
+        ]
+        [ text "Reset"]
+    ]
+
+
 viewHeader : Model -> Html Msg
 viewHeader model =
     Layout.row
@@ -127,56 +186,11 @@ viewHeader model =
                 , Options.css "align-items" "center"
                 , Options.cs "mdl-grid"
                 ]
-                [ b [] [text "Delta: "], input [ A.type_ "number", A.min "1", value (toString model.delta), A.style [("width", "3%")], onInput Delta ] []
-                , b [] [text "Exp: "], input [ A.type_ "number", A.min "1", value (toString model.exponent), A.style [("width", "3%")], onInput Exponent ] []
-                , Button.render Mdl [0] model.mdl
-                    [ Button.flat
-                    , Options.onClick Increment
+                ( List.concat
+                    [ inputs model
+                    , actionButtons model
                     ]
-                    [ text "+ Delta"]
-                , Button.render Mdl [0] model.mdl
-                    [ Button.flat
-                    , Options.onClick Decrement
-                    ]
-                    [ text "- Delta"]
-                , Button.render Mdl [0] model.mdl
-                    [ Button.flat
-                    , Options.onClick Raise
-                    ]
-                    [ text "^ Exp"]
-                , Button.render Mdl [0] model.mdl
-                    [ Button.flat
-                    , Options.onClick SortIntTree
-                    ]
-                    [ text "Sort Int-Tree"]
-                , Button.render Mdl [0] model.mdl
-                    [ Button.colored
-                    , Options.onMouseDown StartShowIsIntPrime
-                    , Options.onMouseUp StopShowIsIntPrime
-                    ]
-                    [ text "Prime?"]
-                , Button.render Mdl [0] model.mdl
-                    [ Button.colored
-                    , Options.onMouseDown StartShowStringLength
-                    , Options.onMouseUp StopShowStringLength
-                    ]
-                    [ text "String Length"]
-                , Button.render Mdl [0] model.mdl
-                    [ Button.accent
-                    , Options.onClick RequestRandomIntList
-                    ]
-                    [ text "Random Int-Tree"]
-                , Button.render Mdl [0] model.mdl
-                    [ Button.accent
-                    , Options.onClick RequestRandomDelta
-                    ]
-                    [ text "Random Delta"]
-                , Button.render Mdl [0] model.mdl
-                    [ Button.raised
-                    , Options.onClick Reset
-                    ]
-                    [ text "Reset"]
-                ]
+                )
             ]
         ]
 
