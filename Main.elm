@@ -113,14 +113,14 @@ view model =
                 }
 
 
---inputs : Model -> List (Html.Html Main.Msg)
+inputs : Model -> List (Html.Html Msg)
 inputs model =
     [ b [] [text "Delta: "], input [ A.type_ "number", A.min "1", value (toString model.delta), A.style [("width", "3%")], onInput Delta ] []
     , b [] [text "Exp: "], input [ A.type_ "number", A.min "1", value (toString model.exponent), A.style [("width", "3%")], onInput Exponent ] []
     ]
 
 
---actionButtons : Model -> List (Html.Html Main.Msg)
+actionButtons : Model -> List (Html.Html Msg)
 actionButtons model =
     [ Button.render Mdl [0] model.mdl
         [ Button.flat
