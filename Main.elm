@@ -2,13 +2,26 @@
 elm-make Main.elm --output elm.js
 --}
 
+-- Based on https://github.com/vipentti/elm-mdl-dashboard/blob/master/src/View.elm
+
 module Main exposing (..)
 
-import Html exposing (Html, button, div, text, hr, input, h3, h4, h5, p, b)
-import Html.Events exposing (onClick, onInput, onMouseDown, onMouseUp)
+import Html exposing (Html, div, text, hr, input, h3, h4, h5, p, b)
+import Html.Events exposing (onInput)
 import Html.Attributes as A exposing (class, style, type_, value)
-import Material.Grid exposing (..)
-import Material.Options exposing (Style, css)
+
+import Material.Grid as Grid exposing (..)
+import Material.Options as Options exposing (Style, css, nop)
+import Material.Layout as Layout
+import Material.Button as Button exposing (..)
+import Material.Elevation as Elevation
+import Material.Color as Color
+import Material.Textfield as Textfield
+import Material.List as Lists
+import Material.Chip as Chip
+import Material.Scheme
+import Material
+
 import Random
 
 import BTreeUniformType exposing (BTreeUniformType(..))
@@ -33,6 +46,7 @@ type alias Model =
     , maxRandomInt : Int
     , minListLength : Int
     , maxListLength : Int
+    , mdl : Material.Model
     }
 
 
@@ -41,7 +55,7 @@ initialModel =
     { intTree = BTreeInt (fromList [3, 2, 1])
     , stringTree = BTreeString (fromList ["a", "bb", "ccc"])
     , boolTree = BTreeBool (Node True Empty (singleton False))
-    , intStringBoolTree = BTreeVaried (Node (StringNode "a") (singleton (IntNode 1)) (Node (BoolNode False) (singleton (BoolNode True)) (Node (StringNode "ccc") (singleton (IntNode 3)) Empty)))
+    , intStringBoolTree = BTreeVaried (Node (IntNode 123) (singleton (StringNode "abc")) (singleton (BoolNode True)))
     , intTreeCache = BTreeInt Empty
     , stringTreeCache = BTreeString Empty
     , intStringBoolTreeCache = BTreeVaried Empty
@@ -49,7 +63,8 @@ initialModel =
     , exponent = 2
     , maxRandomInt = 99
     , minListLength = 1
-    , maxListLength = 12
+    , maxListLength = 6
+    , mdl = Material.model
     }
 
 
@@ -62,7 +77,7 @@ type Msg =
       Increment
     | Decrement
     | Raise
-    | SortIntList
+    | SortIntTree
     | Delta String
     | Exponent String
     | RequestRandomIntList
@@ -74,58 +89,137 @@ type Msg =
     | StartShowIsIntPrime
     | StopShowIsIntPrime
     | Reset
+    | Mdl (Material.Msg Msg)
 
 
 view : Model -> Html Msg
 view model =
-    div [ class "home-page" ]
-        [ viewBanner
-        , div [ class "container page" ]
-            [ div []
-                [ b [] [text "Same Node Type: "]
-                , button [ onClick Increment ] [ text "Increment by Delta" ]
-                , button [ onClick Decrement ] [ text "Decrement by Delta" ]
-                , button [ onClick Raise ] [ text "Raise to Exponent" ]
-                , button [ onClick SortIntList ] [ text "Sort Int-Tree" ]
-                , button [ onClick Reset ] [ text "Reset" ]
+    Material.Scheme.top <|
+        Layout.render Mdl
+                model.mdl
+                [ Layout.fixedHeader
+                , Layout.fixedDrawer
+                , Options.css "display" "flex !important"
+                , Options.css "flex-direction" "row"
+                , Options.css "align-items" "center"
                 ]
-            , div []
-                [ b [] [text "Different Node Type: "]
-                , button [ onMouseDown StartShowIsIntPrime, onMouseUp StopShowIsIntPrime ] [ text "Is Int Prime?" ]
-                , button [ onMouseDown StartShowStringLength, onMouseUp StopShowStringLength ] [ text "String Length" ]
-                ]
-            , div []
-                [ b [] [text "Random: "]
-                , button [ onClick RequestRandomIntList ] [ text "Int-Tree" ]
-                , button [ onClick RequestRandomDelta ] [ text "Delta" ]
-                ]
-            , hr [] []
-            , b [] [text "Delta: "], input [ type_ "number", A.min "1", value (toString model.delta), onInput Delta ] []
-            , b [] [text "Exponent: "], input [ type_ "number", A.min "1", value (toString model.exponent), onInput Exponent ] []
-            -- , div [] [ text (toString model) ]
-            , hr [] []
-            , div [] [ text ("Depth Int-Tree: " ++ toString (BTreeUniformType.depth model.intTree)) ]
-            , div [] [ text ("Depth String-Tree: " ++ toString (BTreeUniformType.depth model.stringTree)) ]
-            , div [] [ text ("Sum Int-Tree: " ++ toString (BTreeUniformType.sumInt model.intTree)) ]
-            , div [] [ text ("Sum String-Tree: " ++ toString (BTreeUniformType.sumString model.stringTree)) ]
-            , hr [] []
-            , h5 [] [text "Int-Tree"], bTreeUniformTypeDiagram model.intTree
-            , hr [] []
-            , h5 [] [text "String-Tree"], bTreeUniformTypeDiagram model.stringTree
-            , hr [] []
-            , h5 [] [text "Bool-Tree"], bTreeUniformTypeDiagram model.boolTree
-            , hr [] []
-            , h5 [] [text "Int/String/Bool-Tree"], bTreeVariedTypeDiagram model.intStringBoolTree
-            ]
-    ]
+                { header = [ viewHeader model ]
+                , drawer = []
+                , tabs = ( [], [] )
+                , main =
+                    [ viewBody model
+                    ]
+                }
 
-viewBanner : Html msg
-viewBanner =
-    div [ class "banner" ]
-        [ div [ class "container" ]
-            [ h3 [ class "logo-font" ] [ text "Binary-Tree Playground" ]
+
+viewHeader : Model -> Html Msg
+viewHeader model =
+    Layout.row
+        [ Color.background <| Color.color Color.Grey Color.S100
+        , Color.text <| Color.color Color.Grey Color.S900
+        ]
+        [ Layout.title [] [ text "Binary-Tree Playground" ]
+        , Layout.spacer
+        , grid [ ]
+            [ cell
+                [ size All 12
+                , Elevation.e2
+                , Options.css "align-items" "center"
+                , Options.cs "mdl-grid"
+                ]
+                [ b [] [text "Delta: "], input [ A.type_ "number", A.min "1", value (toString model.delta), A.style [("width", "3%")], onInput Delta ] []
+                , b [] [text "Exp: "], input [ A.type_ "number", A.min "1", value (toString model.exponent), A.style [("width", "3%")], onInput Exponent ] []
+                , Button.render Mdl [0] model.mdl
+                    [ Button.flat
+                    , Options.onClick Increment
+                    ]
+                    [ text "+ Delta"]
+                , Button.render Mdl [0] model.mdl
+                    [ Button.flat
+                    , Options.onClick Decrement
+                    ]
+                    [ text "- Delta"]
+                , Button.render Mdl [0] model.mdl
+                    [ Button.flat
+                    , Options.onClick Raise
+                    ]
+                    [ text "^ Exp"]
+                , Button.render Mdl [0] model.mdl
+                    [ Button.flat
+                    , Options.onClick SortIntTree
+                    ]
+                    [ text "Sort Int-Tree"]
+                , Button.render Mdl [0] model.mdl
+                    [ Button.colored
+                    , Options.onMouseDown StartShowIsIntPrime
+                    , Options.onMouseUp StopShowIsIntPrime
+                    ]
+                    [ text "Prime?"]
+                , Button.render Mdl [0] model.mdl
+                    [ Button.colored
+                    , Options.onMouseDown StartShowStringLength
+                    , Options.onMouseUp StopShowStringLength
+                    ]
+                    [ text "String Length"]
+                , Button.render Mdl [0] model.mdl
+                    [ Button.accent
+                    , Options.onClick RequestRandomIntList
+                    ]
+                    [ text "Random Int-Tree"]
+                , Button.render Mdl [0] model.mdl
+                    [ Button.accent
+                    , Options.onClick RequestRandomDelta
+                    ]
+                    [ text "Random Delta"]
+                , Button.render Mdl [0] model.mdl
+                    [ Button.raised
+                    , Options.onClick Reset
+                    ]
+                    [ text "Reset"]
+                ]
             ]
         ]
+
+
+viewBody : Model -> Html Msg
+viewBody model =
+    grid [ ]
+        [ cell
+            [ size All 12
+            , Elevation.e2
+            , Options.css "align-items" "center"
+            , Options.cs "mdl-grid"
+            ]
+            [ Chip.span []
+                [ Chip.content []
+                    [ text ("Depth Int-Tree: " ++ toString (BTreeUniformType.depth model.intTree)) ]
+                ]
+            , Chip.span []
+                [ Chip.content []
+                    [ text ("Depth String-Tree: " ++ toString (BTreeUniformType.depth model.stringTree)) ]
+                ]
+            , Chip.span []
+                [ Chip.content []
+                    [ text ("Sum Int-Tree: " ++ toString (BTreeUniformType.sumInt model.intTree)) ]
+                ]
+            , Chip.span []
+                [ Chip.content []
+                    [ text ("Sum String-Tree: " ++ toString (BTreeUniformType.sumString model.stringTree)) ]
+                ]
+            ]
+        , cell
+            [ size All 12
+            , Elevation.e2
+            , Options.css "align-items" "center"
+            , Options.cs "mdl-grid"
+            ]
+            [ bTreeUniformTypeDiagram model.intTree
+            , bTreeUniformTypeDiagram model.stringTree
+            , bTreeUniformTypeDiagram model.boolTree
+            , bTreeVariedTypeDiagram model.intStringBoolTree
+            ]
+        ]
+
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -154,7 +248,7 @@ update msg model =
                 , intStringBoolTree = BTreeVariedType.raiseNodes model.exponent model.intStringBoolTree
             }, Cmd.none)
 
-        SortIntList ->
+        SortIntTree ->
             ({model
                 | intTree = BTreeUniformType.sort model.intTree
             }, Cmd.none)
@@ -227,10 +321,15 @@ update msg model =
         Reset ->
             (initialModel, Cmd.none)
 
+        -- Boilerplate: Mdl action handler.
+        Mdl msg_ ->
+            Material.update Mdl msg_ model
+
 
 intFromInput : String -> Int
 intFromInput string =
     Result.withDefault 0 (String.toInt string)
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
