@@ -24,17 +24,17 @@ toTaggedBTree bTreeUniformType =
             map BoolNode bTree
 
 
-toStringLength : BTreeUniformType -> BTreeUniformType
+toStringLength : BTreeUniformType -> Maybe BTreeUniformType
 toStringLength bTreeUniformType =
     case bTreeUniformType of
-        BTreeInt bTree -> -- no op
-            BTreeInt bTree
-
         BTreeString bTree ->
-            BTreeInt (map String.length bTree)
+            Just (BTreeInt (map String.length bTree))
 
-        BTreeBool bTree -> -- no op
-            BTreeBool bTree
+        BTreeInt bTree ->
+            Nothing
+
+        BTreeBool bTree ->
+            Nothing
 
 
 toIsIntPrime : BTreeUniformType -> BTreeUniformType

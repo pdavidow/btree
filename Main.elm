@@ -348,7 +348,7 @@ update msg model =
             ({model
                 | stringTreeCache = model.stringTree
                 , intStringBoolTreeCache = model.intStringBoolTree
-                , stringTree = BTreeUniformType.toStringLength model.stringTree
+                , stringTree = withRollback BTreeUniformType.toStringLength model.stringTree
                 , intStringBoolTree = BTreeVariedType.toStringLength model.intStringBoolTree
             }, Cmd.none)
 
