@@ -33,6 +33,7 @@ import BTree exposing (NodeTag(..))
 import BTree exposing (..)
 import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram)
 import Constants exposing (nothingString)
+import MusicScaleType exposing (MusicScaleType(..))
 ------------------------------------------------
 
 
@@ -40,10 +41,11 @@ type alias Model =
     { intTree : BTreeUniformType
     , stringTree : BTreeUniformType
     , boolTree : BTreeUniformType
-    , intStringBoolTree : BTreeVariedType
+    , musicTree : BTreeUniformType
+    , variedTree : BTreeVariedType
     , intTreeCache : BTreeUniformType
     , stringTreeCache : BTreeUniformType
-    , intStringBoolTreeCache : BTreeVariedType
+    , variedTreeCache : BTreeVariedType
     , delta : Int
     , exponent : Int
     , maxRandomInt : Int
@@ -58,10 +60,11 @@ initialModel =
     { intTree = BTreeInt (fromList [3, 2, 1])
     , stringTree = BTreeString (fromList ["a", "bb", "ccc"])
     , boolTree = BTreeBool (Node True Empty (singleton False))
-    , intStringBoolTree = BTreeVaried (Node (IntNode 123) (singleton (StringNode "abc")) (singleton (BoolNode True)))
+    , musicTree = BTreeMusicScale (Node A Empty (singleton A_sharp))
+    , variedTree = BTreeVaried (Node (IntNode 123) (singleton (StringNode "abc")) ((Node (BoolNode True)) (singleton (MusicScaleNode C_sharp)) Empty))
     , intTreeCache = BTreeInt Empty
     , stringTreeCache = BTreeString Empty
-    , intStringBoolTreeCache = BTreeVaried Empty
+    , variedTreeCache = BTreeVaried Empty
     , delta = 1
     , exponent = 2
     , maxRandomInt = 99
@@ -238,7 +241,8 @@ viewTrees model =
     [ bTreeUniformTypeDiagram model.intTree
     , bTreeUniformTypeDiagram model.stringTree
     , bTreeUniformTypeDiagram model.boolTree
-    , bTreeVariedTypeDiagram model.intStringBoolTree
+    , bTreeUniformTypeDiagram model.musicTree
+    , bTreeVariedTypeDiagram model.variedTree
     ]
 
 
@@ -270,7 +274,7 @@ update msg model =
                     | intTree = BTreeUniformType.incrementNodes model.delta model.intTree
                     , stringTree = BTreeUniformType.incrementNodes model.delta model.stringTree
                     , boolTree = BTreeUniformType.incrementNodes model.delta model.boolTree
-                    , intStringBoolTree = BTreeVariedType.incrementNodes model.delta model.intStringBoolTree
+                    , variedTree = BTreeVariedType.incrementNodes model.delta model.variedTree
             }, Cmd.none)
 
         Decrement ->
@@ -278,7 +282,7 @@ update msg model =
                 | intTree = BTreeUniformType.decrementNodes model.delta model.intTree
                 , stringTree = BTreeUniformType.decrementNodes model.delta model.stringTree
                 , boolTree = BTreeUniformType.decrementNodes model.delta model.boolTree
-                , intStringBoolTree = BTreeVariedType.decrementNodes model.delta model.intStringBoolTree
+                , variedTree = BTreeVariedType.decrementNodes model.delta model.variedTree
             }, Cmd.none)
 
         Raise ->
@@ -286,7 +290,7 @@ update msg model =
                 | intTree = BTreeUniformType.raiseNodes model.exponent model.intTree
                 , stringTree = BTreeUniformType.raiseNodes model.exponent model.stringTree
                 , boolTree = BTreeUniformType.raiseNodes model.exponent model.boolTree
-                , intStringBoolTree = BTreeVariedType.raiseNodes model.exponent model.intStringBoolTree
+                , variedTree = BTreeVariedType.raiseNodes model.exponent model.variedTree
             }, Cmd.none)
 
         SortIntTree ->
@@ -333,30 +337,30 @@ update msg model =
         StartShowIsIntPrime ->
             ({model
                 | intTreeCache = model.intTree
-                , intStringBoolTreeCache = model.intStringBoolTree
+                , variedTreeCache = model.variedTree
                 , intTree = withRollback BTreeUniformType.toIsIntPrime model.intTree
-                , intStringBoolTree = BTreeVariedType.toIsIntPrime model.intStringBoolTree
+                , variedTree = BTreeVariedType.toIsIntPrime model.variedTree
             }, Cmd.none)
 
         StopShowIsIntPrime ->
             ({model
                 | intTree = model.intTreeCache
-                , intStringBoolTree = model.intStringBoolTreeCache
+                , variedTree = model.variedTreeCache
             }, Cmd.none)
 
         StartShowStringLength ->
             ({model
                 | stringTreeCache = model.stringTree
-                , intStringBoolTreeCache = model.intStringBoolTree
+                , variedTreeCache = model.variedTree
                 , stringTree = withRollback BTreeUniformType.toStringLength model.stringTree
-                , intStringBoolTree = BTreeVariedType.toStringLength model.intStringBoolTree
+                , variedTree = BTreeVariedType.toStringLength model.variedTree
             }, Cmd.none)
 
 
         StopShowStringLength ->
             ({model
                 | stringTree = model.stringTreeCache
-                , intStringBoolTree = model.intStringBoolTreeCache
+                , variedTree = model.variedTreeCache
             }, Cmd.none)
 
         Reset ->

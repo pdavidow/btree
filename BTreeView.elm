@@ -9,7 +9,7 @@ import BTreeVariedType exposing (BTreeVariedType(..))
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
 
-import Color exposing (Color, green, orange, black, white, yellow, blue, lightCharcoal)
+import Color exposing (Color, green, orange, black, white, yellow, blue, purple, lightCharcoal)
 import Collage exposing (group, segment, traced, rotate, move, scale, oval, rect, ngon, filled, outlined, text, rect, polygon, moveY, defaultLine, Form, toForm, LineStyle)
 import Element
 import Html exposing (Html)
@@ -102,6 +102,13 @@ drawNode maybeishNodeTag =
                             , ngon 6 20 |> outlined treeLineStyle
                             , displayString b |> fromString |> style treeNodeStyle |> text |> moveY 4
                             ]
+
+                MusicScaleNode note ->
+                    group
+                        [ ngon 5 35 |> filled (purple)
+                        , ngon 5 35 |> outlined treeLineStyle
+                        , toString note |> fromString |> style treeNodeStyle |> text |> moveY 4
+                        ]
 
         Nothing ->
             toForm Element.empty

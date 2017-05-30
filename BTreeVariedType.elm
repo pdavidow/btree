@@ -14,13 +14,16 @@ toStringLength (BTreeVaried bTree) =
     let
         func : NodeTag -> NodeTag
         func nodeTag = case nodeTag of
-            StringNode s ->
-                IntNode (String.length s)
-
-            IntNode i -> -- no op
+            IntNode x -> -- no op
                 nodeTag
 
-            BoolNode b -> -- no op
+            StringNode x ->
+                IntNode (String.length x)
+
+            BoolNode x -> -- no op
+                nodeTag
+
+            MusicScaleNode x -> -- no op
                 nodeTag
     in
         BTreeVaried (map func bTree)
@@ -31,13 +34,16 @@ toIsIntPrime (BTreeVaried bTree) =
     let
         func : NodeTag -> NodeTag
         func nodeTag = case nodeTag of
-            IntNode i ->
-                BoolNode (Arithmetic.isPrime i)
+            IntNode x ->
+                BoolNode (Arithmetic.isPrime x)
 
-            StringNode s -> -- no op
+            StringNode x -> -- no op
                 nodeTag
 
-            BoolNode b -> -- no op
+            BoolNode x -> -- no op
+                nodeTag
+
+            MusicScaleNode x -> -- no op
                 nodeTag
     in
         BTreeVaried (map func bTree)
@@ -49,14 +55,17 @@ mapVariedTree operand mappers (BTreeVaried bTree) =
         func : Int -> Mappers -> NodeTag -> NodeTag
         func operand mappers nodeTag =
             case nodeTag of
-                IntNode i ->
-                    IntNode (mappers.int operand i)
+                IntNode x ->
+                    IntNode (mappers.int operand x)
 
-                StringNode s ->
-                    StringNode (mappers.string operand s)
+                StringNode x ->
+                    StringNode (mappers.string operand x)
 
-                BoolNode b ->
-                    BoolNode (mappers.bool operand b)
+                BoolNode x ->
+                    BoolNode (mappers.bool operand x)
+
+                MusicScaleNode x ->
+                    MusicScaleNode x -- todo (mappers.musicScale operand x)
     in
         BTreeVaried (map (func operand mappers) bTree)
 

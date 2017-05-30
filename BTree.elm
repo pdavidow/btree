@@ -3,6 +3,7 @@
 module BTree exposing (..)
 
 import TreeDiagram as TD exposing (node, Tree)
+import MusicScaleType exposing (MusicScaleType)
 
 
 type BTree a
@@ -14,6 +15,7 @@ type NodeTag
     = IntNode Int
     | StringNode String
     | BoolNode Bool
+    | MusicScaleNode MusicScaleType
 
 
 singleton : a -> BTree a
@@ -164,3 +166,8 @@ toTreeDiagramTree bTree =
 sort: BTree comparable -> BTree comparable
 sort btree =
     fromList (List.sort (flatten btree))
+
+
+sortWith : (a -> comparable) -> BTree a -> BTree a
+sortWith func btree =
+    btree --todo

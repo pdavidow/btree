@@ -2,13 +2,16 @@ module BTreeUniformType exposing (..)
 
 import BTree exposing (NodeTag(..))
 import BTree exposing (BTree, map, depth, sumInt, sumString, sort)
+import MusicScaleType exposing (MusicScaleType, sortOrder)
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
 import Arithmetic exposing (isPrime)
+
 
 type BTreeUniformType
     = BTreeInt (BTree Int)
     | BTreeString (BTree String)
     | BTreeBool (BTree Bool)
+    | BTreeMusicScale (BTree MusicScaleType)
 
 
 toTaggedBTree : BTreeUniformType -> BTree NodeTag
@@ -23,17 +26,23 @@ toTaggedBTree bTreeUniformType =
         BTreeBool bTree ->
             map BoolNode bTree
 
+        BTreeMusicScale bTree ->
+            map MusicScaleNode bTree
+
 
 toStringLength : BTreeUniformType -> Maybe BTreeUniformType
 toStringLength bTreeUniformType =
     case bTreeUniformType of
-        BTreeString bTree ->
-            Just (BTreeInt (map String.length bTree))
-
         BTreeInt bTree ->
             Nothing
 
+        BTreeString bTree ->
+            Just (BTreeInt (map String.length bTree))
+
         BTreeBool bTree ->
+            Nothing
+
+        BTreeMusicScale bTree ->
             Nothing
 
 
@@ -49,6 +58,9 @@ toIsIntPrime bTreeUniformType =
         BTreeBool bTree ->
             Nothing
 
+        BTreeMusicScale bTree ->
+            Nothing
+
 
 mapUniformTree : Int -> Mappers -> BTreeUniformType -> BTreeUniformType
 mapUniformTree operand mappers bTreeUniformType =
@@ -61,6 +73,9 @@ mapUniformTree operand mappers bTreeUniformType =
 
         BTreeBool bTree ->
             BTreeBool (map (mappers.bool operand) bTree)
+
+        BTreeMusicScale bTree ->
+            BTreeMusicScale bTree -- todo (map (mappers.musicScale operand) bTree)
 
 
 incrementNodes : Int -> BTreeUniformType -> BTreeUniformType
@@ -90,6 +105,9 @@ depth bTreeUniformType =
         BTreeBool bTree ->
             BTree.depth bTree
 
+        BTreeMusicScale bTree ->
+            BTree.depth bTree
+
 
 sumInt : BTreeUniformType -> Maybe Int
 sumInt bTreeUniformType =
@@ -103,17 +121,23 @@ sumInt bTreeUniformType =
         BTreeBool bTree ->
             Nothing
 
+        BTreeMusicScale bTree ->
+            Nothing
+
 
 sumString : BTreeUniformType -> Maybe String
 sumString bTreeUniformType =
     case bTreeUniformType of
-        BTreeString bTree ->
-            Just (BTree.sumString bTree)
-
         BTreeInt bTree ->
             Nothing
 
+        BTreeString bTree ->
+            Just (BTree.sumString bTree)
+
         BTreeBool bTree ->
+            Nothing
+
+        BTreeMusicScale bTree ->
             Nothing
 
 
@@ -128,3 +152,6 @@ sort bTreeUniformType =
 
         BTreeBool bTree ->
             Nothing
+
+        BTreeMusicScale bTree ->
+            Nothing -- todo Just (BTreeMusicScale (BTree.sortWith MusicScaleType.sortOrder bTree))
