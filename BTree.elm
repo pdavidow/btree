@@ -23,28 +23,6 @@ singleton v =
     Node v Empty Empty
 
 
-insert : comparable -> BTree comparable -> BTree comparable
-insert x tree =
-    case tree of
-      Empty ->
-          singleton x
-
-      Node y left right ->
-          if x > y then
-              Node y left (insert x right)
-
-          else if x < y then
-              Node y (insert x left) right
-
-          else
-              tree
-
-
-fromList : List comparable -> BTree comparable
-fromList xs =
-    List.foldl insert Empty xs
-
-
 depth : BTree a -> Int
 depth tree =
     case tree of
@@ -165,9 +143,7 @@ toTreeDiagramTree bTree =
 
 sort: BTree comparable -> BTree comparable
 sort btree =
-    flatten btree
-        |> List.sort
-        |> fromList
+    sortBy identity btree
 
 
 sortBy : (a -> comparable) -> BTree a -> BTree a
@@ -177,9 +153,19 @@ sortBy func btree =
         |> fromListBy func
 
 
+fromList : List comparable -> BTree comparable
+fromList xs =
+    fromListBy identity xs
+
+
 fromListBy : (a -> comparable) -> List a -> BTree a
 fromListBy func xs =
     List.foldl (insertBy func) Empty xs
+
+
+insert : comparable -> BTree comparable -> BTree comparable
+insert x tree =
+    insertBy identity x tree
 
 
 insertBy : (a -> comparable) -> a -> BTree a -> BTree a
