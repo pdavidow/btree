@@ -151,7 +151,7 @@ sort bTreeUniformType =
             Just (BTreeString (BTree.sort bTree))
 
         BTreeBool bTree ->
-            Nothing
+            Just (BTreeBool (BTree.sortBy toString bTree))
 
         BTreeMusicScale bTree ->
             Just (BTreeMusicScale (BTree.sortBy MusicScaleType.sortOrder bTree))

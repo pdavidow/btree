@@ -58,8 +58,8 @@ type alias Model =
 initialModel: Model
 initialModel =
     { intTree = BTreeInt (fromList [3, 2, 1])
-    , stringTree = BTreeString (fromList ["a", "bb", "ccc"])
-    , boolTree = BTreeBool (Node True Empty (singleton False))
+    , stringTree = BTreeString (fromList ["ccc", "a", "bb"])
+    , boolTree = BTreeBool (Node True (singleton True) (singleton False))
     , musicTree = BTreeMusicScale (Node G (singleton E) (singleton C_sharp))
     , variedTree = BTreeVaried (Node (IntNode 123) (singleton (StringNode "abc")) ((Node (BoolNode True)) (singleton (MusicScaleNode C_sharp)) Empty))
     , intTreeCache = BTreeInt Empty
@@ -83,8 +83,7 @@ type Msg =
       Increment
     | Decrement
     | Raise
-    | SortIntTree
-    | SortMusicTree
+    | SortUniformTrees
     | Delta String
     | Exponent String
     | RequestRandomIntList
@@ -145,14 +144,9 @@ actionButtons model =
         [ text "^ Exp"]
     , Button.render Mdl [0] model.mdl
         [ Button.flat
-        , Options.onClick SortIntTree
+        , Options.onClick SortUniformTrees
         ]
-        [ text "Sort Int"]
-    , Button.render Mdl [0] model.mdl
-        [ Button.flat
-        , Options.onClick SortMusicTree
-        ]
-        [ text "Sort Music"]
+        [ text "Sort Uniform"]
     , Button.render Mdl [0] model.mdl
         [ Button.colored
         , Options.onMouseDown StartShowIsIntPrime
@@ -299,15 +293,14 @@ update msg model =
                 , variedTree = BTreeVariedType.raiseNodes model.exponent model.variedTree
             }, Cmd.none)
 
-        SortIntTree ->
+        SortUniformTrees ->
             ({model
                 | intTree = withRollback BTreeUniformType.sort model.intTree
+                , stringTree = withRollback BTreeUniformType.sort model.stringTree
+                , boolTree = withRollback BTreeUniformType.sort model.boolTree
+                , musicTree = withRollback BTreeUniformType.sort model.musicTree
             }, Cmd.none)
 
-        SortMusicTree ->
-            ({model
-                | musicTree = withRollback BTreeUniformType.sort model.musicTree
-            }, Cmd.none)
 
         Delta s ->
             ({model | delta = intFromInput s
