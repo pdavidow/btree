@@ -334,7 +334,7 @@ update msg model =
             ({model
                 | intTreeCache = model.intTree
                 , intStringBoolTreeCache = model.intStringBoolTree
-                , intTree = BTreeUniformType.toIsIntPrime model.intTree
+                , intTree = withRollback BTreeUniformType.toIsIntPrime model.intTree
                 , intStringBoolTree = BTreeVariedType.toIsIntPrime model.intStringBoolTree
             }, Cmd.none)
 

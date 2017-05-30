@@ -14,14 +14,14 @@ toStringLength (BTreeVaried bTree) =
     let
         func : NodeTag -> NodeTag
         func nodeTag = case nodeTag of
-            IntNode i -> -- no op
-                IntNode i
-
             StringNode s ->
                 IntNode (String.length s)
 
+            IntNode i -> -- no op
+                nodeTag
+
             BoolNode b -> -- no op
-                BoolNode b
+                nodeTag
     in
         BTreeVaried (map func bTree)
 
@@ -35,10 +35,10 @@ toIsIntPrime (BTreeVaried bTree) =
                 BoolNode (Arithmetic.isPrime i)
 
             StringNode s -> -- no op
-                StringNode s
+                nodeTag
 
             BoolNode b -> -- no op
-                BoolNode b
+                nodeTag
     in
         BTreeVaried (map func bTree)
 

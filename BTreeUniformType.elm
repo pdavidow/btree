@@ -37,17 +37,17 @@ toStringLength bTreeUniformType =
             Nothing
 
 
-toIsIntPrime : BTreeUniformType -> BTreeUniformType
+toIsIntPrime : BTreeUniformType -> Maybe BTreeUniformType
 toIsIntPrime bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            BTreeBool (map Arithmetic.isPrime bTree)
+            Just (BTreeBool (map Arithmetic.isPrime bTree))
 
-        BTreeString bTree ->  -- no op
-            BTreeString bTree
+        BTreeString bTree ->
+            Nothing
 
-        BTreeBool bTree -> -- no op
-            BTreeBool bTree
+        BTreeBool bTree ->
+            Nothing
 
 
 mapUniformTree : Int -> Mappers -> BTreeUniformType -> BTreeUniformType

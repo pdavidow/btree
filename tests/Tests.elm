@@ -447,31 +447,31 @@ all =
          , describe "BTreeUniformType.toIsIntPrime"
             [ test "of empty BTreeString" <|
                 \() ->
-                    Expect.equal (BTreeString Empty) (BTreeUniformType.toIsIntPrime (BTreeString Empty))
+                    Expect.equal Nothing (BTreeUniformType.toIsIntPrime (BTreeString Empty))
             , test "of singleton BTreeString" <|
                 \() ->
-                    Expect.equal (BTreeString (singleton "abc")) (BTreeUniformType.toIsIntPrime(BTreeString (singleton "abc")))
+                    Expect.equal Nothing (BTreeUniformType.toIsIntPrime(BTreeString (singleton "abc")))
             , test "of 2 values BTreeString" <|
                 \() ->
-                    Expect.equal (BTreeString (fromList ["ab", "cdefg"])) (BTreeUniformType.toIsIntPrime (BTreeString (fromList ["ab", "cdefg"])))
+                    Expect.equal Nothing (BTreeUniformType.toIsIntPrime (BTreeString (fromList ["ab", "cdefg"])))
             , test "of empty BTreeInt" <|
                 \() ->
-                    Expect.equal (BTreeBool Empty) (BTreeUniformType.toIsIntPrime (BTreeInt Empty))
+                    Expect.equal (Just (BTreeBool Empty)) (BTreeUniformType.toIsIntPrime (BTreeInt Empty))
             , test "of singleton BTreeInt" <|
                 \() ->
-                    Expect.equal (BTreeBool (singleton True)) (BTreeUniformType.toIsIntPrime(BTreeInt (singleton 13)))
+                    Expect.equal (Just (BTreeBool (singleton True))) (BTreeUniformType.toIsIntPrime(BTreeInt (singleton 13)))
             , test "of 2 values BTreeInt" <|
                 \() ->
-                    Expect.equal (BTreeBool (Node False Empty (singleton True))) (BTreeUniformType.toIsIntPrime (BTreeInt (fromList [12, 13])))
+                    Expect.equal (Just (BTreeBool (Node False Empty (singleton True)))) (BTreeUniformType.toIsIntPrime (BTreeInt (fromList [12, 13])))
             , test "of empty BTreeBool" <|
                 \() ->
-                    Expect.equal (BTreeBool Empty) (BTreeUniformType.toIsIntPrime (BTreeBool Empty))
+                    Expect.equal Nothing (BTreeUniformType.toIsIntPrime (BTreeBool Empty))
             , test "of singleton BTreeBool" <|
                 \() ->
-                    Expect.equal (BTreeBool (singleton True)) (BTreeUniformType.toIsIntPrime(BTreeBool (singleton True)))
+                    Expect.equal Nothing (BTreeUniformType.toIsIntPrime(BTreeBool (singleton True)))
             , test "of 2 values BTreeBool" <|
                 \() ->
-                    Expect.equal (BTreeBool (Node True Empty (singleton False))) (BTreeUniformType.toIsIntPrime (BTreeBool (Node True Empty (singleton False))))
+                    Expect.equal Nothing (BTreeUniformType.toIsIntPrime (BTreeBool (Node True Empty (singleton False))))
             ]
          , describe "BTreeVariedType.toStringLength"
             [ test "of empty" <|
