@@ -154,4 +154,4 @@ sort bTreeUniformType =
             Nothing
 
         BTreeMusicScale bTree ->
-            Nothing -- todo Just (BTreeMusicScale (BTree.sortWith MusicScaleType.sortOrder bTree))
+            Just (BTreeMusicScale (BTree.sortBy MusicScaleType.sortOrder bTree))

@@ -165,9 +165,35 @@ toTreeDiagramTree bTree =
 
 sort: BTree comparable -> BTree comparable
 sort btree =
-    fromList (List.sort (flatten btree))
+    flatten btree
+        |> List.sort
+        |> fromList
 
 
-sortWith : (a -> comparable) -> BTree a -> BTree a
-sortWith func btree =
-    btree --todo
+sortBy : (a -> comparable) -> BTree a -> BTree a
+sortBy func btree =
+    flatten btree
+        |> List.sortBy func
+        |> fromListBy func
+
+
+fromListBy : (a -> comparable) -> List a -> BTree a
+fromListBy func xs =
+    List.foldl (insertBy func) Empty xs
+
+
+insertBy : (a -> comparable) -> a -> BTree a -> BTree a
+insertBy func x tree =
+    case tree of
+      Empty ->
+          singleton x
+
+      Node y left right ->
+          if func x > func y then
+              Node y left (insertBy func x right)
+
+          else if func x < func y then
+              Node y (insertBy func x left) right
+
+          else
+              tree

@@ -2,7 +2,7 @@ module MusicScaleType exposing (MusicScaleType(..), sortOrder)
 
 
 type MusicScaleType
-    = A -- todo Int (octave) ...
+    = A -- todo Int == octave ...
     | A_sharp
     | B
     | C

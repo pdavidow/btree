@@ -60,7 +60,7 @@ initialModel =
     { intTree = BTreeInt (fromList [3, 2, 1])
     , stringTree = BTreeString (fromList ["a", "bb", "ccc"])
     , boolTree = BTreeBool (Node True Empty (singleton False))
-    , musicTree = BTreeMusicScale (Node A Empty (singleton A_sharp))
+    , musicTree = BTreeMusicScale (Node G (singleton E) (singleton C_sharp))
     , variedTree = BTreeVaried (Node (IntNode 123) (singleton (StringNode "abc")) ((Node (BoolNode True)) (singleton (MusicScaleNode C_sharp)) Empty))
     , intTreeCache = BTreeInt Empty
     , stringTreeCache = BTreeString Empty
@@ -84,6 +84,7 @@ type Msg =
     | Decrement
     | Raise
     | SortIntTree
+    | SortMusicTree
     | Delta String
     | Exponent String
     | RequestRandomIntList
@@ -146,7 +147,12 @@ actionButtons model =
         [ Button.flat
         , Options.onClick SortIntTree
         ]
-        [ text "Sort Int-Tree"]
+        [ text "Sort Int"]
+    , Button.render Mdl [0] model.mdl
+        [ Button.flat
+        , Options.onClick SortMusicTree
+        ]
+        [ text "Sort Music"]
     , Button.render Mdl [0] model.mdl
         [ Button.colored
         , Options.onMouseDown StartShowIsIntPrime
@@ -296,6 +302,11 @@ update msg model =
         SortIntTree ->
             ({model
                 | intTree = withRollback BTreeUniformType.sort model.intTree
+            }, Cmd.none)
+
+        SortMusicTree ->
+            ({model
+                | musicTree = withRollback BTreeUniformType.sort model.musicTree
             }, Cmd.none)
 
         Delta s ->
