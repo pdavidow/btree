@@ -57,10 +57,10 @@ type alias Model =
 
 initialModel: Model
 initialModel =
-    { intTree = BTreeInt (fromList [3, 2, 1])
-    , stringTree = BTreeString (fromList ["ccc", "a", "bb"])
+    { intTree = BTreeInt (fromList [3, 2, 1, 2])
+    , stringTree = BTreeString (fromList ["ccc", "a", "bb", "a"])
     , boolTree = BTreeBool (Node True (singleton True) (singleton False))
-    , musicTree = BTreeMusicScale (Node G (singleton E) (singleton C_sharp))
+    , musicTree = BTreeMusicScale (Node F (singleton E) (Node C_sharp Empty (singleton E)))
     , variedTree = BTreeVaried (Node (IntNode 123) (singleton (StringNode "abc")) ((Node (BoolNode True)) (singleton (MusicScaleNode C_sharp)) Empty))
     , intTreeCache = BTreeInt Empty
     , stringTreeCache = BTreeString Empty

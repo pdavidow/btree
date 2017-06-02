@@ -175,11 +175,7 @@ insertBy func x tree =
           singleton x
 
       Node y left right ->
-          if func x > func y then
-              Node y left (insertBy func x right)
-
-          else if func x < func y then
-              Node y (insertBy func x left) right
-
+          if func x >= func y then
+            Node y left (insertBy func x right)
           else
-              tree
+            Node y (insertBy func x left) right
