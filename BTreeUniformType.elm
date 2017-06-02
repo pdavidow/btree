@@ -155,3 +155,19 @@ sort bTreeUniformType =
 
         BTreeMusicScale bTree ->
             Just (BTreeMusicScale (BTree.sortBy MusicScaleType.sortOrder bTree))
+
+
+removeDuplicates : BTreeUniformType -> BTreeUniformType
+removeDuplicates bTreeUniformType =
+    case bTreeUniformType of
+        BTreeInt bTree ->
+            BTreeInt (BTree.removeDuplicates bTree)
+
+        BTreeString bTree ->
+            BTreeString (BTree.removeDuplicates bTree)
+
+        BTreeBool bTree ->
+            BTreeBool (BTree.removeDuplicatesBy toString bTree)
+
+        BTreeMusicScale bTree ->
+            BTreeMusicScale (BTree.removeDuplicatesBy MusicScaleType.sortOrder bTree)

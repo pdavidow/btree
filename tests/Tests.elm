@@ -588,5 +588,16 @@ all =
                 \() ->
                     Expect.equal Nothing (BTreeUniformType.sumString (BTreeBool (Node True Empty (singleton False))))
             ]
+         , describe "BTreeUniformType.removeDuplicates"
+            [ test "of empty BTreeString" <|
+                \() ->
+                    Expect.equal (BTreeString Empty) (BTreeUniformType.removeDuplicates (BTreeString Empty))
+            , test "of singleton BTreeString" <|
+                \() ->
+                    Expect.equal (BTreeString (singleton "a")) (BTreeUniformType.removeDuplicates(BTreeString (singleton "a")))
+            , test "of 2 values BTreeString" <|
+                \() ->
+                    Expect.equal (BTreeString (singleton "a")) (BTreeUniformType.removeDuplicates (BTreeString (Node "a" Empty (singleton "a"))))
+            ]
         ]
 

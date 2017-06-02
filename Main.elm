@@ -84,6 +84,7 @@ type Msg =
     | Decrement
     | Raise
     | SortUniformTrees
+    | RemoveDuplicatesInUniformTrees
     | Delta String
     | Exponent String
     | RequestRandomIntList
@@ -146,7 +147,12 @@ actionButtons model =
         [ Button.flat
         , Options.onClick SortUniformTrees
         ]
-        [ text "Sort Uniform"]
+        [ text "Sort Uni"]
+    , Button.render Mdl [0] model.mdl
+        [ Button.flat
+        , Options.onClick RemoveDuplicatesInUniformTrees
+        ]
+        [ text "NoDup Uni"]
     , Button.render Mdl [0] model.mdl
         [ Button.colored
         , Options.onMouseDown StartShowIsIntPrime
@@ -183,7 +189,7 @@ viewHeader model =
         [ Color.background <| Color.color Color.Grey Color.S100
         , Color.text <| Color.color Color.Grey Color.S900
         ]
-        [ Layout.title [] [ text "Binary-Tree Playground" ]
+        [ Layout.title [] [ text "BTREE" ]
         , Layout.spacer
         , grid [ ]
             [ cell
@@ -301,6 +307,13 @@ update msg model =
                 , musicTree = withRollback BTreeUniformType.sort model.musicTree
             }, Cmd.none)
 
+        RemoveDuplicatesInUniformTrees ->
+            ({model
+                | intTree = BTreeUniformType.removeDuplicates model.intTree
+                , stringTree = BTreeUniformType.removeDuplicates model.stringTree
+                , boolTree = BTreeUniformType.removeDuplicates model.boolTree
+                , musicTree = BTreeUniformType.removeDuplicates model.musicTree
+            }, Cmd.none)
 
         Delta s ->
             ({model | delta = intFromInput s

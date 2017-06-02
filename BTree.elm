@@ -4,6 +4,7 @@ module BTree exposing (..)
 
 import TreeDiagram as TD exposing (node, Tree)
 import MusicScaleType exposing (MusicScaleType)
+import List.Extra exposing (uniqueBy)
 
 
 type BTree a
@@ -24,8 +25,8 @@ singleton v =
 
 
 depth : BTree a -> Int
-depth tree =
-    case tree of
+depth bTree =
+    case bTree of
         Empty ->
             0
 
@@ -34,8 +35,8 @@ depth tree =
 
 
 map : (a -> b) -> BTree a -> BTree b
-map func tree =
-    case tree of
+map func bTree =
+    case bTree of
         Empty ->
             Empty
 
@@ -44,8 +45,8 @@ map func tree =
 
 
 sum : BTree number -> number
-sum tree =
-    case tree of
+sum bTree =
+    case bTree of
         Empty ->
             0
 
@@ -54,8 +55,8 @@ sum tree =
 
 
 flatten : BTree a -> List a
-flatten tree =
-    case tree of
+flatten bTree =
+    case bTree of
         Empty ->
             []
 
@@ -64,8 +65,8 @@ flatten tree =
 
 
 isElement : a -> BTree a -> Bool
-isElement a tree =
-    case tree of
+isElement a bTree =
+    case bTree of
         Empty ->
             False
 
@@ -75,8 +76,8 @@ isElement a tree =
 
 
 fold : (a -> b -> b) -> b -> BTree a -> b
-fold func acc tree =
-    case tree of
+fold func acc bTree =
+    case bTree of
         Empty ->
             acc
 
@@ -88,39 +89,39 @@ fold func acc tree =
 
 
 sumUsingFold : BTree number -> number
-sumUsingFold tree =
+sumUsingFold bTree =
     let
         func = (+)
         seed = 0
     in
-        fold func seed tree
+        fold func seed bTree
 
 
 sumInt : BTree Int -> Int
-sumInt tree =
-    sumUsingFold tree
+sumInt bTree =
+    sumUsingFold bTree
 
 
 sumString : BTree String -> String
-sumString tree =
+sumString bTree =
     let
         func = (++)
         seed = ""
     in
-        fold func seed tree
+        fold func seed bTree
 
 
 flattenUsingFold : BTree a -> List a
-flattenUsingFold tree =
+flattenUsingFold bTree =
     let
         func = (::)
         seed = []
     in
-        fold func seed tree
+        fold func seed bTree
 
 
 isElementUsingFold : a -> BTree a -> Bool
-isElementUsingFold a tree =
+isElementUsingFold a bTree =
     let
         func v acc =
             if acc.isFound then acc
@@ -128,7 +129,7 @@ isElementUsingFold a tree =
             else acc
         seed = {a = a, isFound = False}
     in
-        (fold func seed tree).isFound
+        (fold func seed bTree).isFound
 
 
 toTreeDiagramTree : BTree a -> TD.Tree (Maybe a)
@@ -142,13 +143,13 @@ toTreeDiagramTree bTree =
 
 
 sort: BTree comparable -> BTree comparable
-sort btree =
-    sortBy identity btree
+sort bTree =
+    sortBy identity bTree
 
 
 sortBy : (a -> comparable) -> BTree a -> BTree a
-sortBy func btree =
-    flatten btree
+sortBy func bTree =
+    flatten bTree
         |> List.sortBy func
         |> fromListBy func
 
@@ -164,13 +165,13 @@ fromListBy func xs =
 
 
 insert : comparable -> BTree comparable -> BTree comparable
-insert x tree =
-    insertBy identity x tree
+insert x bTree =
+    insertBy identity x bTree
 
 
 insertBy : (a -> comparable) -> a -> BTree a -> BTree a
-insertBy func x tree =
-    case tree of
+insertBy func x bTree =
+    case bTree of
       Empty ->
           singleton x
 
@@ -179,3 +180,15 @@ insertBy func x tree =
             Node y left (insertBy func x right)
           else
             Node y (insertBy func x left) right
+
+
+removeDuplicates : BTree comparable -> BTree comparable
+removeDuplicates bTree =
+    removeDuplicatesBy identity bTree
+
+
+removeDuplicatesBy : (a -> comparable) -> BTree a -> BTree a
+removeDuplicatesBy func bTree =
+    flatten bTree
+        |> List.Extra.uniqueBy func
+        |> fromListBy func
