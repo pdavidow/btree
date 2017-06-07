@@ -1,21 +1,48 @@
 module BTreeUniformType exposing (..)
 
 import BTree exposing (NodeTag(..))
-import BTree exposing (BTree, map, depth, sumInt, sumString, sort)
+import BTree exposing (BTree, depth, map, removeDuplicatesBy, singleton, sumInt , sumString , sort, sortBy)
 import MusicNote exposing (MusicNote, sortOrder)
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
 import Arithmetic exposing (isPrime)
 
+
+type OnlyNothing = OnlyNothing
 
 type BTreeUniformType
     = BTreeInt (BTree Int)
     | BTreeString (BTree String)
     | BTreeBool (BTree Bool)
     | BTreeMusicNote (BTree (Maybe MusicNote))
+    | BTreeNothing (BTree OnlyNothing)
 
 
-toTaggedBTree : BTreeUniformType -> BTree NodeTag
-toTaggedBTree bTreeUniformType =
+toNothing : BTreeUniformType -> BTreeUniformType
+toNothing bTreeUniformType =
+    let
+        nothing : BTree a -> BTreeUniformType
+        nothing bTree =
+            BTreeNothing (map (\a -> OnlyNothing) bTree)
+    in
+        case bTreeUniformType of
+            BTreeInt bTree ->
+                nothing bTree
+
+            BTreeString bTree ->
+                nothing bTree
+
+            BTreeBool bTree ->
+                nothing bTree
+
+            BTreeMusicNote bTree ->
+                nothing bTree
+
+            BTreeNothing bTree ->
+                bTreeUniformType
+
+
+toTagged : BTreeUniformType -> BTree NodeTag
+toTagged bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
             map IntNode bTree
@@ -39,6 +66,9 @@ toTaggedBTree bTreeUniformType =
             in
                 map func bTree
 
+        BTreeNothing bTree ->
+            map (\a -> NothingNode) bTree
+
 
 toStringLength : BTreeUniformType -> Maybe BTreeUniformType
 toStringLength bTreeUniformType =
@@ -53,6 +83,9 @@ toStringLength bTreeUniformType =
             Nothing
 
         BTreeMusicNote bTree ->
+            Nothing
+
+        BTreeNothing bTree ->
             Nothing
 
 
@@ -71,6 +104,9 @@ toIsIntPrime bTreeUniformType =
         BTreeMusicNote bTree ->
             Nothing
 
+        BTreeNothing bTree ->
+            Nothing
+
 
 mapUniformTree : Int -> Mappers -> BTreeUniformType -> BTreeUniformType
 mapUniformTree operand mappers bTreeUniformType =
@@ -86,6 +122,9 @@ mapUniformTree operand mappers bTreeUniformType =
 
         BTreeMusicNote bTree ->
             BTreeMusicNote (map (mappers.musicNote operand) bTree)
+
+        BTreeNothing bTree ->
+            bTreeUniformType
 
 
 incrementNodes : Int -> BTreeUniformType -> BTreeUniformType
@@ -118,6 +157,9 @@ depth bTreeUniformType =
         BTreeMusicNote bTree ->
             BTree.depth bTree
 
+        BTreeNothing bTree ->
+            BTree.depth bTree
+
 
 sumInt : BTreeUniformType -> Maybe Int
 sumInt bTreeUniformType =
@@ -132,6 +174,9 @@ sumInt bTreeUniformType =
             Nothing
 
         BTreeMusicNote bTree ->
+            Nothing
+
+        BTreeNothing bTree ->
             Nothing
 
 
@@ -150,6 +195,9 @@ sumString bTreeUniformType =
         BTreeMusicNote bTree ->
             Nothing
 
+        BTreeNothing bTree ->
+            Nothing
+
 
 sort : BTreeUniformType -> Maybe BTreeUniformType
 sort bTreeUniformType =
@@ -166,6 +214,9 @@ sort bTreeUniformType =
         BTreeMusicNote bTree ->
             Just (BTreeMusicNote (BTree.sortBy MusicNote.sortOrder bTree))
 
+        BTreeNothing bTree ->
+            Just bTreeUniformType
+
 
 removeDuplicates : BTreeUniformType -> BTreeUniformType
 removeDuplicates bTreeUniformType =
@@ -181,3 +232,7 @@ removeDuplicates bTreeUniformType =
 
         BTreeMusicNote bTree ->
             BTreeMusicNote (BTree.removeDuplicatesBy MusicNote.sortOrder bTree)
+
+        BTreeNothing bTree ->
+            BTreeNothing (singleton OnlyNothing)
+

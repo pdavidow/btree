@@ -23,7 +23,7 @@ import Material.Scheme
 import Material
 
 import Random
-import Pivot exposing (withRollback)
+import Pivot exposing (withRollback) -- todo unused?
 import Maybe.Extra exposing (unwrap)
 
 import BTreeUniformType exposing (BTreeUniformType(..))
@@ -377,7 +377,7 @@ update msg model =
             ({model | delta = i
             }, Cmd.none)
 
-        StartShowIsIntPrime ->
+        StartShowIsIntPrime -> -- todo refactor...
             ({model-- todo refactor
                 | intTreeCache = model.intTree
                 , stringTreeCache = model.stringTree
@@ -385,10 +385,10 @@ update msg model =
                 , musicNoteTreeCache = model.musicNoteTree
                 , variedTreeCache = model.variedTree
 
-                , intTree = withRollback BTreeUniformType.toIsIntPrime model.intTree
-                , stringTree = withRollback BTreeUniformType.toIsIntPrime model.stringTree
-                , boolTree= withRollback BTreeUniformType.toIsIntPrime model.boolTree
-                , musicNoteTree = withRollback BTreeUniformType.toIsIntPrime model.musicNoteTree
+                , intTree = Maybe.withDefault (BTreeUniformType.toNothing model.intTree) (BTreeUniformType.toIsIntPrime model.intTree)
+                , stringTree = Maybe.withDefault (BTreeUniformType.toNothing model.stringTree) (BTreeUniformType.toIsIntPrime model.stringTree)
+                , boolTree= Maybe.withDefault (BTreeUniformType.toNothing model.boolTree) (BTreeUniformType.toIsIntPrime model.boolTree)
+                , musicNoteTree = Maybe.withDefault (BTreeUniformType.toNothing model.musicNoteTree) (BTreeUniformType.toIsIntPrime model.musicNoteTree)
                 , variedTree = BTreeVariedType.toIsIntPrime model.variedTree
             }, Cmd.none)
 
@@ -409,10 +409,10 @@ update msg model =
                 , musicNoteTreeCache = model.musicNoteTree
                 , variedTreeCache = model.variedTree
 
-                , intTree = withRollback BTreeUniformType.toStringLength model.intTree
-                , stringTree = withRollback BTreeUniformType.toStringLength model.stringTree
-                , boolTree= withRollback BTreeUniformType.toStringLength model.boolTree
-                , musicNoteTree = withRollback BTreeUniformType.toStringLength model.musicNoteTree
+                , intTree = Maybe.withDefault (BTreeUniformType.toNothing model.intTree) (BTreeUniformType.toStringLength model.intTree)
+                , stringTree = Maybe.withDefault (BTreeUniformType.toNothing model.stringTree) ( BTreeUniformType.toStringLength model.stringTree)
+                , boolTree= Maybe.withDefault (BTreeUniformType.toNothing model.boolTree) ( BTreeUniformType.toStringLength model.boolTree)
+                , musicNoteTree = Maybe.withDefault (BTreeUniformType.toNothing model.musicNoteTree) ( BTreeUniformType.toStringLength model.musicNoteTree)
                 , variedTree = BTreeVariedType.toStringLength model.variedTree
             }, Cmd.none)
 

@@ -4,7 +4,7 @@ module BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram)
 
 import BTree exposing (BTree, toTreeDiagramTree)
 import BTree exposing (NodeTag(..))
-import BTreeUniformType exposing (BTreeUniformType(..), toTaggedBTree)
+import BTreeUniformType exposing (BTreeUniformType(..), toTagged)
 import BTreeVariedType exposing (BTreeVariedType(..))
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
@@ -20,7 +20,7 @@ import Arithmetic exposing (isEven)
 
 bTreeUniformTypeDiagram : BTreeUniformType -> Html msg
 bTreeUniformTypeDiagram bTreeUniformType =
-    bTreeDiagram (toTaggedBTree bTreeUniformType)
+    bTreeDiagram (toTagged bTreeUniformType)
 
 
 bTreeVariedTypeDiagram : BTreeVariedType -> Html msg

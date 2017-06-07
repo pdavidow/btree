@@ -5,7 +5,7 @@ module Tests exposing (..)
 import BTree exposing (..)
 import BTree exposing (NodeTag(..))
 import TreeDiagram as TD exposing (node)
-import BTreeUniformType exposing (toTaggedBTree, incrementNodes, decrementNodes, raiseNodes)
+import BTreeUniformType exposing (toTagged, incrementNodes, decrementNodes, raiseNodes)
 import BTreeUniformType exposing (BTreeUniformType(..))
 import BTreeVariedType exposing (BTreeVariedType(..), incrementNodes, decrementNodes, raiseNodes)
 import MusicNote exposing (MusicNote(..), (:+:), (:-:))
@@ -310,16 +310,16 @@ all =
                 \() ->
                     Expect.equal (TD.node (Just 1) [(TD.node Nothing []), (TD.node (Just 2) [(TD.node Nothing []), (TD.node Nothing [])])]) (toTreeDiagramTree (fromList [1,2]))
             ]
-         , describe "toTaggedBTree"
+         , describe "toTagged"
             [ test "of empty" <|
                 \() ->
-                    Expect.equal (Empty) (toTaggedBTree (BTreeInt Empty))
+                    Expect.equal (Empty) (toTagged (BTreeInt Empty))
             , test "of singleton" <|
                 \() ->
-                    Expect.equal (singleton (IntNode 1)) (toTaggedBTree (BTreeInt (singleton 1)))
+                    Expect.equal (singleton (IntNode 1)) (toTagged (BTreeInt (singleton 1)))
             , test "of 2 values" <|
                 \() ->
-                    Expect.equal (Node (StringNode "a") Empty (singleton (StringNode "b"))) (toTaggedBTree (BTreeString (fromList ["a", "b"])))
+                    Expect.equal (Node (StringNode "a") Empty (singleton (StringNode "b"))) (toTagged (BTreeString (fromList ["a", "b"])))
             ]
          , describe "BTree.sort"
             [ test "of empty" <|
