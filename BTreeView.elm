@@ -113,8 +113,8 @@ drawNode maybeishNodeTag =
 
                 NothingNode ->
                     group
-                        [ oval 50 30 |> filled (red)
-                        , oval 50 30 |> outlined treeLineStyle
+                        [ oval 50 50 |> filled (red)
+                        , oval 50 50 |> outlined treeLineStyle
                         , nothingString |> fromString |> style treeNodeStyle |> text |> moveY 4
                         ]
 

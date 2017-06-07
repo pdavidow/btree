@@ -45,6 +45,8 @@ type alias Model =
     , variedTree : BTreeVariedType
     , intTreeCache : BTreeUniformType
     , stringTreeCache : BTreeUniformType
+    , boolTreeCache : BTreeUniformType
+    , musicNoteTreeCache : BTreeUniformType
     , variedTreeCache : BTreeVariedType
     , delta : Int
     , exponent : Int
@@ -58,12 +60,14 @@ type alias Model =
 initialModel: Model
 initialModel =
     { intTree = BTreeInt (Node 5 (singleton 4) (Node 3 Empty (singleton 4)))
-    , stringTree = BTreeString (Node "F" (singleton "E") (Node "C#" Empty (singleton "e")))
+    , stringTree = BTreeString (Node "Q" (singleton "E") (Node "CC" Empty (singleton "eee")))
     , boolTree = BTreeBool (Node True (singleton True) (singleton False))
     , musicNoteTree = BTreeMusicNote (Node (Just F) (singleton (Just E)) (Node (Just C_sharp) Empty (singleton (Just E))))
     , variedTree = BTreeVaried (Node (IntNode 123) (singleton (StringNode "abc")) ((Node (BoolNode True)) (singleton (MusicNoteNode C_sharp)) Empty))
     , intTreeCache = BTreeInt Empty
     , stringTreeCache = BTreeString Empty
+    , boolTreeCache = BTreeBool Empty
+    , musicNoteTreeCache = BTreeMusicNote Empty
     , variedTreeCache = BTreeVaried Empty
     , delta = 1
     , exponent = 2
@@ -374,31 +378,51 @@ update msg model =
             }, Cmd.none)
 
         StartShowIsIntPrime ->
-            ({model
+            ({model-- todo refactor
                 | intTreeCache = model.intTree
+                , stringTreeCache = model.stringTree
+                , boolTreeCache = model.boolTree
+                , musicNoteTreeCache = model.musicNoteTree
                 , variedTreeCache = model.variedTree
+
                 , intTree = withRollback BTreeUniformType.toIsIntPrime model.intTree
+                , stringTree = withRollback BTreeUniformType.toIsIntPrime model.stringTree
+                , boolTree= withRollback BTreeUniformType.toIsIntPrime model.boolTree
+                , musicNoteTree = withRollback BTreeUniformType.toIsIntPrime model.musicNoteTree
                 , variedTree = BTreeVariedType.toIsIntPrime model.variedTree
             }, Cmd.none)
 
         StopShowIsIntPrime ->
-            ({model
+            ({model -- todo refactor
                 | intTree = model.intTreeCache
+                , stringTree = model.stringTreeCache
+                , boolTree= model.boolTreeCache
+                , musicNoteTree = model.musicNoteTreeCache
                 , variedTree = model.variedTreeCache
             }, Cmd.none)
 
         StartShowStringLength ->
-            ({model
-                | stringTreeCache = model.stringTree
+            ({model -- todo refactor
+                | intTreeCache = model.intTree
+                , stringTreeCache = model.stringTree
+                , boolTreeCache = model.boolTree
+                , musicNoteTreeCache = model.musicNoteTree
                 , variedTreeCache = model.variedTree
+
+                , intTree = withRollback BTreeUniformType.toStringLength model.intTree
                 , stringTree = withRollback BTreeUniformType.toStringLength model.stringTree
+                , boolTree= withRollback BTreeUniformType.toStringLength model.boolTree
+                , musicNoteTree = withRollback BTreeUniformType.toStringLength model.musicNoteTree
                 , variedTree = BTreeVariedType.toStringLength model.variedTree
             }, Cmd.none)
 
 
         StopShowStringLength ->
-            ({model
-                | stringTree = model.stringTreeCache
+            ({model -- todo refactor
+                | intTree = model.intTreeCache
+                , stringTree = model.stringTreeCache
+                , boolTree= model.boolTreeCache
+                , musicNoteTree = model.musicNoteTreeCache
                 , variedTree = model.variedTreeCache
             }, Cmd.none)
 
