@@ -1,4 +1,4 @@
-module MusicNote exposing (MusicNote(..), sortOrder, (:+:), (:-:))
+module MusicNote exposing (MusicNote(..), sortOrder, (:+:), (:-:), displayString)
 
 import Array.Hamt as Array exposing (..)
 import List.Extra exposing (elemIndex)
@@ -87,3 +87,43 @@ shift calcShiftedIndex mbNote =
         |> Maybe.andThen (\note -> elemIndex note notes)
         |> Maybe.andThen calcShiftedIndex
         |> Maybe.andThen (\index -> Array.get index (Array.fromList notes))
+
+
+displayString : MusicNote -> String
+displayString note =
+    case note of
+        A ->
+            "A"
+
+        A_sharp ->
+            "A#"
+
+        B ->
+            "B"
+
+        C ->
+            "C"
+
+        C_sharp ->
+            "C#"
+
+        D ->
+            "D"
+
+        D_sharp ->
+            "D#"
+
+        E ->
+            "E"
+
+        F ->
+            "F"
+
+        F_sharp ->
+            "F#"
+
+        G ->
+            "G"
+
+        G_sharp ->
+            "G#"

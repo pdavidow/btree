@@ -8,7 +8,7 @@ import TreeDiagram as TD exposing (node)
 import BTreeUniformType exposing (toTagged, incrementNodes, decrementNodes, raiseNodes)
 import BTreeUniformType exposing (BTreeUniformType(..))
 import BTreeVariedType exposing (BTreeVariedType(..), incrementNodes, decrementNodes, raiseNodes)
-import MusicNote exposing (MusicNote(..), (:+:), (:-:))
+import MusicNote exposing (MusicNote(..), (:+:), (:-:), displayString)
 
 import Test exposing (..)
 import Expect
@@ -632,5 +632,13 @@ all =
             , test "outside range" <|
                 \() ->
                     Expect.equal (Nothing) ((Just B) :-: 3)
+            ]
+         , describe "MusicNote.displayString"
+            [ test "plain" <|
+                \() ->
+                    Expect.equal ("D") (MusicNote.displayString D)
+            , test "sharp" <|
+                \() ->
+                    Expect.equal ("D#") (MusicNote.displayString D_sharp)
             ]
         ]

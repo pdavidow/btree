@@ -6,6 +6,8 @@ import BTree exposing (BTree, toTreeDiagramTree)
 import BTree exposing (NodeTag(..))
 import BTreeUniformType exposing (BTreeUniformType(..), toTagged)
 import BTreeVariedType exposing (BTreeVariedType(..))
+import MusicNote exposing (displayString)
+
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
 import Constants exposing (nothingString)
@@ -106,9 +108,9 @@ drawNode maybeishNodeTag =
 
                 MusicNoteNode note ->
                     group
-                        [ ngon 5 35 |> filled (purple)
-                        , ngon 5 35 |> outlined treeLineStyle
-                        , toString note |> fromString |> style treeNodeStyle |> text |> moveY 4
+                        [ ngon 5 25 |> filled (purple)
+                        , ngon 5 25 |> outlined treeLineStyle
+                        , displayString note |> fromString |> style treeNodeStyle |> text |> moveY 4
                         ]
 
                 NothingNode ->
