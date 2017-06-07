@@ -377,54 +377,33 @@ update msg model =
             ({model | delta = i
             }, Cmd.none)
 
-        StartShowIsIntPrime -> -- todo refactor...
-            ({model-- todo refactor
-                | intTreeCache = model.intTree
-                , stringTreeCache = model.stringTree
-                , boolTreeCache = model.boolTree
-                , musicNoteTreeCache = model.musicNoteTree
-                , variedTreeCache = model.variedTree
-
-                , intTree = Maybe.withDefault (BTreeUniformType.toNothing model.intTree) (BTreeUniformType.toIsIntPrime model.intTree)
-                , stringTree = Maybe.withDefault (BTreeUniformType.toNothing model.stringTree) (BTreeUniformType.toIsIntPrime model.stringTree)
-                , boolTree= Maybe.withDefault (BTreeUniformType.toNothing model.boolTree) (BTreeUniformType.toIsIntPrime model.boolTree)
-                , musicNoteTree = Maybe.withDefault (BTreeUniformType.toNothing model.musicNoteTree) (BTreeUniformType.toIsIntPrime model.musicNoteTree)
-                , variedTree = BTreeVariedType.toIsIntPrime model.variedTree
-            }, Cmd.none)
+        StartShowIsIntPrime ->
+            ( model
+                |> cacheAllTrees
+                |> morphUniformTrees BTreeUniformType.toIsIntPrime
+                |> morphVariedTrees BTreeVariedType.toIsIntPrime
+            , Cmd.none
+            )
 
         StopShowIsIntPrime ->
-            ({model -- todo refactor
-                | intTree = model.intTreeCache
-                , stringTree = model.stringTreeCache
-                , boolTree= model.boolTreeCache
-                , musicNoteTree = model.musicNoteTreeCache
-                , variedTree = model.variedTreeCache
-            }, Cmd.none)
+            ( model
+                |> unCacheAllTrees
+            , Cmd.none
+            )
 
         StartShowStringLength ->
-            ({model -- todo refactor
-                | intTreeCache = model.intTree
-                , stringTreeCache = model.stringTree
-                , boolTreeCache = model.boolTree
-                , musicNoteTreeCache = model.musicNoteTree
-                , variedTreeCache = model.variedTree
-
-                , intTree = Maybe.withDefault (BTreeUniformType.toNothing model.intTree) (BTreeUniformType.toStringLength model.intTree)
-                , stringTree = Maybe.withDefault (BTreeUniformType.toNothing model.stringTree) ( BTreeUniformType.toStringLength model.stringTree)
-                , boolTree= Maybe.withDefault (BTreeUniformType.toNothing model.boolTree) ( BTreeUniformType.toStringLength model.boolTree)
-                , musicNoteTree = Maybe.withDefault (BTreeUniformType.toNothing model.musicNoteTree) ( BTreeUniformType.toStringLength model.musicNoteTree)
-                , variedTree = BTreeVariedType.toStringLength model.variedTree
-            }, Cmd.none)
-
+            ( model
+                |> cacheAllTrees
+                |> morphUniformTrees BTreeUniformType.toStringLength
+                |> morphVariedTrees BTreeVariedType.toStringLength
+            , Cmd.none
+            )
 
         StopShowStringLength ->
-            ({model -- todo refactor
-                | intTree = model.intTreeCache
-                , stringTree = model.stringTreeCache
-                , boolTree= model.boolTreeCache
-                , musicNoteTree = model.musicNoteTreeCache
-                , variedTree = model.variedTreeCache
-            }, Cmd.none)
+            ( model
+                |> unCacheAllTrees
+            , Cmd.none
+            )
 
         Reset ->
             (initialModel, Cmd.none)
@@ -432,6 +411,53 @@ update msg model =
         -- Boilerplate: Mdl action handler.
         Mdl msg_ ->
             Material.update Mdl msg_ model
+
+
+cacheAllTrees : Model -> Model
+cacheAllTrees model =
+    {model
+        | intTreeCache = model.intTree
+        , stringTreeCache = model.stringTree
+        , boolTreeCache = model.boolTree
+        , musicNoteTreeCache = model.musicNoteTree
+        , variedTreeCache = model.variedTree
+    }
+
+
+unCacheAllTrees : Model -> Model
+unCacheAllTrees model =
+    {model
+        | intTree = model.intTreeCache
+        , stringTree = model.stringTreeCache
+        , boolTree= model.boolTreeCache
+        , musicNoteTree = model.musicNoteTreeCache
+        , variedTree = model.variedTreeCache
+    }
+
+
+morphUniformTrees : (BTreeUniformType -> Maybe BTreeUniformType) -> Model -> Model
+morphUniformTrees func model =
+    let
+        defaultMorph tree = defaultMorphUniformTree func tree
+    in
+        {model
+            | intTree = defaultMorph model.intTree
+            , stringTree = defaultMorph model.stringTree
+            , boolTree = defaultMorph model.boolTree
+            , musicNoteTree = defaultMorph model.musicNoteTree
+        }
+
+
+morphVariedTrees : (BTreeVariedType -> BTreeVariedType) -> Model -> Model
+morphVariedTrees func model =
+    {model
+        | variedTree = func model.variedTree
+    }
+
+
+defaultMorphUniformTree : (BTreeUniformType -> Maybe BTreeUniformType) -> BTreeUniformType -> BTreeUniformType
+defaultMorphUniformTree func tree =
+    Maybe.withDefault (BTreeUniformType.toNothing tree) (func tree)
 
 
 intFromInput : String -> Int
