@@ -46,8 +46,8 @@ treeDiagram tdTree =
 
 
 drawNode : Maybe NodeTag -> Form
-drawNode maybeishNodeTag =
-    case maybeishNodeTag of
+drawNode mbNodeTag =
+    case mbNodeTag of
         Just nodeTag ->
             case nodeTag of
                 IntNode i ->
