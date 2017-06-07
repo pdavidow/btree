@@ -3,7 +3,7 @@
 module BTree exposing (..)
 
 import TreeDiagram as TD exposing (node, Tree)
-import MusicScaleType exposing (MusicScaleType)
+import MusicNote exposing (MusicNote)
 import List.Extra exposing (uniqueBy)
 
 
@@ -16,7 +16,8 @@ type NodeTag
     = IntNode Int
     | StringNode String
     | BoolNode Bool
-    | MusicScaleNode MusicScaleType
+    | MusicNoteNode MusicNote
+    | NothingNode
 
 
 singleton : a -> BTree a

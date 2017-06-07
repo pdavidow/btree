@@ -14,17 +14,20 @@ toStringLength (BTreeVaried bTree) =
     let
         func : NodeTag -> NodeTag
         func nodeTag = case nodeTag of
-            IntNode x -> -- no op
-                nodeTag
+            IntNode x ->
+                NothingNode
 
             StringNode x ->
                 IntNode (String.length x)
 
-            BoolNode x -> -- no op
-                nodeTag
+            BoolNode x ->
+                NothingNode
 
-            MusicScaleNode x -> -- no op
-                nodeTag
+            MusicNoteNode x ->
+                NothingNode
+
+            NothingNode ->
+                NothingNode
     in
         BTreeVaried (map func bTree)
 
@@ -37,14 +40,17 @@ toIsIntPrime (BTreeVaried bTree) =
             IntNode x ->
                 BoolNode (Arithmetic.isPrime x)
 
-            StringNode x -> -- no op
-                nodeTag
+            StringNode x ->
+                NothingNode
 
-            BoolNode x -> -- no op
-                nodeTag
+            BoolNode x ->
+                NothingNode
 
-            MusicScaleNode x -> -- no op
-                nodeTag
+            MusicNoteNode x ->
+                NothingNode
+
+            NothingNode ->
+                NothingNode
     in
         BTreeVaried (map func bTree)
 
@@ -64,8 +70,11 @@ mapVariedTree operand mappers (BTreeVaried bTree) =
                 BoolNode x ->
                     BoolNode (mappers.bool operand x)
 
-                MusicScaleNode x ->
-                    MusicScaleNode x -- todo (mappers.musicScale operand x)
+                MusicNoteNode x ->
+                    MusicNoteNode x -- todo (mappers.musicNote operand x)
+
+                NothingNode ->
+                    NothingNode
     in
         BTreeVaried (map (func operand mappers) bTree)
 

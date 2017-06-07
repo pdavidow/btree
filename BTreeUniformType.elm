@@ -2,7 +2,7 @@ module BTreeUniformType exposing (..)
 
 import BTree exposing (NodeTag(..))
 import BTree exposing (BTree, map, depth, sumInt, sumString, sort)
-import MusicScaleType exposing (MusicScaleType, sortOrder)
+import MusicNote exposing (MusicNote, sortOrder)
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
 import Arithmetic exposing (isPrime)
 
@@ -11,7 +11,7 @@ type BTreeUniformType
     = BTreeInt (BTree Int)
     | BTreeString (BTree String)
     | BTreeBool (BTree Bool)
-    | BTreeMusicScale (BTree MusicScaleType)
+    | BTreeMusicNote (BTree (Maybe MusicNote))
 
 
 toTaggedBTree : BTreeUniformType -> BTree NodeTag
@@ -26,8 +26,18 @@ toTaggedBTree bTreeUniformType =
         BTreeBool bTree ->
             map BoolNode bTree
 
-        BTreeMusicScale bTree ->
-            map MusicScaleNode bTree
+        BTreeMusicNote bTree ->
+            let
+                func : Maybe MusicNote -> NodeTag
+                func mbNote =
+                    case mbNote of
+                        Just note ->
+                            MusicNoteNode note
+
+                        Nothing ->
+                            NothingNode
+            in
+                map func bTree
 
 
 toStringLength : BTreeUniformType -> Maybe BTreeUniformType
@@ -42,7 +52,7 @@ toStringLength bTreeUniformType =
         BTreeBool bTree ->
             Nothing
 
-        BTreeMusicScale bTree ->
+        BTreeMusicNote bTree ->
             Nothing
 
 
@@ -58,7 +68,7 @@ toIsIntPrime bTreeUniformType =
         BTreeBool bTree ->
             Nothing
 
-        BTreeMusicScale bTree ->
+        BTreeMusicNote bTree ->
             Nothing
 
 
@@ -74,8 +84,8 @@ mapUniformTree operand mappers bTreeUniformType =
         BTreeBool bTree ->
             BTreeBool (map (mappers.bool operand) bTree)
 
-        BTreeMusicScale bTree ->
-            BTreeMusicScale bTree -- todo (map (mappers.musicScale operand) bTree)
+        BTreeMusicNote bTree ->
+            BTreeMusicNote (map (mappers.musicNote operand) bTree)
 
 
 incrementNodes : Int -> BTreeUniformType -> BTreeUniformType
@@ -105,7 +115,7 @@ depth bTreeUniformType =
         BTreeBool bTree ->
             BTree.depth bTree
 
-        BTreeMusicScale bTree ->
+        BTreeMusicNote bTree ->
             BTree.depth bTree
 
 
@@ -121,7 +131,7 @@ sumInt bTreeUniformType =
         BTreeBool bTree ->
             Nothing
 
-        BTreeMusicScale bTree ->
+        BTreeMusicNote bTree ->
             Nothing
 
 
@@ -137,7 +147,7 @@ sumString bTreeUniformType =
         BTreeBool bTree ->
             Nothing
 
-        BTreeMusicScale bTree ->
+        BTreeMusicNote bTree ->
             Nothing
 
 
@@ -153,8 +163,8 @@ sort bTreeUniformType =
         BTreeBool bTree ->
             Just (BTreeBool (BTree.sortBy toString bTree))
 
-        BTreeMusicScale bTree ->
-            Just (BTreeMusicScale (BTree.sortBy MusicScaleType.sortOrder bTree))
+        BTreeMusicNote bTree ->
+            Just (BTreeMusicNote (BTree.sortBy MusicNote.sortOrder bTree))
 
 
 removeDuplicates : BTreeUniformType -> BTreeUniformType
@@ -169,5 +179,5 @@ removeDuplicates bTreeUniformType =
         BTreeBool bTree ->
             BTreeBool (BTree.removeDuplicatesBy toString bTree)
 
-        BTreeMusicScale bTree ->
-            BTreeMusicScale (BTree.removeDuplicatesBy MusicScaleType.sortOrder bTree)
+        BTreeMusicNote bTree ->
+            BTreeMusicNote (BTree.removeDuplicatesBy MusicNote.sortOrder bTree)

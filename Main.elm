@@ -33,7 +33,7 @@ import BTree exposing (NodeTag(..))
 import BTree exposing (..)
 import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram)
 import Constants exposing (nothingString)
-import MusicScaleType exposing (MusicScaleType(..))
+import MusicNote exposing (MusicNote(..))
 ------------------------------------------------
 
 
@@ -41,7 +41,7 @@ type alias Model =
     { intTree : BTreeUniformType
     , stringTree : BTreeUniformType
     , boolTree : BTreeUniformType
-    , musicTree : BTreeUniformType
+    , musicNoteTree : BTreeUniformType
     , variedTree : BTreeVariedType
     , intTreeCache : BTreeUniformType
     , stringTreeCache : BTreeUniformType
@@ -57,11 +57,11 @@ type alias Model =
 
 initialModel: Model
 initialModel =
-    { intTree = BTreeInt (fromList [3, 2, 1, 2])
-    , stringTree = BTreeString (fromList ["ccc", "a", "bb", "a"])
+    { intTree = BTreeInt (Node 5 (singleton 4) (Node 3 Empty (singleton 4)))
+    , stringTree = BTreeString (Node "F" (singleton "E") (Node "C#" Empty (singleton "e")))
     , boolTree = BTreeBool (Node True (singleton True) (singleton False))
-    , musicTree = BTreeMusicScale (Node F (singleton E) (Node C_sharp Empty (singleton E)))
-    , variedTree = BTreeVaried (Node (IntNode 123) (singleton (StringNode "abc")) ((Node (BoolNode True)) (singleton (MusicScaleNode C_sharp)) Empty))
+    , musicNoteTree = BTreeMusicNote (Node (Just F) (singleton (Just E)) (Node (Just C_sharp) Empty (singleton (Just E))))
+    , variedTree = BTreeVaried (Node (IntNode 123) (singleton (StringNode "abc")) ((Node (BoolNode True)) (singleton (MusicNoteNode C_sharp)) Empty))
     , intTreeCache = BTreeInt Empty
     , stringTreeCache = BTreeString Empty
     , variedTreeCache = BTreeVaried Empty
@@ -247,7 +247,7 @@ viewTrees model =
     [ bTreeUniformTypeDiagram model.intTree
     , bTreeUniformTypeDiagram model.stringTree
     , bTreeUniformTypeDiagram model.boolTree
-    , bTreeUniformTypeDiagram model.musicTree
+    , bTreeUniformTypeDiagram model.musicNoteTree
     , bTreeVariedTypeDiagram model.variedTree
     ]
 
@@ -272,39 +272,61 @@ viewBody model =
         ]
 
 
+positiveDelta : Model -> Int
+positiveDelta model =
+    abs model.delta
+
+
+positiveExponent : Model -> Int
+positiveExponent model =
+    abs model.exponent
+
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         Increment ->
-            ({model
-                    | intTree = BTreeUniformType.incrementNodes model.delta model.intTree
-                    , stringTree = BTreeUniformType.incrementNodes model.delta model.stringTree
-                    , boolTree = BTreeUniformType.incrementNodes model.delta model.boolTree
-                    , variedTree = BTreeVariedType.incrementNodes model.delta model.variedTree
-            }, Cmd.none)
+            let
+                delta = positiveDelta model
+            in
+                ({model
+                    | intTree = BTreeUniformType.incrementNodes delta model.intTree
+                    , stringTree = BTreeUniformType.incrementNodes delta model.stringTree
+                    , boolTree = BTreeUniformType.incrementNodes delta model.boolTree
+                    , musicNoteTree = BTreeUniformType.incrementNodes delta model.musicNoteTree
+                    , variedTree = BTreeVariedType.incrementNodes delta model.variedTree
+                }, Cmd.none)
 
         Decrement ->
-            ({model
-                | intTree = BTreeUniformType.decrementNodes model.delta model.intTree
-                , stringTree = BTreeUniformType.decrementNodes model.delta model.stringTree
-                , boolTree = BTreeUniformType.decrementNodes model.delta model.boolTree
-                , variedTree = BTreeVariedType.decrementNodes model.delta model.variedTree
-            }, Cmd.none)
+            let
+                delta = positiveDelta model
+            in
+                ({model
+                    | intTree = BTreeUniformType.decrementNodes delta model.intTree
+                    , stringTree = BTreeUniformType.decrementNodes delta model.stringTree
+                    , boolTree = BTreeUniformType.decrementNodes delta model.boolTree
+                    , musicNoteTree = BTreeUniformType.decrementNodes delta model.musicNoteTree
+                    , variedTree = BTreeVariedType.decrementNodes delta model.variedTree
+                }, Cmd.none)
 
         Raise ->
-            ({model
-                | intTree = BTreeUniformType.raiseNodes model.exponent model.intTree
-                , stringTree = BTreeUniformType.raiseNodes model.exponent model.stringTree
-                , boolTree = BTreeUniformType.raiseNodes model.exponent model.boolTree
-                , variedTree = BTreeVariedType.raiseNodes model.exponent model.variedTree
-            }, Cmd.none)
+            let
+                exponent = positiveExponent model
+            in
+                ({model
+                    | intTree = BTreeUniformType.raiseNodes exponent model.intTree
+                    , stringTree = BTreeUniformType.raiseNodes exponent model.stringTree
+                    , boolTree = BTreeUniformType.raiseNodes exponent model.boolTree
+                    , musicNoteTree = BTreeUniformType.raiseNodes exponent model.musicNoteTree
+                    , variedTree = BTreeVariedType.raiseNodes exponent model.variedTree
+                }, Cmd.none)
 
         SortUniformTrees ->
             ({model
                 | intTree = withRollback BTreeUniformType.sort model.intTree
                 , stringTree = withRollback BTreeUniformType.sort model.stringTree
                 , boolTree = withRollback BTreeUniformType.sort model.boolTree
-                , musicTree = withRollback BTreeUniformType.sort model.musicTree
+                , musicNoteTree = withRollback BTreeUniformType.sort model.musicNoteTree
             }, Cmd.none)
 
         RemoveDuplicatesInUniformTrees ->
@@ -312,7 +334,7 @@ update msg model =
                 | intTree = BTreeUniformType.removeDuplicates model.intTree
                 , stringTree = BTreeUniformType.removeDuplicates model.stringTree
                 , boolTree = BTreeUniformType.removeDuplicates model.boolTree
-                , musicTree = BTreeUniformType.removeDuplicates model.musicTree
+                , musicNoteTree = BTreeUniformType.removeDuplicates model.musicNoteTree
             }, Cmd.none)
 
         Delta s ->

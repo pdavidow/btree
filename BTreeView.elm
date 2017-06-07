@@ -8,8 +8,9 @@ import BTreeUniformType exposing (BTreeUniformType(..), toTaggedBTree)
 import BTreeVariedType exposing (BTreeVariedType(..))
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
+import Constants exposing (nothingString)
 
-import Color exposing (Color, green, orange, black, white, yellow, blue, purple, lightCharcoal)
+import Color exposing (Color, green, orange, black, white, yellow, blue, purple, lightCharcoal, red)
 import Collage exposing (group, segment, traced, rotate, move, scale, oval, rect, ngon, filled, outlined, text, rect, polygon, moveY, defaultLine, Form, toForm, LineStyle)
 import Element
 import Html exposing (Html)
@@ -103,11 +104,18 @@ drawNode maybeishNodeTag =
                             , displayString b |> fromString |> style treeNodeStyle |> text |> moveY 4
                             ]
 
-                MusicScaleNode note ->
+                MusicNoteNode note ->
                     group
                         [ ngon 5 35 |> filled (purple)
                         , ngon 5 35 |> outlined treeLineStyle
                         , toString note |> fromString |> style treeNodeStyle |> text |> moveY 4
+                        ]
+
+                NothingNode ->
+                    group
+                        [ oval 50 30 |> filled (red)
+                        , oval 50 30 |> outlined treeLineStyle
+                        , nothingString |> fromString |> style treeNodeStyle |> text |> moveY 4
                         ]
 
         Nothing ->
