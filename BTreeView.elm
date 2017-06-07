@@ -106,12 +106,17 @@ drawNode maybeishNodeTag =
                             , displayString b |> fromString |> style treeNodeStyle |> text |> moveY 4
                             ]
 
-                MusicNoteNode note ->
-                    group
-                        [ ngon 5 25 |> filled (purple)
-                        , ngon 5 25 |> outlined treeLineStyle
-                        , displayString note |> fromString |> style treeNodeStyle |> text |> moveY 4
-                        ]
+                MusicNoteNode mbNote ->
+                    case mbNote of
+                        Just note ->
+                            group
+                                [ ngon 5 25 |> filled (purple)
+                                , ngon 5 25 |> outlined treeLineStyle
+                                , displayString note |> fromString |> style treeNodeStyle |> text |> moveY 4
+                                ]
+
+                        Nothing ->
+                            drawNode (Just NothingNode)
 
                 NothingNode ->
                     group

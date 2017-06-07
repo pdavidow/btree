@@ -354,6 +354,12 @@ all =
             , test "of 2 BTreeBool,  no change" <|
                 \() ->
                     Expect.equal (BTreeBool (Node True Empty (singleton False))) (BTreeUniformType.incrementNodes 8 (BTreeBool (Node True Empty (singleton False))))
+            , test "of empty BTreeMusicNote" <|
+                \() ->
+                    Expect.equal (BTreeMusicNote Empty) (BTreeUniformType.incrementNodes 1 (BTreeMusicNote Empty))
+            , test "of 2 BTreeMusicNote" <|
+                \() ->
+                    Expect.equal ((BTreeMusicNote (Node (Just G_sharp) (singleton (Nothing)) Empty))) (BTreeUniformType.incrementNodes 1 (BTreeMusicNote (Node (Just G) (singleton (Just G_sharp)) Empty)))
             ]
          , describe "BTreeUniformType.decrementNodes"
             [ test "of empty" <|
@@ -371,6 +377,12 @@ all =
             , test "of 2 bool values,  no change" <|
                 \() ->
                     Expect.equal (BTreeBool (Node True Empty (singleton False))) (BTreeUniformType.decrementNodes 8 (BTreeBool (Node True Empty (singleton False))))
+            , test "of empty BTreeMusicNote" <|
+                \() ->
+                    Expect.equal (BTreeMusicNote Empty) (BTreeUniformType.decrementNodes 1 (BTreeMusicNote Empty))
+            , test "of 2 BTreeMusicNote" <|
+                \() ->
+                    Expect.equal ((BTreeMusicNote (Node (Just A) (singleton (Nothing)) Empty))) (BTreeUniformType.decrementNodes 1 (BTreeMusicNote (Node (Just A_sharp) (singleton (Just A)) Empty)))
             ]
          , describe "BTreeUniformType.raiseNodes"
             [ test "of empty" <|
@@ -388,6 +400,12 @@ all =
             , test "of 2 bool values,  no change" <|
                 \() ->
                     Expect.equal (BTreeBool (Node True Empty (singleton False))) (BTreeUniformType.raiseNodes 8 (BTreeBool (Node True Empty (singleton False))))
+            , test "of empty BTreeMusicNote" <|
+                \() ->
+                    Expect.equal (BTreeMusicNote Empty) (BTreeUniformType.decrementNodes 1 (BTreeMusicNote Empty))
+            , test "of 2 BTreeMusicNote" <|
+                \() ->
+                    Expect.equal ((BTreeMusicNote (Node (Just A_sharp) (singleton (Just A)) Empty))) (BTreeUniformType.raiseNodes 1 (BTreeMusicNote (Node (Just A_sharp) (singleton (Just A)) Empty)))
             ]
          , describe "BTreeVariedType.incrementNodes"
             [ test "of empty" <|
@@ -396,9 +414,9 @@ all =
             , test "of singleton" <|
                 \() ->
                     Expect.equal (BTreeVaried (singleton (IntNode 11))) (BTreeVariedType.incrementNodes 1 (BTreeVaried (singleton (IntNode 10))))
-            , test "of 3 values" <|
+            , test "of 4 values" <|
                 \() ->
-                    Expect.equal (BTreeVaried (Node (StringNode "a +3") (singleton (IntNode 4)) (singleton (BoolNode False)))) (BTreeVariedType.incrementNodes 3 (BTreeVaried (Node (StringNode "a") (singleton (IntNode 1)) (singleton (BoolNode True)))))
+                    Expect.equal (BTreeVaried (Node (StringNode "abcde +3") (singleton (IntNode 14)) (Node (MusicNoteNode (Just G)) (singleton (BoolNode False)) Empty))) (BTreeVariedType.incrementNodes 3 (BTreeVaried (Node (StringNode "abcde") (singleton (IntNode 11)) (Node (MusicNoteNode (Just E)) (singleton (BoolNode True)) Empty))))
             ]
          , describe "BTreeVariedType.decrementNodes"
             [ test "of empty" <|
@@ -407,9 +425,9 @@ all =
             , test "of singleton" <|
                 \() ->
                     Expect.equal (BTreeVaried (singleton (IntNode 9))) (BTreeVariedType.decrementNodes 1 (BTreeVaried (singleton (IntNode 10))))
-            , test "of 3 values" <|
+            , test "of 4 values" <|
                 \() ->
-                    Expect.equal (BTreeVaried (Node (StringNode "a -4") (singleton (IntNode -3)) (singleton (BoolNode True)))) (BTreeVariedType.decrementNodes 4 (BTreeVaried (Node (StringNode "a") (singleton (IntNode 1)) (singleton (BoolNode True)))))
+                    Expect.equal (BTreeVaried (Node (StringNode "abcde -3") (singleton (IntNode 8)) (Node (MusicNoteNode (Just C_sharp)) (singleton (BoolNode False)) Empty))) (BTreeVariedType.decrementNodes 3 (BTreeVaried (Node (StringNode "abcde") (singleton (IntNode 11)) (Node (MusicNoteNode (Just E)) (singleton (BoolNode True)) Empty))))
             ]
          , describe "BTreeVariedType.raiseNodes"
             [ test "of empty" <|
@@ -418,9 +436,9 @@ all =
             , test "of singleton" <|
                 \() ->
                     Expect.equal (BTreeVaried (singleton (IntNode 8))) (BTreeVariedType.raiseNodes 3 (BTreeVaried (singleton (IntNode 2))))
-            , test "of 3 values" <|
+            , test "of 4 values" <|
                 \() ->
-                    Expect.equal (BTreeVaried (Node (StringNode "a ^3") (singleton (IntNode 125)) (singleton (BoolNode False)))) (BTreeVariedType.raiseNodes 3 (BTreeVaried (Node (StringNode "a") (singleton (IntNode 5)) (singleton (BoolNode True)))))
+                    Expect.equal (BTreeVaried (Node (StringNode "abcde ^3") (singleton (IntNode 8)) (Node (MusicNoteNode (Just E)) (singleton (BoolNode False)) Empty))) (BTreeVariedType.raiseNodes 3 (BTreeVaried (Node (StringNode "abcde") (singleton (IntNode 2)) (Node (MusicNoteNode (Just E)) (singleton (BoolNode True)) Empty))))
             ]
          , describe "BTreeUniformType.toStringLength"
             [ test "of empty BTreeString" <|
@@ -483,7 +501,7 @@ all =
                     Expect.equal (BTreeVaried (singleton (IntNode 3))) (BTreeVariedType.toStringLength (BTreeVaried (singleton (StringNode "abc"))))
             , test "of 4 values" <|
                 \() ->
-                    Expect.equal (BTreeVaried (Node (IntNode 5) (singleton NothingNode) (Node NothingNode (singleton NothingNode) Empty))) (BTreeVariedType.toStringLength (BTreeVaried (Node (StringNode "abcde") (singleton (IntNode 1)) (Node (MusicNoteNode E) (singleton (BoolNode True)) Empty))))
+                    Expect.equal (BTreeVaried (Node (IntNode 5) (singleton NothingNode) (Node NothingNode (singleton NothingNode) Empty))) (BTreeVariedType.toStringLength (BTreeVaried (Node (StringNode "abcde") (singleton (IntNode 1)) (Node (MusicNoteNode (Just E)) (singleton (BoolNode True)) Empty))))
             ]
          , describe "BTreeVariedType.toIsIntPrime"
             [ test "of empty" <|
@@ -494,7 +512,7 @@ all =
                     Expect.equal (BTreeVaried (singleton (BoolNode False))) (BTreeVariedType.toIsIntPrime (BTreeVaried (singleton (IntNode 1))))
             , test "of 4 values" <|
                 \() ->
-                    Expect.equal (BTreeVaried (Node NothingNode (singleton (BoolNode True)) (Node NothingNode (singleton NothingNode) Empty))) (BTreeVariedType.toIsIntPrime (BTreeVaried (Node (StringNode "abcde") (singleton (IntNode 11)) (Node (MusicNoteNode E) (singleton (BoolNode True)) Empty))))
+                    Expect.equal (BTreeVaried (Node NothingNode (singleton (BoolNode True)) (Node NothingNode (singleton NothingNode) Empty))) (BTreeVariedType.toIsIntPrime (BTreeVaried (Node (StringNode "abcde") (singleton (IntNode 11)) (Node (MusicNoteNode (Just E)) (singleton (BoolNode True)) Empty))))
             ]
          , describe "BTreeUniformType.sort"
             [ test "of empty BTreeString" <|

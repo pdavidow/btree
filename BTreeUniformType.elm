@@ -54,17 +54,7 @@ toTagged bTreeUniformType =
             map BoolNode bTree
 
         BTreeMusicNote bTree ->
-            let
-                func : Maybe MusicNote -> NodeTag
-                func mbNote =
-                    case mbNote of
-                        Just note ->
-                            MusicNoteNode note
-
-                        Nothing ->
-                            NothingNode
-            in
-                map func bTree
+            map MusicNoteNode bTree
 
         BTreeNothing bTree ->
             map (\a -> NothingNode) bTree

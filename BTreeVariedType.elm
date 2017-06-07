@@ -71,7 +71,7 @@ mapVariedTree operand mappers (BTreeVaried bTree) =
                     BoolNode (mappers.bool operand x)
 
                 MusicNoteNode x ->
-                    MusicNoteNode x -- todo (mappers.musicNote operand x)
+                    MusicNoteNode (mappers.musicNote operand x)
 
                 NothingNode ->
                     NothingNode

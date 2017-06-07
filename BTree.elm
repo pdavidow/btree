@@ -16,7 +16,7 @@ type NodeTag
     = IntNode Int
     | StringNode String
     | BoolNode Bool
-    | MusicNoteNode MusicNote
+    | MusicNoteNode (Maybe MusicNote)
     | NothingNode
 
 
