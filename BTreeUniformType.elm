@@ -2,7 +2,7 @@ module BTreeUniformType exposing (..)
 
 import BTree exposing (NodeTag(..))
 import BTree exposing (BTree, depth, map, removeDuplicatesBy, singleton, sumInt , sumString , sort, sortBy)
-import MusicNote exposing (MusicNote, sortOrder)
+import MusicNote exposing (MusicNote, mbSortOrder)
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
 import Arithmetic exposing (isPrime)
 
@@ -202,7 +202,7 @@ sort bTreeUniformType =
             Just (BTreeBool (BTree.sortBy toString bTree))
 
         BTreeMusicNote bTree ->
-            Just (BTreeMusicNote (BTree.sortBy MusicNote.sortOrder bTree))
+            Just (BTreeMusicNote (BTree.sortBy MusicNote.mbSortOrder bTree))
 
         BTreeNothing bTree ->
             Just bTreeUniformType
@@ -221,7 +221,7 @@ removeDuplicates bTreeUniformType =
             BTreeBool (BTree.removeDuplicatesBy toString bTree)
 
         BTreeMusicNote bTree ->
-            BTreeMusicNote (BTree.removeDuplicatesBy MusicNote.sortOrder bTree)
+            BTreeMusicNote (BTree.removeDuplicatesBy MusicNote.mbSortOrder bTree)
 
         BTreeNothing bTree ->
             BTreeNothing (singleton OnlyNothing)
