@@ -1,7 +1,8 @@
-module ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
+module ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers, safeIsPrime)
 
-import Arithmetic exposing (isEven)
+import Arithmetic exposing (isEven, isPrime)
 import MusicNote exposing (MusicNote, (:+:), (:-:))
+import Constants exposing (maxSafeInt)
 
 
 type alias Mappers =
@@ -84,3 +85,12 @@ decrementMusicNote delta mbNote =
 raiseMusicNote : Int -> Maybe MusicNote -> Maybe MusicNote
 raiseMusicNote exp mbNote =
     mbNote
+
+
+-- https://github.com/elm-lang/elm-compiler/issues/1246
+safeIsPrime : Int -> Maybe Bool
+safeIsPrime n =
+    if (abs n) > maxSafeInt then
+        Debug.log (("abs n" ++ (toString (abs n)) toString n) Nothing
+    else
+        Just (Arithmetic.isPrime (Debug.log "Just n" n))

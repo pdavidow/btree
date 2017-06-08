@@ -9,6 +9,7 @@ import BTreeUniformType exposing (toTagged, incrementNodes, decrementNodes, rais
 import BTreeUniformType exposing (BTreeUniformType(..))
 import BTreeVariedType exposing (BTreeVariedType(..), incrementNodes, decrementNodes, raiseNodes)
 import MusicNote exposing (MusicNote(..), (:+:), (:-:), displayString, sortOrder)
+import Constants exposing (maxSafeInt)
 
 import Test exposing (..)
 import Expect
@@ -579,6 +580,9 @@ all =
             , test "of 2 values BTreeInt" <|
                 \() ->
                     Expect.equal (Just (BTreeBool (Node False Empty (singleton True)))) (BTreeUniformType.toIsIntPrime (BTreeInt (fromList [12, 13])))
+            --, test "of 1 unsafe BTreeInt" <|
+              --  \() ->
+                --    Expect.equal (Just (BTreeBool (Node False Empty (singleton True)))) (BTreeUniformType.toIsIntPrime (BTreeInt (fromList [maxSafeInt + 1])))
             , test "of empty BTreeBool" <|
                 \() ->
                     Expect.equal Nothing (BTreeUniformType.toIsIntPrime (BTreeBool Empty))
@@ -613,6 +617,9 @@ all =
             , test "of 4 values" <|
                 \() ->
                     Expect.equal (BTreeVaried (Node NothingNode (singleton (BoolNode True)) (Node NothingNode (singleton NothingNode) Empty))) (BTreeVariedType.toIsIntPrime (BTreeVaried (Node (StringNode "abcde") (singleton (IntNode 11)) (Node (MusicNoteNode (Just E)) (singleton (BoolNode True)) Empty))))
+            , test "of unsafe singleton" <|
+                \() ->
+                    Expect.equal (BTreeVaried (singleton (NothingNode))) (BTreeVariedType.toIsIntPrime (BTreeVaried (singleton (IntNode (maxSafeInt + 1)))))
             ]
          , describe "BTreeUniformType.sort"
             [ test "of empty BTreeString" <|

@@ -34,6 +34,7 @@ import BTree exposing (..)
 import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram)
 import Constants exposing (nothingString)
 import MusicNote exposing (MusicNote(..))
+import Constants exposing (maxSafeInt)
 ------------------------------------------------
 
 
@@ -59,7 +60,7 @@ type alias Model =
 
 initialModel: Model
 initialModel =
-    { intTree = BTreeInt (Node 5 (singleton 4) (Node 3 Empty (singleton 4)))
+    { intTree = BTreeInt (Node 5 (singleton 4) (Node maxSafeInt Empty (singleton 4)))
     , stringTree = BTreeString (Node "Q 123" (singleton "E") (Node "Q 123" Empty (singleton "ee")))
     , boolTree = BTreeBool (Node True (singleton True) (singleton False))
     , musicNoteTree = BTreeMusicNote (Node (Just F) (singleton (Just E)) (Node (Just C_sharp) Empty (singleton (Just E))))

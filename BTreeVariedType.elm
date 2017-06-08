@@ -2,9 +2,8 @@ module BTreeVariedType exposing (..)
 
 import BTree exposing (BTree, map)
 import BTree exposing (NodeTag(..))
-import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
+import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers, safeIsPrime)
 import Arithmetic exposing (isPrime)
-
 
 type BTreeVariedType = BTreeVaried (BTree NodeTag)
 
@@ -38,7 +37,11 @@ toIsIntPrime (BTreeVaried bTree) =
         func : NodeTag -> NodeTag
         func nodeTag = case nodeTag of
             IntNode x ->
-                BoolNode (Arithmetic.isPrime x)
+                case safeIsPrime x of
+                    Just bool ->
+                        BoolNode bool
+                    Nothing ->
+                        NothingNode
 
             StringNode x ->
                 NothingNode
