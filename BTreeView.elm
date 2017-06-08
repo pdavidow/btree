@@ -120,8 +120,8 @@ drawNode mbNodeTag =
 
                 NothingNode ->
                     group
-                        [ oval 50 50 |> filled (red)
-                        , oval 50 50 |> outlined treeLineStyle
+                        [ oval 40 40 |> filled (red)
+                        , oval 40 40 |> outlined treeLineStyle
                         , nothingString |> fromString |> style treeNodeStyle |> text |> moveY 4
                         ]
 

@@ -425,17 +425,29 @@ unCacheAllTrees model =
     }
 
 
+changeUniformTrees : (BTreeUniformType -> BTreeUniformType) -> Model -> Model
+changeUniformTrees func model =
+    {model
+        | intTree = func model.intTree
+        , stringTree = func model.stringTree
+        , boolTree = func model.boolTree
+        , musicNoteTree = func model.musicNoteTree
+    }
+
+
+changeVariedTrees : (BTreeVariedType -> BTreeVariedType) -> Model -> Model
+changeVariedTrees func model =
+    {model
+        | variedTree = func model.variedTree
+    }
+
+
 shiftUniformTrees : Int -> (Int -> BTreeUniformType -> BTreeUniformType) -> Model -> Model
 shiftUniformTrees operand func model =
     let
         shift = func operand
     in
-        {model
-            | intTree = shift model.intTree
-            , stringTree = shift model.stringTree
-            , boolTree = shift model.boolTree
-            , musicNoteTree = shift model.musicNoteTree
-        }
+        changeUniformTrees shift model
 
 
 shiftVariedTrees : Int -> (Int -> BTreeVariedType -> BTreeVariedType) -> Model -> Model
@@ -443,9 +455,7 @@ shiftVariedTrees operand func model =
     let
         shift = func operand
     in
-        {model
-            | variedTree = shift model.variedTree
-        }
+        changeVariedTrees shift model
 
 
 sortUniformTrees : Model -> Model
@@ -453,12 +463,7 @@ sortUniformTrees model =
     let
         func = withRollback BTreeUniformType.sort
     in
-        {model
-            | intTree = func model.intTree
-            , stringTree = func model.stringTree
-            , boolTree = func model.boolTree
-            , musicNoteTree = func model.musicNoteTree
-        }
+        changeUniformTrees func model
 
 
 removeDuplicatesUniformTrees : Model -> Model
@@ -466,32 +471,20 @@ removeDuplicatesUniformTrees model =
     let
         func = BTreeUniformType.removeDuplicates
     in
-        {model
-            | intTree = func model.intTree
-            , stringTree = func model.stringTree
-            , boolTree = func model.boolTree
-            , musicNoteTree = func model.musicNoteTree
-        }
+        changeUniformTrees func model
 
 
 morphUniformTrees : (BTreeUniformType -> Maybe BTreeUniformType) -> Model -> Model
 morphUniformTrees func model =
     let
-        defaultMorph tree = defaultMorphUniformTree func tree
+        defaultMorph = \tree -> defaultMorphUniformTree func tree
     in
-        {model
-            | intTree = defaultMorph model.intTree
-            , stringTree = defaultMorph model.stringTree
-            , boolTree = defaultMorph model.boolTree
-            , musicNoteTree = defaultMorph model.musicNoteTree
-        }
+        changeUniformTrees defaultMorph model
 
 
 morphVariedTrees : (BTreeVariedType -> BTreeVariedType) -> Model -> Model
 morphVariedTrees func model =
-    {model
-        | variedTree = func model.variedTree
-    }
+    changeVariedTrees func model
 
 
 defaultMorphUniformTree : (BTreeUniformType -> Maybe BTreeUniformType) -> BTreeUniformType -> BTreeUniformType
