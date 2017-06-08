@@ -8,7 +8,7 @@ import TreeDiagram as TD exposing (node)
 import BTreeUniformType exposing (toTagged, incrementNodes, decrementNodes, raiseNodes)
 import BTreeUniformType exposing (BTreeUniformType(..))
 import BTreeVariedType exposing (BTreeVariedType(..), incrementNodes, decrementNodes, raiseNodes)
-import MusicNote exposing (MusicNote(..), (:+:), (:-:), displayString)
+import MusicNote exposing (MusicNote(..), (:+:), (:-:), displayString, sortOrder)
 
 import Test exposing (..)
 import Expect
@@ -52,6 +52,41 @@ all =
                         target = singleton currentValue
                     in
                         Expect.equal (Node 'b' Empty (singleton 'b')) (insert newValue target)
+            ]
+        , describe "insertBy"
+            [ test "insertBy into empty tree" <|
+                \() ->
+                    let
+                        target = Empty
+                        newValue = Just A
+                    in
+                        Expect.equal (singleton newValue) (insertBy (MusicNote.sortOrder) newValue target)
+            , test "insert larger value on right" <|
+                 \() ->
+                    let
+                        currentValue = Just B
+                        newValue = Just C
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue Empty newChild) (insertBy (MusicNote.sortOrder) newValue target)
+            , test "insert smaller value on left" <|
+                 \() ->
+                    let
+                        currentValue = Just B
+                        newValue = Just A
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue newChild Empty) (insertBy (MusicNote.sortOrder) newValue target)
+            , test "insert duplicate" <|
+                 \() ->
+                    let
+                        currentValue = Just B
+                        newValue = Just B
+                        target = singleton currentValue
+                    in
+                        Expect.equal (Node (Just B) Empty (singleton (Just B))) (insertBy (MusicNote.sortOrder) newValue target)
             ]
         , describe "fromList"
             [ test "from empty list" <|
