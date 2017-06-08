@@ -293,37 +293,31 @@ update msg model =
             let
                 delta = positiveDelta model
             in
-                ({model
-                    | intTree = BTreeUniformType.incrementNodes delta model.intTree
-                    , stringTree = BTreeUniformType.incrementNodes delta model.stringTree
-                    , boolTree = BTreeUniformType.incrementNodes delta model.boolTree
-                    , musicNoteTree = BTreeUniformType.incrementNodes delta model.musicNoteTree
-                    , variedTree = BTreeVariedType.incrementNodes delta model.variedTree
-                }, Cmd.none)
+                ( model
+                    |> shiftUniformTrees delta BTreeUniformType.incrementNodes
+                    |> shiftVariedTrees delta BTreeVariedType.incrementNodes
+                , Cmd.none
+                )
 
         Decrement ->
             let
                 delta = positiveDelta model
             in
-                ({model
-                    | intTree = BTreeUniformType.decrementNodes delta model.intTree
-                    , stringTree = BTreeUniformType.decrementNodes delta model.stringTree
-                    , boolTree = BTreeUniformType.decrementNodes delta model.boolTree
-                    , musicNoteTree = BTreeUniformType.decrementNodes delta model.musicNoteTree
-                    , variedTree = BTreeVariedType.decrementNodes delta model.variedTree
-                }, Cmd.none)
+                ( model
+                    |> shiftUniformTrees delta BTreeUniformType.decrementNodes
+                    |> shiftVariedTrees delta BTreeVariedType.decrementNodes
+                , Cmd.none
+                )
 
         Raise ->
             let
                 exponent = positiveExponent model
             in
-                ({model
-                    | intTree = BTreeUniformType.raiseNodes exponent model.intTree
-                    , stringTree = BTreeUniformType.raiseNodes exponent model.stringTree
-                    , boolTree = BTreeUniformType.raiseNodes exponent model.boolTree
-                    , musicNoteTree = BTreeUniformType.raiseNodes exponent model.musicNoteTree
-                    , variedTree = BTreeVariedType.raiseNodes exponent model.variedTree
-                }, Cmd.none)
+                ( model
+                    |> shiftUniformTrees exponent BTreeUniformType.raiseNodes
+                    |> shiftVariedTrees exponent BTreeVariedType.raiseNodes
+                , Cmd.none
+                )
 
         SortUniformTrees ->
             ({model
@@ -433,6 +427,30 @@ unCacheAllTrees model =
         , musicNoteTree = model.musicNoteTreeCache
         , variedTree = model.variedTreeCache
     }
+
+
+shiftUniformTrees : Int -> (Int -> BTreeUniformType -> BTreeUniformType) -> Model -> Model
+shiftUniformTrees operand func model =
+    let
+        shift = func operand
+    in
+        {model
+            | intTree = shift model.intTree
+            , stringTree = shift model.stringTree
+            , boolTree = shift model.boolTree
+            , musicNoteTree = shift model.musicNoteTree
+        }
+
+
+
+shiftVariedTrees : Int -> (Int -> BTreeVariedType -> BTreeVariedType) -> Model -> Model
+shiftVariedTrees operand func model =
+    let
+        shift = func operand
+    in
+        {model
+            | variedTree = shift model.variedTree
+        }
 
 
 morphUniformTrees : (BTreeUniformType -> Maybe BTreeUniformType) -> Model -> Model

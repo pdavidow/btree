@@ -116,7 +116,7 @@ drawNode mbNodeTag =
                                 ]
 
                         Nothing ->
-                            drawNode (Just NothingNode)
+                            drawNothingNode
 
                 NothingNode ->
                     group
@@ -127,6 +127,11 @@ drawNode mbNodeTag =
 
         Nothing ->
             toForm Element.empty
+
+
+drawNothingNode : Form
+drawNothingNode =
+    drawNode (Just NothingNode)
 
 
 drawEdge : ( Float, Float ) -> Form
