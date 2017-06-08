@@ -410,6 +410,28 @@ all =
                 \() ->
                     Expect.equal (fromListBy (MusicNote.sortOrder) [A, B, D, E, G]) (BTree.sortBy (MusicNote.sortOrder) (fromListBy (MusicNote.sortOrder) [D, A, E, G, B]))
             ]
+         , describe "BTree.removeDuplicates"
+            [ test "of empty" <|
+                \() ->
+                    Expect.equal (Empty) (BTree.removeDuplicates Empty)
+            , test "of singleton" <|
+                \() ->
+                    Expect.equal (singleton 1) (BTree.removeDuplicates (singleton 1))
+            , test "of 5 values" <|
+                \() ->
+                    Expect.equal (fromList [4, 1, 3, 5]) (BTree.removeDuplicates (fromList [4, 1, 3, 5, 1]))
+            ]
+         , describe "BTree.removeDuplicatesBy"
+            [ test "of empty" <|
+                \() ->
+                    Expect.equal (Empty) (BTree.removeDuplicatesBy (MusicNote.sortOrder) Empty)
+            , test "of singleton" <|
+                \() ->
+                    Expect.equal (singleton A) (BTree.removeDuplicatesBy (MusicNote.sortOrder) (singleton A))
+            , test "of 5 values" <|
+                \() ->
+                    Expect.equal (fromListBy (MusicNote.sortOrder) [D, A, E, B]) (BTree.removeDuplicatesBy (MusicNote.sortOrder) (fromListBy (MusicNote.sortOrder) [D, A, E, A, B]))
+            ]
          , describe "BTreeUniformType.incrementNodes"
             [ test "of empty BTreeInt" <|
                 \() ->
