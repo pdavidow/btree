@@ -60,7 +60,7 @@ type alias Model =
 initialModel: Model
 initialModel =
     { intTree = BTreeInt (Node 5 (singleton 4) (Node 3 Empty (singleton 4)))
-    , stringTree = BTreeString (Node "Q" (singleton "E") (Node "CC" Empty (singleton "eee")))
+    , stringTree = BTreeString (Node "Q 123" (singleton "E") (Node "Q 123" Empty (singleton "ee")))
     , boolTree = BTreeBool (Node True (singleton True) (singleton False))
     , musicNoteTree = BTreeMusicNote (Node (Just F) (singleton (Just E)) (Node (Just C_sharp) Empty (singleton (Just E))))
     , variedTree = BTreeVaried (Node (IntNode 123) (singleton (StringNode "abc")) ((Node (BoolNode True)) (singleton (MusicNoteNode (Just C_sharp))) Empty))
@@ -291,49 +291,45 @@ update msg model =
     case msg of
         Increment ->
             let
-                delta = positiveDelta model
+                operand = positiveDelta model
             in
                 ( model
-                    |> shiftUniformTrees delta BTreeUniformType.incrementNodes
-                    |> shiftVariedTrees delta BTreeVariedType.incrementNodes
+                    |> shiftUniformTrees operand BTreeUniformType.incrementNodes
+                    |> shiftVariedTrees operand BTreeVariedType.incrementNodes
                 , Cmd.none
                 )
 
         Decrement ->
             let
-                delta = positiveDelta model
+                operand = positiveDelta model
             in
                 ( model
-                    |> shiftUniformTrees delta BTreeUniformType.decrementNodes
-                    |> shiftVariedTrees delta BTreeVariedType.decrementNodes
+                    |> shiftUniformTrees operand BTreeUniformType.decrementNodes
+                    |> shiftVariedTrees operand BTreeVariedType.decrementNodes
                 , Cmd.none
                 )
 
         Raise ->
             let
-                exponent = positiveExponent model
+                operand = positiveExponent model
             in
                 ( model
-                    |> shiftUniformTrees exponent BTreeUniformType.raiseNodes
-                    |> shiftVariedTrees exponent BTreeVariedType.raiseNodes
+                    |> shiftUniformTrees operand BTreeUniformType.raiseNodes
+                    |> shiftVariedTrees operand BTreeVariedType.raiseNodes
                 , Cmd.none
                 )
 
         SortUniformTrees ->
-            ({model
-                | intTree = withRollback BTreeUniformType.sort model.intTree
-                , stringTree = withRollback BTreeUniformType.sort model.stringTree
-                , boolTree = withRollback BTreeUniformType.sort model.boolTree
-                , musicNoteTree = withRollback BTreeUniformType.sort model.musicNoteTree
-            }, Cmd.none)
+            ( model
+                |> sortUniformTrees
+            , Cmd.none
+            )
 
         RemoveDuplicatesInUniformTrees ->
-            ({model
-                | intTree = BTreeUniformType.removeDuplicates model.intTree
-                , stringTree = BTreeUniformType.removeDuplicates model.stringTree
-                , boolTree = BTreeUniformType.removeDuplicates model.boolTree
-                , musicNoteTree = BTreeUniformType.removeDuplicates model.musicNoteTree
-            }, Cmd.none)
+            ( model
+                |> removeDuplicatesUniformTrees
+            , Cmd.none
+            )
 
         Delta s ->
             ({model | delta = intFromInput s
@@ -442,7 +438,6 @@ shiftUniformTrees operand func model =
         }
 
 
-
 shiftVariedTrees : Int -> (Int -> BTreeVariedType -> BTreeVariedType) -> Model -> Model
 shiftVariedTrees operand func model =
     let
@@ -450,6 +445,32 @@ shiftVariedTrees operand func model =
     in
         {model
             | variedTree = shift model.variedTree
+        }
+
+
+sortUniformTrees : Model -> Model
+sortUniformTrees model =
+    let
+        func = withRollback BTreeUniformType.sort
+    in
+        {model
+            | intTree = func model.intTree
+            , stringTree = func model.stringTree
+            , boolTree = func model.boolTree
+            , musicNoteTree = func model.musicNoteTree
+        }
+
+
+removeDuplicatesUniformTrees : Model -> Model
+removeDuplicatesUniformTrees model =
+    let
+        func = BTreeUniformType.removeDuplicates
+    in
+        {model
+            | intTree = func model.intTree
+            , stringTree = func model.stringTree
+            , boolTree = func model.boolTree
+            , musicNoteTree = func model.musicNoteTree
         }
 
 
