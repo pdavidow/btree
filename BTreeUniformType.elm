@@ -1,4 +1,4 @@
-module BTreeUniformType exposing (BTreeUniformType, BTreeUniformType(..), toTagged, toStringLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, depth, sumInt, sumString, sort, removeDuplicates)
+module BTreeUniformType exposing (BTreeUniformType, BTreeUniformType(..), OnlyNothing(..), toNothing, toTagged, toStringLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, depth, sumInt, sumString, sort, removeDuplicates)
 
 import BTree exposing (NodeTag(..))
 import BTree exposing (BTree, depth, map, removeDuplicatesBy, singleton, sumInt , sumString , sort, sortBy)
