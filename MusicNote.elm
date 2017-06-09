@@ -1,4 +1,4 @@
-module MusicNote exposing (MusicNote(..), (:+:), (:-:), displayString, mbSortOrder, sortOrder)
+module MusicNote exposing (MusicNote(..), sortOrder, mbSortOrder, (:+:), (:-:), displayString)
 
 import Array.Hamt as Array exposing (..)
 import List.Extra exposing (elemIndex)
