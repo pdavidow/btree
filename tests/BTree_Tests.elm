@@ -14,141 +14,12 @@ import String
 bTree : Test
 bTree =
     describe "BTree module"
-        [ describe "insert"
-            [ test "insert into empty tree" <|
+        [ describe "BTree.singleton"
+            [ test "singleton" <|
                 \() ->
-                    let
-                        target = Empty
-                        newValue = 1
-                    in
-                        Expect.equal (singleton newValue) (insert newValue target)
-            , test "insert larger value on right" <|
-                 \() ->
-                    let
-                        currentValue = 'b'
-                        newValue = 'c'
-                        target = singleton currentValue
-                        newChild = singleton newValue
-                    in
-                        Expect.equal (Node currentValue Empty newChild) (insert newValue target)
-            , test "insert smaller value on left" <|
-                 \() ->
-                    let
-                        currentValue = 'b'
-                        newValue = 'a'
-                        target = singleton currentValue
-                        newChild = singleton newValue
-                    in
-                        Expect.equal (Node currentValue newChild Empty) (insert newValue target)
-            , test "insert duplicate" <|
-                 \() ->
-                    let
-                        currentValue = 'b'
-                        newValue = 'b'
-                        target = singleton currentValue
-                    in
-                        Expect.equal (Node 'b' Empty (singleton 'b')) (insert newValue target)
+                    Expect.equal (Node 1 Empty Empty) (singleton 1)
             ]
-        , describe "insertBy"
-            [ test "insertBy into empty tree" <|
-                \() ->
-                    let
-                        target = Empty
-                        newValue = A
-                    in
-                        Expect.equal (singleton newValue) (insertBy (MusicNote.sortOrder) newValue target)
-            , test "insert larger value on right" <|
-                 \() ->
-                    let
-                        currentValue = B
-                        newValue = C
-                        target = singleton currentValue
-                        newChild = singleton newValue
-                    in
-                        Expect.equal (Node currentValue Empty newChild) (insertBy (MusicNote.sortOrder) newValue target)
-            , test "insert smaller value on left" <|
-                 \() ->
-                    let
-                        currentValue = B
-                        newValue = A
-                        target = singleton currentValue
-                        newChild = singleton newValue
-                    in
-                        Expect.equal (Node currentValue newChild Empty) (insertBy (MusicNote.sortOrder) newValue target)
-            , test "insert duplicate" <|
-                 \() ->
-                    let
-                        currentValue = B
-                        newValue = B
-                        target = singleton currentValue
-                    in
-                        Expect.equal (Node B Empty (singleton B)) (insertBy (MusicNote.sortOrder) newValue target)
-            ]
-        , describe "fromList"
-            [ test "from empty list" <|
-                \() ->
-                    []
-                        |> fromList
-                        |> Expect.equal Empty
-            , test "from single element list" <|
-                \() ->
-                    ['a']
-                        |> fromList
-                        |> Expect.equal (singleton 'a')
-            , test "from ordered-ascending list" <|
-                \() ->
-                    ['a', 'b', 'c']
-                        |> fromList
-                        |> Expect.equal (Node 'a' Empty (Node 'b' Empty (singleton 'c')))
-            , test "from ordered-descending list" <|
-                \() ->
-                    ['c', 'b', 'a']
-                        |> fromList
-                        |> Expect.equal (Node 'c' (Node 'b' (singleton 'a') Empty) Empty)
-            , test "from unordered list" <|
-                \() ->
-                    ['c', 'a', 'b']
-                        |> fromList
-                        |> Expect.equal (Node 'c' (Node 'a' Empty (singleton 'b')) Empty)
-            , test "from list with duplications" <|
-                \() ->
-                    ['a', 'b', 'b']
-                        |> fromList
-                        |> Expect.equal (Node 'a' Empty (Node 'b' Empty (singleton 'b')))
-            ]
-        , describe "fromListBy"
-            [ test "from empty list" <|
-                \() ->
-                    []
-                        |> fromListBy (MusicNote.sortOrder)
-                        |> Expect.equal Empty
-            , test "from single element list" <|
-                \() ->
-                    [A]
-                        |> fromListBy (MusicNote.sortOrder)
-                        |> Expect.equal (singleton A)
-            , test "from ordered-ascending list" <|
-                \() ->
-                    [A, B, C]
-                        |> fromListBy (MusicNote.sortOrder)
-                        |> Expect.equal (Node A Empty (Node B Empty (singleton C)))
-            , test "from ordered-descending list" <|
-                \() ->
-                    [C, B, A]
-                        |> fromListBy (MusicNote.sortOrder)
-                        |> Expect.equal (Node C (Node B (singleton A) Empty) Empty)
-            , test "from unordered list" <|
-                \() ->
-                    [C, A, B]
-                        |> fromListBy (MusicNote.sortOrder)
-                        |> Expect.equal (Node C (Node A Empty (singleton B)) Empty)
-            , test "from list with duplications" <|
-                \() ->
-                    [A, B, B]
-                        |> fromListBy (MusicNote.sortOrder)
-                        |> Expect.equal (Node A Empty (Node B Empty (singleton B)))
-            ]
-        , describe "depth"
+        , describe "BTree.depth"
             [ test "of empty" <|
                 \() ->
                     Empty
@@ -167,7 +38,7 @@ bTree =
                         |> depth
                         |> Expect.equal 3
             ]
-        , describe "map"
+        , describe "BTree.map"
             [ test "of empty" <|
                 \() ->
                     Empty
@@ -186,7 +57,7 @@ bTree =
                         |> map (\n -> n ^ 2)
                         |> Expect.equal (fromList [1, 4, 9])
             ]
-        , describe "sum"
+        , describe "BTree.sum"
             [ test "of empty" <|
                 \() ->
                     Empty
@@ -205,26 +76,7 @@ bTree =
                         |> sum
                         |> Expect.equal 6
             ]
-        , describe "sumString"
-            [ test "of empty" <|
-                \() ->
-                    Empty
-                        |> sumString
-                        |> Expect.equal ""
-            , test "of singleton" <|
-                \() ->
-                    "abc"
-                        |> singleton
-                        |> sumString
-                        |> Expect.equal "abc"
-            , test "of 3 levels" <|
-                \() ->
-                    ["abc", "def", "ghi"]
-                        |> fromList
-                        |> sumString
-                        |> Expect.equal "ghidefabc"
-            ]
-        , describe "flatten"
+        , describe "BTree.flatten"
             [ test "of empty" <|
                 \() ->
                     let
@@ -261,7 +113,7 @@ bTree =
                     in
                         Expect.equal (list) (flatten tree)
             ]
-        , describe "isElement"
+        , describe "BTree.isElement"
             [ test "of empty" <|
                 \() ->
                     Expect.equal (False) (isElement 1 Empty)
@@ -300,7 +152,7 @@ bTree =
                     in
                         Expect.equal (False) (isElement 4 tree)
             ]
-        , describe "fold"
+        , describe "BTree.fold"
             [ test "of empty" <|
                 \() ->
                     let
@@ -334,19 +186,80 @@ bTree =
                         tree = fromList [4, 7, 5, 6, 1]
                     in
                         Expect.equal (sum tree) (sumUsingFold tree)
-            , test "of 'Flatten a tree into a list'" <|
+        , describe "BTree.sumUsingFold"
+            [ test "of empty" <|
+                \() ->
+                    Empty
+                        |> sumUsingFold
+                        |> Expect.equal 0
+            , test "of singleton" <|
+                \() ->
+                    1
+                        |> singleton
+                        |> sumUsingFold
+                        |> Expect.equal 1
+            , test "of 3 levels" <|
+                \() ->
+                    [1, 2, 3]
+                        |> fromList
+                        |> sumUsingFold
+                        |> Expect.equal 6
+            ]
+        , describe "BTree.sumInt"
+            [ test "of empty" <|
+                \() ->
+                    Empty
+                        |> sumInt
+                        |> Expect.equal 0
+            , test "of singleton" <|
+                \() ->
+                    1
+                        |> singleton
+                        |> sumInt
+                        |> Expect.equal 1
+            , test "of 3 levels" <|
+                \() ->
+                    [1, 2, 3]
+                        |> fromList
+                        |> sumInt
+                        |> Expect.equal 6
+            ]
+        , describe "BTree.sumString"
+            [ test "of empty" <|
+                \() ->
+                    Empty
+                        |> sumString
+                        |> Expect.equal ""
+            , test "of singleton" <|
+                \() ->
+                    "abc"
+                        |> singleton
+                        |> sumString
+                        |> Expect.equal "abc"
+            , test "of 3 levels" <|
+                \() ->
+                    ["abc", "def", "ghi"]
+                        |> fromList
+                        |> sumString
+                        |> Expect.equal "ghidefabc"
+            ]
+        , describe "BTree.flattenUsingFold"
+            [ test "of 'Flatten a tree into a list'" <|
                 \() ->
                     let
                         tree = fromList [4, 7, 5, 6, 1]
                     in
                         Expect.equal (List.sort (flatten tree)) (List.sort (flattenUsingFold tree))
-            , test "of 'Check to see if an element is in a given tree', empty tree" <|
+            ]
+        , describe "BTree.isElementUsingFold"
+            [ test "of 'Check to see if an element is in a given tree', empty tree" <|
                 \() ->
                     let
                         a = 5
                         tree = Empty
                     in
                         Expect.equal (isElement a tree) (isElementUsingFold a tree)
+            ]
             , test "of 'Check to see if an element is in a given tree', yes found" <|
                 \() ->
                     let
@@ -362,7 +275,7 @@ bTree =
                     in
                         Expect.equal (isElement a tree) (isElementUsingFold a tree)
             ]
-         , describe "toTreeDiagramTree" -- not much of a test because constructors are not exposed
+         , describe "BTree.toTreeDiagramTree" -- not much of a test because constructors are not exposed
             [ test "of empty" <|
                 \() ->
                     Expect.equal (TD.node Nothing []) (toTreeDiagramTree Empty)
@@ -394,6 +307,140 @@ bTree =
             , test "of 5 values" <|
                 \() ->
                     Expect.equal (fromListBy (MusicNote.sortOrder) [A, B, D, E, G]) (BTree.sortBy (MusicNote.sortOrder) (fromListBy (MusicNote.sortOrder) [D, A, E, G, B]))
+            ]
+        , describe "BTree.fromList"
+            [ test "from empty list" <|
+                \() ->
+                    []
+                        |> fromList
+                        |> Expect.equal Empty
+            , test "from single element list" <|
+                \() ->
+                    ['a']
+                        |> fromList
+                        |> Expect.equal (singleton 'a')
+            , test "from ordered-ascending list" <|
+                \() ->
+                    ['a', 'b', 'c']
+                        |> fromList
+                        |> Expect.equal (Node 'a' Empty (Node 'b' Empty (singleton 'c')))
+            , test "from ordered-descending list" <|
+                \() ->
+                    ['c', 'b', 'a']
+                        |> fromList
+                        |> Expect.equal (Node 'c' (Node 'b' (singleton 'a') Empty) Empty)
+            , test "from unordered list" <|
+                \() ->
+                    ['c', 'a', 'b']
+                        |> fromList
+                        |> Expect.equal (Node 'c' (Node 'a' Empty (singleton 'b')) Empty)
+            , test "from list with duplications" <|
+                \() ->
+                    ['a', 'b', 'b']
+                        |> fromList
+                        |> Expect.equal (Node 'a' Empty (Node 'b' Empty (singleton 'b')))
+            ]
+        , describe "BTree.fromListBy"
+            [ test "from empty list" <|
+                \() ->
+                    []
+                        |> fromListBy (MusicNote.sortOrder)
+                        |> Expect.equal Empty
+            , test "from single element list" <|
+                \() ->
+                    [A]
+                        |> fromListBy (MusicNote.sortOrder)
+                        |> Expect.equal (singleton A)
+            , test "from ordered-ascending list" <|
+                \() ->
+                    [A, B, C]
+                        |> fromListBy (MusicNote.sortOrder)
+                        |> Expect.equal (Node A Empty (Node B Empty (singleton C)))
+            , test "from ordered-descending list" <|
+                \() ->
+                    [C, B, A]
+                        |> fromListBy (MusicNote.sortOrder)
+                        |> Expect.equal (Node C (Node B (singleton A) Empty) Empty)
+            , test "from unordered list" <|
+                \() ->
+                    [C, A, B]
+                        |> fromListBy (MusicNote.sortOrder)
+                        |> Expect.equal (Node C (Node A Empty (singleton B)) Empty)
+            , test "from list with duplications" <|
+                \() ->
+                    [A, B, B]
+                        |> fromListBy (MusicNote.sortOrder)
+                        |> Expect.equal (Node A Empty (Node B Empty (singleton B)))
+            ]
+        , describe "BTree.insert"
+            [ test "insert into empty tree" <|
+                \() ->
+                    let
+                        target = Empty
+                        newValue = 1
+                    in
+                        Expect.equal (singleton newValue) (insert newValue target)
+            , test "insert larger value on right" <|
+                 \() ->
+                    let
+                        currentValue = 'b'
+                        newValue = 'c'
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue Empty newChild) (insert newValue target)
+            , test "insert smaller value on left" <|
+                 \() ->
+                    let
+                        currentValue = 'b'
+                        newValue = 'a'
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue newChild Empty) (insert newValue target)
+            , test "insert duplicate" <|
+                 \() ->
+                    let
+                        currentValue = 'b'
+                        newValue = 'b'
+                        target = singleton currentValue
+                    in
+                        Expect.equal (Node 'b' Empty (singleton 'b')) (insert newValue target)
+            ]
+        , describe "BTree.insertBy"
+            [ test "insertBy into empty tree" <|
+                \() ->
+                    let
+                        target = Empty
+                        newValue = A
+                    in
+                        Expect.equal (singleton newValue) (insertBy (MusicNote.sortOrder) newValue target)
+            , test "insert larger value on right" <|
+                 \() ->
+                    let
+                        currentValue = B
+                        newValue = C
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue Empty newChild) (insertBy (MusicNote.sortOrder) newValue target)
+            , test "insert smaller value on left" <|
+                 \() ->
+                    let
+                        currentValue = B
+                        newValue = A
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue newChild Empty) (insertBy (MusicNote.sortOrder) newValue target)
+            , test "insert duplicate" <|
+                 \() ->
+                    let
+                        currentValue = B
+                        newValue = B
+                        target = singleton currentValue
+                    in
+                        Expect.equal (Node B Empty (singleton B)) (insertBy (MusicNote.sortOrder) newValue target)
             ]
          , describe "BTree.removeDuplicates"
             [ test "of empty" <|
