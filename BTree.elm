@@ -1,6 +1,6 @@
 -- http://elm-lang.org/examples/binary-Tree
 
-module BTree exposing (..)
+module BTree exposing (BTree, BTree(..), NodeTag, NodeTag(..), singleton, depth, map, sum, flatten, isElement, fold, sumUsingFold, sumInt, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromListBy, insert, insertBy, removeDuplicates, removeDuplicatesBy)
 
 import TreeDiagram as TD exposing (node, Tree)
 import MusicNote exposing (MusicNote)
