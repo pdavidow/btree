@@ -1,4 +1,4 @@
-module BTreeVariedType exposing (..)
+module BTreeVariedType exposing (BTreeVariedType, BTreeVariedType(..), toStringLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes)
 
 import BTree exposing (BTree, map)
 import BTree exposing (NodeTag(..))
