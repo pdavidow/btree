@@ -23,7 +23,7 @@ import Material.Scheme
 import Material
 
 import Random
-import Pivot exposing (withRollback) -- todo unused?
+import Pivot exposing (withRollback)
 import Maybe.Extra exposing (unwrap)
 
 import BTreeUniformType exposing (BTreeUniformType(..))

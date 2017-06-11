@@ -1,7 +1,7 @@
 module BTreeUniformType_Tests exposing (..)
 
 import BTreeUniformType exposing (toNothing, toTagged, incrementNodes, decrementNodes, raiseNodes)
-import BTreeUniformType exposing (BTreeUniformType(..), OnlyNothing(..))
+import BTreeUniformType exposing (BTreeUniformType(..))
 import BTree exposing (..)
 import MusicNote exposing (MusicNote(..), sortOrder)
 
@@ -20,11 +20,19 @@ bTreeUniformType =
                     Expect.equal (BTreeNothing Empty) (toNothing (BTreeInt Empty))
             , test "of singleton" <|
                 \() ->
-                    -- todo https://elmlang.slack.com/archives/C0CJ3SBBM/p1497038067587077
-                    Expect.equal (BTreeNothing (singleton OnlyNothing)) (toNothing (BTreeInt (singleton 1)))
+                    singleton 1
+                        |> BTreeInt
+                        |> toNothing
+                        |> toTagged -- called because should not expose OnlyNothing just for sake of test.
+                        |> Expect.equal (singleton NothingNode)
+
             , test "of 2 values" <|
                 \() ->
-                    Expect.equal (Node (StringNode "a") Empty (singleton (StringNode "b"))) (toTagged (BTreeString (fromList ["a", "b"])))
+                    fromList ["a", "b"]
+                        |> BTreeString
+                        |> toNothing
+                        |> toTagged -- called because should not expose OnlyNothing just for sake of test.
+                        |> Expect.equal (Node NothingNode Empty (singleton NothingNode))
             ]
          , describe "BTreeUniformType.toTagged"
             [ test "of empty" <|
