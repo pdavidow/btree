@@ -1,4 +1,4 @@
-module BTreeUniformType exposing (BTreeUniformType, BTreeUniformType(..), toNothing, toTagged, toStringLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, depth, sumInt, sumString, sort, removeDuplicates)
+module BTreeUniformType exposing (BTreeUniformType, BTreeUniformType(..), toNothing, toTaggedNodes, toStringLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, depth, sumInt, sumString, sort, removeDuplicates)
 
 import BTree exposing (NodeTag(..))
 import BTree exposing (BTree, depth, map, removeDuplicatesBy, singleton, sumInt , sumString , sort, sortBy)
@@ -41,8 +41,8 @@ toNothing bTreeUniformType =
                 bTreeUniformType
 
 
-toTagged : BTreeUniformType -> BTree NodeTag
-toTagged bTreeUniformType =
+toTaggedNodes : BTreeUniformType -> BTree NodeTag
+toTaggedNodes bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
             map IntNode bTree

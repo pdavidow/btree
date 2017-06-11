@@ -4,7 +4,7 @@ module BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram)
 
 import BTree exposing (BTree, toTreeDiagramTree)
 import BTree exposing (NodeTag(..))
-import BTreeUniformType exposing (BTreeUniformType(..), toTagged)
+import BTreeUniformType exposing (BTreeUniformType(..), toTaggedNodes)
 import BTreeVariedType exposing (BTreeVariedType(..))
 import MusicNote exposing (displayString)
 
@@ -22,7 +22,7 @@ import Arithmetic exposing (isEven)
 
 bTreeUniformTypeDiagram : BTreeUniformType -> Html msg
 bTreeUniformTypeDiagram bTreeUniformType =
-    bTreeDiagram (toTagged bTreeUniformType)
+    bTreeDiagram (toTaggedNodes bTreeUniformType)
 
 
 bTreeVariedTypeDiagram : BTreeVariedType -> Html msg

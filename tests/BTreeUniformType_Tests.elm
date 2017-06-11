@@ -1,6 +1,6 @@
 module BTreeUniformType_Tests exposing (..)
 
-import BTreeUniformType exposing (toNothing, toTagged, incrementNodes, decrementNodes, raiseNodes)
+import BTreeUniformType exposing (toNothing, toTaggedNodes, incrementNodes, decrementNodes, raiseNodes)
 import BTreeUniformType exposing (BTreeUniformType(..))
 import BTree exposing (..)
 import MusicNote exposing (MusicNote(..), sortOrder)
@@ -23,7 +23,7 @@ bTreeUniformType =
                     singleton 1
                         |> BTreeInt
                         |> toNothing
-                        |> toTagged -- called because should not expose OnlyNothing just for sake of test.
+                        |> toTaggedNodes -- called because should not expose OnlyNothing just for sake of test.
                         |> Expect.equal (singleton NothingNode)
 
             , test "of 2 values" <|
@@ -31,19 +31,19 @@ bTreeUniformType =
                     fromList ["a", "b"]
                         |> BTreeString
                         |> toNothing
-                        |> toTagged -- called because should not expose OnlyNothing just for sake of test.
+                        |> toTaggedNodes -- called because should not expose OnlyNothing just for sake of test.
                         |> Expect.equal (Node NothingNode Empty (singleton NothingNode))
             ]
-         , describe "BTreeUniformType.toTagged"
+         , describe "BTreeUniformType.toTaggedNodes"
             [ test "of empty" <|
                 \() ->
-                    Expect.equal (Empty) (toTagged (BTreeInt Empty))
+                    Expect.equal (Empty) (toTaggedNodes (BTreeInt Empty))
             , test "of singleton" <|
                 \() ->
-                    Expect.equal (singleton (IntNode 1)) (toTagged (BTreeInt (singleton 1)))
+                    Expect.equal (singleton (IntNode 1)) (toTaggedNodes (BTreeInt (singleton 1)))
             , test "of 2 values" <|
                 \() ->
-                    Expect.equal (Node (StringNode "a") Empty (singleton (StringNode "b"))) (toTagged (BTreeString (fromList ["a", "b"])))
+                    Expect.equal (Node (StringNode "a") Empty (singleton (StringNode "b"))) (toTaggedNodes (BTreeString (fromList ["a", "b"])))
             ]
          , describe "BTreeUniformType.toStringLength"
             [ test "of empty BTreeString" <|
