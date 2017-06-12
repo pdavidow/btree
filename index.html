@@ -11,7 +11,29 @@
 
         <script src="elm.js"></script>
         <script>
-            Elm.Main.embed(document.getElementById("elm-area"));
+            const app = Elm.Main.fullscreen();
+            // https://elmlang.slack.com/archives/C192T0Q1E/p1497303588289542
+            //const audioContext = new AudioContext();
+
+            app.ports.port_playFreqs.subscribe(function (freqs) {
+                const audioContext = new AudioContext();
+                const interval = 0.5;
+                const gap = 0.2;
+                let startTime = 0;
+
+                freqs.forEach((freq) => {
+                    const oscillator = audioContext.createOscillator();
+
+                    oscillator.connect(audioContext.destination);
+                    oscillator.frequency.value = freq;
+
+                    console.log ("startTime, freq",startTime, freq);
+                    oscillator.start(startTime);
+                    startTime += interval;
+                    let stoptime = startTime - gap;
+                    oscillator.stop(stoptime);
+                });
+            });
         </script>
     </body>
 </html>

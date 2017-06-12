@@ -1,4 +1,4 @@
-module MusicNote exposing (MusicNote(..), sortOrder, mbSortOrder, (:+:), (:-:), displayString)
+module MusicNote exposing (MusicNote(..), sortOrder, mbSortOrder, (:+:), (:-:), displayString, toFrequency)
 
 import Array.Hamt as Array exposing (..)
 import List.Extra exposing (elemIndex)
@@ -137,3 +137,43 @@ displayString note =
 
         G_sharp ->
             "G#"
+
+
+toFrequency : MusicNote -> Float
+toFrequency note =
+  case note of
+    A ->
+        115 -- todo
+
+    A_sharp ->
+        120 -- todo
+
+    B ->
+        125 -- todo
+
+    C -> -- 1 octave below Middle C
+        130.81
+
+    C_sharp ->
+        138.59
+
+    D ->
+        146.83
+
+    D_sharp ->
+        155.56
+
+    E ->
+        164.81
+
+    F ->
+        174.61
+
+    F_sharp ->
+        185.0
+
+    G ->
+        196.0
+
+    G_sharp ->
+        207.65

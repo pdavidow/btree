@@ -34,6 +34,7 @@ import BTree exposing (..)
 import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram)
 import Constants exposing (nothingString)
 import MusicNote exposing (MusicNote(..))
+import MusicNotePlayer exposing (playTreeMusicNote)
 ------------------------------------------------
 
 
@@ -99,6 +100,7 @@ type Msg =
     | StopShowStringLength
     | StartShowIsIntPrime
     | StopShowIsIntPrime
+    | PlayNotes
     | Reset
     | Mdl (Material.Msg Msg)
 
@@ -179,6 +181,11 @@ actionButtons model =
         , Options.onClick RequestRandomDelta
         ]
         [ text "Random Delta"]
+    , Button.render Mdl [0] model.mdl
+        [ Button.flat
+        , Options.onClick PlayNotes
+        ]
+        [ text "Play (6x max))"]
     , Button.render Mdl [0] model.mdl
         [ Button.raised
         , Options.onClick Reset
@@ -332,12 +339,18 @@ update msg model =
             )
 
         Delta s ->
-            ({model | delta = intFromInput s
-            }, Cmd.none)
+            (   { model
+                | delta = intFromInput s
+                }
+            , Cmd.none
+            )
 
         Exponent s ->
-            ({model | exponent = intFromInput s
-            }, Cmd.none)
+            (   { model
+                | exponent = intFromInput s
+                }
+            , Cmd.none
+            )
 
         RequestRandomIntList ->
             let
@@ -354,18 +367,28 @@ update msg model =
                     --andThen : (a -> Generator b) -> Generator a -> Generator b
                     Random.andThen randomIntList generatorListLength
             in
-                (model, Random.generate ReceiveRandomIntList generatorIntList)
+                ( model
+                , Random.generate ReceiveRandomIntList generatorIntList
+                )
 
         RequestRandomDelta ->
-            (model, Random.generate ReceiveRandomDelta (Random.int 1 100))
+            ( model
+            , Random.generate ReceiveRandomDelta (Random.int 1 100)
+            )
 
         ReceiveRandomIntList list ->
-            ({model | intTree = BTreeInt (fromList list)
-            }, Cmd.none)
+            (   { model
+                | intTree = BTreeInt (fromList list)
+                }
+            , Cmd.none
+            )
 
         ReceiveRandomDelta i ->
-            ({model | delta = i
-            }, Cmd.none)
+            (   { model
+                | delta = i
+                }
+            , Cmd.none
+            )
 
         StartShowIsIntPrime ->
             ( model
@@ -395,8 +418,15 @@ update msg model =
             , Cmd.none
             )
 
+        PlayNotes ->
+            ( model
+            , playTreeMusicNote (model.musicNoteTree)
+            )
+
         Reset ->
-            (initialModel, Cmd.none)
+            ( initialModel
+            , Cmd.none
+            )
 
         -- Boilerplate: Mdl action handler.
         Mdl msg_ ->
