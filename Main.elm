@@ -1,10 +1,10 @@
+module Main exposing (..)
+
 {--
 elm-make Main.elm --output elm.js
 --}
 
 -- Based on https://github.com/vipentti/elm-mdl-dashboard/blob/master/src/View.elm
-
-module Main exposing (..)
 
 import Html exposing (Html, div, text, hr, input, h3, h4, h5, p, b)
 import Html.Events exposing (onInput)
@@ -32,9 +32,10 @@ import BTreeVariedType exposing (BTreeVariedType(..), incrementNodes, decrementN
 import BTree exposing (NodeTag(..))
 import BTree exposing (..)
 import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram)
-import Constants exposing (nothingString)
+import UniversalConstants exposing (nothingString)
 import MusicNote exposing (MusicNote(..))
-import MusicNotePlayer exposing (playTreeMusicNote)
+import MusicNotePlayer exposing (playTreeMusic)
+import Ports exposing (port_donePlayNotes)
 ------------------------------------------------
 
 
@@ -54,6 +55,7 @@ type alias Model =
     , maxRandomInt : Int
     , minListLength : Int
     , maxListLength : Int
+    , isEnablePlayNotesButton : Bool
     , mdl : Material.Model
     }
 
@@ -75,6 +77,7 @@ initialModel =
     , maxRandomInt = 99
     , minListLength = 1
     , maxListLength = 6
+    , isEnablePlayNotesButton = True
     , mdl = Material.model
     }
 
@@ -101,6 +104,7 @@ type Msg =
     | StartShowIsIntPrime
     | StopShowIsIntPrime
     | PlayNotes
+    | DonePlayNotes (Bool)
     | Reset
     | Mdl (Material.Msg Msg)
 
@@ -139,54 +143,56 @@ actionButtons model =
         , Options.onClick Increment
         ]
         [ text "+ Delta"]
-    , Button.render Mdl [0] model.mdl
+    , Button.render Mdl [1] model.mdl
         [ Button.flat
         , Options.onClick Decrement
         ]
         [ text "- Delta"]
-    , Button.render Mdl [0] model.mdl
+    , Button.render Mdl [2] model.mdl
         [ Button.flat
         , Options.onClick Raise
         ]
         [ text "^ Exp"]
-    , Button.render Mdl [0] model.mdl
+    , Button.render Mdl [3] model.mdl
         [ Button.flat
         , Options.onClick SortUniformTrees
         ]
         [ text "Sort Uni"]
-    , Button.render Mdl [0] model.mdl
+    , Button.render Mdl [4] model.mdl
         [ Button.flat
         , Options.onClick RemoveDuplicatesInUniformTrees
         ]
         [ text "NoDup Uni"]
-    , Button.render Mdl [0] model.mdl
+    , Button.render Mdl [5] model.mdl
         [ Button.colored
         , Options.onMouseDown StartShowIsIntPrime
         , Options.onMouseUp StopShowIsIntPrime
         ]
         [ text "Prime?"]
-    , Button.render Mdl [0] model.mdl
+    , Button.render Mdl [6] model.mdl
         [ Button.colored
         , Options.onMouseDown StartShowStringLength
         , Options.onMouseUp StopShowStringLength
         ]
         [ text "String Length"]
-    , Button.render Mdl [0] model.mdl
+    , Button.render Mdl [7] model.mdl
         [ Button.accent
         , Options.onClick RequestRandomIntList
         ]
         [ text "Random Int-Tree"]
-    , Button.render Mdl [0] model.mdl
+    , Button.render Mdl [8] model.mdl
         [ Button.accent
         , Options.onClick RequestRandomDelta
         ]
         [ text "Random Delta"]
-    , Button.render Mdl [0] model.mdl
+    , Button.render Mdl [9] model.mdl
         [ Button.flat
+        , Button.disabled
+            |> Options.when (not model.isEnablePlayNotesButton)
         , Options.onClick PlayNotes
         ]
-        [ text "Play (6x max))"]
-    , Button.render Mdl [0] model.mdl
+        [ text "Play Notes"]
+    , Button.render Mdl [10] model.mdl
         [ Button.raised
         , Options.onClick Reset
         ]
@@ -419,8 +425,17 @@ update msg model =
             )
 
         PlayNotes ->
-            ( model
-            , playTreeMusicNote (model.musicNoteTree)
+            (   { model
+                | isEnablePlayNotesButton = False
+                }
+            , playTreeMusic model.musicNoteTree
+            )
+
+        DonePlayNotes bool ->
+            (   { model
+                | isEnablePlayNotesButton = bool
+                }
+            , Cmd.none
             )
 
         Reset ->
@@ -529,7 +544,7 @@ intFromInput string =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.none
+    port_donePlayNotes DonePlayNotes
 
 
 main =

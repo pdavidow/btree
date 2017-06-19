@@ -12,27 +12,30 @@
         <script src="elm.js"></script>
         <script>
             const app = Elm.Main.fullscreen();
-            // https://elmlang.slack.com/archives/C192T0Q1E/p1497303588289542
-            //const audioContext = new AudioContext();
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-            app.ports.port_playFreqs.subscribe(function (freqs) {
-                const audioContext = new AudioContext();
-                const interval = 0.5;
-                const gap = 0.2;
-                let startTime = 0;
+            app.ports.port_announceOnDonePlayNotes.subscribe(function (endTime) { // millisecond
+                console.log ("port_announceOnDonePlayNotes endTime", endTime);
+                announceDonePlayNotes = function() {
+                    app.ports.port_donePlayNotes.send(true);
+                };
 
-                freqs.forEach((freq) => {
-                    const oscillator = audioContext.createOscillator();
+                setTimeout(announceDonePlayNotes, endTime);
+            });
 
-                    oscillator.connect(audioContext.destination);
-                    oscillator.frequency.value = freq;
+            app.ports.port_playNote.subscribe(function (note) {
+                console.log ("port_playNote note", note);
 
-                    console.log ("startTime, freq",startTime, freq);
-                    oscillator.start(startTime);
-                    startTime += interval;
-                    let stoptime = startTime - gap;
-                    oscillator.stop(stoptime);
-                });
+                const {freq, startOffset, stopOffset} = note;
+                const oscillator = audioContext.createOscillator();
+                let currentTime;
+
+                oscillator.connect(audioContext.destination);
+                oscillator.frequency.value = freq;
+
+                currentTime = audioContext.currentTime;
+                oscillator.start(currentTime + startOffset); // seconds
+                oscillator.stop (currentTime + stopOffset); // seconds
             });
         </script>
     </body>

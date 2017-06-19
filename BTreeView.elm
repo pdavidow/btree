@@ -10,7 +10,7 @@ import MusicNote exposing (displayString)
 
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
-import Constants exposing (nothingString)
+import UniversalConstants exposing (nothingString)
 
 import Color exposing (Color, green, orange, black, white, yellow, blue, purple, lightCharcoal, red)
 import Collage exposing (group, segment, traced, rotate, move, scale, oval, rect, ngon, filled, outlined, text, rect, polygon, moveY, defaultLine, Form, toForm, LineStyle)

@@ -1,4 +1,4 @@
-module Constants exposing (..)
+module UniversalConstants exposing (..)
 
 
 nothingString : String

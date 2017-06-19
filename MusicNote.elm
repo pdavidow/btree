@@ -19,6 +19,9 @@ type MusicNote
     | G_sharp
 
 
+-- todo: type alias Freq = Float
+
+
 notes : List MusicNote
 notes =
     [ A
@@ -139,41 +142,43 @@ displayString note =
             "G#"
 
 
+-- todo: Freq type alias
 toFrequency : MusicNote -> Float
 toFrequency note =
-  case note of
-    A ->
-        115 -- todo
+    -- http://newt.phys.unsw.edu.au/jw/notes.html
+    case note of
+        A -> -- A3
+            220.00
 
-    A_sharp ->
-        120 -- todo
+        A_sharp ->
+            233.08
 
-    B ->
-        125 -- todo
+        B ->
+            246.94
 
-    C -> -- 1 octave below Middle C
-        130.81
+        C -> -- C4 (Middle C)
+            261.63
 
-    C_sharp ->
-        138.59
+        C_sharp ->
+            277.18
 
-    D ->
-        146.83
+        D ->
+            293.67
 
-    D_sharp ->
-        155.56
+        D_sharp ->
+            311.13
 
-    E ->
-        164.81
+        E ->
+            329.63
 
-    F ->
-        174.61
+        F ->
+            349.23
 
-    F_sharp ->
-        185.0
+        F_sharp ->
+            369.99
 
-    G ->
-        196.0
+        G ->
+            392.00
 
-    G_sharp ->
-        207.65
+        G_sharp ->
+            415.30
