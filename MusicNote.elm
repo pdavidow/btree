@@ -1,4 +1,4 @@
-module MusicNote exposing (MusicNote(..), sortOrder, mbSortOrder, (:+:), (:-:), displayString, toFrequency)
+module MusicNote exposing (MusicNote(..), Freq(..), sortOrder, mbSortOrder, (:+:), (:-:), displayString, toFrequency)
 
 import Array.Hamt as Array exposing (..)
 import List.Extra exposing (elemIndex)
@@ -19,7 +19,7 @@ type MusicNote
     | G_sharp
 
 
--- todo: type alias Freq = Float
+type Freq = Freq Float
 
 
 notes : List MusicNote
@@ -142,43 +142,42 @@ displayString note =
             "G#"
 
 
--- todo: Freq type alias
-toFrequency : MusicNote -> Float
+toFrequency : MusicNote -> Freq
 toFrequency note =
     -- http://newt.phys.unsw.edu.au/jw/notes.html
     case note of
         A -> -- A3
-            220.00
+            Freq 220.00
 
         A_sharp ->
-            233.08
+            Freq 233.08
 
         B ->
-            246.94
+            Freq 246.94
 
         C -> -- C4 (Middle C)
-            261.63
+            Freq 261.63
 
         C_sharp ->
-            277.18
+            Freq 277.18
 
         D ->
-            293.67
+            Freq 293.67
 
         D_sharp ->
-            311.13
+            Freq 311.13
 
         E ->
-            329.63
+            Freq 329.63
 
         F ->
-            349.23
+            Freq 349.23
 
         F_sharp ->
-            369.99
+            Freq 369.99
 
         G ->
-            392.00
+            Freq 392.00
 
         G_sharp ->
-            415.30
+            Freq 415.30

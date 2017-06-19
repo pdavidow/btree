@@ -5,7 +5,7 @@ import Time exposing (Time, millisecond, inSeconds, inMilliseconds)
 
 import BTreeUniformType exposing (BTreeUniformType(..))
 import BTree exposing (BTree, flatten)
-import MusicNote exposing (MusicNote, toFrequency)
+import MusicNote exposing (MusicNote, Freq(..), toFrequency)
 import AudioNote exposing (AudioNote)
 import Ports exposing (port_playNote, port_announceOnDonePlayNotes)
 
@@ -27,7 +27,6 @@ playTreeMusic bTreeUniformType =
     case bTreeUniformType of
         BTreeMusicNote bTree ->
             let
-                freqs : List Float
                 freqs = flatten bTree
                     |> values
                     |> List.map toFrequency
@@ -38,7 +37,7 @@ playTreeMusic bTreeUniformType =
             Cmd.none
 
 
-playFreqs : List Float -> Cmd msg
+playFreqs : List Freq -> Cmd msg
 playFreqs freqs =
     let
         totalInterval = interval * toFloat (List.length freqs)
@@ -51,7 +50,7 @@ playFreqs freqs =
             |> Cmd.batch
 
 
-playFreqsCmds : List Float -> List (Cmd msg)
+playFreqsCmds : List Freq -> List (Cmd msg)
 playFreqsCmds freqs =
     let
         notes = audioNotesFor freqs
@@ -59,11 +58,11 @@ playFreqsCmds freqs =
         List.map port_playNote notes
 
 
-audioNotesFor : List Float -> List AudioNote
+audioNotesFor : List Freq -> List AudioNote
 audioNotesFor freqs =
     let
-        func: Int -> Float -> AudioNote
-        func index freq =
+        func: Int -> Freq -> AudioNote
+        func index (Freq freq) =
             let
                 startOffset =  (toFloat index) * interval
                 stopOffset =  startOffset + noteDuration
