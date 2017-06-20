@@ -44,9 +44,7 @@ playFreqs freqs =
         onDoneCmd = port_announceOnDonePlayNotes (inMilliseconds totalInterval) -- todo: use onEnd in AudioNode
         playCmds = playFreqsCmds freqs
     in
-        playCmds
-            |> List.reverse -- todo report issue
-            |> (::) onDoneCmd
+        onDoneCmd::playCmds
             |> Cmd.batch
 
 

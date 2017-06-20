@@ -1,9 +1,5 @@
 module Main exposing (..)
 
-{--
-elm-make Main.elm --output elm.js
---}
-
 -- Based on https://github.com/vipentti/elm-mdl-dashboard/blob/master/src/View.elm
 
 import Html exposing (Html, div, text, hr, input, h3, h4, h5, p, b)
