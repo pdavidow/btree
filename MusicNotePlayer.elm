@@ -7,7 +7,7 @@ import BTreeUniformType exposing (BTreeUniformType(..))
 import BTree exposing (BTree, flatten)
 import MusicNote exposing (MusicNote, Freq(..), toFrequency)
 import AudioNote exposing (AudioNote)
-import Ports exposing (port_playNote, port_announceOnDonePlayNotes)
+import Ports exposing (port_playNote)
 
 
 noteDuration : Time
@@ -40,31 +40,32 @@ playTreeMusic bTreeUniformType =
 playFreqs : List Freq -> Cmd msg
 playFreqs freqs =
     let
-        totalInterval = interval * toFloat (List.length freqs)
-        onDoneCmd = port_announceOnDonePlayNotes (inMilliseconds totalInterval) -- todo: use onEnd in AudioNode
-        playCmds = playFreqsCmds freqs
-    in
-        onDoneCmd::playCmds
-            |> Cmd.batch
-
-
-playFreqsCmds : List Freq -> List (Cmd msg)
-playFreqsCmds freqs =
-    let
         notes = audioNotesFor freqs
+        cmds = List.map port_playNote notes
     in
-        List.map port_playNote notes
+        Cmd.batch cmds
 
 
 audioNotesFor : List Freq -> List AudioNote
 audioNotesFor freqs =
     let
+        lastIndex = (List.length freqs) - 1
+
         func: Int -> Freq -> AudioNote
         func index (Freq freq) =
             let
                 startOffset =  (toFloat index) * interval
+
                 stopOffset =  startOffset + noteDuration
+
+                onEnded = if index == lastIndex
+                    then Just True
+                    else Nothing
             in
-                AudioNote freq (inSeconds startOffset) (inSeconds stopOffset)
+                AudioNote
+                    freq
+                    (inSeconds startOffset)
+                    (inSeconds stopOffset)
+                    onEnded
     in
         List.indexedMap func freqs

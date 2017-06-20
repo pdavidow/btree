@@ -14,25 +14,20 @@
             const app = Elm.Main.fullscreen();
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-            app.ports.port_announceOnDonePlayNotes.subscribe(function (endTime) { // msec
-                console.log ("port_announceOnDonePlayNotes endTime", endTime);
-
-                announceDonePlayNotes = function() {
-                    app.ports.port_donePlayNotes.send(true);
-                };
-
-                setTimeout(announceDonePlayNotes, endTime);
-            });
+            announceDonePlayNotes = function() {
+                app.ports.port_donePlayNotes.send(true);
+            };
 
             app.ports.port_playNote.subscribe(function (note) {
                 console.log ("port_playNote note", note);
 
-                const {freq, startOffset, stopOffset} = note;
+                const {freq, startOffset, stopOffset, onEnded} = note;
                 const oscillator = audioContext.createOscillator();
                 let currentTime;
 
                 oscillator.connect(audioContext.destination);
                 oscillator.frequency.value = freq;
+                if (onEnded) oscillator.onended = announceDonePlayNotes;
 
                 currentTime = audioContext.currentTime;
                 oscillator.start(currentTime + startOffset); // sec

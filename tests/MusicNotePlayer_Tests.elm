@@ -27,7 +27,7 @@ musicNote =
                 \() ->
                     let
                         tree = BTreeMusicNote (Node (Just A) Empty Empty)
-                        result = "{ type = \"node\", branches = [{ type = \"leaf\", home = \"port_announceOnDonePlayNotes\", value = 600 },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 220, startOffset = 0, stopOffset = 0.5 } }] }"
+                        result = "{ type = \"node\", branches = [{ type = \"leaf\", home = \"port_playNote\", value = { freq = 220, startOffset = 0, stopOffset = 0.5, onEnded = Just True } }] }"
 
                     in
                         Expect.equal result (toString (playTreeMusic tree))
