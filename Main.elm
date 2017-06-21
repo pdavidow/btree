@@ -184,7 +184,7 @@ actionButtons model =
     , Button.render Mdl [9] model.mdl
         [ Button.flat
         , Button.disabled
-            |> Options.when (isDisablePlayNotesButton model)
+            |> Options.when (not (isEnablePlayNotesButton model))
         , Options.onClick PlayNotes
         ]
         [ text "Play Notes"]
@@ -196,18 +196,9 @@ actionButtons model =
     ]
 
 
-isDisablePlayNotesButton : Model -> Bool
-isDisablePlayNotesButton model =
-    let
-        isNothingToPlay : BTreeUniformType -> Bool
-        isNothingToPlay bTreeUniformType =
-            let
-                isMbNothingToPlay = BTreeUniformType.isAllNothing bTreeUniformType
-            in
-                Maybe.Extra.unwrap True identity isMbNothingToPlay
-
-    in
-        (not model.isEnablePlayNotesButton) || (isNothingToPlay model.musicNoteTree)
+isEnablePlayNotesButton : Model -> Bool
+isEnablePlayNotesButton model =
+    (model.isEnablePlayNotesButton) && not (BTreeUniformType.isAllNothing model.musicNoteTree)
 
 
 viewHeader : Model -> Html Msg

@@ -1,6 +1,6 @@
 module BTree_Tests exposing (..)
 
-import BTree exposing (BTree, BTree(..), NodeTag, NodeTag(..), singleton, depth, map, sum, flatten, isElement, fold, sumUsingFold, sumInt, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromListBy, insert, insertBy, removeDuplicates, removeDuplicatesBy, isAllNothing)
+import BTree exposing (BTree, BTree(..), NodeTag, NodeTag(..), singleton, depth, map, sum, flatten, isElement, fold, sumUsingFold, sumInt, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromListBy, insert, insertBy, removeDuplicates, removeDuplicatesBy, isAllNothing, isEmpty)
 
 import BTree exposing (NodeTag(..))
 import TreeDiagram as TD exposing (node)
@@ -476,4 +476,16 @@ bTree =
                 \() ->
                     Expect.equal False (BTree.isAllNothing (Node Nothing Empty (singleton (Just 1))))
             ]
+         , describe "BTree.isEmpty"
+            [ test "of empty" <|
+                \() ->
+                    Expect.equal True (BTree.isEmpty Empty)
+            , test "of all nothing" <|
+                \() ->
+                    Expect.equal False (BTree.isEmpty (singleton (Nothing)))
+            , test "of something" <|
+                \() ->
+                    Expect.equal False (BTree.isEmpty (Node Nothing Empty (singleton (Just 1))))
+            ]
         ]
+
