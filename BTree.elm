@@ -1,10 +1,12 @@
 -- http://elm-lang.org/examples/binary-Tree
 
-module BTree exposing (BTree, BTree(..), NodeTag, NodeTag(..), singleton, depth, map, sum, flatten, isElement, fold, sumUsingFold, sumInt, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromListBy, insert, insertBy, removeDuplicates, removeDuplicatesBy)
+module BTree exposing (BTree, BTree(..), NodeTag, NodeTag(..), singleton, depth, map, sum, flatten, isElement, fold, sumUsingFold, sumInt, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromListBy, insert, insertBy, removeDuplicates, removeDuplicatesBy, isAllNothing)
 
 import TreeDiagram as TD exposing (node, Tree)
-import MusicNote exposing (MusicNote)
 import List.Extra exposing (uniqueBy)
+import Maybe.Extra exposing (values)
+
+import MusicNote exposing (MusicNote)
 
 
 type BTree a
@@ -150,7 +152,8 @@ sort bTree =
 
 sortBy : (a -> comparable) -> BTree a -> BTree a
 sortBy func bTree =
-    flatten bTree
+    bTree
+        |> flatten
         |> List.sortBy func
         |> fromListBy func
 
@@ -190,6 +193,15 @@ removeDuplicates bTree =
 
 removeDuplicatesBy : (a -> comparable) -> BTree a -> BTree a
 removeDuplicatesBy func bTree =
-    flatten bTree
+    bTree
+        |> flatten
         |> List.Extra.uniqueBy func
         |> fromListBy func
+
+
+isAllNothing : BTree (Maybe a) -> Bool
+isAllNothing bTree =
+    bTree
+        |> flatten
+        |> Maybe.Extra.values
+        |> List.isEmpty

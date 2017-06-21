@@ -1,4 +1,4 @@
-module BTreeUniformType exposing (BTreeUniformType, BTreeUniformType(..), toNothing, toTaggedNodes, toStringLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, depth, sumInt, sumString, sort, removeDuplicates)
+module BTreeUniformType exposing (BTreeUniformType, BTreeUniformType(..), toNothing, toTaggedNodes, toStringLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, depth, sumInt, sumString, sort, removeDuplicates, isAllNothing)
 
 import BTree exposing (NodeTag(..))
 import BTree exposing (BTree, depth, map, removeDuplicatesBy, singleton, sumInt , sumString , sort, sortBy)
@@ -225,4 +225,23 @@ removeDuplicates bTreeUniformType =
 
         BTreeNothing bTree ->
             BTreeNothing (singleton OnlyNothing)
+
+
+isAllNothing : BTreeUniformType -> Maybe Bool -- todo test
+isAllNothing bTreeUniformType =
+    case bTreeUniformType of
+        BTreeInt bTree ->
+            Nothing
+
+        BTreeString bTree ->
+            Nothing
+
+        BTreeBool bTree ->
+            Nothing
+
+        BTreeMusicNote bTree ->
+            Just (BTree.isAllNothing bTree)
+
+        BTreeNothing bTree ->
+            Just True
 
