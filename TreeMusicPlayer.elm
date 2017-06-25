@@ -1,4 +1,4 @@
-module MusicNotePlayer exposing (playTreeMusic)
+module TreeMusicPlayer exposing (treeMusicPlay)
 
 import Maybe.Extra exposing (values)
 import Time exposing (Time, millisecond, inSeconds, inMilliseconds)
@@ -22,8 +22,8 @@ interval : Time
 interval = noteDuration + gapDuration
 
 
-playTreeMusic : BTreeUniformType -> Cmd msg
-playTreeMusic bTreeUniformType =
+treeMusicPlay : BTreeUniformType -> Cmd msg
+treeMusicPlay bTreeUniformType =
     case bTreeUniformType of
         BTreeMusicNote bTree ->
             let

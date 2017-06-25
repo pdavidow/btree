@@ -30,7 +30,7 @@ import BTree exposing (..)
 import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram)
 import UniversalConstants exposing (nothingString)
 import MusicNote exposing (MusicNote(..))
-import MusicNotePlayer exposing (playTreeMusic)
+import TreeMusicPlayer exposing (treeMusicPlay)
 import Ports exposing (port_donePlayNotes)
 ------------------------------------------------
 
@@ -429,7 +429,7 @@ update msg model =
             (   { model
                 | isEnablePlayNotesButton = False
                 }
-            , playTreeMusic model.musicNoteTree
+            , treeMusicPlay model.musicNoteTree
             )
 
         DonePlayNotes bool ->

@@ -1,6 +1,6 @@
-module MusicNotePlayer_Tests exposing (..)
+module TreeMusicPlayer_Tests exposing (..)
 
-import MusicNotePlayer exposing (playTreeMusic)
+import TreeMusicPlayer exposing (treeMusicPlay)
 import MusicNote exposing (MusicNote(..))
 import BTreeUniformType exposing (BTreeUniformType(..))
 import BTree exposing (BTree(..), singleton)
@@ -13,8 +13,8 @@ import String
 
 musicNote : Test
 musicNote =
-    describe "MusicNotePlayer module"
-         [ describe "MusicNotePlayer.playTreeMusic"
+    describe "TreeMusicPlayer module"
+         [ describe "TreeMusicPlayer.playTreeMusic"
             [ test "invalid" <|
                 \() ->
                     let
@@ -22,7 +22,7 @@ musicNote =
                         result = Cmd.none
 
                     in
-                        Expect.equal result (playTreeMusic tree)
+                        Expect.equal result (treeMusicPlay tree)
             , test "valid" <|
                 \() ->
                     let
@@ -30,6 +30,6 @@ musicNote =
                         result = "{ type = \"node\", branches = [{ type = \"leaf\", home = \"port_playNote\", value = { freq = 220, startOffset = 0, stopOffset = 0.5, onEnded = Just True } }] }"
 
                     in
-                        Expect.equal result (toString (playTreeMusic tree))
+                        Expect.equal result (toString (treeMusicPlay tree))
             ]
         ]
