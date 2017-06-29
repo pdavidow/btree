@@ -11,7 +11,7 @@
 
         <script src="elm.js"></script>
         <script>
-            const app = Elm.Main.fullscreen();
+            const app = Elm.Main.fullscreen(Math.floor(Math.random()*0x0FFFFFFF));
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
             announceDonePlayNotes = function() {

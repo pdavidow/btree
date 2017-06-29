@@ -26,7 +26,7 @@ musicNote =
             , test "valid" <|
                 \() ->
                     let
-                        tree = BTreeMusicNote (Node (Just A) Empty Empty)
+                        tree = BTreeMusicNotePlayer (Node (Just A) Empty Empty)
                         result = "{ type = \"node\", branches = [{ type = \"leaf\", home = \"port_playNote\", value = { freq = 220, startOffset = 0, stopOffset = 0.5, onEnded = Just True } }] }"
 
                     in

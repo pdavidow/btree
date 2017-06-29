@@ -1,6 +1,6 @@
 module MusicNote_Tests exposing (..)
 
-import MusicNote exposing (MusicNote(..), Freq(..), sortOrder, mbSortOrder, (:+:), (:-:), displayString, toFrequency)
+import MusicNote exposing (MusicNote(..), Freq(..), sorter, mbSorter, (:+:), (:-:), displayString, toFrequency)
 
 import Test exposing (..)
 import Expect
@@ -14,15 +14,15 @@ musicNote =
          [ describe "MusicNote.sortOrder"
             [ test "sortOrder" <|
                 \() ->
-                    Expect.equal ("E") (sortOrder E)
+                    Expect.equal ("E") (sorter E)
             ]
          , describe "MusicNote.mbSortOrder"
             [ test "Just" <|
                 \() ->
-                    Expect.equal ("Just E") (mbSortOrder (Just E))
+                    Expect.equal ("Just E") (mbSorter (Just E))
             , test "Nothing" <|
                 \() ->
-                    Expect.equal ("Nothing") (mbSortOrder Nothing)
+                    Expect.equal ("Nothing") (mbSorter Nothing)
             ]
          , describe "MusicNote.(:+:)"
             [ test "within range" <|

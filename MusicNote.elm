@@ -1,4 +1,4 @@
-module MusicNote exposing (MusicNote(..), Freq(..), sortOrder, mbSortOrder, (:+:), (:-:), displayString, toFrequency)
+module MusicNote exposing (MusicNote(..), Freq(..), sorter, mbSorter, (:+:), (:-:), displayString, toFrequency)
 
 import Array.Hamt as Array exposing (..)
 import List.Extra exposing (elemIndex)
@@ -49,16 +49,16 @@ minNoteIndex =
     0
 
 
-sortOrder : MusicNote -> String
-sortOrder note =
+sorter : MusicNote -> String
+sorter note =
     Basics.toString note
 
 
-mbSortOrder : Maybe MusicNote -> String
-mbSortOrder mbNote =
+mbSorter : Maybe MusicNote -> String
+mbSorter mbNote =
     case mbNote of
         Just note ->
-            "Just " ++ (sortOrder note)
+            "Just " ++ (sorter note)
 
         Nothing ->
             "Nothing"

@@ -2,7 +2,7 @@ module BTreeVariedType_Tests exposing (..)
 
 import BTreeVariedType exposing (BTreeVariedType(..), incrementNodes, decrementNodes, raiseNodes)
 import BTree exposing (..)
-import MusicNote exposing (MusicNote(..), sortOrder)
+import MusicNote exposing (MusicNote(..), sorter)
 
 import Test exposing (..)
 import Expect

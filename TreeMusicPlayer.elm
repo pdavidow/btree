@@ -6,9 +6,13 @@ import Time exposing (Time, millisecond, inSeconds, inMilliseconds)
 import BTreeUniformType exposing (BTreeUniformType(..))
 import BTree exposing (BTree, flatten)
 import MusicNote exposing (MusicNote, Freq(..), toFrequency)
+import MusicNotePlayer exposing (MusicNotePlayer(..))
 import AudioNote exposing (AudioNote)
 import Ports exposing (port_playNote)
 
+
+
+-- todo move some stuff from here into MusicNotePlayer
 
 noteDuration : Time
 noteDuration = 500 * millisecond
@@ -25,10 +29,10 @@ interval = noteDuration + gapDuration
 treeMusicPlay : BTreeUniformType -> Cmd msg
 treeMusicPlay bTreeUniformType =
     case bTreeUniformType of
-        BTreeMusicNote bTree ->
+        BTreeMusicNotePlayer bTree ->
             let
                 freqs = flatten bTree
-                    |> values
+                    |> List.filterMap (\(MusicNotePlayer params) -> params.mbNote)
                     |> List.map toFrequency
             in
                 playFreqs freqs

@@ -1,10 +1,12 @@
 module BTreeUniformType exposing (BTreeUniformType, BTreeUniformType(..), toNothing, toTaggedNodes, toStringLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, depth, sumInt, sumString, sort, removeDuplicates, isAllNothing)
 
+import Arithmetic exposing (isPrime)
+
 import BTree exposing (NodeTag(..))
 import BTree exposing (BTree, depth, map, removeDuplicatesBy, singleton, sumInt , sumString , sort, sortBy, isEmpty)
-import MusicNote exposing (MusicNote, mbSortOrder)
+import MusicNote exposing (MusicNote, mbSorter)
+import MusicNotePlayer exposing (MusicNotePlayer(..), sorter)
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
-import Arithmetic exposing (isPrime)
 
 
 type OnlyNothing = OnlyNothing
@@ -13,7 +15,7 @@ type BTreeUniformType
     = BTreeInt (BTree Int)
     | BTreeString (BTree String)
     | BTreeBool (BTree Bool)
-    | BTreeMusicNote (BTree (Maybe MusicNote))
+    | BTreeMusicNotePlayer (BTree MusicNotePlayer)
     | BTreeNothing (BTree OnlyNothing)
 
 
@@ -34,7 +36,7 @@ toNothing bTreeUniformType =
             BTreeBool bTree ->
                 nothing bTree
 
-            BTreeMusicNote bTree ->
+            BTreeMusicNotePlayer bTree ->
                 nothing bTree
 
             BTreeNothing bTree ->
@@ -53,7 +55,7 @@ toTaggedNodes bTreeUniformType =
         BTreeBool bTree ->
             map BoolNode bTree
 
-        BTreeMusicNote bTree ->
+        BTreeMusicNotePlayer bTree ->
             map MusicNoteNode bTree
 
         BTreeNothing bTree ->
@@ -72,7 +74,7 @@ toStringLength bTreeUniformType =
         BTreeBool bTree ->
             Nothing
 
-        BTreeMusicNote bTree ->
+        BTreeMusicNotePlayer bTree ->
             Nothing
 
         BTreeNothing bTree ->
@@ -91,7 +93,7 @@ toIsIntPrime bTreeUniformType =
         BTreeBool bTree ->
             Nothing
 
-        BTreeMusicNote bTree ->
+        BTreeMusicNotePlayer bTree ->
             Nothing
 
         BTreeNothing bTree ->
@@ -110,8 +112,8 @@ mapUniformTree operand mappers bTreeUniformType =
         BTreeBool bTree ->
             BTreeBool (map (mappers.bool operand) bTree)
 
-        BTreeMusicNote bTree ->
-            BTreeMusicNote (map (mappers.musicNote operand) bTree)
+        BTreeMusicNotePlayer bTree ->
+            BTreeMusicNotePlayer (map (mappers.musicNotePlayer operand) bTree)
 
         BTreeNothing bTree ->
             bTreeUniformType
@@ -144,7 +146,7 @@ depth bTreeUniformType =
         BTreeBool bTree ->
             BTree.depth bTree
 
-        BTreeMusicNote bTree ->
+        BTreeMusicNotePlayer bTree ->
             BTree.depth bTree
 
         BTreeNothing bTree ->
@@ -163,7 +165,7 @@ sumInt bTreeUniformType =
         BTreeBool bTree ->
             Nothing
 
-        BTreeMusicNote bTree ->
+        BTreeMusicNotePlayer bTree ->
             Nothing
 
         BTreeNothing bTree ->
@@ -182,7 +184,7 @@ sumString bTreeUniformType =
         BTreeBool bTree ->
             Nothing
 
-        BTreeMusicNote bTree ->
+        BTreeMusicNotePlayer bTree ->
             Nothing
 
         BTreeNothing bTree ->
@@ -201,8 +203,8 @@ sort bTreeUniformType =
         BTreeBool bTree ->
             Just (BTreeBool (BTree.sortBy toString bTree))
 
-        BTreeMusicNote bTree ->
-            Just (BTreeMusicNote (BTree.sortBy MusicNote.mbSortOrder bTree))
+        BTreeMusicNotePlayer bTree ->
+            Just (BTreeMusicNotePlayer (BTree.sortBy MusicNotePlayer.sorter bTree))
 
         BTreeNothing bTree ->
             Just bTreeUniformType
@@ -220,8 +222,8 @@ removeDuplicates bTreeUniformType =
         BTreeBool bTree ->
             BTreeBool (BTree.removeDuplicatesBy toString bTree)
 
-        BTreeMusicNote bTree ->
-            BTreeMusicNote (BTree.removeDuplicatesBy MusicNote.mbSortOrder bTree)
+        BTreeMusicNotePlayer bTree ->
+            BTreeMusicNotePlayer (BTree.removeDuplicatesBy MusicNotePlayer.sorter bTree)
 
         BTreeNothing bTree ->
             BTreeNothing (singleton OnlyNothing)
@@ -239,8 +241,11 @@ isAllNothing bTreeUniformType =
         BTreeBool bTree ->
             isEmpty bTree
 
-        BTreeMusicNote bTree ->
-            BTree.isAllNothing bTree
+        BTreeMusicNotePlayer bTree ->
+            let
+                func = \(MusicNotePlayer params) -> params.mbNote
+            in
+                BTree.isAllNothing (map func bTree)
 
         BTreeNothing bTree ->
             True

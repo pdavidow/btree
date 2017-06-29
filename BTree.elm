@@ -6,7 +6,7 @@ import TreeDiagram as TD exposing (node, Tree)
 import List.Extra exposing (uniqueBy)
 import Maybe.Extra exposing (values)
 
-import MusicNote exposing (MusicNote)
+import MusicNotePlayer exposing (MusicNotePlayer(..))
 
 
 type BTree a
@@ -18,7 +18,7 @@ type NodeTag
     = IntNode Int
     | StringNode String
     | BoolNode Bool
-    | MusicNoteNode (Maybe MusicNote)
+    | MusicNoteNode MusicNotePlayer
     | NothingNode
 
 
@@ -210,3 +210,5 @@ isAllNothing bTree =
 isEmpty : BTree a -> Bool
 isEmpty bTree =
     bTree == Empty
+
+-- todo ?? fromList flatten fromList REVERSIBLE or not?

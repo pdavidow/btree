@@ -1,20 +1,22 @@
 module ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
 
 import Arithmetic exposing (isEven)
-import MusicNote exposing (MusicNote, (:+:), (:-:))
+
+import MusicNote exposing ((:+:), (:-:))
+import MusicNotePlayer exposing (MusicNotePlayer(..))
 
 
 type alias Mappers =
     { int : Int -> Int -> Int
     , string : Int -> String -> String
     , bool : Int -> Bool -> Bool
-    , musicNote : Int -> Maybe MusicNote -> Maybe MusicNote
+    , musicNotePlayer : Int -> MusicNotePlayer -> MusicNotePlayer
     }
 
 
-incrementMappers = Mappers incrementInt incrementString incrementBool incrementMusicNote
-decrementMappers = Mappers decrementInt decrementString decrementBool decrementMusicNote
-raiseMappers = Mappers raiseInt raiseString raiseBool raiseMusicNote
+incrementMappers = Mappers incrementInt incrementString incrementBool incrementMusicNoteInPlayer
+decrementMappers = Mappers decrementInt decrementString decrementBool decrementMusicNoteInPlayer
+raiseMappers = Mappers raiseInt raiseString raiseBool raiseMusicNoteInPlayer
 
 
 incrementInt : Int -> Int -> Int
@@ -71,16 +73,16 @@ raiseBool exp b =
         not b
 
 
-incrementMusicNote : Int -> Maybe MusicNote -> Maybe MusicNote
-incrementMusicNote delta mbNote =
-    mbNote :+: (abs delta)
+incrementMusicNoteInPlayer : Int -> MusicNotePlayer -> MusicNotePlayer
+incrementMusicNoteInPlayer delta (MusicNotePlayer params) =
+    MusicNotePlayer {params | mbNote = params.mbNote :+: (abs delta)}
 
 
-decrementMusicNote : Int -> Maybe MusicNote -> Maybe MusicNote
-decrementMusicNote delta mbNote =
-    mbNote :-: (abs delta)
+decrementMusicNoteInPlayer : Int -> MusicNotePlayer -> MusicNotePlayer
+decrementMusicNoteInPlayer delta (MusicNotePlayer params) =
+    MusicNotePlayer {params | mbNote = params.mbNote :-: (abs delta)}
 
 
-raiseMusicNote : Int -> Maybe MusicNote -> Maybe MusicNote
-raiseMusicNote exp mbNote =
-    mbNote
+raiseMusicNoteInPlayer : Int -> MusicNotePlayer -> MusicNotePlayer
+raiseMusicNoteInPlayer exp player =
+    player

@@ -2,7 +2,7 @@ module Main exposing (..)
 
 -- Based on https://github.com/vipentti/elm-mdl-dashboard/blob/master/src/View.elm
 
-import Html exposing (Html, div, text, hr, input, h3, h4, h5, p, b)
+import Html exposing (Html, div, text, hr, input, h3, h4, h5, p, b, programWithFlags)
 import Html.Events exposing (onInput)
 import Html.Attributes as A exposing (class, style, type_, value)
 
@@ -18,20 +18,26 @@ import Material.Chip as Chip
 import Material.Scheme
 import Material
 
-import Random
 import Pivot exposing (withRollback)
 import Maybe.Extra exposing (unwrap)
+import List.Extra exposing (last)
+import Random
+import Random.Pcg exposing (Seed, initialSeed, step)
+import Uuid
+import Lazy exposing (lazy)
 
 import BTreeUniformType exposing (BTreeUniformType(..))
 import BTreeUniformType exposing (..)
 import BTreeVariedType exposing (BTreeVariedType(..), incrementNodes, decrementNodes, raiseNodes)
 import BTree exposing (NodeTag(..))
-import BTree exposing (..)
+import BTree exposing (..) -- todo nope onlyt what is needed
 import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram)
 import UniversalConstants exposing (nothingString)
-import MusicNote exposing (MusicNote(..))
+import MusicNote exposing (MusicNote(..), mbSorter)
+import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter)
 import TreeMusicPlayer exposing (treeMusicPlay)
 import Ports exposing (port_donePlayNotes)
+import CustomFunctions exposing (lazyUnwrap)
 ------------------------------------------------
 
 
@@ -52,6 +58,7 @@ type alias Model =
     , minListLength : Int
     , maxListLength : Int
     , isEnablePlayNotesButton : Bool
+    , uuidSeed : Seed
     , mdl : Material.Model
     }
 
@@ -61,12 +68,12 @@ initialModel =
     { intTree = BTreeInt (Node 5 (singleton 4) (Node 3 Empty (singleton 4)))
     , stringTree = BTreeString (Node "Q 123" (singleton "E") (Node "Q 123" Empty (singleton "ee")))
     , boolTree = BTreeBool (Node True (singleton True) (singleton False))
-    , musicNoteTree = BTreeMusicNote (Node (Just F) (singleton (Just E)) (Node (Just C_sharp) Empty (singleton (Just E))))
-    , variedTree = BTreeVaried (Node (IntNode 123) (singleton (StringNode "abc")) ((Node (BoolNode True)) (singleton (MusicNoteNode (Just C_sharp))) Empty))
+    , musicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
+    , variedTree = BTreeVaried (Node (IntNode 123) (singleton (StringNode "abc")) ((Node (BoolNode True)) (singleton (MusicNoteNode (MusicNotePlayer.on (Just C_sharp)))) Empty))
     , intTreeCache = BTreeInt Empty
     , stringTreeCache = BTreeString Empty
     , boolTreeCache = BTreeBool Empty
-    , musicNoteTreeCache = BTreeMusicNote Empty
+    , musicNoteTreeCache = BTreeMusicNotePlayer Empty
     , variedTreeCache = BTreeVaried Empty
     , delta = 1
     , exponent = 2
@@ -74,13 +81,62 @@ initialModel =
     , minListLength = 1
     , maxListLength = 6
     , isEnablePlayNotesButton = True
+    , uuidSeed = initialSeed 0 -- placeholder
     , mdl = Material.model
     }
 
 
-init : (Model, Cmd Msg)
-init =
-  (initialModel, Cmd.none)
+getIds : Int -> Seed -> ( List Uuid.Uuid, Seed )
+getIds count startSeed =
+    let
+        generate = \seed -> step Uuid.uuidGenerator seed
+
+        func : Maybe a -> ( Uuid.Uuid, Seed ) -> ( Uuid.Uuid, Seed )
+        func = \a ( id, seed ) -> generate seed
+
+        tuples = List.repeat (count - 1) Nothing
+            |> List.scanl func (generate startSeed)
+
+        ids = List.map Tuple.first tuples
+
+        lazyDefault = Lazy.lazy (\() -> ( Tuple.first (generate startSeed), startSeed ))
+
+        currentSeed = tuples
+            |> List.Extra.last
+            |> lazyUnwrap lazyDefault identity
+            |> Tuple.second
+
+    in
+        ( ids, currentSeed )
+
+
+initMusicNoteTree : Seed -> (BTreeUniformType, Seed)
+initMusicNoteTree startSeed =
+    let
+        -- bTree = Node F (singleton E) (Node C_sharp Empty (singleton E)) -- todo is this what we now get? (make into test)
+        notes = [F, E, C_sharp, E]
+        ( ids, endSeed ) = getIds (List.length notes) startSeed
+        players = List.map2 (\id note -> MusicNotePlayer.idedOn (Just id) (Just note)) ids notes
+
+        tree = BTree.fromListBy MusicNotePlayer.sorter players
+            |> BTreeMusicNotePlayer
+
+    in
+        ( tree, endSeed )
+
+
+init : Int -> ( Model, Cmd Msg )
+init jsSeed =
+    let
+        ( musicNoteTree, uuidSeed ) = initMusicNoteTree (initialSeed jsSeed)
+    in
+        (   {initialModel
+            | musicNoteTree = musicNoteTree
+            , uuidSeed = uuidSeed
+            }
+        ,
+        Cmd.none
+        )
 
 
 type Msg =
@@ -549,7 +605,7 @@ subscriptions model =
 
 
 main =
-  Html.program
+  Html.programWithFlags -- using programWithFlags to get the seed values from JS
     { init = init
     , view = view
     , update = update

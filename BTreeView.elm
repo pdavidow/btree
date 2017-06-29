@@ -7,6 +7,7 @@ import BTree exposing (NodeTag(..))
 import BTreeUniformType exposing (BTreeUniformType(..), toTaggedNodes)
 import BTreeVariedType exposing (BTreeVariedType(..))
 import MusicNote exposing (displayString)
+import MusicNotePlayer exposing (MusicNotePlayer(..))
 
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
@@ -106,14 +107,19 @@ drawNode mbNodeTag =
                             , displayString b |> fromString |> style treeNodeStyle |> text |> moveY 4
                             ]
 
-                MusicNoteNode mbNote ->
-                    case mbNote of
+                MusicNoteNode (MusicNotePlayer params) ->
+                    case params.mbNote of
                         Just note ->
-                            group
-                                [ ngon 5 25 |> filled (purple)
-                                , ngon 5 25 |> outlined treeLineStyle
-                                , displayString note |> fromString |> style treeNodeStyle |> text |> moveY 4
-                                ]
+                            let
+                                outlineStyle = if params.isPlaying
+                                    then treeLineHighlightStyle
+                                    else treeLineStyle
+                            in
+                                group
+                                    [ ngon 5 25 |> filled (purple)
+                                    , ngon 5 25 |> outlined outlineStyle
+                                    , displayString note |> fromString |> style treeNodeStyle |> text |> moveY 4
+                                    ]
 
                         Nothing ->
                             drawNothingNode
@@ -181,6 +187,11 @@ treeNilStyle =
 treeLineStyle : LineStyle
 treeLineStyle =
     { defaultLine | width = 1 }
+
+
+treeLineHighlightStyle : LineStyle
+treeLineHighlightStyle =
+    { defaultLine | width = 4 }
 
 
 arrow : Form

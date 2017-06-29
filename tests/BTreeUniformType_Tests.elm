@@ -3,7 +3,7 @@ module BTreeUniformType_Tests exposing (..)
 import BTreeUniformType exposing (toNothing, toTaggedNodes, incrementNodes, decrementNodes, raiseNodes, isAllNothing)
 import BTreeUniformType exposing (BTreeUniformType(..))
 import BTree exposing (..)
-import MusicNote exposing (MusicNote(..), sortOrder)
+import MusicNote exposing (MusicNote(..), sorter)
 
 import Test exposing (..)
 import Expect
@@ -66,10 +66,10 @@ bTreeUniformType =
                     Expect.equal Nothing (BTreeUniformType.toStringLength (BTreeBool (Node True Empty (singleton False))))
             , test "of empty BTreeMusicNote" <|
                 \() ->
-                    Expect.equal Nothing (BTreeUniformType.toStringLength (BTreeMusicNote Empty))
+                    Expect.equal Nothing (BTreeUniformType.toStringLength (BTreeMusicNotePlayer Empty))
             , test "of 2 values BTreeMusicNote" <|
                 \() ->
-                    Expect.equal Nothing (BTreeUniformType.toStringLength (BTreeMusicNote (Node (Just A) Empty (singleton (Just B)))))
+                    Expect.equal Nothing (BTreeUniformType.toStringLength (BTreeMusicNotePlayer (Node (Just A) Empty (singleton (Just B)))))
             ]
          , describe "BTreeUniformType.toIsIntPrime"
             [ test "of empty BTreeString" <|
@@ -92,10 +92,10 @@ bTreeUniformType =
                     Expect.equal Nothing (BTreeUniformType.toIsIntPrime (BTreeBool (Node True Empty (singleton False))))
             , test "of empty BTreeMusicNote" <|
                 \() ->
-                    Expect.equal Nothing (BTreeUniformType.toIsIntPrime (BTreeMusicNote Empty))
+                    Expect.equal Nothing (BTreeUniformType.toIsIntPrime (BTreeMusicNotePlayer Empty))
             , test "of 2 values BTreeMusicNote" <|
                 \() ->
-                    Expect.equal Nothing (BTreeUniformType.toIsIntPrime (BTreeMusicNote (Node (Just A) Empty (singleton (Just B)))))
+                    Expect.equal Nothing (BTreeUniformType.toIsIntPrime (BTreeMusicNotePlayer (Node (Just A) Empty (singleton (Just B)))))
             ]
         , describe "BTreeUniformType.incrementNodes"
             [ test "of empty BTreeInt" <|
@@ -121,10 +121,10 @@ bTreeUniformType =
                     Expect.equal (BTreeBool (Node True Empty (singleton False))) (BTreeUniformType.incrementNodes 8 (BTreeBool (Node True Empty (singleton False))))
             , test "of empty BTreeMusicNote" <|
                 \() ->
-                    Expect.equal (BTreeMusicNote Empty) (BTreeUniformType.incrementNodes 1 (BTreeMusicNote Empty))
+                    Expect.equal (BTreeMusicNotePlayer Empty) (BTreeUniformType.incrementNodes 1 (BTreeMusicNotePlayer Empty))
             , test "of 2 BTreeMusicNote" <|
                 \() ->
-                    Expect.equal ((BTreeMusicNote (Node (Just G_sharp) (singleton (Nothing)) Empty))) (BTreeUniformType.incrementNodes 1 (BTreeMusicNote (Node (Just G) (singleton (Just G_sharp)) Empty)))
+                    Expect.equal ((BTreeMusicNotePlayer (Node (Just G_sharp) (singleton (Nothing)) Empty))) (BTreeUniformType.incrementNodes 1 (BTreeMusicNotePlayer (Node (Just G) (singleton (Just G_sharp)) Empty)))
             ]
          , describe "BTreeUniformType.decrementNodes"
             [ test "of empty" <|
@@ -144,10 +144,10 @@ bTreeUniformType =
                     Expect.equal (BTreeBool (Node True Empty (singleton False))) (BTreeUniformType.decrementNodes 8 (BTreeBool (Node True Empty (singleton False))))
             , test "of empty BTreeMusicNote" <|
                 \() ->
-                    Expect.equal (BTreeMusicNote Empty) (BTreeUniformType.decrementNodes 1 (BTreeMusicNote Empty))
+                    Expect.equal (BTreeMusicNotePlayer Empty) (BTreeUniformType.decrementNodes 1 (BTreeMusicNotePlayer Empty))
             , test "of 2 BTreeMusicNote" <|
                 \() ->
-                    Expect.equal ((BTreeMusicNote (Node (Just A) (singleton (Nothing)) Empty))) (BTreeUniformType.decrementNodes 1 (BTreeMusicNote (Node (Just A_sharp) (singleton (Just A)) Empty)))
+                    Expect.equal ((BTreeMusicNotePlayer (Node (Just A) (singleton (Nothing)) Empty))) (BTreeUniformType.decrementNodes 1 (BTreeMusicNotePlayer (Node (Just A_sharp) (singleton (Just A)) Empty)))
             ]
          , describe "BTreeUniformType.raiseNodes"
             [ test "of empty" <|
@@ -167,10 +167,10 @@ bTreeUniformType =
                     Expect.equal (BTreeBool (Node True Empty (singleton False))) (BTreeUniformType.raiseNodes 8 (BTreeBool (Node True Empty (singleton False))))
             , test "of empty BTreeMusicNote" <|
                 \() ->
-                    Expect.equal (BTreeMusicNote Empty) (BTreeUniformType.decrementNodes 1 (BTreeMusicNote Empty))
+                    Expect.equal (BTreeMusicNotePlayer Empty) (BTreeUniformType.decrementNodes 1 (BTreeMusicNotePlayer Empty))
             , test "of 2 BTreeMusicNote" <|
                 \() ->
-                    Expect.equal ((BTreeMusicNote (Node (Just A_sharp) (singleton (Just A)) Empty))) (BTreeUniformType.raiseNodes 1 (BTreeMusicNote (Node (Just A_sharp) (singleton (Just A)) Empty)))
+                    Expect.equal ((BTreeMusicNotePlayer (Node (Just A_sharp) (singleton (Just A)) Empty))) (BTreeUniformType.raiseNodes 1 (BTreeMusicNotePlayer (Node (Just A_sharp) (singleton (Just A)) Empty)))
             ]
          , describe "BTreeUniformType.depth"
             [ test "of empty BTreeString" <|
@@ -205,10 +205,10 @@ bTreeUniformType =
                     Expect.equal Nothing (BTreeUniformType.sumInt (BTreeBool (Node True Empty (singleton False))))
             , test "of empty BTreeMusicNote" <|
                 \() ->
-                    Expect.equal Nothing (BTreeUniformType.sumInt (BTreeMusicNote Empty))
+                    Expect.equal Nothing (BTreeUniformType.sumInt (BTreeMusicNotePlayer Empty))
             , test "of 2 values BTreeMusicNote" <|
                 \() ->
-                    Expect.equal Nothing (BTreeUniformType.sumInt (BTreeMusicNote (Node (Just A) Empty (singleton (Just D)))))
+                    Expect.equal Nothing (BTreeUniformType.sumInt (BTreeMusicNotePlayer (Node (Just A) Empty (singleton (Just D)))))
             ]
          , describe "BTreeUniformType.sumString"
             [ test "of empty BTreeString" <|
@@ -232,10 +232,10 @@ bTreeUniformType =
                     Expect.equal Nothing (BTreeUniformType.sumString (BTreeBool (Node True Empty (singleton False))))
             , test "of empty BTreeMusicNote" <|
                 \() ->
-                    Expect.equal Nothing (BTreeUniformType.sumString (BTreeMusicNote Empty))
+                    Expect.equal Nothing (BTreeUniformType.sumString (BTreeMusicNotePlayer Empty))
             , test "of 2 values BTreeMusicNote" <|
                 \() ->
-                    Expect.equal Nothing (BTreeUniformType.sumString (BTreeMusicNote (Node (Just A) Empty (singleton (Just D)))))
+                    Expect.equal Nothing (BTreeUniformType.sumString (BTreeMusicNotePlayer (Node (Just A) Empty (singleton (Just D)))))
             ]
          , describe "BTreeUniformType.sort"
             [ test "of empty BTreeString" <|
@@ -270,13 +270,13 @@ bTreeUniformType =
                     Expect.equal (Just (BTreeBool (Node False Empty (singleton True)))) (BTreeUniformType.sort (BTreeBool (Node True Empty (singleton False))))
             , test "of empty BTreeMusicNote" <|
                 \() ->
-                    Expect.equal (Just (BTreeMusicNote Empty)) (BTreeUniformType.sort (BTreeMusicNote Empty))
+                    Expect.equal (Just (BTreeMusicNotePlayer Empty)) (BTreeUniformType.sort (BTreeMusicNotePlayer Empty))
             , test "of singleton BTreeMusicNote" <|
                 \() ->
-                    Expect.equal (Just (BTreeMusicNote (singleton (Just A)))) (BTreeUniformType.sort(BTreeMusicNote (singleton (Just A))))
+                    Expect.equal (Just (BTreeMusicNotePlayer (singleton (Just A)))) (BTreeUniformType.sort(BTreeMusicNotePlayer (singleton (Just A))))
             , test "of 2 values BTreeMusicNote" <|
                 \() ->
-                    Expect.equal (Just (BTreeMusicNote (Node (Just A) Empty (singleton (Just E))))) (BTreeUniformType.sort (BTreeMusicNote (Node (Just E) Empty (singleton (Just A)))))
+                    Expect.equal (Just (BTreeMusicNotePlayer (Node (Just A) Empty (singleton (Just E))))) (BTreeUniformType.sort (BTreeMusicNotePlayer (Node (Just E) Empty (singleton (Just A)))))
             ]
          , describe "BTreeUniformType.removeDuplicates"
             [ test "of empty BTreeString" <|
@@ -299,10 +299,10 @@ bTreeUniformType =
                     Expect.equal (BTreeBool (Node True (singleton False) Empty)) (BTreeUniformType.removeDuplicates (BTreeBool (Node True (singleton False) (singleton True))))
             , test "of empty BTreeMusicNote" <|
                 \() ->
-                    Expect.equal (BTreeMusicNote Empty) (BTreeUniformType.removeDuplicates (BTreeMusicNote Empty))
+                    Expect.equal (BTreeMusicNotePlayer Empty) (BTreeUniformType.removeDuplicates (BTreeMusicNotePlayer Empty))
             , test "of 3 values BTreeMusicNote" <|
                 \() ->
-                    Expect.equal (BTreeMusicNote (Node (Just F) (singleton (Just E)) Empty)) (BTreeUniformType.removeDuplicates (BTreeMusicNote (Node (Just F) (singleton (Just E)) (singleton (Just F)))))
+                    Expect.equal (BTreeMusicNotePlayer (Node (Just F) (singleton (Just E)) Empty)) (BTreeUniformType.removeDuplicates (BTreeMusicNotePlayer (Node (Just F) (singleton (Just E)) (singleton (Just F)))))
             ]
          , describe "BTreeUniformType.isAllNothing"
             [ test "of empty BTreeString" <|
@@ -325,10 +325,10 @@ bTreeUniformType =
                     Expect.equal False (BTreeUniformType.isAllNothing (BTreeBool (singleton True)))
             , test "of empty BTreeMusicNote" <|
                 \() ->
-                    Expect.equal True (BTreeUniformType.isAllNothing (BTreeMusicNote Empty))
+                    Expect.equal True (BTreeUniformType.isAllNothing (BTreeMusicNotePlayer Empty))
             , test "of 1 value BTreeMusicNote" <|
                 \() ->
-                    Expect.equal False (BTreeUniformType.isAllNothing (BTreeMusicNote (singleton (Just A))))
+                    Expect.equal False (BTreeUniformType.isAllNothing (BTreeMusicNotePlayer (singleton (Just A))))
             , test "of empty BTreeNothing" <|
                 \() ->
                     Expect.equal True (BTreeUniformType.isAllNothing (BTreeNothing Empty))

@@ -1,9 +1,11 @@
 module BTreeVariedType exposing (BTreeVariedType, BTreeVariedType(..), toStringLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes)
 
+import Arithmetic exposing (isPrime)
+
 import BTree exposing (BTree, map)
 import BTree exposing (NodeTag(..))
+import MusicNotePlayer exposing (MusicNotePlayer(..))
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
-import Arithmetic exposing (isPrime)
 
 
 type BTreeVariedType = BTreeVaried (BTree NodeTag)
@@ -71,7 +73,7 @@ mapVariedTree operand mappers (BTreeVaried bTree) =
                     BoolNode (mappers.bool operand x)
 
                 MusicNoteNode x ->
-                    MusicNoteNode (mappers.musicNote operand x)
+                    MusicNoteNode (mappers.musicNotePlayer operand x)
 
                 NothingNode ->
                     NothingNode
