@@ -45,6 +45,7 @@ type alias Model =
     { intTree : BTreeUniformType
     , stringTree : BTreeUniformType
     , boolTree : BTreeUniformType
+    , initialMusicNoteTree : BTreeUniformType
     , musicNoteTree : BTreeUniformType
     , variedTree : BTreeVariedType
     , intTreeCache : BTreeUniformType
@@ -68,6 +69,7 @@ initialModel =
     { intTree = BTreeInt (Node 5 (singleton 4) (Node 3 Empty (singleton 4)))
     , stringTree = BTreeString (Node "Q 123" (singleton "E") (Node "Q 123" Empty (singleton "ee")))
     , boolTree = BTreeBool (Node True (singleton True) (singleton False))
+    , initialMusicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
     , musicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
     , variedTree = BTreeVaried (Node (IntNode 123) (singleton (StringNode "abc")) ((Node (BoolNode True)) (singleton (MusicNoteNode (MusicNotePlayer.on (Just C_sharp)))) Empty))
     , intTreeCache = BTreeInt Empty
@@ -86,8 +88,8 @@ initialModel =
     }
 
 
-getIds : Int -> Seed -> ( List Uuid.Uuid, Seed )
-getIds count startSeed =
+generateIds : Int -> Seed -> ( List Uuid.Uuid, Seed )
+generateIds count startSeed =
     let
         generate = \seed -> step Uuid.uuidGenerator seed
 
@@ -113,14 +115,12 @@ getIds count startSeed =
 initMusicNoteTree : Seed -> (BTreeUniformType, Seed)
 initMusicNoteTree startSeed =
     let
-        -- bTree = Node F (singleton E) (Node C_sharp Empty (singleton E)) -- todo is this what we now get? (make into test)
         notes = [F, E, C_sharp, E]
-        ( ids, endSeed ) = getIds (List.length notes) startSeed
-        players = List.map2 (\id note -> MusicNotePlayer.idedOn (Just id) (Just note)) ids notes
+        ( ids, endSeed ) = generateIds (List.length notes) startSeed
 
-        tree = BTree.fromListBy MusicNotePlayer.sorter players
+        tree = List.map2 (\id note -> MusicNotePlayer.idedOn (Just id) (Just note)) ids notes
+            |> BTree.fromListBy MusicNotePlayer.sorter
             |> BTreeMusicNotePlayer
-
     in
         ( tree, endSeed )
 
@@ -131,7 +131,8 @@ init jsSeed =
         ( musicNoteTree, uuidSeed ) = initMusicNoteTree (initialSeed jsSeed)
     in
         (   {initialModel
-            | musicNoteTree = musicNoteTree
+            | initialMusicNoteTree = musicNoteTree
+            , musicNoteTree = musicNoteTree
             , uuidSeed = uuidSeed
             }
         ,
@@ -496,7 +497,11 @@ update msg model =
             )
 
         Reset ->
-            ( initialModel
+            (   { initialModel
+                | initialMusicNoteTree = model.initialMusicNoteTree
+                , musicNoteTree = model.initialMusicNoteTree
+                , uuidSeed = model.uuidSeed
+                }
             , Cmd.none
             )
 
