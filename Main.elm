@@ -35,8 +35,8 @@ import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram)
 import UniversalConstants exposing (nothingString)
 import MusicNote exposing (MusicNote(..), mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter)
-import TreeMusicPlayer exposing (treeMusicPlay, donePlayNote)
-import Ports exposing (port_donePlayNote, port_donePlayNotes)
+import TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote)
+import Ports exposing (port_startPlayNote, port_donePlayNote, port_donePlayNotes)
 import CustomFunctions exposing (lazyUnwrap)
 ------------------------------------------------
 
@@ -58,6 +58,7 @@ type Msg =
     | StartShowIsIntPrime
     | StopShowIsIntPrime
     | PlayNotes
+    | StartPlayNote (String)
     | DonePlayNote (String)
     | DonePlayNotes (Bool)
     | Reset
@@ -490,6 +491,23 @@ update msg model =
             , treeMusicPlay model.musicNoteTree
             )
 
+        StartPlayNote id ->
+            let
+                mbUuid = Uuid.fromString id
+
+                updatedTree = case mbUuid of
+                    Just uuid ->
+                       startPlayNote (Debug.log "StartPlayNote uuid" uuid) (Debug.log "StartPlayNote mtree" model.musicNoteTree)
+
+                    Nothing ->
+                        model.musicNoteTree
+            in
+            (   { model
+                | musicNoteTree = updatedTree
+                }
+            , Cmd.none
+            )
+
         DonePlayNote id ->
             let
                 mbUuid = Uuid.fromString id
@@ -629,7 +647,8 @@ intFromInput string =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ port_donePlayNote DonePlayNote
+        [ port_startPlayNote StartPlayNote
+        , port_donePlayNote DonePlayNote
         , port_donePlayNotes DonePlayNotes
         ]
 

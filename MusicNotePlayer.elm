@@ -22,7 +22,7 @@ idedOn : Maybe Uuid -> Maybe MusicNote -> MusicNotePlayer
 idedOn mbId mbNote =
    MusicNotePlayer
        { mbNote = mbNote
-       , isPlaying = True -- todo for now, but should init False
+       , isPlaying = True
        , mbId = mbId
        }
 

@@ -1,4 +1,4 @@
-module TreeMusicPlayer exposing (treeMusicPlay, donePlayNote)
+module TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote)
 
 import Time exposing (Time, millisecond, inMilliseconds)
 import Uuid exposing (Uuid)
@@ -10,9 +10,6 @@ import MusicNotePlayer exposing (MusicNotePlayer(..), isPlayable)
 import AudioNote exposing (AudioNote(..), toJS)
 import Ports exposing (port_playNote)
 
-
-
--- todo move some stuff from here into MusicNotePlayer
 
 treeMusicPlay : BTreeUniformType -> Cmd msg
 treeMusicPlay bTreeUniformType =
@@ -56,15 +53,15 @@ toAudioNotes players =
         List.indexedMap func players
 
 
-donePlayNote : Uuid -> BTreeUniformType -> BTreeUniformType
-donePlayNote uuid bTreeUniformType =
+setPlayMode : Bool -> Uuid -> BTreeUniformType -> BTreeUniformType
+setPlayMode isPlaying uuid bTreeUniformType =
     case bTreeUniformType of
         BTreeMusicNotePlayer bTree ->
             let
                 func = \(MusicNotePlayer params) ->
                     let
                         updatedParams =  if params.mbId == Just uuid
-                            then {params | isPlaying = False}
+                            then {params | isPlaying = isPlaying}
                             else params
                     in
                         MusicNotePlayer updatedParams
@@ -74,3 +71,13 @@ donePlayNote uuid bTreeUniformType =
                 BTreeMusicNotePlayer updatedBTree
         _ ->
             bTreeUniformType
+
+
+startPlayNote : Uuid -> BTreeUniformType -> BTreeUniformType
+startPlayNote uuid bTreeUniformType =
+    setPlayMode True uuid bTreeUniformType
+
+
+donePlayNote : Uuid -> BTreeUniformType -> BTreeUniformType
+donePlayNote uuid bTreeUniformType =
+    setPlayMode False uuid bTreeUniformType
