@@ -1,6 +1,6 @@
 module MusicNote_Tests exposing (..)
 
-import MusicNote exposing (MusicNote(..), Freq(..), sorter, mbSorter, (:+:), (:-:), displayString, toFrequency)
+import MusicNote exposing (MusicNote(..), Freq(..), sorter, mbSorter, (:+:), (:-:), displayString, toFreq)
 
 import Test exposing (..)
 import Expect
@@ -51,6 +51,6 @@ musicNote =
          , describe "MusicNote.toFrequency"
             [ test "toFrequency" <|
                 \() ->
-                    Expect.equal (Freq 293.67) (MusicNote.toFrequency D)
+                    Expect.equal (Freq 293.67) (MusicNote.toFreq D)
             ]
         ]

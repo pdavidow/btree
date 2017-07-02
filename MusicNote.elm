@@ -1,4 +1,4 @@
-module MusicNote exposing (MusicNote(..), Freq(..), sorter, mbSorter, (:+:), (:-:), displayString, toFrequency)
+module MusicNote exposing (MusicNote(..), Freq(..), sorter, mbSorter, (:+:), (:-:), displayString, toFreq)
 
 import Array.Hamt as Array exposing (..)
 import List.Extra exposing (elemIndex)
@@ -142,8 +142,8 @@ displayString note =
             "G#"
 
 
-toFrequency : MusicNote -> Freq
-toFrequency note =
+toFreq : MusicNote -> Freq
+toFreq note =
     -- http://newt.phys.unsw.edu.au/jw/notes.html
     case note of
         A -> -- A3

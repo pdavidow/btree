@@ -23,7 +23,7 @@ import Maybe.Extra exposing (unwrap)
 import List.Extra exposing (last)
 import Random
 import Random.Pcg exposing (Seed, initialSeed, step)
-import Uuid
+import Uuid exposing (Uuid)
 import Lazy exposing (lazy)
 
 import BTreeUniformType exposing (BTreeUniformType(..))
@@ -35,17 +35,40 @@ import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram)
 import UniversalConstants exposing (nothingString)
 import MusicNote exposing (MusicNote(..), mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter)
-import TreeMusicPlayer exposing (treeMusicPlay)
-import Ports exposing (port_donePlayNotes)
+import TreeMusicPlayer exposing (treeMusicPlay, donePlayNote)
+import Ports exposing (port_donePlayNote, port_donePlayNotes)
 import CustomFunctions exposing (lazyUnwrap)
 ------------------------------------------------
+
+
+type Msg =
+      Increment
+    | Decrement
+    | Raise
+    | SortUniformTrees
+    | RemoveDuplicatesInUniformTrees
+    | Delta String
+    | Exponent String
+    | RequestRandomIntList
+    | ReceiveRandomIntList (List Int)
+    | RequestRandomDelta
+    | ReceiveRandomDelta Int
+    | StartShowStringLength
+    | StopShowStringLength
+    | StartShowIsIntPrime
+    | StopShowIsIntPrime
+    | PlayNotes
+    | DonePlayNote (String)
+    | DonePlayNotes (Bool)
+    | Reset
+    | Mdl (Material.Msg Msg)
 
 
 type alias Model =
     { intTree : BTreeUniformType
     , stringTree : BTreeUniformType
     , boolTree : BTreeUniformType
-    , initMusicNoteTree : BTreeUniformType
+    , initialMusicNoteTree : BTreeUniformType
     , musicNoteTree : BTreeUniformType
     , variedTree : BTreeVariedType
     , intTreeCache : BTreeUniformType
@@ -69,7 +92,7 @@ initialModel =
     { intTree = BTreeInt (Node 5 (singleton 4) (Node 3 Empty (singleton 4)))
     , stringTree = BTreeString (Node "Q 123" (singleton "E") (Node "Q 123" Empty (singleton "ee")))
     , boolTree = BTreeBool (Node True (singleton True) (singleton False))
-    , initMusicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
+    , initialMusicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
     , musicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
     , variedTree = BTreeVaried (Node (IntNode 123) (singleton (StringNode "abc")) ((Node (BoolNode True)) (singleton (MusicNoteNode (MusicNotePlayer.on (Just C_sharp)))) Empty))
     , intTreeCache = BTreeInt Empty
@@ -88,12 +111,12 @@ initialModel =
     }
 
 
-generateIds : Int -> Seed -> ( List Uuid.Uuid, Seed )
+generateIds : Int -> Seed -> ( List Uuid, Seed )
 generateIds count startSeed =
     let
         generate = \seed -> step Uuid.uuidGenerator seed
 
-        func : Maybe a -> ( Uuid.Uuid, Seed ) -> ( Uuid.Uuid, Seed )
+        func : Maybe a -> ( Uuid, Seed ) -> ( Uuid, Seed )
         func = \a ( id, seed ) -> generate seed
 
         tuples = List.repeat (count - 1) Nothing
@@ -115,7 +138,7 @@ generateIds count startSeed =
 idedMusicNoteTree : Seed -> (BTreeUniformType, Seed)
 idedMusicNoteTree startSeed =
     let
-        notes = [F, E, C_sharp, E]
+        notes = [E, F, G]
         ( ids, endSeed ) = generateIds (List.length notes) startSeed
 
         tree = List.map2 (\id note -> MusicNotePlayer.idedOn (Just id) (Just note)) ids notes
@@ -131,35 +154,13 @@ init jsSeed =
         ( musicNoteTree, uuidSeed ) = idedMusicNoteTree (initialSeed jsSeed)
     in
         (   {initialModel
-            | initMusicNoteTree = musicNoteTree
+            | initialMusicNoteTree = musicNoteTree
             , musicNoteTree = musicNoteTree
             , uuidSeed = uuidSeed
             }
         ,
         Cmd.none
         )
-
-
-type Msg =
-      Increment
-    | Decrement
-    | Raise
-    | SortUniformTrees
-    | RemoveDuplicatesInUniformTrees
-    | Delta String
-    | Exponent String
-    | RequestRandomIntList
-    | ReceiveRandomIntList (List Int)
-    | RequestRandomDelta
-    | ReceiveRandomDelta Int
-    | StartShowStringLength
-    | StopShowStringLength
-    | StartShowIsIntPrime
-    | StopShowIsIntPrime
-    | PlayNotes
-    | DonePlayNotes (Bool)
-    | Reset
-    | Mdl (Material.Msg Msg)
 
 
 view : Model -> Html Msg
@@ -191,7 +192,14 @@ inputs model =
 
 actionButtons : Model -> List (Html Msg)
 actionButtons model =
-    [ Button.render Mdl [0] model.mdl
+    [ Button.render Mdl [9] model.mdl
+        [ Button.flat
+        , Button.disabled
+            |> Options.when (not (isEnablePlayNotesButton model))
+        , Options.onClick PlayNotes
+        ]
+        [ text "Play Notes"]
+    , Button.render Mdl [0] model.mdl
         [ Button.flat
         , Options.onClick Increment
         ]
@@ -238,13 +246,6 @@ actionButtons model =
         , Options.onClick RequestRandomDelta
         ]
         [ text "Random Delta"]
-    , Button.render Mdl [9] model.mdl
-        [ Button.flat
-        , Button.disabled
-            |> Options.when (not (isEnablePlayNotesButton model))
-        , Options.onClick PlayNotes
-        ]
-        [ text "Play Notes"]
     , Button.render Mdl [10] model.mdl
         [ Button.raised
         , Options.onClick Reset
@@ -319,10 +320,10 @@ viewStatus model =
 
 viewTrees: Model -> List (Html.Html msg)
 viewTrees model =
-    [ bTreeUniformTypeDiagram model.intTree
+    [ bTreeUniformTypeDiagram model.musicNoteTree
+    , bTreeUniformTypeDiagram model.intTree
     , bTreeUniformTypeDiagram model.stringTree
     , bTreeUniformTypeDiagram model.boolTree
-    , bTreeUniformTypeDiagram model.musicNoteTree
     , bTreeVariedTypeDiagram model.variedTree
     ]
 
@@ -489,20 +490,37 @@ update msg model =
             , treeMusicPlay model.musicNoteTree
             )
 
-        DonePlayNotes bool ->
+        DonePlayNote id ->
+            let
+                mbUuid = Uuid.fromString id
+
+                updatedTree = case mbUuid of
+                    Just uuid ->
+                       donePlayNote (Debug.log "DonePlayNote uuid" uuid) (Debug.log "DonePlayNote mtree" model.musicNoteTree)
+
+                    Nothing ->
+                        model.musicNoteTree
+            in
             (   { model
-                | isEnablePlayNotesButton = bool
+                | musicNoteTree = updatedTree
+                }
+            , Cmd.none
+            )
+
+        DonePlayNotes isDone ->
+            (   { model
+                | isEnablePlayNotesButton = (Debug.log "DonePlayNotes" isDone)
                 }
             , Cmd.none
             )
 
         Reset ->
             let
-                tree = model.initMusicNoteTree
+                tree = model.initialMusicNoteTree
                 seed = model.uuidSeed
             in
                 (   { initialModel
-                    | initMusicNoteTree = tree
+                    | initialMusicNoteTree = tree
                     , musicNoteTree = tree
                     , uuidSeed = seed
                     }
@@ -610,7 +628,10 @@ intFromInput string =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    port_donePlayNotes DonePlayNotes
+    Sub.batch
+        [ port_donePlayNote DonePlayNote
+        , port_donePlayNotes DonePlayNotes
+        ]
 
 
 main =
