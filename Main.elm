@@ -139,7 +139,7 @@ generateIds count startSeed =
 idedMusicNoteTree : Seed -> (BTreeUniformType, Seed)
 idedMusicNoteTree startSeed =
     let
-        notes = [E, F, G]
+        notes = [F, E, C_sharp, E]
         ( ids, endSeed ) = generateIds (List.length notes) startSeed
 
         tree = List.map2 (\id note -> MusicNotePlayer.idedOn (Just id) (Just note)) ids notes

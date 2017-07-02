@@ -11,7 +11,7 @@ type AudioNote = AudioNote
     { mbNote : Maybe MusicNote
     , mbId : Maybe Uuid
     , startOffset : Time -- msec
-    , stopOffset : Time -- msec
+    , duration : Time -- msec
     , isLast : Bool
     }
 
@@ -20,7 +20,7 @@ type alias AudioNote_JS =
     { freq : Float
     , id : String
     , startOffset : Float -- sec
-    , stopOffset : Float -- sec
+    , duration : Float -- sec
     , isLast : Bool
     }
 
@@ -31,12 +31,12 @@ toJS (AudioNote params) =
         (Freq freq) = unwrap (Freq 0.0) toFreq params.mbNote
         id = unwrap "" Uuid.toString params.mbId
         startOffset = inSeconds params.startOffset
-        stopOffset = inSeconds params.stopOffset
+        duration = inSeconds params.duration
         isLast = params.isLast
     in
         AudioNote_JS
             freq
             id
             startOffset
-            stopOffset
+            duration
             isLast

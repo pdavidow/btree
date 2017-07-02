@@ -30,7 +30,7 @@ toAudioNotes : List MusicNotePlayer -> List AudioNote
 toAudioNotes players =
     let
         noteDuration = 1000 * millisecond
-        gapDuration = 100 * millisecond
+        gapDuration = 0.0 -- 45 * millisecond
 
         interval = noteDuration + gapDuration
         lastIndex = (List.length players) - 1
@@ -46,7 +46,7 @@ toAudioNotes players =
                     { mbNote = params.mbNote
                     , mbId = params.mbId
                     , startOffset = startOffset
-                    , stopOffset = stopOffset
+                    , duration = noteDuration
                     , isLast = isLast
                     }
     in
