@@ -1,9 +1,10 @@
 module TreeMusicPlayer_Tests exposing (..)
 
 import TreeMusicPlayer exposing (treeMusicPlay)
-import MusicNote exposing (MusicNote(..))
 import BTreeUniformType exposing (BTreeUniformType(..))
 import BTree exposing (BTree(..), singleton)
+import MusicNote exposing (MusicNote(..))
+import MusicNotePlayer exposing (on)
 
 import Test exposing (..)
 import Expect
@@ -26,8 +27,8 @@ musicNote =
             , test "valid" <|
                 \() ->
                     let
-                        tree = BTreeMusicNotePlayer (Node (Just A) Empty Empty)
-                        result = "{ type = \"node\", branches = [{ type = \"leaf\", home = \"port_playNote\", value = { freq = 220, startOffset = 0, stopOffset = 0.5, onEnded = Just True } }] }"
+                        tree = BTreeMusicNotePlayer (singleton (MusicNotePlayer.on A))
+                        result = "{ type = \"node\", branches = [{ type = \"leaf\", home = \"port_playNote\", value = { freq = 220, id = \"\", startOffset = 0, duration = 1, isLast = True } }] }"
 
                     in
                         Expect.equal result (toString (treeMusicPlay tree))

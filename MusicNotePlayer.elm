@@ -13,15 +13,15 @@ type MusicNotePlayer = MusicNotePlayer
     }
 
 
-on : Maybe MusicNote -> MusicNotePlayer
-on mbNote =
-    idedOn Nothing mbNote
+on : MusicNote -> MusicNotePlayer
+on note =
+    idedOn Nothing note
 
 
-idedOn : Maybe Uuid -> Maybe MusicNote -> MusicNotePlayer
-idedOn mbId mbNote =
+idedOn : Maybe Uuid -> MusicNote -> MusicNotePlayer
+idedOn mbId note =
    MusicNotePlayer
-       { mbNote = mbNote
+       { mbNote = Just note
        , isPlaying = False
        , mbId = mbId
        }

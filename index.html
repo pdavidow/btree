@@ -27,6 +27,7 @@
                 const silentOscillator = audioContext.createOscillator(); // hack for lack of .onstarted, start sound shifted to compensate
                 const timeShift = 0.05; //sec
                 const currentTime = audioContext.currentTime;
+
                 const silentStartTime = currentTime + startOffset; // sec
                 const silentStopTime = silentStartTime + timeShift; // sec
                 const soundStartTime = silentStopTime; // sec

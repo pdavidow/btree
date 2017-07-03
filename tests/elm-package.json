@@ -13,6 +13,7 @@
         "elm-community/elm-test": "4.0.0 <= v < 5.0.0",
         "Skinney/elm-array-exploration": "2.0.4 <= v < 3.0.0",
         "brenden/elm-tree-diagram": "3.0.0 <= v < 4.0.0",
+        "danyx23/elm-uuid": "2.1.0 <= v < 3.0.0",
         "debois/elm-mdl": "8.1.0 <= v < 9.0.0",
         "elm-community/list-extra": "6.1.0 <= v < 7.0.0",
         "elm-community/maybe-extra": "4.0.0 <= v < 5.0.0",

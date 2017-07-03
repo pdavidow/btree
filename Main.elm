@@ -95,7 +95,7 @@ initialModel =
     , boolTree = BTreeBool (Node True (singleton True) (singleton False))
     , initialMusicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
     , musicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
-    , variedTree = BTreeVaried (Node (IntNode 123) (singleton (StringNode "abc")) ((Node (BoolNode True)) (singleton (MusicNoteNode (MusicNotePlayer.on (Just C_sharp)))) Empty))
+    , variedTree = BTreeVaried (Node (IntNode 123) (singleton (StringNode "abc")) ((Node (BoolNode True)) (singleton (MusicNoteNode (MusicNotePlayer.on C_sharp))) Empty))
     , intTreeCache = BTreeInt Empty
     , stringTreeCache = BTreeString Empty
     , boolTreeCache = BTreeBool Empty
@@ -142,7 +142,7 @@ idedMusicNoteTree startSeed =
         notes = [F, E, C_sharp, E]
         ( ids, endSeed ) = generateIds (List.length notes) startSeed
 
-        tree = List.map2 (\id note -> MusicNotePlayer.idedOn (Just id) (Just note)) ids notes
+        tree = List.map2 (\id note -> MusicNotePlayer.idedOn (Just id) note) ids notes
             |> BTree.fromListBy MusicNotePlayer.sorter
             |> BTreeMusicNotePlayer
     in
