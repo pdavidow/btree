@@ -497,7 +497,7 @@ update msg model =
 
                 updatedTree = case mbUuid of
                     Just uuid ->
-                       startPlayNote (Debug.log "StartPlayNote uuid" uuid) (Debug.log "StartPlayNote mtree" model.musicNoteTree)
+                       startPlayNote uuid model.musicNoteTree
 
                     Nothing ->
                         model.musicNoteTree
@@ -514,7 +514,7 @@ update msg model =
 
                 updatedTree = case mbUuid of
                     Just uuid ->
-                       donePlayNote (Debug.log "DonePlayNote uuid" uuid) (Debug.log "DonePlayNote mtree" model.musicNoteTree)
+                       donePlayNote uuid model.musicNoteTree
 
                     Nothing ->
                         model.musicNoteTree

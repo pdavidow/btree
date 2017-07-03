@@ -23,9 +23,14 @@
                 console.log ("port_playNote note", note);
 
                 const {freq, id, startOffset, duration, isLast} = note;
-                const timeShift = 0.05; //sec
                 const soundOscillator = audioContext.createOscillator();
                 const silentOscillator = audioContext.createOscillator(); // hack for lack of .onstarted, start sound shifted to compensate
+                const timeShift = 0.05; //sec
+                const currentTime = audioContext.currentTime;
+                const silentStartTime = currentTime + startOffset; // sec
+                const silentStopTime = silentStartTime + timeShift; // sec
+                const soundStartTime = silentStopTime; // sec
+                const soundStopTime = soundStartTime + duration; // sec
 
                 soundOscillator.connect(audioContext.destination);
                 soundOscillator.frequency.value = freq;
@@ -44,13 +49,6 @@
                 } else {
                     soundOscillator.onended = () => announceDonePlayNote(id);
                 }
-
-                const currentTime = audioContext.currentTime;
-
-                const silentStartTime = currentTime + startOffset; // sec
-                const silentStopTime = silentStartTime + timeShift; // sec
-                const soundStartTime = silentStopTime; // sec
-                const soundStopTime = soundStartTime + duration; // sec
 
                 silentOscillator.start(silentStartTime);
                 silentOscillator.stop (silentStopTime);

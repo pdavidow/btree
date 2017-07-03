@@ -15,12 +15,12 @@ treeMusicPlay : BTreeUniformType -> Cmd msg
 treeMusicPlay bTreeUniformType =
     case bTreeUniformType of
         BTreeMusicNotePlayer bTree ->
-            Debug.log "tojs" (flatten bTree
+            flatten bTree
                 |> List.filter isPlayable
                 |> toAudioNotes
                 |> List.map toJS
                 |> List.map port_playNote
-                |> Cmd.batch)
+                |> Cmd.batch
 
         _ ->
             Cmd.none
@@ -30,7 +30,7 @@ toAudioNotes : List MusicNotePlayer -> List AudioNote
 toAudioNotes players =
     let
         noteDuration = 1000 * millisecond
-        gapDuration = 0.0 -- 45 * millisecond
+        gapDuration = 0.0
 
         interval = noteDuration + gapDuration
         lastIndex = (List.length players) - 1
