@@ -4,10 +4,10 @@ import Lazy exposing (Lazy, force)
 
 
 lazyUnwrap : Lazy b -> (a -> b) -> Maybe a -> b
-lazyUnwrap lazy func mbA = --todo reanme global: func => fn
+lazyUnwrap lazy fn mbA =
     case mbA of
         Just a ->
-            func a
+            fn a
 
         Nothing ->
             Lazy.force lazy

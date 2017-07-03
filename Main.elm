@@ -117,11 +117,11 @@ generateIds count startSeed =
     let
         generate = \seed -> step uuidGenerator seed
 
-        func : Maybe a -> ( Uuid, Seed ) -> ( Uuid, Seed )
-        func = \a ( id, seed ) -> generate seed
+        fn : Maybe a -> ( Uuid, Seed ) -> ( Uuid, Seed )
+        fn = \a ( id, seed ) -> generate seed
 
         tuples = List.repeat (count - 1) Nothing
-            |> List.scanl func (generate startSeed)
+            |> List.scanl fn (generate startSeed)
 
         ids = List.map Tuple.first tuples
 
@@ -573,34 +573,34 @@ unCacheAllTrees model =
 
 
 changeUniformTrees : (BTreeUniformType -> BTreeUniformType) -> Model -> Model
-changeUniformTrees func model =
+changeUniformTrees fn model =
     {model
-        | intTree = func model.intTree
-        , stringTree = func model.stringTree
-        , boolTree = func model.boolTree
-        , musicNoteTree = func model.musicNoteTree
+        | intTree = fn model.intTree
+        , stringTree = fn model.stringTree
+        , boolTree = fn model.boolTree
+        , musicNoteTree = fn model.musicNoteTree
     }
 
 
 changeVariedTrees : (BTreeVariedType -> BTreeVariedType) -> Model -> Model
-changeVariedTrees func model =
+changeVariedTrees fn model =
     {model
-        | variedTree = func model.variedTree
+        | variedTree = fn model.variedTree
     }
 
 
 shiftUniformTrees : Int -> (Int -> BTreeUniformType -> BTreeUniformType) -> Model -> Model
-shiftUniformTrees operand func model =
+shiftUniformTrees operand fn model =
     let
-        shift = func operand
+        shift = fn operand
     in
         changeUniformTrees shift model
 
 
 shiftVariedTrees : Int -> (Int -> BTreeVariedType -> BTreeVariedType) -> Model -> Model
-shiftVariedTrees operand func model =
+shiftVariedTrees operand fn model =
     let
-        shift = func operand
+        shift = fn operand
     in
         changeVariedTrees shift model
 
@@ -608,35 +608,35 @@ shiftVariedTrees operand func model =
 sortUniformTrees : Model -> Model
 sortUniformTrees model =
     let
-        func = withRollback BTreeUniformType.sort
+        fn = withRollback BTreeUniformType.sort
     in
-        changeUniformTrees func model
+        changeUniformTrees fn model
 
 
 removeDuplicatesUniformTrees : Model -> Model
 removeDuplicatesUniformTrees model =
     let
-        func = BTreeUniformType.removeDuplicates
+        fn = BTreeUniformType.removeDuplicates
     in
-        changeUniformTrees func model
+        changeUniformTrees fn model
 
 
 morphUniformTrees : (BTreeUniformType -> Maybe BTreeUniformType) -> Model -> Model
-morphUniformTrees func model =
+morphUniformTrees fn model =
     let
-        defaultMorph = \tree -> defaultMorphUniformTree func tree
+        defaultMorph = \tree -> defaultMorphUniformTree fn tree
     in
         changeUniformTrees defaultMorph model
 
 
 morphVariedTrees : (BTreeVariedType -> BTreeVariedType) -> Model -> Model
-morphVariedTrees func model =
-    changeVariedTrees func model
+morphVariedTrees fn model =
+    changeVariedTrees fn model
 
 
 defaultMorphUniformTree : (BTreeUniformType -> Maybe BTreeUniformType) -> BTreeUniformType -> BTreeUniformType
-defaultMorphUniformTree func tree =
-    Maybe.withDefault (BTreeUniformType.toNothing tree) (func tree)
+defaultMorphUniformTree fn tree =
+    Maybe.withDefault (BTreeUniformType.toNothing tree) (fn tree)
 
 
 intFromInput : String -> Int

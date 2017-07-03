@@ -243,9 +243,9 @@ isAllNothing bTreeUniformType =
 
         BTreeMusicNotePlayer bTree ->
             let
-                func = \(MusicNotePlayer params) -> params.mbNote
+                fn = \(MusicNotePlayer params) -> params.mbNote
             in
-                BTree.isAllNothing (map func bTree)
+                BTree.isAllNothing (map fn bTree)
 
         BTreeNothing bTree ->
             True

@@ -34,8 +34,8 @@ toAudioNotes players =
         interval = noteDuration + gapDuration
         lastIndex = (List.length players) - 1
 
-        func: Int -> MusicNotePlayer -> AudioNote
-        func index (MusicNotePlayer params) =
+        fn: Int -> MusicNotePlayer -> AudioNote
+        fn index (MusicNotePlayer params) =
             let
                 startOffset = (toFloat index) * interval
                 stopOffset = startOffset + noteDuration
@@ -43,7 +43,7 @@ toAudioNotes players =
             in
                 audioNote params.mbNote params.mbId startOffset noteDuration isLast
     in
-        List.indexedMap func players
+        List.indexedMap fn players
 
 
 setPlayMode : Bool -> Uuid -> BTreeUniformType -> BTreeUniformType
@@ -51,7 +51,7 @@ setPlayMode isPlaying uuid bTreeUniformType =
     case bTreeUniformType of
         BTreeMusicNotePlayer bTree ->
             let
-                func = \(MusicNotePlayer params) ->
+                fn = \(MusicNotePlayer params) ->
                     let
                         updatedParams =  if params.mbId == Just uuid
                             then {params | isPlaying = isPlaying}
@@ -59,7 +59,7 @@ setPlayMode isPlaying uuid bTreeUniformType =
                     in
                         MusicNotePlayer updatedParams
 
-                updatedBTree = BTree.map func bTree
+                updatedBTree = BTree.map fn bTree
             in
                 BTreeMusicNotePlayer updatedBTree
         _ ->

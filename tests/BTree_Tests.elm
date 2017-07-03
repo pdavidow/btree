@@ -157,30 +157,30 @@ bTree =
             [ test "of empty" <|
                 \() ->
                     let
-                        func = (*)
+                        fn = (*)
                         seed = 3
                         tree = Empty
                     in
-                        Expect.equal (seed) (fold func seed tree)
+                        Expect.equal (seed) (fold fn seed tree)
 
             , test "of singleton" <|
                 \() ->
                     let
-                        func = (*)
+                        fn = (*)
                         seed = 3
                         v = 5
                         tree = singleton v
                     in
-                        Expect.equal (func seed v) (fold func seed tree)
+                        Expect.equal (fn seed v) (fold fn seed tree)
             , test "of 3 value nodes" <|
                 \() ->
                     let
-                        func = (*)
+                        fn = (*)
                         seed = 3
                         list = [4, 5, 6]
                         tree = fromList list
                     in
-                        Expect.equal (List.foldl func seed list) (fold func seed tree) -- same with List.foldr
+                        Expect.equal (List.foldl fn seed list) (fold fn seed tree) -- same with List.foldr
             , test "of 'Sum all of the elements of a tree'" <|
                 \() ->
                     let

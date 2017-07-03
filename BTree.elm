@@ -38,13 +38,13 @@ depth bTree =
 
 
 map : (a -> b) -> BTree a -> BTree b
-map func bTree =
+map fn bTree =
     case bTree of
         Empty ->
             Empty
 
         Node v left right ->
-            Node (func v) (map func left) (map func right)
+            Node (fn v) (map fn left) (map fn right)
 
 
 sum : BTree number -> number
@@ -79,25 +79,25 @@ isElement a bTree =
 
 
 fold : (a -> b -> b) -> b -> BTree a -> b
-fold func acc bTree =
+fold fn acc bTree =
     case bTree of
         Empty ->
             acc
 
         Node v left right ->
             let
-                leftAcc = fold func (func v acc) left
+                leftAcc = fold fn (fn v acc) left
             in
-                fold func leftAcc right
+                fold fn leftAcc right
 
 
 sumUsingFold : BTree number -> number
 sumUsingFold bTree =
     let
-        func = (+)
+        fn = (+)
         seed = 0
     in
-        fold func seed bTree
+        fold fn seed bTree
 
 
 sumInt : BTree Int -> Int
@@ -108,31 +108,31 @@ sumInt bTree =
 sumString : BTree String -> String
 sumString bTree =
     let
-        func = (++)
+        fn = (++)
         seed = ""
     in
-        fold func seed bTree
+        fold fn seed bTree
 
 
 flattenUsingFold : BTree a -> List a
 flattenUsingFold bTree =
     let
-        func = (::)
+        fn = (::)
         seed = []
     in
-        fold func seed bTree
+        fold fn seed bTree
 
 
 isElementUsingFold : a -> BTree a -> Bool
 isElementUsingFold a bTree =
     let
-        func v acc =
+        fn v acc =
             if acc.isFound then acc
             else if acc.a == v then {acc | isFound = True}
             else acc
         seed = {a = a, isFound = False}
     in
-        (fold func seed bTree).isFound
+        (fold fn seed bTree).isFound
 
 
 toTreeDiagramTree : BTree a -> TD.Tree (Maybe a)
@@ -151,11 +151,11 @@ sort bTree =
 
 
 sortBy : (a -> comparable) -> BTree a -> BTree a
-sortBy func bTree =
+sortBy fn bTree =
     bTree
         |> flatten
-        |> List.sortBy func
-        |> fromListBy func
+        |> List.sortBy fn
+        |> fromListBy fn
 
 
 fromList : List comparable -> BTree comparable
@@ -164,8 +164,8 @@ fromList xs =
 
 
 fromListBy : (a -> comparable) -> List a -> BTree a
-fromListBy func xs =
-    List.foldl (insertBy func) Empty xs
+fromListBy fn xs =
+    List.foldl (insertBy fn) Empty xs
 
 
 insert : comparable -> BTree comparable -> BTree comparable
@@ -174,16 +174,16 @@ insert x bTree =
 
 
 insertBy : (a -> comparable) -> a -> BTree a -> BTree a
-insertBy func x bTree =
+insertBy fn x bTree =
     case bTree of
       Empty ->
           singleton x
 
       Node y left right ->
-          if func x >= func y then
-            Node y left (insertBy func x right)
+          if fn x >= fn y then
+            Node y left (insertBy fn x right)
           else
-            Node y (insertBy func x left) right
+            Node y (insertBy fn x left) right
 
 
 removeDuplicates : BTree comparable -> BTree comparable
@@ -192,11 +192,11 @@ removeDuplicates bTree =
 
 
 removeDuplicatesBy : (a -> comparable) -> BTree a -> BTree a
-removeDuplicatesBy func bTree =
+removeDuplicatesBy fn bTree =
     bTree
         |> flatten
-        |> List.Extra.uniqueBy func
-        |> fromListBy func
+        |> List.Extra.uniqueBy fn
+        |> fromListBy fn
 
 
 isAllNothing : BTree (Maybe a) -> Bool

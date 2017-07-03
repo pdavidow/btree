@@ -14,8 +14,8 @@ type BTreeVariedType = BTreeVaried (BTree NodeTag)
 toStringLength : BTreeVariedType -> BTreeVariedType
 toStringLength (BTreeVaried bTree) =
     let
-        func : NodeTag -> NodeTag
-        func nodeTag = case nodeTag of
+        fn : NodeTag -> NodeTag
+        fn nodeTag = case nodeTag of
             IntNode x ->
                 NothingNode
 
@@ -31,14 +31,14 @@ toStringLength (BTreeVaried bTree) =
             NothingNode ->
                 NothingNode
     in
-        BTreeVaried (map func bTree)
+        BTreeVaried (map fn bTree)
 
 
 toIsIntPrime : BTreeVariedType -> BTreeVariedType
 toIsIntPrime (BTreeVaried bTree) =
     let
-        func : NodeTag -> NodeTag
-        func nodeTag = case nodeTag of
+        fn : NodeTag -> NodeTag
+        fn nodeTag = case nodeTag of
             IntNode x ->
                 BoolNode (Arithmetic.isPrime x)
 
@@ -54,14 +54,14 @@ toIsIntPrime (BTreeVaried bTree) =
             NothingNode ->
                 NothingNode
     in
-        BTreeVaried (map func bTree)
+        BTreeVaried (map fn bTree)
 
 
 mapVariedTree : Int -> Mappers -> BTreeVariedType -> BTreeVariedType
 mapVariedTree operand mappers (BTreeVaried bTree) =
     let
-        func : Int -> Mappers -> NodeTag -> NodeTag
-        func operand mappers nodeTag =
+        fn : Int -> Mappers -> NodeTag -> NodeTag
+        fn operand mappers nodeTag =
             case nodeTag of
                 IntNode x ->
                     IntNode (mappers.int operand x)
@@ -78,7 +78,7 @@ mapVariedTree operand mappers (BTreeVaried bTree) =
                 NothingNode ->
                     NothingNode
     in
-        BTreeVaried (map (func operand mappers) bTree)
+        BTreeVaried (map (fn operand mappers) bTree)
 
 
 incrementNodes : Int -> BTreeVariedType -> BTreeVariedType
