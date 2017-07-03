@@ -1,7 +1,6 @@
 module BTreeUniformType_Tests exposing (..)
 
-import BTreeUniformType exposing (toNothing, toTaggedNodes, incrementNodes, decrementNodes, raiseNodes, isAllNothing)
-import BTreeUniformType exposing (BTreeUniformType(..))
+import BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toStringLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, depth, sumInt, sumString, sort, removeDuplicates, isAllNothing)
 import BTree exposing (..)
 import MusicNote exposing (MusicNote(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..), on)

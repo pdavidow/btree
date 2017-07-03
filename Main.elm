@@ -23,7 +23,7 @@ import Maybe.Extra exposing (unwrap)
 import List.Extra exposing (last)
 import Random
 import Random.Pcg exposing (Seed, initialSeed, step)
-import Uuid exposing (Uuid)
+import Uuid exposing (Uuid, uuidGenerator)
 import Lazy exposing (lazy)
 
 import BTreeUniformType exposing (BTreeUniformType(..))
@@ -115,7 +115,7 @@ initialModel =
 generateIds : Int -> Seed -> ( List Uuid, Seed )
 generateIds count startSeed =
     let
-        generate = \seed -> step Uuid.uuidGenerator seed
+        generate = \seed -> step uuidGenerator seed
 
         func : Maybe a -> ( Uuid, Seed ) -> ( Uuid, Seed )
         func = \a ( id, seed ) -> generate seed
