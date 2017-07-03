@@ -7,7 +7,7 @@ import BTreeUniformType exposing (BTreeUniformType(..))
 import BTree exposing (flatten, map)
 import MusicNote exposing (Freq(..), toFreq)
 import MusicNotePlayer exposing (MusicNotePlayer(..), isPlayable)
-import AudioNote exposing (AudioNote(..), toJS)
+import AudioNote exposing (AudioNote, audioNote)
 import Ports exposing (port_playNote)
 
 
@@ -18,7 +18,6 @@ treeMusicPlay bTreeUniformType =
             flatten bTree
                 |> List.filter isPlayable
                 |> toAudioNotes
-                |> List.map toJS
                 |> List.map port_playNote
                 |> Cmd.batch
 
@@ -30,7 +29,7 @@ toAudioNotes : List MusicNotePlayer -> List AudioNote
 toAudioNotes players =
     let
         noteDuration = 1000 * millisecond
-        gapDuration = 0.0
+        gapDuration = 0.0 * millisecond
 
         interval = noteDuration + gapDuration
         lastIndex = (List.length players) - 1
@@ -42,13 +41,7 @@ toAudioNotes players =
                 stopOffset = startOffset + noteDuration
                 isLast = (index == lastIndex)
             in
-                AudioNote
-                    { mbNote = params.mbNote
-                    , mbId = params.mbId
-                    , startOffset = startOffset
-                    , duration = noteDuration
-                    , isLast = isLast
-                    }
+                audioNote params.mbNote params.mbId startOffset noteDuration isLast
     in
         List.indexedMap func players
 

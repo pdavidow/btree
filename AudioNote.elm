@@ -1,4 +1,4 @@
-module AudioNote exposing (AudioNote(..), AudioNote_JS, toJS)
+module AudioNote exposing (AudioNote, audioNote)
 
 import Time exposing (Time, inSeconds)
 import Maybe.Extra exposing (unwrap)
@@ -7,16 +7,7 @@ import Uuid exposing (Uuid)
 import MusicNote exposing (MusicNote, Freq(..), toFreq)
 
 
-type AudioNote = AudioNote
-    { mbNote : Maybe MusicNote
-    , mbId : Maybe Uuid
-    , startOffset : Time -- msec
-    , duration : Time -- msec
-    , isLast : Bool
-    }
-
-
-type alias AudioNote_JS =
+type alias AudioNote =
     { freq : Float
     , id : String
     , startOffset : Float -- sec
@@ -25,18 +16,12 @@ type alias AudioNote_JS =
     }
 
 
-toJS : AudioNote -> AudioNote_JS
-toJS (AudioNote params) =
+audioNote : Maybe MusicNote -> Maybe Uuid -> Time -> Time -> Bool -> AudioNote
+audioNote mbNote mbId startOffsetMsec durationMsec isLast =
     let
-        (Freq freq) = unwrap (Freq 0.0) toFreq params.mbNote
-        id = unwrap "" Uuid.toString params.mbId
-        startOffset = inSeconds params.startOffset
-        duration = inSeconds params.duration
-        isLast = params.isLast
+        (Freq freq) = unwrap (Freq 0.0) toFreq mbNote
+        id = unwrap "" Uuid.toString mbId
+        startOffset = inSeconds startOffsetMsec
+        duration = inSeconds durationMsec
     in
-        AudioNote_JS
-            freq
-            id
-            startOffset
-            duration
-            isLast
+        AudioNote freq id startOffset duration isLast
