@@ -27,10 +27,8 @@ import Uuid exposing (Uuid, uuidGenerator)
 import Lazy exposing (lazy)
 
 import BTreeUniformType exposing (BTreeUniformType(..))
-import BTreeUniformType exposing (..)
 import BTreeVariedType exposing (BTreeVariedType(..), incrementNodes, decrementNodes, raiseNodes)
-import BTree exposing (NodeTag(..))
-import BTree exposing (..) -- todo nope onlyt what is needed
+import BTree exposing (BTree(..), NodeTag(..), fromList, singleton, toTreeDiagramTree)
 import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram)
 import UniversalConstants exposing (nothingString)
 import MusicNote exposing (MusicNote(..), mbSorter)
