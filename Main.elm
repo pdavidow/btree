@@ -77,9 +77,6 @@ type alias Model =
     , variedTreeCache : BTreeVariedType
     , delta : Int
     , exponent : Int
-    , maxRandomInt : Int
-    , minListLength : Int
-    , maxListLength : Int
     , isEnablePlayNotesButton : Bool
     , uuidSeed : Seed
     , mdl : Material.Model
@@ -101,9 +98,6 @@ initialModel =
     , variedTreeCache = BTreeVaried Empty
     , delta = 1
     , exponent = 2
-    , maxRandomInt = 99
-    , minListLength = 1
-    , maxListLength = 6
     , isEnablePlayNotesButton = True
     , uuidSeed = initialSeed 0 -- placeholder
     , mdl = Material.model
@@ -418,17 +412,20 @@ update msg model =
 
         RequestRandomIntList ->
             let
+                maxRandomInt = 99
+                minListLength = 1
+                maxListLength = 6
+
                 randomIntList : Int -> Random.Generator (List Int)
                 randomIntList length =
-                    Random.list length (Random.int 1 model.maxRandomInt)
+                    Random.list length (Random.int 1 maxRandomInt)
 
                 generatorListLength : Random.Generator Int
                 generatorListLength =
-                    Random.int model.minListLength model.maxListLength
+                    Random.int minListLength maxListLength
 
                 generatorIntList : Random.Generator (List Int)
                 generatorIntList =
-                    --andThen : (a -> Generator b) -> Generator a -> Generator b
                     Random.andThen randomIntList generatorListLength
             in
                 ( model
