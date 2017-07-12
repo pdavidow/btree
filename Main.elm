@@ -1,22 +1,10 @@
 module Main exposing (..)
 
--- Based on https://github.com/vipentti/elm-mdl-dashboard/blob/master/src/View.elm
-
-import Html exposing (Html, div, text, hr, input, h3, h4, h5, p, b, programWithFlags)
-import Html.Events exposing (onInput)
-import Html.Attributes as A exposing (class, style, type_, value)
-
-import Material.Grid as Grid exposing (..)
-import Material.Options as Options exposing (Style, css, nop)
-import Material.Layout as Layout
-import Material.Button as Button exposing (..)
-import Material.Elevation as Elevation
-import Material.Color as Color
-import Material.Textfield as Textfield
-import Material.List as Lists
-import Material.Chip as Chip
-import Material.Scheme
-import Material
+import Html exposing (Html, div, span, header, main_, section, article, a, button, text, input, h1, h2, programWithFlags)
+import Html.Events exposing (onClick, onMouseUp, onMouseDown, onInput)
+import Html.Attributes as A exposing (class, style, type_, value, href, target, disabled)
+import Tachyons exposing (classes, tachyons)
+import Tachyons.Classes as T exposing (..)
 
 import Pivot exposing (withRollback)
 import Maybe.Extra exposing (unwrap)
@@ -60,7 +48,6 @@ type Msg =
     | DonePlayNote (String)
     | DonePlayNotes (Bool)
     | Reset
-    | Mdl (Material.Msg Msg)
 
 
 type alias Model =
@@ -79,7 +66,6 @@ type alias Model =
     , exponent : Int
     , isEnablePlayNotesButton : Bool
     , uuidSeed : Seed
-    , mdl : Material.Model
     }
 
 
@@ -100,7 +86,6 @@ initialModel =
     , exponent = 2
     , isEnablePlayNotesButton = True
     , uuidSeed = initialSeed 0 -- placeholder
-    , mdl = Material.model
     }
 
 
@@ -158,92 +143,144 @@ init jsSeed =
 
 view : Model -> Html Msg
 view model =
-    Material.Scheme.top <|
-        Layout.render Mdl
-                model.mdl
-                [ Layout.fixedHeader
-                , Layout.fixedDrawer
-                , Options.css "display" "flex !important"
-                , Options.css "flex-direction" "row"
-                , Options.css "align-items" "center"
+    div [ classes
+            []
+        ]
+        [ tachyons.css
+        , viewHeader model
+        , viewMain model
+        ]
+
+
+viewHeader : Model -> Html Msg
+viewHeader model =
+    header
+        [ classes
+           [ T.bg_green
+           , T.fixed
+           , T.w_100
+           , T.h3
+           , T.ph3
+           , T.pv2
+           , T.z_max
+           ]
+        ]
+        [ span
+            [ classes
+                [ T.f2
+                , T.b
+                , T.pl2
+                , T.pr2
+                , T.hover_yellow
+                , T.hover_bg_black
                 ]
-                { header = [ viewHeader model ]
-                , drawer = []
-                , tabs = ( [], [] )
-                , main =
-                    [ viewBody model
-                    ]
-                }
+            ]
+            [ text "BinaryTree" ]
+        , span
+            [ classes
+                [ T.f2
+                , T.i
+                , T.courier
+                , T.pl2
+                , T.pr2
+                , T.yellow
+                , T.hover_black
+                , T.hover_bg_yellow
+                ]
+            ]
+            [ text "playground" ]
+        , span
+            [ classes
+                [ T.fr
+                , T.pr2
+                , T.pt2
+                , T.f4
+                , T.grow_large
+                ]
+            ]
+            [ a
+                [ href "https://github.com/pdavidow/btree", target "_blank" ]
+                [ text "Github" ]
+            ]
+        ]
 
 
-inputs : Model -> List (Html Msg)
-inputs model =
-    [ b [] [text "Delta: "], input [ A.type_ "number", A.min "1", value (toString model.delta), A.style [("width", "3%")], onInput Delta ] []
-    , b [] [text "Exp: "], input [ A.type_ "number", A.min "1", value (toString model.exponent), A.style [("width", "3%")], onInput Exponent ] []
-    ]
+viewMain : Model -> Html Msg
+viewMain model =
+    main_
+        [ classes
+            [ T.pv5
+            , T.w_100
+            ]
+        ]
+        [ viewDashboard model
+        , viewTrees model
+        ]
 
 
-actionButtons : Model -> List (Html Msg)
-actionButtons model =
-    [ Button.render Mdl [9] model.mdl
-        [ Button.flat
-        , Button.disabled
-            |> Options.when (not (isEnablePlayNotesButton model))
-        , Options.onClick PlayNotes
+viewDashboard : Model -> Html Msg
+viewDashboard model =
+    section
+        [ classes
+            [ T.fixed
+            , T.w_100
+            , T.f3
+            , T.pa3
+            , T.z_max
+           ]
         ]
-        [ text "Play Notes"]
-    , Button.render Mdl [0] model.mdl
-        [ Button.flat
-        , Options.onClick Increment
+        [ section
+            [ classes
+                [ T.pa1
+                , T.bg_washed_yellow
+                ]
+            ]
+            ( viewDashboardTop model )
+        , section
+            [ classes
+                [ T.pa1
+                , T.bg_washed_red
+                ]
+            ]
+            ( viewDashboardBottom model )
         ]
-        [ text "+ Delta"]
-    , Button.render Mdl [1] model.mdl
-        [ Button.flat
-        , Options.onClick Decrement
-        ]
-        [ text "- Delta"]
-    , Button.render Mdl [2] model.mdl
-        [ Button.flat
-        , Options.onClick Raise
-        ]
-        [ text "^ Exp"]
-    , Button.render Mdl [3] model.mdl
-        [ Button.flat
-        , Options.onClick SortUniformTrees
-        ]
-        [ text "Sort Uni"]
-    , Button.render Mdl [4] model.mdl
-        [ Button.flat
-        , Options.onClick RemoveDuplicatesInUniformTrees
-        ]
-        [ text "NoDup Uni"]
-    , Button.render Mdl [5] model.mdl
-        [ Button.colored
-        , Options.onMouseDown StartShowIsIntPrime
-        , Options.onMouseUp StopShowIsIntPrime
-        ]
-        [ text "Prime?"]
-    , Button.render Mdl [6] model.mdl
-        [ Button.colored
-        , Options.onMouseDown StartShowStringLength
-        , Options.onMouseUp StopShowStringLength
-        ]
-        [ text "String Length"]
-    , Button.render Mdl [7] model.mdl
-        [ Button.accent
-        , Options.onClick RequestRandomIntList
-        ]
-        [ text "Random Int-Tree"]
-    , Button.render Mdl [8] model.mdl
-        [ Button.accent
-        , Options.onClick RequestRandomDelta
-        ]
-        [ text "Random Delta"]
-    , Button.render Mdl [10] model.mdl
-        [ Button.raised
-        , Options.onClick Reset
-        ]
-        [ text "Reset"]
+
+
+viewDashboardTop : Model -> List (Html Msg)
+viewDashboardTop model =
+    [ button
+        [onClick PlayNotes, disabled (not (isEnablePlayNotesButton model))]
+        [text "Play"]
+    , button
+        [onClick Increment]
+        [text "+ Delta"]
+    , button
+        [onClick Decrement]
+        [text "- Delta"]
+    , button
+        [onClick Raise]
+        [text "^ Exp"]
+    , button
+        [onClick SortUniformTrees]
+        [text "Sort Uni"]
+    , button
+        [onClick RemoveDuplicatesInUniformTrees]
+        [text "NoDup Uni"]
+    , button
+        [onMouseDown StartShowIsIntPrime, onMouseUp StopShowIsIntPrime]
+        [text "Prime?"]
+    , button
+        [onMouseDown StartShowStringLength, onMouseUp StopShowStringLength]
+        [text "String Length"]
+    , button
+        [onClick RequestRandomIntList]
+        [text "Random Int-Tree"]
+    , button
+        [onClick RequestRandomDelta]
+        [text "Random Delta"]
+    , button
+        [onClick Reset]
+        [text "Reset"]
     ]
 
 
@@ -252,103 +289,99 @@ isEnablePlayNotesButton model =
     (model.isEnablePlayNotesButton) && not (BTreeUniformType.isAllNothing model.musicNoteTree)
 
 
-viewHeader : Model -> Html Msg
-viewHeader model =
-    Layout.row
-        [ Color.background <| Color.color Color.Grey Color.S100
-        , Color.text <| Color.color Color.Grey Color.S900
-        ]
-        [ Layout.title [] [ text "BTREE" ]
-        , Layout.spacer
-        , grid [ ]
-            [ cell
-                [ size All 12
-                , Elevation.e2
-                , Options.css "align-items" "center"
-                , Options.cs "mdl-grid"
-                ]
-                ( List.concat
-                    [ inputs model
-                    , actionButtons model
-                    ]
-                )
-            ]
-        ]
+viewDashboardBottom : Model -> List (Html Msg)
+viewDashboardBottom model =
+    (viewInputs model) ++ (viewStatus model)
 
 
-viewStatus: Model -> List (Html.Html msg)
+viewInputs : Model -> List (Html Msg)
+viewInputs model =
+    [ span [classes [T.b]] [text "Delta: "], input [ A.type_ "number", A.min "1", value (toString model.delta), A.style [("width", "3%")], onInput Delta ] []
+    , span [classes [T.b]] [text "Exp: "], input [ A.type_ "number", A.min "1", value (toString model.exponent), A.style [("width", "3%")], onInput Exponent ] []
+    ]
+
+
+viewStatus : Model -> List (Html Msg)
 viewStatus model =
-    [ Chip.span []
-        [ Chip.content []
-            [ text ("Depth Int-Tree: " ++ toString (BTreeUniformType.depth model.intTree)) ]
-        ]
-    , Chip.span []
-        [ Chip.content []
-            [ text ("Depth String-Tree: " ++ toString (BTreeUniformType.depth model.stringTree)) ]
-        ]
-    , Chip.span []
-        [ Chip.content []
-            ( let
-                string = unwrap
-                    nothingString
-                    toString
-                    (BTreeUniformType.sumInt model.intTree)
-              in
-                [ text ("Sum Int-Tree: " ++ string) ]
-            )
-        ]
-    , Chip.span []
-        [ Chip.content []
-            ( let
-                string = unwrap
-                    nothingString
-                    identity
-                    (BTreeUniformType.sumString model.stringTree)
-              in
-                [ text ("Sum String-Tree: " ++ string) ]
-            )
-        ]
+    [ text ("Sum Int-Tree: " ++ (unwrap nothingString toString (BTreeUniformType.sumInt model.intTree)))
     ]
 
 
-viewTrees: Model -> List (Html.Html msg)
+viewTrees : Model -> Html Msg
 viewTrees model =
-    [ bTreeUniformTypeDiagram model.musicNoteTree
-    , bTreeUniformTypeDiagram model.intTree
-    , bTreeUniformTypeDiagram model.stringTree
-    , bTreeUniformTypeDiagram model.boolTree
-    , bTreeVariedTypeDiagram model.variedTree
-    ]
-
-
-viewBody : Model -> Html Msg
-viewBody model =
-    grid [ ]
-        [ cell
-            [ size All 12
-            , Elevation.e2
-            , Options.css "align-items" "center"
-            , Options.cs "mdl-grid"
-            ]
-            (viewStatus model)
-        , cell
-            [ size All 12
-            , Elevation.e2
-            , Options.css "align-items" "center"
-            , Options.cs "mdl-grid"
-            ]
-            (viewTrees model)
+    -- http://tachyons.io/components/layout/five-column-collapse-one/index.html
+    section
+        [ classes
+            [ T.cf
+            , T.pv6
+            , T.flex_auto
+            , T.bg_washed_green
+           ]
+        ]
+        [ viewTreeCard
+            "uni NotePlayer"
+            (BTreeUniformType.depth model.musicNoteTree)
+            (bTreeUniformTypeDiagram model.musicNoteTree)
+        , viewTreeCard
+            "uni Int"
+            (BTreeUniformType.depth model.intTree)
+            (bTreeUniformTypeDiagram model.intTree)
+        , viewTreeCard
+            "uni String"
+            (BTreeUniformType.depth model.stringTree)
+            (bTreeUniformTypeDiagram model.stringTree)
+        , viewTreeCard
+            "uni Bool"
+            (BTreeUniformType.depth model.boolTree)
+            (bTreeUniformTypeDiagram model.boolTree)
+        , viewTreeCard
+            "varied"
+            -999 -- todo (BTreeVariedType.depth model.variedTree)
+            (bTreeVariedTypeDiagram model.variedTree)
         ]
 
 
-positiveDelta : Model -> Int
-positiveDelta model =
-    abs model.delta
-
-
-positiveExponent : Model -> Int
-positiveExponent model =
-    abs model.exponent
+viewTreeCard : String -> Int -> Html msg -> Html msg
+viewTreeCard title depth diagram =
+    article
+        [ classes
+            [ T.fl
+            , T.w_100
+            , T.w_20_ns
+            , T.br2
+            , T.ba
+            , T.b__black_10
+            , T.mw6
+            , T.center
+            ]
+        ]
+        [ div
+            [ classes
+                [ T.tc
+                ]
+            ]
+            [ Html.h1
+                [ classes
+                    [ T.f3
+                    , T.mb2
+                    ]
+                ]
+                [ text title ]
+            , Html.h2
+                [ classes
+                    [ T.f5
+                    , T.fw4
+                    , T.mt0
+                    ]
+                ]
+                [ depth
+                    |> toString
+                    |> (++) "depth "
+                    |> text
+                ]
+            , diagram
+            ]
+        ]
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -540,9 +573,15 @@ update msg model =
                 , Cmd.none
                 )
 
-        -- Boilerplate: Mdl action handler.
-        Mdl msg_ ->
-            Material.update Mdl msg_ model
+
+positiveDelta : Model -> Int
+positiveDelta model =
+    abs model.delta
+
+
+positiveExponent : Model -> Int
+positiveExponent model =
+    abs model.exponent
 
 
 cacheAllTrees : Model -> Model
