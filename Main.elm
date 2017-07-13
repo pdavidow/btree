@@ -291,19 +291,13 @@ isEnablePlayNotesButton model =
 
 viewDashboardBottom : Model -> List (Html Msg)
 viewDashboardBottom model =
-    (viewInputs model) ++ (viewStatus model)
+    viewInputs model
 
 
 viewInputs : Model -> List (Html Msg)
 viewInputs model =
     [ span [classes [T.b]] [text "Delta: "], input [ A.type_ "number", A.min "1", value (toString model.delta), A.style [("width", "3%")], onInput Delta ] []
     , span [classes [T.b]] [text "Exp: "], input [ A.type_ "number", A.min "1", value (toString model.exponent), A.style [("width", "3%")], onInput Exponent ] []
-    ]
-
-
-viewStatus : Model -> List (Html Msg)
-viewStatus model =
-    [ text ("Sum Int-Tree: " ++ (unwrap nothingString toString (BTreeUniformType.sumInt model.intTree)))
     ]
 
 
@@ -318,31 +312,78 @@ viewTrees model =
             , T.bg_washed_green
            ]
         ]
-        [ viewTreeCard
-            "uni NotePlayer"
-            (BTreeUniformType.depth model.musicNoteTree)
-            (bTreeUniformTypeDiagram model.musicNoteTree)
-        , viewTreeCard
-            "uni Int"
-            (BTreeUniformType.depth model.intTree)
-            (bTreeUniformTypeDiagram model.intTree)
-        , viewTreeCard
-            "uni String"
-            (BTreeUniformType.depth model.stringTree)
-            (bTreeUniformTypeDiagram model.stringTree)
-        , viewTreeCard
-            "uni Bool"
-            (BTreeUniformType.depth model.boolTree)
-            (bTreeUniformTypeDiagram model.boolTree)
-        , viewTreeCard
-            "varied"
-            (BTreeVariedType.depth model.variedTree)
-            (bTreeVariedTypeDiagram model.variedTree)
+        [ viewUniformTreeCard model.musicNoteTree
+        , viewUniformTreeCard model.intTree
+        , viewUniformTreeCard model.stringTree
+        , viewUniformTreeCard model.boolTree
+        , viewVariedTreeCard model.variedTree
         ]
 
 
-viewTreeCard : String -> Int -> Html msg -> Html msg
-viewTreeCard title depth diagram =
+viewUniformTreeCard : BTreeUniformType -> Html msg
+viewUniformTreeCard bTreeUniformType =
+    let
+        title = bTreeUniformTitle bTreeUniformType
+        status = bTreeUniformStatus bTreeUniformType
+        diagram = bTreeUniformTypeDiagram bTreeUniformType
+    in
+        viewTreeCard title status diagram
+
+
+viewVariedTreeCard : BTreeVariedType -> Html msg
+viewVariedTreeCard bTreeVariedType =
+    let
+        (BTreeVaried bTree) = bTreeVariedType
+
+        title = "BTreeVaried"
+        status = depthStatus (BTree.depth bTree)
+        diagram = bTreeVariedTypeDiagram bTreeVariedType
+    in
+        viewTreeCard title status diagram
+
+
+depthStatus : Int -> String
+depthStatus depth =
+    "depth " ++ toString depth
+
+
+bTreeUniformTitle : BTreeUniformType -> String
+bTreeUniformTitle bTreeUniformType =
+    bTreeUniformType
+        |> toString
+        |> String.split " "
+        |> List.head
+        |> Maybe.Extra.unwrap "" identity
+
+
+bTreeUniformStatus : BTreeUniformType -> String
+bTreeUniformStatus bTreeUniformType =
+    let
+        depth = BTreeUniformType.depth bTreeUniformType
+        status = depthStatus depth
+    in
+        case bTreeUniformType of
+            BTreeInt bTree ->
+                let
+                    sum = BTree.sumInt bTree
+                in
+                    status ++ ("; sum " ++ toString sum)
+
+            BTreeString bTree ->
+                status
+
+            BTreeBool bTree ->
+                status
+
+            BTreeMusicNotePlayer bTree ->
+                status
+
+            BTreeNothing bTree ->
+                status
+
+
+viewTreeCard : String -> String -> Html msg -> Html msg
+viewTreeCard title status diagram =
     article
         [ classes
             [ T.fl
@@ -374,11 +415,7 @@ viewTreeCard title depth diagram =
                     , T.mt0
                     ]
                 ]
-                [ depth
-                    |> toString
-                    |> (++) "depth "
-                    |> text
-                ]
+                [ text status ]
             , diagram
             ]
         ]
