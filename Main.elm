@@ -336,7 +336,7 @@ viewTrees model =
             (bTreeUniformTypeDiagram model.boolTree)
         , viewTreeCard
             "varied"
-            -999 -- todo (BTreeVariedType.depth model.variedTree)
+            (BTreeVariedType.depth model.variedTree)
             (bTreeVariedTypeDiagram model.variedTree)
         ]
 

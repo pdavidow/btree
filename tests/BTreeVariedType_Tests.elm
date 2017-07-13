@@ -69,4 +69,15 @@ bTreeVariedType =
                 \() ->
                     Expect.equal (BTreeVaried (Node (StringNode "abcde ^3") (singleton (IntNode 8)) (Node (MusicNoteNode (MusicNotePlayer.on E)) (singleton (BoolNode False)) Empty))) (BTreeVariedType.raiseNodes 3 (BTreeVaried (Node (StringNode "abcde") (singleton (IntNode 2)) (Node (MusicNoteNode (MusicNotePlayer.on E)) (singleton (BoolNode True)) Empty))))
             ]
+         , describe "BTreeVariedType.depth"
+            [ test "of empty" <|
+                \() ->
+                    Expect.equal 0 (BTreeVariedType.depth (BTreeVaried Empty))
+            , test "of singleton" <|
+                \() ->
+                    Expect.equal 1 (BTreeVariedType.depth (BTreeVaried (singleton (IntNode 2))))
+            , test "of 4 values" <|
+                \() ->
+                    Expect.equal 3 (BTreeVariedType.depth (BTreeVaried (Node (StringNode "abcde") (singleton (IntNode 2)) (Node (MusicNoteNode (MusicNotePlayer.on E)) (singleton (BoolNode True)) Empty))))
+            ]
         ]

@@ -1,4 +1,4 @@
-module BTreeVariedType exposing (BTreeVariedType, BTreeVariedType(..), toStringLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes)
+module BTreeVariedType exposing (BTreeVariedType, BTreeVariedType(..), toStringLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, depth)
 
 import Arithmetic exposing (isPrime)
 
@@ -9,6 +9,11 @@ import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMapp
 
 
 type BTreeVariedType = BTreeVaried (BTree NodeTag)
+
+
+depth : BTreeVariedType -> Int
+depth (BTreeVaried bTree) =
+    BTree.depth bTree
 
 
 toStringLength : BTreeVariedType -> BTreeVariedType
