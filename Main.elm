@@ -394,6 +394,7 @@ viewTreeCard title status diagram =
             , T.b__black_10
             , T.mw6
             , T.center
+            , T.overflow_x_scroll
             ]
         ]
         [ div
