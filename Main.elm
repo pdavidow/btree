@@ -249,37 +249,40 @@ viewDashboard model =
 viewDashboardTop : Model -> List (Html Msg)
 viewDashboardTop model =
     [ button
-        [onClick PlayNotes, disabled (not (isEnablePlayNotesButton model))]
+        [classes [T.hover_bg_light_green, T.ma1], onClick PlayNotes, disabled (not (isEnablePlayNotesButton model))]
         [text "Play"]
+    , span
+        [classes [T.ba, T.br2, T.pt2, T.pb2, T.pl1, T.pr1, T.ml2, T.mr2]]
+        [ button
+            [classes [T.hover_bg_light_green, T.ma1], onClick Increment]
+            [text "+ Delta"]
+        , button
+            [classes [T.hover_bg_light_green, T.ma1], onClick Decrement]
+            [text "- Delta"]
+        , button
+            [classes [T.hover_bg_light_green, T.ma1], onClick Raise]
+            [text "^ Exp"]
+        ]
     , button
-        [onClick Increment]
-        [text "+ Delta"]
-    , button
-        [onClick Decrement]
-        [text "- Delta"]
-    , button
-        [onClick Raise]
-        [text "^ Exp"]
-    , button
-        [onClick SortUniformTrees]
+        [classes [T.hover_bg_light_green, T.ma1], onClick SortUniformTrees]
         [text "Sort"]
     , button
-        [onClick RemoveDuplicatesInUniformTrees]
+        [classes [T.hover_bg_light_green, T.ma1], onClick RemoveDuplicatesInUniformTrees]
         [text "Dedup uni"]
     , button
-        [onMouseDown StartShowIsIntPrime, onMouseUp StopShowIsIntPrime]
+        [classes [T.hover_bg_light_green, T.ma1], onMouseDown StartShowIsIntPrime, onMouseUp StopShowIsIntPrime]
         [text "Prime?"]
     , button
-        [onMouseDown StartShowStringLength, onMouseUp StopShowStringLength]
+        [classes [T.hover_bg_light_green, T.ma1], onMouseDown StartShowStringLength, onMouseUp StopShowStringLength]
         [text "String Length"]
     , button
-        [onClick RequestRandomIntList]
+        [classes [T.hover_bg_light_green, T.ma1], onClick RequestRandomIntList]
         [text "Random Int-Tree"]
     , button
-        [onClick RequestRandomDelta]
+        [classes [T.hover_bg_light_green, T.ma1], onClick RequestRandomDelta]
         [text "Random Delta"]
     , button
-        [onClick Reset]
+        [classes [T.fr, T.hover_bg_light_red], onClick Reset]
         [text "Reset"]
     ]
 
@@ -296,8 +299,20 @@ viewDashboardBottom model =
 
 viewInputs : Model -> List (Html Msg)
 viewInputs model =
-    [ span [classes [T.b]] [text "Delta: "], input [ A.type_ "number", A.min "1", value (toString model.delta), A.style [("width", "3%")], onInput Delta ] []
-    , span [classes [T.b]] [text "Exp: "], input [ A.type_ "number", A.min "1", value (toString model.exponent), A.style [("width", "3%")], onInput Exponent ] []
+    [ span
+        []
+        [ (text "Delta: ")
+        , input
+            [classes [T.f4, T.w3], A.type_ "number", A.min "1", value (toString model.delta), onInput Delta]
+            []
+        ]
+    , span
+        [classes [T.pl3]]
+        [ (text "Exp: ")
+        , input
+            [classes [T.f4, T.w3], A.type_ "number", A.min "1", value (toString model.exponent), onInput Exponent]
+            []
+        ]
     ]
 
 
