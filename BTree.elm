@@ -4,7 +4,7 @@ module BTree exposing (BTree, BTree(..), NodeTag, NodeTag(..), singleton, depth,
 
 import TreeDiagram as TD exposing (node, Tree)
 import List.Extra exposing (uniqueBy)
-import Maybe.Extra exposing (values)
+import Maybe.Extra exposing (unwrap, values)
 
 import MusicNotePlayer exposing (MusicNotePlayer(..))
 
@@ -135,14 +135,35 @@ isElementUsingFold a bTree =
         (fold fn seed bTree).isFound
 
 
-toTreeDiagramTree : BTree a -> TD.Tree (Maybe a)
+toTreeDiagramTree : BTree a -> Maybe (TD.Tree (Maybe a))
 toTreeDiagramTree bTree =
     case bTree of
         Empty ->
+            Nothing
+
+        _ ->
+            Just (toTreeDiagramTreeOfNonEmpty bTree)
+
+
+toTreeDiagramTreeOfNonEmpty : BTree a -> TD.Tree (Maybe a)
+toTreeDiagramTreeOfNonEmpty bTree =
+    case bTree of
+        Empty -> -- should never get here
             TD.node Nothing []
 
         Node v left right ->
-            TD.node (Just v)[toTreeDiagramTree left, toTreeDiagramTree right]
+            let
+                leftResult = if isEmpty left
+                    then []
+                    else [ toTreeDiagramTreeOfNonEmpty left ]
+
+                rightResult = if isEmpty right
+                    then []
+                    else [ toTreeDiagramTreeOfNonEmpty right ]
+
+                treeList = leftResult ++ rightResult
+            in
+                TD.node (Just v) treeList
 
 
 sort: BTree comparable -> BTree comparable

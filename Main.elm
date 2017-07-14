@@ -262,10 +262,10 @@ viewDashboardTop model =
         [text "^ Exp"]
     , button
         [onClick SortUniformTrees]
-        [text "Sort Uni"]
+        [text "Sort"]
     , button
         [onClick RemoveDuplicatesInUniformTrees]
-        [text "NoDup Uni"]
+        [text "Dedup uni"]
     , button
         [onMouseDown StartShowIsIntPrime, onMouseUp StopShowIsIntPrime]
         [text "Prime?"]
@@ -327,7 +327,7 @@ viewUniformTreeCard bTreeUniformType =
         status = bTreeUniformStatus bTreeUniformType
         diagram = bTreeUniformTypeDiagram bTreeUniformType
     in
-        viewTreeCard title status diagram
+        viewTreeCard title status Nothing diagram
 
 
 viewVariedTreeCard : BTreeVariedType -> Html msg
@@ -339,7 +339,7 @@ viewVariedTreeCard bTreeVariedType =
         status = depthStatus (BTree.depth bTree)
         diagram = bTreeVariedTypeDiagram bTreeVariedType
     in
-        viewTreeCard title status diagram
+        viewTreeCard title status (Just (T.bg_black_05)) diagram
 
 
 depthStatus : Int -> String
@@ -382,10 +382,10 @@ bTreeUniformStatus bTreeUniformType =
                 status
 
 
-viewTreeCard : String -> String -> Html msg -> Html msg
-viewTreeCard title status diagram =
-    article
-        [ classes
+viewTreeCard : String -> String -> Maybe String -> Html msg -> Html msg
+viewTreeCard title status mbBgColor diagram =
+    let
+        articleTachyons =
             [ T.fl
             , T.w_100
             , T.w_20_ns
@@ -395,31 +395,39 @@ viewTreeCard title status diagram =
             , T.mw6
             , T.center
             , T.overflow_x_scroll
-            ]
-        ]
-        [ div
-            [ classes
-                [ T.tc
-                ]
-            ]
-            [ Html.h1
+            ]  ++ (unwrap [] List.singleton mbBgColor)
+    in
+        article
+            [ classes articleTachyons ]
+            [ div
                 [ classes
-                    [ T.f3
-                    , T.mb2
+                    [ T.tc
                     ]
                 ]
-                [ text title ]
-            , Html.h2
-                [ classes
-                    [ T.f5
-                    , T.fw4
-                    , T.mt0
+                [ Html.h1
+                    [ classes
+                        [ T.f4
+                        , T.mb2
+                        , T.pt1
+                        ]
                     ]
+                    [ text title ]
+                , Html.h2
+                    [ classes
+                        [ T.f5
+                        , T.fw4
+                        , T.mt0
+                        ]
+                    ]
+                    [ text status ]
+                , div
+                    [ classes
+                        [ T.mt0
+                        ]
+                    ]
+                    [ diagram ]
                 ]
-                [ text status ]
-            , diagram
             ]
-        ]
 
 
 update : Msg -> Model -> (Model, Cmd Msg)

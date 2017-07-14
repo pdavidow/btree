@@ -15,7 +15,7 @@ import UniversalConstants exposing (nothingString)
 
 import Color exposing (Color, green, orange, black, white, yellow, blue, purple, lightCharcoal, red)
 import Collage exposing (group, segment, traced, rotate, move, scale, oval, rect, ngon, filled, outlined, text, rect, polygon, moveY, defaultLine, Form, toForm, LineStyle)
-import Element
+import Element exposing (Element)
 import Html exposing (Html)
 import Text exposing (fromString, style, defaultStyle)
 import Arithmetic exposing (isEven)
@@ -33,14 +33,24 @@ bTreeVariedTypeDiagram (BTreeVaried taggedBTree) =
 
 bTreeDiagram : BTree NodeTag -> Html msg
 bTreeDiagram bTree =
-    treeDiagram (toTreeDiagramTree bTree)
+    bTree
+        |> toTreeDiagramTree
+        |> treeElement
+        |> Element.toHtml
 
 
-treeDiagram : TD.Tree (Maybe NodeTag) -> Html msg
-treeDiagram tdTree =
-    Element.toHtml <|
+treeElement : Maybe (TD.Tree (Maybe NodeTag)) -> Element
+treeElement mbTdTree =
+    case mbTdTree of
+        Nothing ->
+            Element.empty
+
+        Just (tdTree) ->
             draw
-                { defaultTreeLayout | padding = 60, siblingDistance = 80 }
+                { defaultTreeLayout
+                | padding = 100
+                , siblingDistance = 80
+                }
                 drawNode
                 drawEdge
                 tdTree
@@ -142,32 +152,7 @@ drawNothingNode =
 
 drawEdge : ( Float, Float ) -> Form
 drawEdge ( x, y ) =
-    let
-        arrowOffset =
-            30
-
-        theta =
-            atan (y / x)
-
-        rot =
-            if x > 0 then
-                theta
-            else
-                pi + theta
-
-        dist =
-            (sqrt (x ^ 2 + y ^ 2)) - 15
-
-        scale =
-            ((dist - arrowOffset) / dist)
-
-        to =
-            (scale * x, scale * y)
-    in
-        group
-            [ segment ( 0, 0 ) to |> traced treeLineStyle
-            , arrow |> move to |> rotate rot
-            ]
+    group [segment (0, 0) (x, y) |> traced treeLineStyle]
 
 
 treeNodeStyle : Text.Style
@@ -192,8 +177,3 @@ treeLineStyle =
 treeLineHighlightStyle : LineStyle
 treeLineHighlightStyle =
     { defaultLine | width = 4 }
-
-
-arrow : Form
-arrow =
-    polygon [ ( -1, 1 ), ( 1, 0 ), ( -1, -1 ), ( -0.5, 0 ) ] |> filled black |> scale 4
