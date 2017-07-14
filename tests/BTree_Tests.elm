@@ -279,13 +279,13 @@ bTree =
          , describe "BTree.toTreeDiagramTree" -- not much of a test because constructors are not exposed
             [ test "of empty" <|
                 \() ->
-                    Expect.equal (TD.node Nothing []) (toTreeDiagramTree Empty)
+                    Expect.equal Nothing (toTreeDiagramTree Empty)
             , test "of singleton" <|
                 \() ->
-                    Expect.equal (TD.node (Just 1) [(TD.node Nothing []), (TD.node Nothing [])]) (toTreeDiagramTree (singleton 1))
+                    Expect.equal (Just (TD.node (Just 1) [])) (toTreeDiagramTree (singleton 1))
             , test "of 2 values" <|
                 \() ->
-                    Expect.equal (TD.node (Just 1) [(TD.node Nothing []), (TD.node (Just 2) [(TD.node Nothing []), (TD.node Nothing [])])]) (toTreeDiagramTree (fromList [1,2]))
+                    Expect.equal (Just (TD.node (Just 1) [TD.node (Just 2) []])) (toTreeDiagramTree (fromList [1,2]))
             ]
          , describe "BTree.sort"
             [ test "of empty" <|
