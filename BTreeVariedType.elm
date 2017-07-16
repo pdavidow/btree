@@ -1,10 +1,11 @@
-module BTreeVariedType exposing (BTreeVariedType, BTreeVariedType(..), toStringLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes)
+module BTreeVariedType exposing (BTreeVariedType, BTreeVariedType(..), toStringLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, removeDuplicates)
 
 import Arithmetic exposing (isPrime)
 
 import BTree exposing (BTree, map)
 import BTree exposing (NodeTag(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..))
+import MusicNote exposing (mbSorter)
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
 
 
@@ -94,3 +95,26 @@ decrementNodes delta bTreeVaried =
 raiseNodes : Int -> BTreeVariedType -> BTreeVariedType
 raiseNodes exp bTreeVaried =
     mapVariedTree exp raiseMappers bTreeVaried
+
+
+removeDuplicates : BTreeVariedType -> BTreeVariedType
+removeDuplicates (BTreeVaried bTree) =
+    let
+        fn = \node ->
+            case node of
+                IntNode v ->
+                    toString node
+
+                StringNode v ->
+                    toString node
+
+                BoolNode v ->
+                    toString node
+
+                MusicNoteNode (MusicNotePlayer params) ->
+                    "MusicNoteNode " ++ (MusicNote.mbSorter params.mbNote)
+
+                NothingNode ->
+                    toString node
+    in
+        BTreeVaried (BTree.removeDuplicatesBy fn bTree)

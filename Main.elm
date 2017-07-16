@@ -32,7 +32,7 @@ type Msg =
     | Decrement
     | Raise
     | SortUniformTrees
-    | RemoveDuplicatesInUniformTrees
+    | RemoveDuplicates
     | Delta String
     | Exponent String
     | RequestRandomIntList
@@ -76,7 +76,7 @@ initialModel =
     , boolTree = BTreeBool (Node True (singleton True) (singleton False))
     , initialMusicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
     , musicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
-    , variedTree = BTreeVaried (Node (IntNode 123) (singleton (StringNode "abc")) ((Node (BoolNode True)) (singleton (MusicNoteNode (MusicNotePlayer.on C_sharp))) Empty))
+    , variedTree = BTreeVaried (Node (IntNode 123) (Node (StringNode "A") (singleton (MusicNoteNode (MusicNotePlayer.on A))) Empty) ((Node (BoolNode True)) (singleton (MusicNoteNode (MusicNotePlayer.on A))) (singleton (BoolNode True))))
     , intTreeCache = BTreeInt Empty
     , stringTreeCache = BTreeString Empty
     , boolTreeCache = BTreeBool Empty
@@ -272,8 +272,8 @@ viewDashboardTop model =
             [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick SortUniformTrees, disabled model.isPlayNotes]
             [text "Sort"]
         , button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick RemoveDuplicatesInUniformTrees, disabled model.isPlayNotes]
-            [text "Dedup uni"]
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick RemoveDuplicates, disabled model.isPlayNotes]
+            [text "Dedup"]
         ]
     , span
         [classes [T.ml2, T.mr2]]
@@ -496,9 +496,9 @@ update msg model =
             , Cmd.none
             )
 
-        RemoveDuplicatesInUniformTrees ->
+        RemoveDuplicates ->
             ( model
-                |> removeDuplicatesUniformTrees
+                |> removeDuplicates
             , Cmd.none
             )
 
@@ -720,12 +720,27 @@ sortUniformTrees model =
         changeUniformTrees fn model
 
 
+removeDuplicates : Model -> Model
+removeDuplicates model =
+    model
+        |> removeDuplicatesUniformTrees
+        |> removeDuplicatesVariedTrees
+
+
 removeDuplicatesUniformTrees : Model -> Model
 removeDuplicatesUniformTrees model =
     let
         fn = BTreeUniformType.removeDuplicates
     in
         changeUniformTrees fn model
+
+
+removeDuplicatesVariedTrees : Model -> Model
+removeDuplicatesVariedTrees model =
+    let
+        fn = BTreeVariedType.removeDuplicates
+    in
+        changeVariedTrees fn model
 
 
 morphUniformTrees : (BTreeUniformType -> Maybe BTreeUniformType) -> Model -> Model
