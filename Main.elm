@@ -64,7 +64,7 @@ type alias Model =
     , variedTreeCache : BTreeVariedType
     , delta : Int
     , exponent : Int
-    , isEnablePlayNotesButton : Bool
+    , isPlayNotes : Bool
     , uuidSeed : Seed
     }
 
@@ -84,7 +84,7 @@ initialModel =
     , variedTreeCache = BTreeVaried Empty
     , delta = 1
     , exponent = 2
-    , isEnablePlayNotesButton = True
+    , isPlayNotes = False
     , uuidSeed = initialSeed 0 -- placeholder
     }
 
@@ -257,22 +257,22 @@ viewDashboardTop model =
     , span
         [classes [T.ml2, T.mr2]]
         [ button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick Increment]
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick Increment, disabled model.isPlayNotes]
             [text "+ Delta"]
         , button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick Decrement]
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick Decrement, disabled model.isPlayNotes]
             [text "- Delta"]
         , button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick Raise]
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick Raise, disabled model.isPlayNotes]
             [text "^ Exp"]
         ]
     , span
         [classes [T.ml2, T.mr2]]
         [ button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick SortUniformTrees]
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick SortUniformTrees, disabled model.isPlayNotes]
             [text "Sort"]
         , button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick RemoveDuplicatesInUniformTrees]
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick RemoveDuplicatesInUniformTrees, disabled model.isPlayNotes]
             [text "Dedup uni"]
         ]
     , span
@@ -294,14 +294,14 @@ viewDashboardTop model =
             [text "Random Delta"]
         ]
     , button
-        [classes [T.fr, T.hover_bg_light_yellow, T.mt1, T.mb1, T.mr2], onClick Reset]
+        [classes [T.fr, T.hover_bg_light_yellow, T.mt1, T.mb1, T.mr2], onClick Reset, disabled model.isPlayNotes]
         [text "Reset"]
     ]
 
 
 isEnablePlayNotesButton : Model -> Bool
 isEnablePlayNotesButton model =
-    (model.isEnablePlayNotesButton) && not (BTreeUniformType.isAllNothing model.musicNoteTree)
+    not (model.isPlayNotes) && not (BTreeUniformType.isAllNothing model.musicNoteTree)
 
 
 viewDashboardBottom : Model -> List (Html Msg)
@@ -587,7 +587,7 @@ update msg model =
 
         PlayNotes ->
             (   { model
-                | isEnablePlayNotesButton = False
+                | isPlayNotes = True
                 }
             , treeMusicPlay model.musicNoteTree
             )
@@ -628,7 +628,7 @@ update msg model =
 
         DonePlayNotes isDone ->
             (   { model
-                | isEnablePlayNotesButton = (Debug.log "DonePlayNotes" isDone)
+                | isPlayNotes = not isDone
                 }
             , Cmd.none
             )
