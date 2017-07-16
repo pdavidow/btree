@@ -248,41 +248,53 @@ viewDashboard model =
 
 viewDashboardTop : Model -> List (Html Msg)
 viewDashboardTop model =
-    [ button
-        [classes [T.hover_bg_light_green, T.ma1], onClick PlayNotes, disabled (not (isEnablePlayNotesButton model))]
-        [text "Play"]
-    , span
-        [classes [T.ba, T.br2, T.pt2, T.pb2, T.pl1, T.pr1, T.ml2, T.mr2]]
+    [ span
+        [classes [T.ml2, T.mr2]]
         [ button
-            [classes [T.hover_bg_light_green, T.ma1], onClick Increment]
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick PlayNotes, disabled (not (isEnablePlayNotesButton model))]
+            [text "Play"]
+        ]
+    , span
+        [classes [T.ml2, T.mr2]]
+        [ button
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick Increment]
             [text "+ Delta"]
         , button
-            [classes [T.hover_bg_light_green, T.ma1], onClick Decrement]
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick Decrement]
             [text "- Delta"]
         , button
-            [classes [T.hover_bg_light_green, T.ma1], onClick Raise]
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick Raise]
             [text "^ Exp"]
         ]
+    , span
+        [classes [T.ml2, T.mr2]]
+        [ button
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick SortUniformTrees]
+            [text "Sort"]
+        , button
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick RemoveDuplicatesInUniformTrees]
+            [text "Dedup uni"]
+        ]
+    , span
+        [classes [T.ml2, T.mr2]]
+        [ button
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onMouseDown StartShowIsIntPrime, onMouseUp StopShowIsIntPrime]
+            [text "Prime?"]
+        , button
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onMouseDown StartShowStringLength, onMouseUp StopShowStringLength]
+            [text "String Length"]
+        ]
+    , span
+        [classes [T.ml2, T.mr2]]
+        [ button
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick RequestRandomIntList]
+            [text "Random Int-Tree"]
+        , button
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick RequestRandomDelta]
+            [text "Random Delta"]
+        ]
     , button
-        [classes [T.hover_bg_light_green, T.ma1], onClick SortUniformTrees]
-        [text "Sort"]
-    , button
-        [classes [T.hover_bg_light_green, T.ma1], onClick RemoveDuplicatesInUniformTrees]
-        [text "Dedup uni"]
-    , button
-        [classes [T.hover_bg_light_green, T.ma1], onMouseDown StartShowIsIntPrime, onMouseUp StopShowIsIntPrime]
-        [text "Prime?"]
-    , button
-        [classes [T.hover_bg_light_green, T.ma1], onMouseDown StartShowStringLength, onMouseUp StopShowStringLength]
-        [text "String Length"]
-    , button
-        [classes [T.hover_bg_light_green, T.ma1], onClick RequestRandomIntList]
-        [text "Random Int-Tree"]
-    , button
-        [classes [T.hover_bg_light_green, T.ma1], onClick RequestRandomDelta]
-        [text "Random Delta"]
-    , button
-        [classes [T.fr, T.hover_bg_light_red], onClick Reset]
+        [classes [T.fr, T.hover_bg_light_yellow, T.mt1, T.mb1, T.mr2], onClick Reset]
         [text "Reset"]
     ]
 
