@@ -137,33 +137,33 @@ isElementUsingFold a bTree =
 
 toTreeDiagramTree : BTree a -> Maybe (TD.Tree (Maybe a))
 toTreeDiagramTree bTree =
-    case bTree of
-        Empty ->
-            Nothing
+    let
+        toTreeDiagramTreeOfNonEmpty : BTree a -> TD.Tree (Maybe a)
+        toTreeDiagramTreeOfNonEmpty bTree =
+            case bTree of
+                Empty -> -- should never get here
+                    TD.node Nothing []
 
-        _ ->
-            Just (toTreeDiagramTreeOfNonEmpty bTree)
+                Node v left right ->
+                    let
+                        leftResult = if isEmpty left
+                            then []
+                            else [ toTreeDiagramTreeOfNonEmpty left ]
 
+                        rightResult = if isEmpty right
+                            then []
+                            else [ toTreeDiagramTreeOfNonEmpty right ]
 
-toTreeDiagramTreeOfNonEmpty : BTree a -> TD.Tree (Maybe a)
-toTreeDiagramTreeOfNonEmpty bTree =
-    case bTree of
-        Empty -> -- should never get here
-            TD.node Nothing []
+                        treeList = leftResult ++ rightResult
+                    in
+                        TD.node (Just v) treeList
+    in
+        case bTree of
+            Empty ->
+                Nothing
 
-        Node v left right ->
-            let
-                leftResult = if isEmpty left
-                    then []
-                    else [ toTreeDiagramTreeOfNonEmpty left ]
-
-                rightResult = if isEmpty right
-                    then []
-                    else [ toTreeDiagramTreeOfNonEmpty right ]
-
-                treeList = leftResult ++ rightResult
-            in
-                TD.node (Just v) treeList
+            _ ->
+                Just (toTreeDiagramTreeOfNonEmpty bTree)
 
 
 sort: BTree comparable -> BTree comparable
