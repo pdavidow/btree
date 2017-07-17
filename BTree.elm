@@ -20,6 +20,7 @@ type NodeTag
     | BoolNode Bool
     | MusicNoteNode MusicNotePlayer
     | NothingNode
+    | UnsafeNode
 
 
 singleton : a -> BTree a

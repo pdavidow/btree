@@ -1,6 +1,7 @@
 module BTreeVariedType exposing (BTreeVariedType, BTreeVariedType(..), toStringLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, removeDuplicates)
 
 import Arithmetic exposing (isPrime)
+-- import Basics.Extra exposing (isSafeInteger) todo
 
 import BTree exposing (BTree, map)
 import BTree exposing (NodeTag(..))
@@ -31,6 +32,9 @@ toStringLength (BTreeVaried bTree) =
 
             NothingNode ->
                 NothingNode
+
+            UnsafeNode ->
+                NothingNode
     in
         BTreeVaried (map fn bTree)
 
@@ -38,10 +42,15 @@ toStringLength (BTreeVaried bTree) =
 toIsIntPrime : BTreeVariedType -> BTreeVariedType
 toIsIntPrime (BTreeVaried bTree) =
     let
+        -- todo https://github.com/elm-community/basics-extra/issues/7
+        isSafeInteger = \int -> (abs int) <= (2^53 - 1)
+
         fn : NodeTag -> NodeTag
         fn nodeTag = case nodeTag of
             IntNode x ->
-                BoolNode (Arithmetic.isPrime x)
+                if isSafeInteger x -- todo refactor with uni
+                    then BoolNode (Arithmetic.isPrime x)
+                    else UnsafeNode
 
             StringNode x ->
                 NothingNode
@@ -53,6 +62,9 @@ toIsIntPrime (BTreeVaried bTree) =
                 NothingNode
 
             NothingNode ->
+                NothingNode
+
+            UnsafeNode ->
                 NothingNode
     in
         BTreeVaried (map fn bTree)
@@ -77,6 +89,9 @@ mapVariedTree operand mappers (BTreeVaried bTree) =
                     MusicNoteNode (mappers.musicNotePlayer operand x)
 
                 NothingNode ->
+                    NothingNode
+
+                UnsafeNode ->
                     NothingNode
     in
         BTreeVaried (map (fn operand mappers) bTree)
@@ -115,6 +130,9 @@ removeDuplicates (BTreeVaried bTree) =
                     "MusicNoteNode " ++ (MusicNote.mbSorter params.mbNote)
 
                 NothingNode ->
+                    toString node
+
+                UnsafeNode ->
                     toString node
     in
         BTreeVaried (BTree.removeDuplicatesBy fn bTree)

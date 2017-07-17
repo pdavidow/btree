@@ -11,7 +11,7 @@ import MusicNotePlayer exposing (MusicNotePlayer(..))
 
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
-import UniversalConstants exposing (nothingString)
+import UniversalConstants exposing (nothingString, unsafeString)
 
 import Color exposing (Color, green, orange, black, white, yellow, blue, purple, lightCharcoal, red)
 import Collage exposing (group, segment, traced, rotate, move, scale, oval, rect, ngon, filled, outlined, text, rect, polygon, moveY, defaultLine, Form, toForm, LineStyle)
@@ -139,6 +139,13 @@ drawNode mbNodeTag =
                         [ oval 40 40 |> filled (red)
                         , oval 40 40 |> outlined treeLineStyle
                         , nothingString |> fromString |> style treeNodeStyle |> text |> moveY 4
+                        ]
+
+                UnsafeNode ->
+                    group
+                        [ rect 55 30 |> filled (red)
+                        , rect 55 30 |> outlined treeLineStyle
+                        , unsafeString |> fromString |> style treeNodeStyle |> text |> moveY 4
                         ]
 
         Nothing ->

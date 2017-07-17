@@ -1,12 +1,14 @@
 module BTreeUniformType exposing (BTreeUniformType, BTreeUniformType(..), toNothing, toTaggedNodes, toStringLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, depth, sumInt, sumString, sort, removeDuplicates, isAllNothing)
 
 import Arithmetic exposing (isPrime)
+-- import Basics.Extra exposing (isSafeInteger) -- todo https://github.com/elm-community/basics-extra/issues/7
 
 import BTree exposing (NodeTag(..))
 import BTree exposing (BTree, depth, map, removeDuplicatesBy, singleton, sumInt , sumString , sort, sortBy, isEmpty)
 import MusicNote exposing (MusicNote, mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), sorter)
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
+import BTreeVariedType exposing (BTreeVariedType(..))
 
 
 type OnlyNothing = OnlyNothing
@@ -81,23 +83,32 @@ toStringLength bTreeUniformType =
             Nothing
 
 
-toIsIntPrime : BTreeUniformType -> Maybe BTreeUniformType
+toIsIntPrime : BTreeUniformType -> BTreeVariedType
 toIsIntPrime bTreeUniformType =
+    -- todo https://github.com/elm-community/basics-extra/issues/7
     case bTreeUniformType of
         BTreeInt bTree ->
-            Just (BTreeBool (map Arithmetic.isPrime bTree))
+            let
+                -- todo https://github.com/elm-community/basics-extra/issues/7
+                isSafeInteger = \int -> (abs int) <= (2^53 - 1)
+
+                fn = \int -> if isSafeInteger int
+                    then BoolNode (Arithmetic.isPrime int)
+                    else UnsafeNode
+            in
+                BTreeVaried (map fn bTree)
 
         BTreeString bTree ->
-            Nothing
+            BTreeVaried (map (\a -> NothingNode) bTree) -- todo refactor?
 
         BTreeBool bTree ->
-            Nothing
+            BTreeVaried (map (\a -> NothingNode) bTree)
 
         BTreeMusicNotePlayer bTree ->
-            Nothing
+            BTreeVaried (map (\a -> NothingNode) bTree)
 
         BTreeNothing bTree ->
-            Nothing
+            BTreeVaried (map (\a -> NothingNode) bTree)
 
 
 mapUniformTree : Int -> Mappers -> BTreeUniformType -> BTreeUniformType
