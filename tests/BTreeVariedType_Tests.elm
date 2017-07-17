@@ -34,7 +34,7 @@ bTreeVariedType =
                     Expect.equal (BTreeVaried (singleton (BoolNode False))) (BTreeVariedType.toIsIntPrime (BTreeVaried (singleton (IntNode 1))))
             , test "of 4 values" <|
                 \() ->
-                    Expect.equal (BTreeVaried (Node NothingNode (singleton (BoolNode True)) (Node NothingNode (singleton NothingNode) Empty))) (BTreeVariedType.toIsIntPrime (BTreeVaried (Node (StringNode "abcde") (singleton (IntNode 11)) (Node (MusicNoteNode (MusicNotePlayer.on E)) (singleton (BoolNode True)) Empty))))
+                    Expect.equal (BTreeVaried (Node NothingNode (singleton (UnsafeNode)) (Node NothingNode (singleton NothingNode) Empty))) (BTreeVariedType.toIsIntPrime (BTreeVaried (Node (StringNode "abcde") (singleton (IntNode (2^53))) (Node (MusicNoteNode (MusicNotePlayer.on E)) (singleton (BoolNode True)) Empty))))
             ]
          , describe "BTreeVariedType.incrementNodes"
             [ test "of empty" <|
