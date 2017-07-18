@@ -12,8 +12,8 @@ import Fuzz exposing (list, int, tuple, string)
 import String
 
 
-musicNote : Test
-musicNote =
+musicNotePlayer : Test
+musicNotePlayer =
     describe "MusicNotePlayer module"
          [ describe "MusicNotePlayer.on"
             [ test "on" <|

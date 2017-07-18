@@ -1,4 +1,4 @@
-module CustomFunctions exposing (lazyUnwrap)
+module CustomFunctions exposing (lazyUnwrap, digitCount)
 
 import Lazy exposing (Lazy, force)
 
@@ -11,3 +11,17 @@ lazyUnwrap lazy fn mbA =
 
         Nothing ->
             Lazy.force lazy
+
+
+digitCount : Int -> Int
+digitCount i =
+    -- https://elmlang.slack.com/archives/C0CJ3SBBM/p1500404055237431
+    if i == 0
+        then
+            1
+        else
+            abs i
+                |> toFloat
+                |> logBase 10
+                |> floor
+                |> (+) 1

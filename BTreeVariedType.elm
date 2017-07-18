@@ -8,6 +8,7 @@ import BTree exposing (NodeTag(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..))
 import MusicNote exposing (mbSorter)
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
+import CustomFunctions exposing (digitCount)
 
 
 type BTreeVariedType = BTreeVaried (BTree NodeTag)
@@ -19,12 +20,7 @@ toLength (BTreeVaried bTree) =
         fn : NodeTag -> NodeTag
         fn nodeTag = case nodeTag of
             IntNode x ->
-                let
-                    fn = \i -> i
-                        |> toString
-                        |> String.length
-                in
-                    IntNode (fn x)
+                IntNode (digitCount x)
 
             StringNode x ->
                 IntNode (String.length x)

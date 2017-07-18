@@ -38,8 +38,8 @@ setPlayMode isPlaying =
             Nothing -> not isPlaying -- should never get here, but might as well
 
 
-musicNote : Test
-musicNote =
+treeMusicPlayer : Test
+treeMusicPlayer =
     describe "TreeMusicPlayer module"
          [ describe "TreeMusicPlayer.playTreeMusic"
             [ test "invalid" <|

@@ -14,7 +14,7 @@ import String
 bTreeVariedType : Test
 bTreeVariedType =
     describe "BTreeVariedType module"
-         [ describe "BTreeVariedType.toStringLength"
+         [ describe "BTreeVariedType.toLength"
             [ test "of empty" <|
                 \() ->
                     Expect.equal (BTreeVaried Empty) (BTreeVariedType.toLength (BTreeVaried Empty))
@@ -23,7 +23,7 @@ bTreeVariedType =
                     Expect.equal (BTreeVaried (singleton (IntNode 3))) (BTreeVariedType.toLength (BTreeVaried (singleton (StringNode "abc"))))
             , test "of 4 values" <|
                 \() ->
-                    Expect.equal (BTreeVaried (Node (IntNode 5) (singleton NothingNode) (Node NothingNode (singleton NothingNode) Empty))) (BTreeVariedType.toLength (BTreeVaried (Node (StringNode "abcde") (singleton (IntNode 1)) (Node (MusicNoteNode (MusicNotePlayer.on E)) (singleton (BoolNode True)) Empty))))
+                    Expect.equal (BTreeVaried (Node (IntNode 5) (singleton (IntNode 3)) (Node NothingNode (singleton NothingNode) Empty))) (BTreeVariedType.toLength (BTreeVaried (Node (StringNode "abcde") (singleton (IntNode -500)) (Node (MusicNoteNode (MusicNotePlayer.on E)) (singleton (BoolNode True)) Empty))))
             ]
          , describe "BTreeVariedType.toIsIntPrime"
             [ test "of empty" <|

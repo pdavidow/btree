@@ -55,7 +55,7 @@ bTreeUniformType =
                 \() ->
                     Expect.equal (Node (StringNode "a") Empty (singleton (StringNode "b"))) (toTaggedNodes (BTreeString (fromList ["a", "b"])))
             ]
-         , describe "BTreeUniformType.toStringLength"
+         , describe "BTreeUniformType.toLength"
             [ test "of empty BTreeString" <|
                 \() ->
                     Expect.equal (Just (BTreeInt Empty)) (BTreeUniformType.toLength (BTreeString Empty))
@@ -64,10 +64,13 @@ bTreeUniformType =
                     Expect.equal (Just (BTreeInt (Node 2 Empty (singleton 5)))) (BTreeUniformType.toLength (BTreeString (fromList ["ab", "cdefg"])))
             , test "of empty BTreeInt" <|
                 \() ->
-                    Expect.equal Nothing (BTreeUniformType.toLength (BTreeInt Empty))
-            , test "of 2 values BTreeInt" <|
+                    Expect.equal (Just (BTreeInt Empty)) (BTreeUniformType.toLength (BTreeInt Empty))
+            , test "of 3 values BTreeInt" <|
                 \() ->
-                    Expect.equal Nothing (BTreeUniformType.toLength (BTreeInt (fromList [12, 34567])))
+                    let
+                        infinity = 1000 ^ 1000
+                    in
+                        Expect.equal (Just (BTreeInt (fromList [2, 5, infinity]))) (BTreeUniformType.toLength (BTreeInt (fromList [-12, 34567, (1234 ^ 5678)])))
             , test "of empty BTreeBool" <|
                 \() ->
                     Expect.equal Nothing (BTreeUniformType.toLength (BTreeBool Empty))

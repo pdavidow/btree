@@ -9,6 +9,7 @@ import MusicNote exposing (MusicNote, mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), sorter)
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
 import BTreeVariedType exposing (BTreeVariedType(..))
+import CustomFunctions exposing (digitCount)
 
 
 type OnlyNothing = OnlyNothing
@@ -68,12 +69,7 @@ toLength : BTreeUniformType -> Maybe BTreeUniformType
 toLength bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            let
-                fn = \i -> i
-                    |> toString
-                    |> String.length
-            in
-                Just (BTreeInt (map fn bTree))
+            Just (BTreeInt (map digitCount bTree))
 
         BTreeString bTree ->
             Just (BTreeInt (map String.length bTree))
