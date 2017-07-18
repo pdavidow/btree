@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (Html, div, span, header, main_, section, article, a, button, text, input, h1, h2, programWithFlags)
-import Html.Events exposing (onClick, onMouseUp, onMouseDown, onInput)
+import Html.Events exposing (onClick, onMouseUp, onMouseDown, onMouseLeave, onInput)
 import Html.Attributes as A exposing (class, style, type_, value, href, target, disabled)
 import Tachyons exposing (classes, tachyons)
 import Tachyons.Classes as T exposing (..)
@@ -70,6 +70,7 @@ type alias Model =
     , exponent : Int
     , isPlayNotes : Bool
     , isShowUniformMorphedToVaried : Bool
+    , isTreeCaching : Bool
     , uuidSeed : Seed
     }
 
@@ -95,6 +96,7 @@ initialModel =
     , exponent = 2
     , isPlayNotes = False
     , isShowUniformMorphedToVaried = False
+    , isTreeCaching = False
     , uuidSeed = initialSeed 0 -- placeholder
     }
 
@@ -288,10 +290,10 @@ viewDashboardTop model =
     , span
         [classes [T.ml2, T.mr2]]
         [ button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onMouseDown StartShowIsIntPrime, onMouseUp StopShowIsIntPrime]
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onMouseDown StartShowIsIntPrime, onMouseUp StopShowIsIntPrime, onMouseLeave StopShowIsIntPrime]
             [text "Prime?"]
         , button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onMouseDown StartShowStringLength, onMouseUp StopShowStringLength]
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onMouseDown StartShowStringLength, onMouseUp StopShowStringLength, onMouseLeave StopShowStringLength]
             [text "String Length"]
         ]
     , span
@@ -579,32 +581,58 @@ update msg model =
             )
 
         StartShowIsIntPrime ->
-            ( {model | isShowUniformMorphedToVaried = True}
-                |> cacheAllTrees
-                |> morphUniformToVariedTrees BTreeUniformType.toIsIntPrime
-                |> morphVariedTrees BTreeVariedType.toIsIntPrime
+            (   { model
+                | isShowUniformMorphedToVaried = True
+                , isTreeCaching = True
+                }
+                    |> cacheAllTrees
+                    |> morphUniformToVariedTrees BTreeUniformType.toIsIntPrime
+                    |> morphVariedTrees BTreeVariedType.toIsIntPrime
             , Cmd.none
             )
 
         StopShowIsIntPrime ->
-            ( {model | isShowUniformMorphedToVaried = False}
-                |> unCacheAllTrees
-            , Cmd.none
-            )
+            let
+                newModel = if model.isTreeCaching
+                    then
+                        { model
+                        | isShowUniformMorphedToVaried = False
+                        , isTreeCaching = False
+                        }
+                            |> unCacheAllTrees
+                    else
+                        { model
+                        | isShowUniformMorphedToVaried = False
+                        }
+            in
+                ( newModel
+                , Cmd.none
+                )
 
         StartShowStringLength ->
-            ( model
-                |> cacheAllTrees
-                |> morphUniformTrees BTreeUniformType.toStringLength
-                |> morphVariedTrees BTreeVariedType.toStringLength
+            (   { model
+                | isTreeCaching = True
+                }
+                    |> cacheAllTrees
+                    |> morphUniformTrees BTreeUniformType.toStringLength
+                    |> morphVariedTrees BTreeVariedType.toStringLength
             , Cmd.none
             )
 
         StopShowStringLength ->
-            ( model
-                |> unCacheAllTrees
-            , Cmd.none
-            )
+            let
+                newModel = if model.isTreeCaching
+                    then
+                        { model
+                        | isTreeCaching = False
+                        }
+                            |> unCacheAllTrees
+                    else
+                        model
+            in
+                ( newModel
+                , Cmd.none
+                )
 
         PlayNotes ->
             (   { model
