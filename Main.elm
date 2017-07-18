@@ -14,8 +14,8 @@ import Random.Pcg exposing (Seed, initialSeed, step)
 import Uuid exposing (Uuid, uuidGenerator)
 import Lazy exposing (lazy)
 
-import BTreeUniformType exposing (BTreeUniformType(..))
-import BTreeVariedType exposing (BTreeVariedType(..), incrementNodes, decrementNodes, raiseNodes)
+import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes)
+import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes)
 import BTree exposing (BTree(..), NodeTag(..), fromList, singleton, toTreeDiagramTree)
 import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram)
 import UniversalConstants exposing (nothingString)
@@ -39,8 +39,8 @@ type Msg =
     | ReceiveRandomIntList (List Int)
     | RequestRandomDelta
     | ReceiveRandomDelta Int
-    | StartShowStringLength
-    | StopShowStringLength
+    | StartShowLength
+    | StopShowLength
     | StartShowIsIntPrime
     | StopShowIsIntPrime
     | PlayNotes
@@ -293,8 +293,8 @@ viewDashboardTop model =
             [classes [T.hover_bg_light_green, T.mt1, T.mb1], onMouseDown StartShowIsIntPrime, onMouseUp StopShowIsIntPrime, onMouseLeave StopShowIsIntPrime]
             [text "Prime?"]
         , button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onMouseDown StartShowStringLength, onMouseUp StopShowStringLength, onMouseLeave StopShowStringLength]
-            [text "String Length"]
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onMouseDown StartShowLength, onMouseUp StopShowLength, onMouseLeave StopShowLength]
+            [text "Length"]
         ]
     , span
         [classes [T.ml2, T.mr2]]
@@ -609,17 +609,17 @@ update msg model =
                 , Cmd.none
                 )
 
-        StartShowStringLength ->
+        StartShowLength ->
             (   { model
                 | isTreeCaching = True
                 }
                     |> cacheAllTrees
-                    |> morphUniformTrees BTreeUniformType.toStringLength
-                    |> morphVariedTrees BTreeVariedType.toStringLength
+                    |> morphUniformTrees BTreeUniformType.toLength
+                    |> morphVariedTrees BTreeVariedType.toLength
             , Cmd.none
             )
 
-        StopShowStringLength ->
+        StopShowLength ->
             let
                 newModel = if model.isTreeCaching
                     then

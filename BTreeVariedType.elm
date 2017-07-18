@@ -1,4 +1,4 @@
-module BTreeVariedType exposing (BTreeVariedType, BTreeVariedType(..), toStringLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, removeDuplicates)
+module BTreeVariedType exposing (BTreeVariedType, BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, removeDuplicates)
 
 import Arithmetic exposing (isPrime)
 -- import Basics.Extra exposing (isSafeInteger) todo
@@ -13,13 +13,18 @@ import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMapp
 type BTreeVariedType = BTreeVaried (BTree NodeTag)
 
 
-toStringLength : BTreeVariedType -> BTreeVariedType
-toStringLength (BTreeVaried bTree) =
+toLength : BTreeVariedType -> BTreeVariedType
+toLength (BTreeVaried bTree) =
     let
         fn : NodeTag -> NodeTag
         fn nodeTag = case nodeTag of
             IntNode x ->
-                NothingNode
+                let
+                    fn = \i -> i
+                        |> toString
+                        |> String.length
+                in
+                    IntNode (fn x)
 
             StringNode x ->
                 IntNode (String.length x)
