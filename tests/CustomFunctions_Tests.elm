@@ -38,10 +38,7 @@ customFunctions =
                     Expect.equal 1 (CustomFunctions.digitCount 0)
             , test "Infinity" <|
                 \() ->
-                    let
-                        infinity = 1000 ^ 1000
-                    in
-                        Expect.equal infinity (digitCount (1234 ^ 5678))
+                    Expect.equal True (isInfinite (toFloat (digitCount (1234 ^ 5678))))
             ]
         ]
 
