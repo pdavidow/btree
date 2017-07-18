@@ -1,12 +1,14 @@
 -- http://elm-lang.org/examples/binary-Tree
 
-module BTree exposing (BTree, BTree(..), NodeTag, NodeTag(..), singleton, depth, map, sum, flatten, isElement, fold, sumUsingFold, sumInt, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromListBy, insert, insertBy, removeDuplicates, removeDuplicatesBy, isAllNothing, isEmpty)
+module BTree exposing (BTree, BTree(..), NodeTag, NodeTag(..), singleton, depth, map, sum, flatten, isElement, fold, sumUsingFold, sumInt, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromListBy, insert, insertBy, removeDuplicates, removeDuplicatesBy, isAllNothing, isEmpty, toNothingNodes)
 
 import TreeDiagram as TD exposing (node, Tree)
 import List.Extra exposing (uniqueBy)
 import Maybe.Extra exposing (unwrap, values)
 
 import MusicNotePlayer exposing (MusicNotePlayer(..))
+
+-- todo ?? fromList flatten fromList REVERSIBLE or not?
 
 
 type BTree a
@@ -233,4 +235,7 @@ isEmpty : BTree a -> Bool
 isEmpty bTree =
     bTree == Empty
 
--- todo ?? fromList flatten fromList REVERSIBLE or not?
+
+toNothingNodes : BTree a -> BTree NodeTag
+toNothingNodes bTree =
+    map (\a -> NothingNode) bTree

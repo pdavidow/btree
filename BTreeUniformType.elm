@@ -4,7 +4,7 @@ import Arithmetic exposing (isPrime)
 -- import Basics.Extra exposing (isSafeInteger) -- todo https://github.com/elm-community/basics-extra/issues/7
 
 import BTree exposing (NodeTag(..))
-import BTree exposing (BTree, depth, map, removeDuplicatesBy, singleton, sumInt , sumString , sort, sortBy, isEmpty)
+import BTree exposing (BTree, depth, map, removeDuplicatesBy, singleton, sumInt , sumString , sort, sortBy, isEmpty, toNothingNodes)
 import MusicNote exposing (MusicNote, mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), sorter)
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
@@ -61,7 +61,7 @@ toTaggedNodes bTreeUniformType =
             map MusicNoteNode bTree
 
         BTreeNothing bTree ->
-            map (\a -> NothingNode) bTree
+            toNothingNodes bTree
 
 
 toStringLength : BTreeUniformType -> Maybe BTreeUniformType
@@ -99,16 +99,16 @@ toIsIntPrime bTreeUniformType =
                 BTreeVaried (map fn bTree)
 
         BTreeString bTree ->
-            BTreeVaried (map (\a -> NothingNode) bTree) -- todo refactor?
+            BTreeVaried (toNothingNodes bTree)
 
         BTreeBool bTree ->
-            BTreeVaried (map (\a -> NothingNode) bTree)
+            BTreeVaried (toNothingNodes bTree)
 
         BTreeMusicNotePlayer bTree ->
-            BTreeVaried (map (\a -> NothingNode) bTree)
+            BTreeVaried (toNothingNodes bTree)
 
         BTreeNothing bTree ->
-            BTreeVaried (map (\a -> NothingNode) bTree)
+            BTreeVaried (toNothingNodes bTree)
 
 
 mapUniformTree : Int -> Mappers -> BTreeUniformType -> BTreeUniformType
