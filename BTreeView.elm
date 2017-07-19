@@ -84,15 +84,9 @@ drawNode mbNodeTag =
                         stringLength = String.length s
                         width = toFloat (30 + (10 * stringLength))
                         height = 30
-
-                        colorizer : String -> Color
-                        colorizer s =
-                            if Arithmetic.isEven stringLength
-                                then yellow
-                                else blue
                     in
                         group
-                            [ rect width height |> filled (colorizer s)
+                            [ rect width height |> filled blue
                             , rect width height |> outlined treeLineStyle
                             , s |> fromString |> style treeNodeStyle |> text |> moveY 4
                             ]

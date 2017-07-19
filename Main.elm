@@ -77,16 +77,16 @@ type alias Model =
 
 initialModel: Model
 initialModel =
-    { intTree = BTreeInt (Node (2^53) (singleton 4) (Node 3 Empty (singleton 4)))
+    { intTree = BTreeInt (Node (2 ^ 53) (singleton 4) (Node -33 Empty (singleton 4)))
     , intMorphedToVariedTree = BTreeVaried Empty -- placeholder
-    , stringTree = BTreeString (Node "Q 123" (singleton "E") (Node "Q 123" Empty (singleton "ee")))
+    , stringTree = BTreeString (Node "2 ^ 53" (singleton "Elm") (Node "Elm" Empty (singleton "elm")))
     , stringMorphedToVariedTree = BTreeVaried Empty -- placeholder
     , boolTree = BTreeBool (Node True (singleton True) (singleton False))
     , boolMorphedToVariedTree = BTreeVaried Empty -- placeholder
     , initialMusicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
     , musicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
     , musicNoteMorphedToVariedTree = BTreeVaried Empty -- placeholder
-    , variedTree = BTreeVaried (Node (IntNode (2^53)) (Node (StringNode "A") (singleton (MusicNoteNode (MusicNotePlayer.on A))) (singleton (IntNode 123))) ((Node (BoolNode True)) (singleton (MusicNoteNode (MusicNotePlayer.on A))) (singleton (BoolNode True))))
+    , variedTree = BTreeVaried (Node (IntNode (2 ^ 53)) (Node (StringNode "A") (singleton (MusicNoteNode (MusicNotePlayer.on A))) (singleton (IntNode 123))) ((Node (BoolNode True)) (singleton (MusicNoteNode (MusicNotePlayer.on A))) (singleton (BoolNode True))))
     , intTreeCache = BTreeInt Empty
     , stringTreeCache = BTreeString Empty
     , boolTreeCache = BTreeBool Empty
