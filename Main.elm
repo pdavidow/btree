@@ -79,7 +79,7 @@ initialModel: Model
 initialModel =
     { intTree = BTreeInt (Node (2 ^ 53) (singleton 4) (Node -33 Empty (singleton 4)))
     , intMorphedToVariedTree = BTreeVaried Empty -- placeholder
-    , stringTree = BTreeString (Node "2 ^ 53" (singleton "Elm") (Node "Elm" Empty (singleton "elm")))
+    , stringTree = BTreeString (Node "2 ^ 53" (singleton "helm") (Node "helm" Empty (singleton "Elm")))
     , stringMorphedToVariedTree = BTreeVaried Empty -- placeholder
     , boolTree = BTreeBool (Node True (singleton True) (singleton False))
     , boolMorphedToVariedTree = BTreeVaried Empty -- placeholder
