@@ -23,7 +23,7 @@ import MusicNote exposing (MusicNote(..), mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter)
 import TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote)
 import Ports exposing (port_startPlayNote, port_donePlayNote, port_donePlayNotes)
-import CustomFunctions exposing (lazyUnwrap)
+import Lib exposing (lazyUnwrap)
 ------------------------------------------------
 
 

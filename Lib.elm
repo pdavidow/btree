@@ -1,4 +1,4 @@
-module CustomFunctions exposing (lazyUnwrap, digitCount)
+module Lib exposing (lazyUnwrap, digitCount)
 
 import Lazy exposing (Lazy, force)
 

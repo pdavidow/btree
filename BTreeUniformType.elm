@@ -9,7 +9,7 @@ import MusicNote exposing (MusicNote, mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), sorter)
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
 import BTreeVariedType exposing (BTreeVariedType(..))
-import CustomFunctions exposing (digitCount)
+import Lib exposing (digitCount)
 
 
 type OnlyNothing = OnlyNothing

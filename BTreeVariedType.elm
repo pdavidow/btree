@@ -8,7 +8,7 @@ import BTree exposing (NodeTag(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..))
 import MusicNote exposing (mbSorter)
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
-import CustomFunctions exposing (digitCount)
+import Lib exposing (digitCount)
 
 
 type BTreeVariedType = BTreeVaried (BTree NodeTag)
