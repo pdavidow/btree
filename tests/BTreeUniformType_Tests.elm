@@ -123,7 +123,7 @@ bTreeUniformType =
                     Expect.equal (BTreeString Empty) (BTreeUniformType.incrementNodes 1 (BTreeString Empty))
             , test "of 2 BTreeString" <|
                 \() ->
-                    Expect.equal (BTreeString (Node "a +3" Empty (singleton "b +3"))) (BTreeUniformType.incrementNodes 3 (BTreeString (fromList ["a", "b"])))
+                    Expect.equal (BTreeString (Node "a3" Empty (singleton "b3"))) (BTreeUniformType.incrementNodes 3 (BTreeString (fromList ["a", "b"])))
             , test "of empty BTreeBool" <|
                 \() ->
                     Expect.equal (BTreeBool Empty) (BTreeUniformType.incrementNodes 1 (BTreeBool Empty))
@@ -149,7 +149,7 @@ bTreeUniformType =
                     Expect.equal (BTreeInt (singleton 9)) (BTreeUniformType.decrementNodes 1 (BTreeInt (singleton 10)))
             , test "of 2 values" <|
                 \() ->
-                    Expect.equal (BTreeString (Node "a -3" Empty (singleton "b -3"))) (BTreeUniformType.decrementNodes 3 (BTreeString (fromList ["a", "b"])))
+                    Expect.equal (BTreeString (fromList ["ab", ""])) (BTreeUniformType.decrementNodes 3 (BTreeString (fromList ["abcde", "AB"])))
             , test "of 2 bool values, change" <|
                 \() ->
                     Expect.equal (BTreeBool (Node False Empty (singleton True))) (BTreeUniformType.decrementNodes 3 (BTreeBool (Node True Empty (singleton False))))
@@ -172,7 +172,7 @@ bTreeUniformType =
                     Expect.equal (BTreeInt (singleton 8)) (BTreeUniformType.raiseNodes 3 (BTreeInt (singleton 2)))
             , test "of 2 values" <|
                 \() ->
-                    Expect.equal (BTreeString (Node "a ^3" Empty (singleton "b ^3"))) (BTreeUniformType.raiseNodes 3 (BTreeString (fromList ["a", "b"])))
+                    Expect.equal (BTreeString (Node "a" Empty (singleton "b"))) (BTreeUniformType.raiseNodes 3 (BTreeString (fromList ["a", "b"])))
             , test "of 2 bool values, change" <|
                 \() ->
                     Expect.equal (BTreeBool (Node False Empty (singleton True))) (BTreeUniformType.raiseNodes 3 (BTreeBool (Node True Empty (singleton False))))
