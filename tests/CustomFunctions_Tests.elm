@@ -1,6 +1,7 @@
 module CustomFunctions_Tests exposing (..)
 
 import CustomFunctions exposing (lazyUnwrap, digitCount)
+
 import Lazy exposing (lazy)
 
 import Test exposing (..)

@@ -1,8 +1,7 @@
 module BTree_Tests exposing (..)
 
-import BTree exposing (BTree, BTree(..), NodeTag, NodeTag(..), singleton, depth, map, sum, flatten, isElement, fold, sumUsingFold, sumInt, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromListBy, insert, insertBy, removeDuplicates, removeDuplicatesBy, isAllNothing, isEmpty, toNothingNodes)
+import BTree exposing (BTree(..), NodeTag(..), singleton, depth, map, sum, flatten, isElement, fold, sumUsingFold, sumInt, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromListBy, insert, insertBy, removeDuplicates, removeDuplicatesBy, isAllNothing, isEmpty, toNothingNodes)
 
-import BTree exposing (NodeTag(..))
 import TreeDiagram as TD exposing (node)
 import MusicNote exposing (MusicNote(..), sorter)
 

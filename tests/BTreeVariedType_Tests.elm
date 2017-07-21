@@ -1,6 +1,7 @@
 module BTreeVariedType_Tests exposing (..)
 
-import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, removeDuplicates)
+import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, removeDuplicates, hasAnyIntNodes)
+
 import BTree exposing (..)
 import MusicNote exposing (MusicNote(..))
 import MusicNotePlayer exposing (on)
@@ -94,5 +95,19 @@ bTreeVariedType =
             , test "of NothingNode" <|
                 \() ->
                      Expect.equal (BTreeVaried (singleton NothingNode)) (BTreeVariedType.removeDuplicates (BTreeVaried (Node NothingNode (singleton NothingNode) (singleton NothingNode))))
+            ]
+         , describe "BTreeVariedType.hasAnyIntNodes"
+            [ test "of empty" <|
+                \() ->
+                    Expect.equal False (BTreeVariedType.hasAnyIntNodes (BTreeVaried Empty))
+            , test "of singleton IntNode" <|
+                \() ->
+                    Expect.equal True (BTreeVariedType.hasAnyIntNodes (BTreeVaried (singleton (IntNode 2))))
+            , test "of 4 values, including IntNode" <|
+                \() ->
+                    Expect.equal True (BTreeVariedType.hasAnyIntNodes (BTreeVaried (Node (StringNode "abcde") (singleton (IntNode 2)) (Node (MusicNoteNode (MusicNotePlayer.on E)) (singleton (BoolNode True)) Empty))))
+            , test "of 4 values, not including IntNode" <|
+                \() ->
+                    Expect.equal False (BTreeVariedType.hasAnyIntNodes (BTreeVaried (Node (StringNode "abcde") (singleton (BoolNode False)) (Node (MusicNoteNode (MusicNotePlayer.on E)) (singleton (BoolNode True)) Empty))))
             ]
         ]

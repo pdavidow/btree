@@ -1,6 +1,7 @@
 module MusicNotePlayer_Tests exposing (..)
 
 import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter, isPlayable)
+
 import MusicNote exposing (MusicNote(..))
 
 import Random.Pcg exposing (initialSeed, step)
