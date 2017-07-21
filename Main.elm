@@ -15,9 +15,9 @@ import Uuid exposing (Uuid, uuidGenerator)
 import Lazy exposing (lazy)
 
 import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes)
-import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes)
+import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, hasAnyIntNodes)
 import BTree exposing (BTree(..), NodeTag(..), fromList, singleton, toTreeDiagramTree)
-import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram)
+import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intNodeEvenColor, intNodeOddColor)
 import UniversalConstants exposing (nothingString)
 import MusicNote exposing (MusicNote(..), mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter)
@@ -109,17 +109,19 @@ generateIds count startSeed =
         fn : Maybe a -> ( Uuid, Seed ) -> ( Uuid, Seed )
         fn = \a ( id, seed ) -> generate seed
 
-        tuples = List.repeat (count - 1) Nothing
-            |> List.scanl fn (generate startSeed)
+        tuples =
+            List.repeat (count - 1) Nothing
+                |> List.scanl fn (generate startSeed)
 
         ids = List.map Tuple.first tuples
 
         lazyDefault = Lazy.lazy (\() -> ( Tuple.first (generate startSeed), startSeed ))
 
-        currentSeed = tuples
-            |> List.Extra.last
-            |> lazyUnwrap lazyDefault identity
-            |> Tuple.second
+        currentSeed =
+            tuples
+                |> List.Extra.last
+                |> lazyUnwrap lazyDefault identity
+                |> Tuple.second
 
     in
         ( ids, currentSeed )
@@ -375,9 +377,11 @@ viewUniformTreeCard bTreeUniformType =
     let
         title = bTreeUniformTitle bTreeUniformType
         status = bTreeUniformStatus bTreeUniformType
+        mbLegend = bTreeUniformLegend bTreeUniformType
+        mbBgColor = Nothing
         diagram = bTreeUniformTypeDiagram bTreeUniformType
     in
-        viewTreeCard title status Nothing diagram
+        viewTreeCard title status mbLegend mbBgColor diagram
 
 
 viewVariedTreeCard : BTreeVariedType -> Html msg
@@ -387,9 +391,11 @@ viewVariedTreeCard bTreeVariedType =
 
         title = "BTreeVaried"
         status = depthStatus (BTree.depth bTree)
+        mbLegend = bTreeVariedLegend bTreeVariedType
+        mbBgColor = Just T.bg_black_05
         diagram = bTreeVariedTypeDiagram bTreeVariedType
     in
-        viewTreeCard title status (Just (T.bg_black_05)) diagram
+        viewTreeCard title status mbLegend mbBgColor diagram
 
 
 depthStatus : Int -> String
@@ -403,7 +409,7 @@ bTreeUniformTitle bTreeUniformType =
         |> toString
         |> String.split " "
         |> List.head
-        |> Maybe.Extra.unwrap "" identity
+        |> Maybe.withDefault ""
 
 
 bTreeUniformStatus : BTreeUniformType -> String
@@ -432,8 +438,67 @@ bTreeUniformStatus bTreeUniformType =
                 status
 
 
-viewTreeCard : String -> String -> Maybe String -> Html msg -> Html msg
-viewTreeCard title status mbBgColor diagram =
+bTreeUniformLegend : BTreeUniformType -> Maybe (Html msg)
+bTreeUniformLegend bTreeUniformType =
+    case bTreeUniformType of
+        BTreeInt bTree ->
+            Just bTreeIntCardLegend
+
+        BTreeString bTree ->
+            Nothing
+
+        BTreeBool bTree ->
+            Nothing
+
+        BTreeMusicNotePlayer bTree ->
+            Nothing
+
+        BTreeNothing bTree ->
+            Nothing
+
+
+bTreeIntCardLegend : Html msg
+bTreeIntCardLegend =
+    Html.h2
+        [ classes
+            [ T.i
+            , T.b
+            , T.tc
+            , T.center
+            , T.f5
+            , T.pa1
+            ]
+        ]
+        [ span
+            [ classes
+                [T.black
+                ]
+            ]
+            [ text "Legend: " ]
+        , span
+            [ classes
+                [intNodeEvenColor
+                ]
+            ]
+            [ text "Even " ]
+        , span
+            [ classes
+                [intNodeOddColor
+                ]
+            ]
+            [ text "Odd" ]
+        ]
+
+
+bTreeVariedLegend : BTreeVariedType -> Maybe (Html msg)
+bTreeVariedLegend bTreeVariedType =
+    if BTreeVariedType.hasAnyIntNodes bTreeVariedType
+        then Just bTreeIntCardLegend
+        else Nothing
+
+
+viewTreeCard : String -> String -> Maybe (Html msg) -> Maybe String -> Html msg -> Html msg
+viewTreeCard title status mbLegend mbBgColor diagram =
     let
         articleTachyons =
             [ T.fl
@@ -445,7 +510,7 @@ viewTreeCard title status mbBgColor diagram =
             , T.mw6
             , T.center
             , T.overflow_x_scroll
-            ]  ++ (unwrap [] List.singleton mbBgColor)
+            ]  ++ (Maybe.Extra.unwrap [] List.singleton mbBgColor)
     in
         article
             [ classes articleTachyons ]
@@ -459,6 +524,7 @@ viewTreeCard title status mbBgColor diagram =
                         [ T.f4
                         , T.mb2
                         , T.pt1
+                        , T.black
                         ]
                     ]
                     [ text title ]
@@ -467,15 +533,23 @@ viewTreeCard title status mbBgColor diagram =
                         [ T.f5
                         , T.fw4
                         , T.mt0
+                        , T.black
                         ]
                     ]
                     [ text status ]
-                , div
+                , article
                     [ classes
                         [ T.mt0
+                        , T.pl2
                         ]
                     ]
                     [ diagram ]
+                , article
+                    [ classes
+                        [ T.center
+                        ]
+                    ]
+                    [ Maybe.withDefault (span[][]) mbLegend ]
                 ]
             ]
 

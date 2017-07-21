@@ -3,6 +3,7 @@ module CustomFunctions exposing (lazyUnwrap, digitCount)
 import Lazy exposing (Lazy, force)
 
 
+-- todo https://github.com/maxsnew/lazy/commit/c9c3f85
 lazyUnwrap : Lazy b -> (a -> b) -> Maybe a -> b
 lazyUnwrap lazy fn mbA =
     case mbA of

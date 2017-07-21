@@ -1,4 +1,4 @@
-module BTreeVariedType exposing (BTreeVariedType, BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, removeDuplicates)
+module BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, removeDuplicates, hasAnyIntNodes)
 
 import Arithmetic exposing (isPrime)
 -- import Basics.Extra exposing (isSafeInteger) todo
@@ -137,3 +137,16 @@ removeDuplicates (BTreeVaried bTree) =
                     toString node
     in
         BTreeVaried (BTree.removeDuplicatesBy fn bTree)
+
+
+hasAnyIntNodes : BTreeVariedType -> Bool
+hasAnyIntNodes (BTreeVaried bTree) =
+    let
+        isIntNode : NodeTag -> Bool
+        isIntNode node =
+            case node of
+                IntNode i -> True
+                _ -> False
+    in
+        BTree.flatten bTree
+            |> List.any isIntNode

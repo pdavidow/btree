@@ -1,6 +1,17 @@
+module BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intNodeEvenColor, intNodeOddColor)
+
 -- https://github.com/brenden/elm-tree-diagram/blob/master/examples/canvas/RedBlackTree.elm
 
-module BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram)
+import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
+import TreeDiagram.Canvas exposing (draw)
+import UniversalConstants exposing (nothingString, unsafeString)
+
+import Color exposing (Color)
+import Collage exposing (group, segment, traced, rotate, move, scale, oval, rect, ngon, filled, outlined, text, rect, polygon, moveY, defaultLine, Form, toForm, LineStyle)
+import Element exposing (Element, centered, toHtml)
+import Html exposing (Html)
+import Text exposing (fromString, style, defaultStyle)
+import Arithmetic exposing (isEven)
 
 import BTree exposing (BTree, toTreeDiagramTree)
 import BTree exposing (NodeTag(..))
@@ -8,17 +19,8 @@ import BTreeUniformType exposing (BTreeUniformType(..), toTaggedNodes)
 import BTreeVariedType exposing (BTreeVariedType(..))
 import MusicNote exposing (displayString)
 import MusicNotePlayer exposing (MusicNotePlayer(..))
-
-import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
-import TreeDiagram.Canvas exposing (draw)
-import UniversalConstants exposing (nothingString, unsafeString)
-
-import Color exposing (Color, green, orange, black, white, yellow, blue, purple, lightCharcoal, red)
-import Collage exposing (group, segment, traced, rotate, move, scale, oval, rect, ngon, filled, outlined, text, rect, polygon, moveY, defaultLine, Form, toForm, LineStyle)
-import Element exposing (Element)
-import Html exposing (Html)
-import Text exposing (fromString, style, defaultStyle)
-import Arithmetic exposing (isEven)
+import TachyonsColor exposing (TachyonsColor, tachyonsColorToColor)
+import Tachyons.Classes as T exposing (..)
 
 
 bTreeUniformTypeDiagram : BTreeUniformType -> Html msg
@@ -46,7 +48,7 @@ treeElement mbTdTree =
             Element.empty
 
         Just (tdTree) ->
-            draw
+            TreeDiagram.Canvas.draw
                 { defaultTreeLayout
                 | padding = 100
                 , siblingDistance = 80
@@ -54,6 +56,16 @@ treeElement mbTdTree =
                 drawNode
                 drawEdge
                 tdTree
+
+
+intNodeEvenColor : TachyonsColor
+intNodeEvenColor =
+    T.dark_green
+
+
+intNodeOddColor : TachyonsColor
+intNodeOddColor =
+    T.orange
 
 
 drawNode : Maybe NodeTag -> Form
@@ -69,9 +81,10 @@ drawNode mbNodeTag =
 
                         colorizer : Int -> Color
                         colorizer i =
-                            if Arithmetic.isEven i
-                                then green
-                                else orange
+                            tachyonsColorToColor <|
+                                if Arithmetic.isEven i
+                                    then intNodeEvenColor
+                                    else intNodeOddColor
                     in
                         group
                             [ oval width height |> filled (colorizer i)
@@ -86,7 +99,7 @@ drawNode mbNodeTag =
                         height = 30
                     in
                         group
-                            [ rect width height |> filled blue
+                            [ rect width height |> filled (tachyonsColorToColor T.dark_blue)
                             , rect width height |> outlined treeLineStyle
                             , s |> fromString |> style treeNodeStyle |> text |> moveY 4
                             ]
@@ -102,8 +115,8 @@ drawNode mbNodeTag =
                         colorizer : Bool -> Color
                         colorizer bool =
                             if bool
-                                then lightCharcoal
-                                else black
+                                then (tachyonsColorToColor T.gray)
+                                else (tachyonsColorToColor T.black)
                     in
                         group
                             [ ngon 6 20 |> filled (colorizer b)
@@ -120,7 +133,7 @@ drawNode mbNodeTag =
                                     else treeLineStyle
                             in
                                 group
-                                    [ ngon 5 25 |> filled (purple)
+                                    [ ngon 5 25 |> filled (tachyonsColorToColor T.purple)
                                     , ngon 5 25 |> outlined outlineStyle
                                     , displayString note |> fromString |> style treeNodeStyle |> text |> moveY 4
                                     ]
@@ -130,14 +143,14 @@ drawNode mbNodeTag =
 
                 NothingNode ->
                     group
-                        [ oval 40 40 |> filled (red)
+                        [ oval 40 40 |> filled (tachyonsColorToColor T.dark_red)
                         , oval 40 40 |> outlined treeLineStyle
                         , nothingString |> fromString |> style treeNodeStyle |> text |> moveY 4
                         ]
 
                 UnsafeNode ->
                     group
-                        [ rect 55 30 |> filled (red)
+                        [ rect 55 30 |> filled (tachyonsColorToColor T.dark_red)
                         , rect 55 30 |> outlined treeLineStyle
                         , unsafeString |> fromString |> style treeNodeStyle |> text |> moveY 4
                         ]
@@ -159,15 +172,16 @@ drawEdge ( x, y ) =
 treeNodeStyle : Text.Style
 treeNodeStyle =
     { defaultStyle
-        | color = white
-        , height = Just 15
+        | color = (tachyonsColorToColor T.white)
+        , bold = False
+        , height = Just 15.0
         , typeface = [ "Times New Roman", "serif" ]
     }
 
 
 treeNilStyle : Text.Style
 treeNilStyle =
-    { defaultStyle | color = white, height = Just 20 }
+    { defaultStyle | color = (tachyonsColorToColor T.white), height = Just 20 }
 
 
 treeLineStyle : LineStyle
