@@ -36,17 +36,17 @@ raiseInt exp i =
 
 incrementString : Int -> String -> String
 incrementString delta s =
-    s ++ " +" ++ (toString (abs delta))
+    s ++ toString (abs delta)
 
 
 decrementString : Int -> String -> String
 decrementString delta s =
-    s ++ " -" ++ (toString (abs delta))
+    String.dropRight delta s
 
 
 raiseString : Int -> String -> String
 raiseString exp s =
-    s ++ " ^" ++ (toString (abs exp))
+    s
 
 
 incrementBool : Int -> Bool -> Bool
