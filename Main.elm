@@ -16,7 +16,7 @@ import Lazy exposing (lazy)
 
 import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes)
 import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, hasAnyIntNodes)
-import BTree exposing (BTree(..), NodeTag(..), fromList, singleton, toTreeDiagramTree)
+import BTree exposing (BTree(..), NodeTag(..), fromListBy, fromMaybeSafeInts, singleton, toTreeDiagramTree)
 import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intNodeEvenColor, intNodeOddColor)
 import UniversalConstants exposing (nothingString)
 import MusicNote exposing (MusicNote(..), mbSorter)
@@ -24,6 +24,7 @@ import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter)
 import TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote)
 import Ports exposing (port_startPlayNote, port_donePlayNote, port_donePlayNotes)
 import Lib exposing (lazyUnwrap)
+import MaybeSafe exposing (maxSafeInt, toMaybeSafeInt)
 ------------------------------------------------
 
 
@@ -52,14 +53,10 @@ type Msg =
 
 type alias Model =
     { intTree : BTreeUniformType
-    , intMorphedToVariedTree : BTreeVariedType
     , stringTree : BTreeUniformType
-    , stringMorphedToVariedTree : BTreeVariedType
     , boolTree : BTreeUniformType
-    , boolMorphedToVariedTree : BTreeVariedType
     , initialMusicNoteTree : BTreeUniformType
     , musicNoteTree : BTreeUniformType
-    , musicNoteMorphedToVariedTree : BTreeVariedType
     , variedTree : BTreeVariedType
     , intTreeCache : BTreeUniformType
     , stringTreeCache : BTreeUniformType
@@ -69,7 +66,6 @@ type alias Model =
     , delta : Int
     , exponent : Int
     , isPlayNotes : Bool
-    , isShowUniformMorphedToVaried : Bool
     , isTreeCaching : Bool
     , uuidSeed : Seed
     }
@@ -77,16 +73,12 @@ type alias Model =
 
 initialModel: Model
 initialModel =
-    { intTree = BTreeInt (Node (2 ^ 53) (singleton 4) (Node -33 Empty (singleton 4)))
-    , intMorphedToVariedTree = BTreeVaried Empty -- placeholder
-    , stringTree = BTreeString (Node "2 ^ 53" (singleton "helm") (Node "helm" Empty (singleton "Elm")))
-    , stringMorphedToVariedTree = BTreeVaried Empty -- placeholder
-    , boolTree = BTreeBool (Node True (singleton True) (singleton False))
-    , boolMorphedToVariedTree = BTreeVaried Empty -- placeholder
+    { intTree = BTreeInt (Node (toMaybeSafeInt <| maxSafeInt) (singleton <| toMaybeSafeInt 4) (Node (toMaybeSafeInt -9) Empty (singleton <| toMaybeSafeInt 4)))
+    , stringTree = BTreeString (Node "Max Safe Int" (singleton "four") (Node "-nine" Empty (singleton "four")))
+    , boolTree = BTreeBool (Node (Just True) (singleton <| Just True) (singleton <| Just False))
     , initialMusicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
     , musicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
-    , musicNoteMorphedToVariedTree = BTreeVaried Empty -- placeholder
-    , variedTree = BTreeVaried (Node (IntNode (2 ^ 53)) (Node (StringNode "A") (singleton (MusicNoteNode (MusicNotePlayer.on A))) (singleton (IntNode 123))) ((Node (BoolNode True)) (singleton (MusicNoteNode (MusicNotePlayer.on A))) (singleton (BoolNode True))))
+    , variedTree = BTreeVaried (Node (IntNode <| toMaybeSafeInt <| maxSafeInt) (Node (StringNode "A") (singleton <| MusicNoteNode <| MusicNotePlayer.on A) (singleton <| IntNode <| toMaybeSafeInt 123)) ((Node (BoolNode <| Just True)) (singleton <| MusicNoteNode <| MusicNotePlayer.on A) (singleton <| BoolNode <| Just True)))
     , intTreeCache = BTreeInt Empty
     , stringTreeCache = BTreeString Empty
     , boolTreeCache = BTreeBool Empty
@@ -95,7 +87,6 @@ initialModel =
     , delta = 1
     , exponent = 2
     , isPlayNotes = False
-    , isShowUniformMorphedToVaried = False
     , isTreeCaching = False
     , uuidSeed = initialSeed 0 -- placeholder
     }
@@ -189,11 +180,10 @@ viewHeader model =
                 , T.hover_bg_black
                 ]
             ]
-            [ text "BinaryTree" ]
+            [ text "BinaryTree Playground" ]
         , span
             [ classes
-                [ T.f2
-                , T.i
+                [ T.f3
                 , T.courier
                 , T.pl2
                 , T.pr2
@@ -202,7 +192,15 @@ viewHeader model =
                 , T.hover_bg_yellow
                 ]
             ]
-            [ text "playground" ]
+            [ text "with the MaybeSafe " -- todo only put MaybeSafe in T.courier
+            , span
+                [ classes
+                    [ T.i
+                    , T.b
+                    ]
+                ]
+                [ text "Prince Of Ints" ]
+            ]
         , span
             [ classes
                 [ T.fr
@@ -346,20 +344,13 @@ viewTrees : Model -> Html Msg
 viewTrees model =
     -- http://tachyons.io/components/layout/five-column-collapse-one/index.html
     let
-        cards = (if model.isShowUniformMorphedToVaried
-            then
-                [ viewVariedTreeCard model.musicNoteMorphedToVariedTree
-                , viewVariedTreeCard model.intMorphedToVariedTree
-                , viewVariedTreeCard model.stringMorphedToVariedTree
-                , viewVariedTreeCard model.boolMorphedToVariedTree
-                ]
-            else
-                [ viewUniformTreeCard model.musicNoteTree
-                , viewUniformTreeCard model.intTree
-                , viewUniformTreeCard model.stringTree
-                , viewUniformTreeCard model.boolTree
-                ]
-            ) ++ [viewVariedTreeCard model.variedTree]
+        cards =
+            [ viewUniformTreeCard model.musicNoteTree
+            , viewUniformTreeCard model.intTree
+            , viewUniformTreeCard model.stringTree
+            , viewUniformTreeCard model.boolTree
+            , viewVariedTreeCard model.variedTree
+            ]
     in
         section
             [ classes
@@ -416,26 +407,9 @@ bTreeUniformStatus : BTreeUniformType -> String
 bTreeUniformStatus bTreeUniformType =
     let
         depth = BTreeUniformType.depth bTreeUniformType
-        status = depthStatus depth
+        mbSum = BTreeUniformType.sumInt bTreeUniformType
     in
-        case bTreeUniformType of
-            BTreeInt bTree ->
-                let
-                    sum = BTree.sumInt bTree
-                in
-                    status ++ ("; sum " ++ toString sum)
-
-            BTreeString bTree ->
-                status
-
-            BTreeBool bTree ->
-                status
-
-            BTreeMusicNotePlayer bTree ->
-                status
-
-            BTreeNothing bTree ->
-                status
+        (depthStatus depth) ++ (Maybe.Extra.unwrap "" (\sum -> "; sum " ++ toString sum) mbSum) -- todo refator
 
 
 bTreeUniformLegend : BTreeUniformType -> Maybe (Html msg)
@@ -642,7 +616,7 @@ update msg model =
 
         ReceiveRandomIntList list ->
             (   { model
-                | intTree = BTreeInt (fromList list)
+                | intTree = BTreeInt (BTree.fromMaybeSafeInts list)
                 }
             , Cmd.none
             )
@@ -656,11 +630,10 @@ update msg model =
 
         StartShowIsIntPrime ->
             (   { model
-                | isShowUniformMorphedToVaried = True
-                , isTreeCaching = True
+                | isTreeCaching = True
                 }
                     |> cacheAllTrees
-                    |> morphUniformToVariedTrees BTreeUniformType.toIsIntPrime
+                    |> morphUniformTrees BTreeUniformType.toIsIntPrime
                     |> morphVariedTrees BTreeVariedType.toIsIntPrime
             , Cmd.none
             )
@@ -670,14 +643,11 @@ update msg model =
                 newModel = if model.isTreeCaching
                     then
                         { model
-                        | isShowUniformMorphedToVaried = False
-                        , isTreeCaching = False
+                        | isTreeCaching = False
                         }
                             |> unCacheAllTrees
                     else
-                        { model
-                        | isShowUniformMorphedToVaried = False
-                        }
+                        model
             in
                 ( newModel
                 , Cmd.none
@@ -812,16 +782,6 @@ changeUniformTrees fn model =
     }
 
 
-changeUniformToVariedTrees : (BTreeUniformType -> BTreeVariedType) -> Model -> Model
-changeUniformToVariedTrees fn model =
-    {model
-        | intMorphedToVariedTree = fn model.intTree
-        , stringMorphedToVariedTree = fn model.stringTree
-        , boolMorphedToVariedTree = fn model.boolTree
-        , musicNoteMorphedToVariedTree = fn model.musicNoteTree
-    }
-
-
 changeVariedTrees : (BTreeVariedType -> BTreeVariedType) -> Model -> Model
 changeVariedTrees fn model =
     {model
@@ -882,11 +842,6 @@ morphUniformTrees fn model =
         defaultMorph = \tree -> defaultMorphUniformTree fn tree
     in
         changeUniformTrees defaultMorph model
-
-
-morphUniformToVariedTrees : (BTreeUniformType -> BTreeVariedType) -> Model -> Model
-morphUniformToVariedTrees fn model =
-    changeUniformToVariedTrees fn model
 
 
 morphVariedTrees : (BTreeVariedType -> BTreeVariedType) -> Model -> Model

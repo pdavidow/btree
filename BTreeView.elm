@@ -4,7 +4,6 @@ module BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intN
 
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
-import UniversalConstants exposing (nothingString, unsafeString)
 
 import Color exposing (Color)
 import Collage exposing (group, segment, traced, rotate, move, scale, oval, rect, ngon, filled, outlined, text, rect, polygon, moveY, defaultLine, Form, toForm, LineStyle)
@@ -12,6 +11,8 @@ import Element exposing (Element, centered, toHtml)
 import Html exposing (Html)
 import Text exposing (fromString, style, defaultStyle)
 import Arithmetic exposing (isEven)
+import TachyonsColor exposing (TachyonsColor, tachyonsColorToColor)
+import Tachyons.Classes as T exposing (..)
 
 import BTree exposing (BTree, toTreeDiagramTree)
 import BTree exposing (NodeTag(..))
@@ -19,9 +20,8 @@ import BTreeUniformType exposing (BTreeUniformType(..), toTaggedNodes)
 import BTreeVariedType exposing (BTreeVariedType(..))
 import MusicNote exposing (displayString)
 import MusicNotePlayer exposing (MusicNotePlayer(..))
-import TachyonsColor exposing (TachyonsColor, tachyonsColorToColor)
-import Tachyons.Classes as T exposing (..)
-
+import UniversalConstants exposing (nothingString, unsafeString)
+import MaybeSafe exposing (MaybeSafe(..))
 
 bTreeUniformTypeDiagram : BTreeUniformType -> Html msg
 bTreeUniformTypeDiagram bTreeUniformType =
@@ -73,24 +73,32 @@ drawNode mbNodeTag =
     case mbNodeTag of
         Just nodeTag ->
             case nodeTag of
-                IntNode i ->
-                    let
-                        stringLength = String.length (toString i)
-                        width = toFloat (30 + (10 * stringLength))
-                        height = 30
+                IntNode mbsInt ->
+                    case mbsInt of
+                        Unsafe ->
+                            group
+                                [ rect 55 30 |> filled (tachyonsColorToColor T.dark_red)
+                                , rect 55 30 |> outlined treeLineStyle
+                                , unsafeString |> fromString |> style treeNodeStyle |> text |> moveY 4
+                                ]
+                        Safe int ->
+                            let
+                                stringLength = String.length (toString int)
+                                width = toFloat (30 + (10 * stringLength))
+                                height = 30
 
-                        colorizer : Int -> Color
-                        colorizer i =
-                            tachyonsColorToColor <|
-                                if Arithmetic.isEven i
-                                    then intNodeEvenColor
-                                    else intNodeOddColor
-                    in
-                        group
-                            [ oval width height |> filled (colorizer i)
-                            , oval width height |> outlined treeLineStyle
-                            , toString i |> fromString |> style treeNodeStyle |> text |> moveY 4
-                            ]
+                                colorizer : Int -> Color
+                                colorizer int =
+                                    tachyonsColorToColor <|
+                                        if Arithmetic.isEven int
+                                            then intNodeEvenColor
+                                            else intNodeOddColor
+                            in
+                                group
+                                    [ oval width height |> filled (colorizer int)
+                                    , oval width height |> outlined treeLineStyle
+                                    , toString int |> fromString |> style treeNodeStyle |> text |> moveY 4
+                                    ]
 
                 StringNode s ->
                     let
@@ -104,25 +112,30 @@ drawNode mbNodeTag =
                             , s |> fromString |> style treeNodeStyle |> text |> moveY 4
                             ]
 
-                BoolNode b ->
-                    let
-                        displayString : Bool -> String
-                        displayString bool =
-                            if bool
-                                then "T"
-                                else "F"
+                BoolNode mbBool ->
+                    case mbBool of
+                        Nothing ->
+                            drawNothingNode
 
-                        colorizer : Bool -> Color
-                        colorizer bool =
-                            if bool
-                                then (tachyonsColorToColor T.gray)
-                                else (tachyonsColorToColor T.black)
-                    in
-                        group
-                            [ ngon 6 20 |> filled (colorizer b)
-                            , ngon 6 20 |> outlined treeLineStyle
-                            , displayString b |> fromString |> style treeNodeStyle |> text |> moveY 4
-                            ]
+                        Just bool ->
+                            let
+                                displayString : Bool -> String
+                                displayString bool =
+                                    if bool
+                                        then "T"
+                                        else "F"
+
+                                colorizer : Bool -> Color
+                                colorizer bool =
+                                    if bool
+                                        then (tachyonsColorToColor T.gray)
+                                        else (tachyonsColorToColor T.black)
+                            in
+                                group
+                                    [ ngon 6 20 |> filled (colorizer bool)
+                                    , ngon 6 20 |> outlined treeLineStyle
+                                    , displayString bool |> fromString |> style treeNodeStyle |> text |> moveY 4
+                                    ]
 
                 MusicNoteNode (MusicNotePlayer params) ->
                     case params.mbNote of
@@ -146,13 +159,6 @@ drawNode mbNodeTag =
                         [ oval 40 40 |> filled (tachyonsColorToColor T.dark_red)
                         , oval 40 40 |> outlined treeLineStyle
                         , nothingString |> fromString |> style treeNodeStyle |> text |> moveY 4
-                        ]
-
-                UnsafeNode ->
-                    group
-                        [ rect 55 30 |> filled (tachyonsColorToColor T.dark_red)
-                        , rect 55 30 |> outlined treeLineStyle
-                        , unsafeString |> fromString |> style treeNodeStyle |> text |> moveY 4
                         ]
 
         Nothing ->

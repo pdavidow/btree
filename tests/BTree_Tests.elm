@@ -1,6 +1,6 @@
 module BTree_Tests exposing (..)
 
-import BTree exposing (BTree(..), NodeTag(..), singleton, depth, map, sum, flatten, isElement, fold, sumUsingFold, sumInt, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromListBy, insert, insertBy, removeDuplicates, removeDuplicatesBy, isAllNothing, isEmpty, toNothingNodes)
+import BTree exposing (BTree(..), NodeTag(..), singleton, depth, map, sumInt, flatten, isElement, fold, sumUsingFold, sumInt, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromListBy, insert, insertBy, removeDuplicates, removeDuplicatesBy, isAllNothing, isEmpty, toNothingNodes)
 
 import TreeDiagram as TD exposing (node)
 import MusicNote exposing (MusicNote(..), sorter)
@@ -61,19 +61,19 @@ bTree =
             [ test "of empty" <|
                 \() ->
                     Empty
-                        |> sum
+                        |> sumInt
                         |> Expect.equal 0
             , test "of singleton" <|
                 \() ->
                     1
                         |> singleton
-                        |> sum
+                        |> sumInt
                         |> Expect.equal 1
             , test "of 3 levels" <|
                 \() ->
                     [1, 2, 3]
                         |> fromList
-                        |> sum
+                        |> sumInt
                         |> Expect.equal 6
             ]
         , describe "BTree.flatten"
@@ -185,7 +185,7 @@ bTree =
                     let
                         tree = fromList [4, 7, 5, 6, 1]
                     in
-                        Expect.equal (sum tree) (sumUsingFold tree)
+                        Expect.equal (sumInt tree) (sumUsingFold tree)
         , describe "BTree.sumUsingFold"
             [ test "of empty" <|
                 \() ->

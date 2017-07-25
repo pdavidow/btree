@@ -3,21 +3,21 @@ module BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes
 import Arithmetic exposing (isPrime)
 -- import Basics.Extra exposing (isSafeInteger) -- todo https://github.com/elm-community/basics-extra/issues/7
 
-import BTree exposing (NodeTag(..))
-import BTree exposing (BTree, depth, map, removeDuplicatesBy, singleton, sumInt , sumString , sort, sortBy, isEmpty, toNothingNodes)
+import BTree exposing (BTree, NodeTag(..), depth, map, removeDuplicatesBy, singleton, sumMaybeSafeInt , sumString , sort, sortBy, isEmpty, toNothingNodes)
 import MusicNote exposing (MusicNote, mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), sorter)
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
 import BTreeVariedType exposing (BTreeVariedType(..))
 import Lib exposing (digitCount)
+import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 
 
 type OnlyNothing = OnlyNothing
 
 type BTreeUniformType
-    = BTreeInt (BTree Int)
+    = BTreeInt (BTree (MaybeSafe Int))
     | BTreeString (BTree String)
-    | BTreeBool (BTree Bool)
+    | BTreeBool (BTree (Maybe Bool))
     | BTreeMusicNotePlayer (BTree MusicNotePlayer)
     | BTreeNothing (BTree OnlyNothing)
 
@@ -72,7 +72,10 @@ toLength bTreeUniformType =
             Just (BTreeInt (map digitCount bTree))
 
         BTreeString bTree ->
-            Just (BTreeInt (map String.length bTree))
+            let
+                fn = \s -> toMaybeSafeInt <| String.length s
+            in
+                Just <| BTreeInt (map fn bTree)
 
         BTreeBool bTree ->
             Nothing
@@ -84,32 +87,32 @@ toLength bTreeUniformType =
             Nothing
 
 
-toIsIntPrime : BTreeUniformType -> BTreeVariedType
+toIsIntPrime : BTreeUniformType -> Maybe BTreeUniformType
 toIsIntPrime bTreeUniformType =
-    -- todo https://github.com/elm-community/basics-extra/issues/7
     case bTreeUniformType of
         BTreeInt bTree ->
             let
-                -- todo https://github.com/elm-community/basics-extra/issues/7
-                isSafeInteger = \int -> (abs int) <= (2^53 - 1)
+                fn = \mbsInt ->
+                    case mbsInt of
+                        Unsafe ->
+                            Nothing
 
-                fn = \int -> if isSafeInteger int
-                    then BoolNode (Arithmetic.isPrime int)
-                    else UnsafeNode
+                        Safe int ->
+                            Just <| Arithmetic.isPrime int
             in
-                BTreeVaried (map fn bTree)
+                Just (BTreeBool (map fn bTree))
 
         BTreeString bTree ->
-            BTreeVaried (toNothingNodes bTree)
+            Nothing
 
         BTreeBool bTree ->
-            BTreeVaried (toNothingNodes bTree)
+            Nothing
 
         BTreeMusicNotePlayer bTree ->
-            BTreeVaried (toNothingNodes bTree)
+            Nothing
 
         BTreeNothing bTree ->
-            BTreeVaried (toNothingNodes bTree)
+            Nothing
 
 
 mapUniformTree : Int -> Mappers -> BTreeUniformType -> BTreeUniformType
@@ -165,11 +168,11 @@ depth bTreeUniformType =
             BTree.depth bTree
 
 
-sumInt : BTreeUniformType -> Maybe Int
+sumInt : BTreeUniformType -> Maybe (MaybeSafe Int)
 sumInt bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            Just (BTree.sumInt bTree)
+            Just <| BTree.sumMaybeSafeInt bTree
 
         BTreeString bTree ->
             Nothing
@@ -207,7 +210,7 @@ sort : BTreeUniformType -> Maybe BTreeUniformType
 sort bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            Just (BTreeInt (BTree.sort bTree))
+            Just (BTreeInt (BTree.sortBy toString bTree))
 
         BTreeString bTree ->
             Just (BTreeString (BTree.sort bTree))
@@ -226,7 +229,7 @@ removeDuplicates : BTreeUniformType -> BTreeUniformType
 removeDuplicates bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            BTreeInt (BTree.removeDuplicates bTree)
+            BTreeInt (BTree.removeDuplicatesBy toString bTree)
 
         BTreeString bTree ->
             BTreeString (BTree.removeDuplicates bTree)

@@ -9,7 +9,7 @@ import MusicNotePlayer exposing (MusicNotePlayer(..))
 import MusicNote exposing (mbSorter)
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
 import Lib exposing (digitCount)
-
+import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 
 type BTreeVariedType = BTreeVaried (BTree NodeTag)
 
@@ -19,11 +19,11 @@ toLength (BTreeVaried bTree) =
     let
         fn : NodeTag -> NodeTag
         fn nodeTag = case nodeTag of
-            IntNode x ->
-                IntNode (digitCount x)
+            IntNode mbsInt ->
+                IntNode (digitCount mbsInt)
 
-            StringNode x ->
-                IntNode (String.length x)
+            StringNode s ->
+                IntNode <| toMaybeSafeInt <| (String.length s)
 
             BoolNode x ->
                 NothingNode
@@ -32,9 +32,6 @@ toLength (BTreeVaried bTree) =
                 NothingNode
 
             NothingNode ->
-                NothingNode
-
-            UnsafeNode ->
                 NothingNode
     in
         BTreeVaried (map fn bTree)
@@ -48,10 +45,16 @@ toIsIntPrime (BTreeVaried bTree) =
 
         fn : NodeTag -> NodeTag
         fn nodeTag = case nodeTag of
-            IntNode x ->
-                if isSafeInteger x -- todo refactor with uni
-                    then BoolNode (Arithmetic.isPrime x)
-                    else UnsafeNode
+            IntNode mbsInt ->
+                let
+                    mbBool = case mbsInt of
+                        Unsafe ->
+                            Nothing
+
+                        Safe int ->
+                            Just (Arithmetic.isPrime int)
+                in
+                    BoolNode mbBool
 
             StringNode x ->
                 NothingNode
@@ -64,9 +67,6 @@ toIsIntPrime (BTreeVaried bTree) =
 
             NothingNode ->
                 NothingNode
-
-            UnsafeNode ->
-                NothingNode
     in
         BTreeVaried (map fn bTree)
 
@@ -77,22 +77,19 @@ mapVariedTree operand mappers (BTreeVaried bTree) =
         fn : Int -> Mappers -> NodeTag -> NodeTag
         fn operand mappers nodeTag =
             case nodeTag of
-                IntNode x ->
-                    IntNode (mappers.int operand x)
+                IntNode mbsInt ->
+                    IntNode (mappers.int operand mbsInt)
 
                 StringNode x ->
                     StringNode (mappers.string operand x)
 
-                BoolNode x ->
-                    BoolNode (mappers.bool operand x)
+                BoolNode mbBool ->
+                    BoolNode (mappers.bool operand mbBool)
 
                 MusicNoteNode x ->
                     MusicNoteNode (mappers.musicNotePlayer operand x)
 
                 NothingNode ->
-                    NothingNode
-
-                UnsafeNode ->
                     NothingNode
     in
         BTreeVaried (map (fn operand mappers) bTree)
@@ -118,22 +115,19 @@ removeDuplicates (BTreeVaried bTree) =
     let
         fn = \node ->
             case node of
-                IntNode v ->
+                IntNode x ->
                     toString node
 
-                StringNode v ->
+                StringNode x ->
                     toString node
 
-                BoolNode v ->
+                BoolNode x ->
                     toString node
 
                 MusicNoteNode (MusicNotePlayer params) ->
                     "MusicNoteNode " ++ (MusicNote.mbSorter params.mbNote)
 
                 NothingNode ->
-                    toString node
-
-                UnsafeNode ->
                     toString node
     in
         BTreeVaried (BTree.removeDuplicatesBy fn bTree)
@@ -145,7 +139,7 @@ hasAnyIntNodes (BTreeVaried bTree) =
         isIntNode : NodeTag -> Bool
         isIntNode node =
             case node of
-                IntNode i -> True
+                IntNode x -> True
                 _ -> False
     in
         BTree.flatten bTree

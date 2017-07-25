@@ -4,12 +4,13 @@ import Arithmetic exposing (isEven)
 
 import MusicNote exposing ((:+:), (:-:))
 import MusicNotePlayer exposing (MusicNotePlayer(..))
+import MaybeSafe exposing (MaybeSafe(..), isSafeInt, toMaybeSafeInt)
 
 
 type alias Mappers =
-    { int : Int -> Int -> Int
+    { int : Int -> MaybeSafe Int -> MaybeSafe Int
     , string : Int -> String -> String
-    , bool : Int -> Bool -> Bool
+    , bool : Int -> Maybe Bool -> Maybe Bool
     , musicNotePlayer : Int -> MusicNotePlayer -> MusicNotePlayer
     }
 
@@ -19,19 +20,43 @@ decrementMappers = Mappers decrementInt decrementString decrementBool decrementM
 raiseMappers = Mappers raiseInt raiseString raiseBool raiseMusicNoteInPlayer
 
 
-incrementInt : Int -> Int -> Int
-incrementInt delta i =
-    i + (abs delta)
+incrementInt : Int -> MaybeSafe Int -> MaybeSafe Int
+incrementInt delta mbsInt =
+    case mbsInt of -- todo refactor...
+        Unsafe ->
+            Unsafe
+
+        Safe int ->
+            delta
+                |> abs
+                |> (+) int
+                |> toMaybeSafeInt
 
 
-decrementInt : Int -> Int -> Int
-decrementInt delta i =
-    i - (abs delta)
+decrementInt : Int -> MaybeSafe Int -> MaybeSafe Int
+decrementInt delta mbsInt =
+    case mbsInt of -- todo refactor...
+        Unsafe ->
+            Unsafe
+
+        Safe int ->
+            delta
+                |> abs
+                |> (-) int
+                |> toMaybeSafeInt
 
 
-raiseInt : Int -> Int -> Int
-raiseInt exp i =
-    i ^ (abs exp)
+raiseInt : Int -> MaybeSafe Int -> MaybeSafe Int
+raiseInt exp mbsInt =
+    case mbsInt of -- todo refactor...
+        Unsafe ->
+            Unsafe
+
+        Safe int ->
+            exp
+                |> abs
+                |> (^) int
+                |> toMaybeSafeInt
 
 
 incrementString : Int -> String -> String
@@ -49,28 +74,25 @@ raiseString exp s =
     s
 
 
-incrementBool : Int -> Bool -> Bool
-incrementBool delta b =
-    if (Arithmetic.isEven (abs delta)) then
-        b
-    else
-        not b
+incrementBool : Int -> Maybe Bool -> Maybe Bool
+incrementBool delta mbBool =
+    let
+        fn = \delta bool -> bool == Arithmetic.isEven (abs delta)
+    in
+        Maybe.map (fn delta) mbBool
 
 
-decrementBool : Int -> Bool -> Bool
-decrementBool delta b =
-    if (Arithmetic.isEven (abs delta)) then
-        b
-    else
-        not b
+decrementBool : Int -> Maybe Bool -> Maybe Bool
+decrementBool delta mbBool =
+    let
+        fn = \delta bool -> bool == Arithmetic.isEven (abs delta)
+    in
+        Maybe.map (fn delta) mbBool
 
 
-raiseBool : Int -> Bool -> Bool
-raiseBool exp b =
-    if (Arithmetic.isEven (abs exp)) then
-        b
-    else
-        not b
+raiseBool : Int -> Maybe Bool -> Maybe Bool
+raiseBool exp mbBool =
+    mbBool
 
 
 incrementMusicNoteInPlayer : Int -> MusicNotePlayer -> MusicNotePlayer
