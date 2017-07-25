@@ -24,7 +24,7 @@ import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter)
 import TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote)
 import Ports exposing (port_startPlayNote, port_donePlayNote, port_donePlayNotes)
 import Lib exposing (lazyUnwrap)
-import MaybeSafe exposing (maxSafeInt, toMaybeSafeInt)
+import MaybeSafe exposing (MaybeSafe(..), maxSafeInt, toMaybeSafeInt)
 ------------------------------------------------
 
 
@@ -413,9 +413,21 @@ bTreeUniformStatus : BTreeUniformType -> String
 bTreeUniformStatus bTreeUniformType =
     let
         depth = BTreeUniformType.depth bTreeUniformType
-        mbSum = BTreeUniformType.sumInt bTreeUniformType
+        mbMbsSum = BTreeUniformType.sumInt bTreeUniformType
+
+        fn = \mbMbsSum ->
+            let
+                pretty = \mbsSum ->
+                    case mbsSum of
+                        Unsafe -> "unsafe"
+                        Safe sum -> toString sum
+            in
+                Maybe.Extra.unwrap
+                    ""
+                    (\mbsSum -> "; sum " ++ pretty mbsSum)
+                    mbMbsSum
     in
-        (depthStatus depth) ++ (Maybe.Extra.unwrap "" (\sum -> "; sum " ++ toString sum) mbSum) -- todo refator
+        (depthStatus depth) ++ (fn mbMbsSum)
 
 
 bTreeUniformLegend : BTreeUniformType -> Maybe (Html msg)
