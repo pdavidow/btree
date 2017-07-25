@@ -205,7 +205,7 @@ viewHeader model =
                     , T.baskerville
                     ]
                 ]
-                [ text " Prince Of Ints" ]
+                [ text " Prince of Ints" ]
             ]
         , span
             [ classes
