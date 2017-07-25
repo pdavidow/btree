@@ -4,7 +4,7 @@ import Arithmetic exposing (isPrime)
 -- import Basics.Extra exposing (isSafeInteger) todo
 
 import BTree exposing (BTree, map)
-import BTree exposing (NodeTag(..))
+import NodeTag exposing (NodeTag(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..))
 import MusicNote exposing (mbSorter)
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)

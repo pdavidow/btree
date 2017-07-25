@@ -3,7 +3,8 @@ module BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes
 import Arithmetic exposing (isPrime)
 -- import Basics.Extra exposing (isSafeInteger) -- todo https://github.com/elm-community/basics-extra/issues/7
 
-import BTree exposing (BTree, NodeTag(..), depth, map, removeDuplicatesBy, singleton, sumMaybeSafeInt , sumString , sort, sortBy, isEmpty, toNothingNodes)
+import BTree exposing (BTree, depth, map, removeDuplicatesBy, singleton, sumMaybeSafeInt , sumString , sort, sortBy, isEmpty, toNothingNodes)
+import NodeTag exposing (NodeTag(..))
 import MusicNote exposing (MusicNote, mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), sorter)
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)

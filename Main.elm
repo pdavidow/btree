@@ -16,7 +16,8 @@ import Lazy exposing (lazy)
 
 import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes)
 import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, hasAnyIntNodes)
-import BTree exposing (BTree(..), NodeTag(..), fromListBy, fromMaybeSafeInts, singleton, toTreeDiagramTree)
+import BTree exposing (BTree(..), fromListBy, fromMaybeSafeInts, singleton, toTreeDiagramTree)
+import NodeTag exposing (NodeTag(..))
 import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intNodeEvenColor, intNodeOddColor)
 import UniversalConstants exposing (nothingString)
 import MusicNote exposing (MusicNote(..), mbSorter)
@@ -417,7 +418,7 @@ bTreeUniformStatus bTreeUniformType =
 
         fn = \mbMbsSum ->
             let
-                pretty = \mbsSum ->
+                pretty = \mbsSum -> -- todo style
                     case mbsSum of
                         Unsafe -> "unsafe"
                         Safe sum -> toString sum

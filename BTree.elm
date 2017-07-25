@@ -1,13 +1,13 @@
--- http://elm-lang.org/examples/binary-Tree
+module BTree exposing (BTree(..), singleton, depth, map, sumInt, flatten, isElement, fold, sumUsingFold, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromListBy, insert, insertBy, removeDuplicates, removeDuplicatesBy, isAllNothing, isEmpty, toNothingNodes, sumMaybeSafeInt, fromMaybeSafeInts)
 
-module BTree exposing (BTree(..), NodeTag(..), singleton, depth, map, sumInt, flatten, isElement, fold, sumUsingFold, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromListBy, insert, insertBy, removeDuplicates, removeDuplicatesBy, isAllNothing, isEmpty, toNothingNodes, sumMaybeSafeInt, fromMaybeSafeInts)
+-- http://elm-lang.org/examples/binary-Tree
 
 import TreeDiagram as TD exposing (node, Tree)
 import List.Extra exposing (uniqueBy)
 import Maybe.Extra exposing (unwrap, values)
 
-import MusicNotePlayer exposing (MusicNotePlayer(..))
 import MaybeSafe exposing (MaybeSafe(..), sumInt, toMaybeSafeInt, isSafe)
+import NodeTag exposing (NodeTag(..))
 
 -- todo ?? fromList flatten fromList REVERSIBLE or not?
 
@@ -15,14 +15,6 @@ import MaybeSafe exposing (MaybeSafe(..), sumInt, toMaybeSafeInt, isSafe)
 type BTree a
     = Empty
     | Node a (BTree a) (BTree a)
-
-
-type NodeTag -- todo refactor put into separte module
-    = IntNode (MaybeSafe Int)
-    | StringNode String
-    | BoolNode (Maybe Bool)
-    | MusicNoteNode MusicNotePlayer
-    | NothingNode
 
 
 singleton : a -> BTree a

@@ -15,7 +15,7 @@ import TachyonsColor exposing (TachyonsColor, tachyonsColorToColor)
 import Tachyons.Classes as T exposing (..)
 
 import BTree exposing (BTree, toTreeDiagramTree)
-import BTree exposing (NodeTag(..))
+import NodeTag exposing (NodeTag(..))
 import BTreeUniformType exposing (BTreeUniformType(..), toTaggedNodes)
 import BTreeVariedType exposing (BTreeVariedType(..))
 import MusicNote exposing (displayString)
