@@ -184,7 +184,6 @@ viewHeader model =
         , span
             [ classes
                 [ T.f3
-                , T.courier
                 , T.pl2
                 , T.pr2
                 , T.yellow
@@ -192,14 +191,21 @@ viewHeader model =
                 , T.hover_bg_yellow
                 ]
             ]
-            [ text "with the MaybeSafe " -- todo only put MaybeSafe in T.courier
+            [ text "with the "
+            , span
+                [ classes
+                    [ T.courier
+                    ]
+                ]
+                [ text "MaybeSafe" ]
             , span
                 [ classes
                     [ T.i
                     , T.b
+                    , T.baskerville
                     ]
                 ]
-                [ text "Prince Of Ints" ]
+                [ text " Prince Of Ints" ]
             ]
         , span
             [ classes
