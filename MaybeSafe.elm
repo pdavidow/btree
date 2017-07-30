@@ -39,7 +39,7 @@ sumMaybeSafeInt list =
         else
             let
                 intermediateResults = list
-                    |> toOnlySafeInts
+                    |> toOnlySafeInt
                     |> List.scanl (+) 0
                     |> List.map toMaybeSafeInt
             in
@@ -62,8 +62,8 @@ isSafe mbsA =
     not <| isUnsafe mbsA
 
 
-toOnlySafes : a -> List (MaybeSafe a) -> List a
-toOnlySafes unusedDefault list =
+toOnlySafe : a -> List (MaybeSafe a) -> List a
+toOnlySafe unusedDefault list =
     let
         fn = \ mbsA ->
             case mbsA of
@@ -73,9 +73,9 @@ toOnlySafes unusedDefault list =
         List.map fn <| List.filter isSafe list
 
 
-toOnlySafeInts : List (MaybeSafe Int) -> List Int
-toOnlySafeInts list =
-    toOnlySafes 0 list
+toOnlySafeInt : List (MaybeSafe Int) -> List Int
+toOnlySafeInt list =
+    toOnlySafe 0 list
 
 
 withDefault : a -> MaybeSafe a -> a
