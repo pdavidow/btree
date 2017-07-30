@@ -176,16 +176,19 @@ viewHeader model =
         ]
         [ span
             [ classes
-                [ T.hover_yellow
+                [ T.black
+                , T.bg_yellow
+                , T.hover_yellow
                 , T.hover_bg_black
                 ]
             ]
             [ text "BinaryTree" ]
         , span
             [ classes
-                [ T.purple
-                , T.hover_yellow
-                , T.hover_bg_purple
+                [ T.yellow
+                , T.bg_black
+                , T.hover_black
+                , T.hover_bg_yellow
                 , ml2
                 ]
             ]
