@@ -17,7 +17,7 @@ import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, 
 import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, hasAnyIntNodes)
 import BTree exposing (BTree(..), fromListBy, fromIntList, singleton, toTreeDiagramTree)
 import NodeTag exposing (NodeTag(..))
-import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intNodeEvenColor, intNodeOddColor)
+import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
 import UniversalConstants exposing (nothingString)
 import MusicNote exposing (MusicNote(..), mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter)
@@ -177,18 +177,18 @@ viewHeader model =
         [ span
             [ classes
                 [ T.black
-                , T.bg_yellow
-                , T.hover_yellow
+                , T.bg_light_green
+                , T.hover_light_green
                 , T.hover_bg_black
                 ]
             ]
             [ text "BinaryTree" ]
         , span
             [ classes
-                [ T.yellow
+                [ T.light_green
                 , T.bg_black
                 , T.hover_black
-                , T.hover_bg_yellow
+                , T.hover_bg_light_green
                 , ml2
                 ]
             ]
@@ -370,10 +370,8 @@ viewUniformTreeCard bTreeUniformType =
 viewVariedTreeCard : BTreeVariedType -> Html msg
 viewVariedTreeCard bTreeVariedType =
     let
-        (BTreeVaried bTree) = bTreeVariedType
-
         title = "BTreeVaried"
-        status = depthStatus (BTree.depth bTree)
+        status = bTreeVariedStatus bTreeVariedType
         mbLegend = bTreeVariedLegend bTreeVariedType
         mbBgColor = Just T.bg_black_05
         diagram = bTreeVariedTypeDiagram bTreeVariedType
@@ -395,25 +393,70 @@ bTreeUniformTitle bTreeUniformType =
         |> Maybe.withDefault ""
 
 
-bTreeUniformStatus : BTreeUniformType -> String
+treeStatus : Int -> Maybe (MaybeSafe Int) -> Html msg
+treeStatus depth mbMbsSum =
+    let
+        sumDisplay =
+            let
+                result = \mbsSum ->
+                    case mbsSum of
+                        Unsafe ->
+                            span
+                                [ classes
+                                    [ unsafeColor
+                                    ]
+                                ]
+                                [ text "unsafe" ]
+                        Safe sum ->
+                            span
+                                []
+                                [ text <| toString sum]
+            in
+                Maybe.Extra.unwrap
+                    [span [][]]
+                    (\mbsSum ->
+                        [ span
+                            []
+                            [ text "; sum " ]
+                        , result mbsSum
+                        ]
+                    )
+                    mbMbsSum
+    in
+        article
+            [ classes
+                [ T.f5
+                , T.fw4
+                , T.mt0
+                , T.black
+                ]
+            ]
+            (
+            [ span
+                []
+                [ text <| depthStatus depth ]
+            ]
+            ++ sumDisplay
+            )
+
+
+
+bTreeUniformStatus : BTreeUniformType -> Html msg
 bTreeUniformStatus bTreeUniformType =
     let
         depth = BTreeUniformType.depth bTreeUniformType
         mbMbsSum = BTreeUniformType.sumInt bTreeUniformType
-
-        fn = \mbMbsSum ->
-            let
-                pretty = \mbsSum -> -- todo style
-                    case mbsSum of
-                        Unsafe -> "unsafe"
-                        Safe sum -> toString sum
-            in
-                Maybe.Extra.unwrap
-                    ""
-                    (\mbsSum -> "; sum " ++ pretty mbsSum)
-                    mbMbsSum
     in
-        (depthStatus depth) ++ (fn mbMbsSum)
+        treeStatus depth mbMbsSum
+
+
+bTreeVariedStatus : BTreeVariedType -> Html msg
+bTreeVariedStatus (BTreeVaried bTree) =
+    let
+        depth = BTree.depth bTree
+        mbMbsSum = Nothing
+    in
+        treeStatus depth mbMbsSum
 
 
 bTreeUniformLegend : BTreeUniformType -> Maybe (Html msg)
@@ -437,7 +480,7 @@ bTreeUniformLegend bTreeUniformType =
 
 bTreeIntCardLegend : Html msg
 bTreeIntCardLegend =
-    Html.h2
+    article
         [ classes
             [ T.i
             , T.b
@@ -475,7 +518,7 @@ bTreeVariedLegend bTreeVariedType =
         else Nothing
 
 
-viewTreeCard : String -> String -> Maybe (Html msg) -> Maybe String -> Html msg -> Html msg
+viewTreeCard : String -> Html msg -> Maybe (Html msg) -> Maybe String -> Html msg -> Html msg
 viewTreeCard title status mbLegend mbBgColor diagram =
     let
         articleTachyons =
@@ -506,15 +549,7 @@ viewTreeCard title status mbLegend mbBgColor diagram =
                         ]
                     ]
                     [ text title ]
-                , Html.h2
-                    [ classes
-                        [ T.f5
-                        , T.fw4
-                        , T.mt0
-                        , T.black
-                        ]
-                    ]
-                    [ text status ]
+                , status
                 , article
                     [ classes
                         [ T.mt0

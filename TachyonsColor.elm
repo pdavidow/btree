@@ -22,6 +22,7 @@ tColorsWithHex =
         , ( T.dark_green, "#137752" )
         , ( T.dark_red, "#E7040F" )
         , ( T.gray, "#777777" )
+        , ( T.light_silver, "#AAAAAA" )
         , ( T.orange, "#FF6300" )
         , ( T.purple, "#5E2CA5" )
         , ( T.white,"#FFFFFF" )

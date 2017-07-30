@@ -1,4 +1,4 @@
-module BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intNodeEvenColor, intNodeOddColor)
+module BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
 
 -- https://github.com/brenden/elm-tree-diagram/blob/master/examples/canvas/RedBlackTree.elm
 
@@ -68,6 +68,11 @@ intNodeOddColor =
     T.orange
 
 
+unsafeColor : TachyonsColor
+unsafeColor =
+    T.dark_red
+
+
 drawNode : Maybe NodeTag -> Form
 drawNode mbNodeTag =
     case mbNodeTag of
@@ -77,7 +82,7 @@ drawNode mbNodeTag =
                     case mbsInt of
                         Unsafe ->
                             group
-                                [ rect 55 30 |> filled (tachyonsColorToColor T.dark_red)
+                                [ rect 55 30 |> filled (tachyonsColorToColor unsafeColor)
                                 , rect 55 30 |> outlined treeLineStyle
                                 , unsafeString |> fromString |> style treeNodeStyle |> text |> moveY 4
                                 ]
@@ -156,7 +161,7 @@ drawNode mbNodeTag =
 
                 NothingNode ->
                     group
-                        [ oval 40 40 |> filled (tachyonsColorToColor T.dark_red)
+                        [ oval 40 40 |> filled (tachyonsColorToColor T.light_silver)
                         , oval 40 40 |> outlined treeLineStyle
                         , nothingString |> fromString |> style treeNodeStyle |> text |> moveY 4
                         ]
