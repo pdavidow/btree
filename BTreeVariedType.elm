@@ -1,4 +1,4 @@
-module BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, removeDuplicates, hasAnyIntNodes)
+module BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, deDuplicate, hasAnyIntNodes)
 
 import Arithmetic exposing (isPrime)
 -- import Basics.Extra exposing (isSafeInteger) todo
@@ -110,8 +110,8 @@ raiseNodes exp bTreeVaried =
     mapVariedTree exp raiseMappers bTreeVaried
 
 
-removeDuplicates : BTreeVariedType -> BTreeVariedType
-removeDuplicates (BTreeVaried bTree) =
+deDuplicate : BTreeVariedType -> BTreeVariedType
+deDuplicate (BTreeVaried bTree) =
     let
         fn = \node ->
             case node of
@@ -130,7 +130,7 @@ removeDuplicates (BTreeVaried bTree) =
                 NothingNode ->
                     toString node
     in
-        BTreeVaried (BTree.removeDuplicatesBy fn bTree)
+        BTreeVaried (BTree.deDuplicateBy fn bTree)
 
 
 hasAnyIntNodes : BTreeVariedType -> Bool

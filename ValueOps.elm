@@ -66,7 +66,7 @@ incrementString delta s =
 
 decrementString : Int -> String -> String
 decrementString delta s =
-    String.dropRight delta s
+    String.dropRight (abs delta) s
 
 
 raiseString : Int -> String -> String

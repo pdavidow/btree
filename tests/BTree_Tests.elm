@@ -1,9 +1,11 @@
 module BTree_Tests exposing (..)
 
-import BTree exposing (BTree(..), NodeTag(..), singleton, depth, map, sumInt, flatten, isElement, fold, sumUsingFold, sumInt, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromListBy, insert, insertBy, removeDuplicates, removeDuplicatesBy, isAllNothing, isEmpty, toNothingNodes)
+import BTree exposing (BTree(..), singleton, depth, map, flatten, isElement, fold, sumInt, sumMaybeSafeInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromListBy, insert, insertBy, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes)
+import NodeTag exposing (NodeTag(..))
+import MusicNote exposing (MusicNote(..), sorter)
+import MaybeSafe exposing (MaybeSafe(..), maxSafeInt)
 
 import TreeDiagram as TD exposing (node)
-import MusicNote exposing (MusicNote(..), sorter)
 
 import Test exposing (..)
 import Expect
@@ -15,154 +17,135 @@ bTree : Test
 bTree =
     describe "BTree module"
         [ describe "BTree.singleton"
-            [ test "singleton" <|
+            [ test "singleton.1" <|
                 \() ->
-                    Expect.equal (Node 1 Empty Empty) (singleton 1)
+                    Expect.equal (Node 1 Empty Empty) (BTree.singleton 1)
             ]
         , describe "BTree.depth"
-            [ test "of empty" <|
+            [ test "of depth.0" <|
                 \() ->
                     Empty
-                        |> depth
+                        |> BTree.depth
                         |> Expect.equal 0
-            , test "of singleton" <|
+            , test "of depth.1" <|
                 \() ->
                     'a'
                         |> singleton
-                        |> depth
+                        |> BTree.depth
                         |> Expect.equal 1
-            , test "of 3 levels" <|
+            , test "of depth.2" <|
                 \() ->
                     ['a', 'b', 'c']
                         |> fromList
-                        |> depth
+                        |> BTree.depth
                         |> Expect.equal 3
             ]
         , describe "BTree.map"
-            [ test "of empty" <|
+            [ test "of map.0" <|
                 \() ->
                     Empty
-                        |> map (\n -> n + 1)
+                        |> BTree.map (\n -> n + 1)
                         |> Expect.equal Empty
-            , test "of singleton" <|
+            , test "of map.1" <|
                 \() ->
                     3
                         |> singleton
-                        |> map (\n -> n - 1)
+                        |> BTree.map (\n -> n - 1)
                         |> Expect.equal (singleton 2)
-            , test "of 3 levels" <|
+            , test "of map.2" <|
                 \() ->
                     [1, 2, 3]
                         |> fromList
-                        |> map (\n -> n ^ 2)
+                        |> BTree.map (\n -> n ^ 2)
                         |> Expect.equal (fromList [1, 4, 9])
             ]
-        , describe "BTree.sum"
-            [ test "of empty" <|
-                \() ->
-                    Empty
-                        |> sumInt
-                        |> Expect.equal 0
-            , test "of singleton" <|
-                \() ->
-                    1
-                        |> singleton
-                        |> sumInt
-                        |> Expect.equal 1
-            , test "of 3 levels" <|
-                \() ->
-                    [1, 2, 3]
-                        |> fromList
-                        |> sumInt
-                        |> Expect.equal 6
-            ]
         , describe "BTree.flatten"
-            [ test "of empty" <|
+            [ test "of flatten.0" <|
                 \() ->
                     let
                         list = []
                         tree = fromList list
                     in
-                        Expect.equal (list) (flatten tree)
-            , test "of single node" <|
+                        Expect.equal (list) (BTree.flatten tree)
+            , test "of flatten.1" <|
                 \() ->
                     let
                         list = [1]
                         tree = fromList list
                     in
-                        Expect.equal (list) (flatten tree)
-            , test "of 3 levels, ascending order" <|
+                        Expect.equal (list) (BTree.flatten tree)
+            , test "of flatten.2" <|
                 \() ->
                     let
                         list = [1, 2, 3]
                         tree = fromList list
                     in
-                        Expect.equal (list) (flatten tree)
-            , test "of 3 levels, descending order" <|
+                        Expect.equal (list) (BTree.flatten tree)
+            , test "of flatten.3" <|
                 \() ->
                     let
                         list = [3, 2, 1]
                         tree = fromList list
                     in
-                        Expect.equal (list) (flatten tree)
-            , test "of 3 levels, no order" <|
+                        Expect.equal (list) (BTree.flatten tree)
+            , test "of flatten.4" <|
                 \() ->
                     let
                         list = [3, 1, 2]
                         tree = fromList list
                     in
-                        Expect.equal (list) (flatten tree)
+                        Expect.equal (list) (BTree.flatten tree)
             ]
         , describe "BTree.isElement"
-            [ test "of empty" <|
+            [ test "of isElement.0" <|
                 \() ->
-                    Expect.equal (False) (isElement 1 Empty)
-            , test "of singleton, found" <|
+                    Expect.equal (False) (BTree.isElement 1 Empty)
+            , test "of isElement.1" <|
                 \() ->
-                    Expect.equal (True) (isElement 1 (singleton 1))
-            , test "of singleton, not found" <|
+                    Expect.equal (True) (BTree.isElement 1 (singleton 1))
+            , test "of isElement.2" <|
                 \() ->
-                    Expect.equal (False) (isElement 2 (singleton 1))
-            , test "of 3 levels, found at level 1" <|
-                \() ->
-                    let
-                        list = [1, 2, 3]
-                        tree = fromList list
-                    in
-                        Expect.equal (True) (isElement 1 tree)
-            , test "of 3 levels, found at level 2" <|
+                    Expect.equal (False) (BTree.isElement 2 (singleton 1))
+            , test "of isElement.3" <|
                 \() ->
                     let
                         list = [1, 2, 3]
                         tree = fromList list
                     in
-                        Expect.equal (True) (isElement 2 tree)
-            , test "of 3 levels, found at level 3" <|
+                        Expect.equal (True) (BTree.isElement 1 tree)
+            , test "of isElement.4" <|
                 \() ->
                     let
                         list = [1, 2, 3]
                         tree = fromList list
                     in
-                        Expect.equal (True) (isElement 3 tree)
-            , test "of 3 levels, not found" <|
+                        Expect.equal (True) (BTree.isElement 2 tree)
+            , test "of isElement.5" <|
                 \() ->
                     let
                         list = [1, 2, 3]
                         tree = fromList list
                     in
-                        Expect.equal (False) (isElement 4 tree)
+                        Expect.equal (True) (BTree.isElement 3 tree)
+            , test "of isElement.6" <|
+                \() ->
+                    let
+                        list = [1, 2, 3]
+                        tree = fromList list
+                    in
+                        Expect.equal (False) (BTree.isElement 4 tree)
             ]
         , describe "BTree.fold"
-            [ test "of empty" <|
+            [ test "of fold.0" <|
                 \() ->
                     let
                         fn = (*)
                         seed = 3
                         tree = Empty
                     in
-                        Expect.equal (seed) (fold fn seed tree)
+                        Expect.equal (seed) (BTree.fold fn seed tree)
 
-            , test "of singleton" <|
+            , test "of fold.1" <|
                 \() ->
                     let
                         fn = (*)
@@ -170,8 +153,8 @@ bTree =
                         v = 5
                         tree = singleton v
                     in
-                        Expect.equal (fn seed v) (fold fn seed tree)
-            , test "of 3 value nodes" <|
+                        Expect.equal (fn seed v) (BTree.fold fn seed tree)
+            , test "of fold.2" <|
                 \() ->
                     let
                         fn = (*)
@@ -179,208 +162,346 @@ bTree =
                         list = [4, 5, 6]
                         tree = fromList list
                     in
-                        Expect.equal (List.foldl fn seed list) (fold fn seed tree) -- same with List.foldr
-            , test "of 'Sum all of the elements of a tree'" <|
+                        Expect.equal (List.foldl fn seed list) (BTree.fold fn seed tree) -- same with List.foldr
+        , describe "BTree.sumInt"
+            [ test "of sumInt.0" <|
+                \() ->
+                    Empty
+                        |> BTree.sumInt
+                        |> Expect.equal (Safe 0)
+            , test "of sumInt.1" <|
+                \() ->
+                    1
+                        |> singleton
+                        |> BTree.sumInt
+                        |> Expect.equal (Safe 1)
+            , test "of sumInt.2" <|
+                \() ->
+                    [1, 2, 3]
+                        |> fromList
+                        |> BTree.sumInt
+                        |> Expect.equal (Safe 6)
+            , test "of sumInt.3" <|
+                \() ->
+                    maxSafeInt
+                        |> singleton
+                        |> BTree.sumInt
+                        |> Expect.equal (Safe maxSafeInt)
+            , test "of sumInt.4" <|
+                \() ->
+                    maxSafeInt + 1
+                        |> singleton
+                        |> BTree.sumInt
+                        |> Expect.equal (Unsafe)
+            , test "of sumInt.5" <|
+                \() ->
+                    maxSafeInt + 1
+                        |> negate
+                        |> singleton
+                        |> BTree.sumInt
+                        |> Expect.equal (Unsafe)
+            , test "of sumInt.6" <|
+                \() ->
+                    [maxSafeInt + 1, 2, 3]
+                        |> fromList
+                        |> BTree.sumInt
+                        |> Expect.equal (Unsafe)
+            , test "of sumInt.7" <|
+                \() ->
+                    [maxSafeInt, 2, -3]
+                        |> fromList
+                        |> BTree.sumInt
+                        |> Expect.equal (Unsafe)
+            ]
+        , describe "BTree.sumMaybeSafeInt"
+            [ test "of sumMaybeSafeInt.0" <|
+                \() ->
+                    Empty
+                        |> BTree.sumMaybeSafeInt
+                        |> Expect.equal (Safe 0)
+            , test "of sumMaybeSafeInt.1" <|
+                \() ->
+                    (singleton <| Safe 0)
+                        |> BTree.sumMaybeSafeInt
+                        |> Expect.equal (Safe 0)
+            , test "of sumMaybeSafeInt.2" <|
+                \() ->
+                    Node (Safe 1) (singleton <| Safe -1) Empty
+                        |> BTree.sumMaybeSafeInt
+                        |> Expect.equal (Safe 0)
+            , test "of sumMaybeSafeInt.3" <|
+                \() ->
+                    Node (Safe 1) (singleton <| Safe -1) (singleton <| Safe 0)
+                        |> BTree.sumMaybeSafeInt
+                        |> Expect.equal (Safe 0)
+            , test "of sumMaybeSafeInt.4" <|
+                \() ->
+                    Node (Safe 1) (singleton <| Safe 2) (singleton <| Safe -3)
+                        |> BTree.sumMaybeSafeInt
+                        |> Expect.equal (Safe 0)
+            , test "of sumMaybeSafeInt.5" <|
+                \() ->
+                    Node (Safe -1) (singleton <| Safe -2) (singleton <| Safe -3)
+                        |> BTree.sumMaybeSafeInt
+                        |> Expect.equal (Safe -6)
+            , test "of sumMaybeSafeInt.6" <|
+                \() ->
+                    (singleton <| Safe maxSafeInt)
+                        |> BTree.sumMaybeSafeInt
+                        |> Expect.equal (Safe maxSafeInt)
+            , test "of sumMaybeSafeInt.7" <|
+                \() ->
+                    Node (Safe maxSafeInt) (singleton <| Safe -1) Empty
+                        |> BTree.sumMaybeSafeInt
+                        |> Expect.equal (Safe <| maxSafeInt - 1)
+            , test "of sumMaybeSafeInt.8" <|
+                \() ->
+                    Node (Safe maxSafeInt) (singleton <| Safe 1) Empty
+                        |> BTree.sumMaybeSafeInt
+                        |> Expect.equal (Unsafe)
+            ]
+        , describe "BTree.sumFloat"
+            [ test "of sumFloat.0" <|
+                \() ->
+                    Empty
+                        |> BTree.sumFloat
+                        |> Expect.equal 0.0
+            , test "of sumFloat.1" <|
+                \() ->
+                    [1.0, 2.0, 3.0]
+                        |> fromList
+                        |> BTree.sumFloat
+                        |> Expect.equal (1.0 + 2.0 + 3.0)
+            ]
+        , describe "BTree.sumIntUsingFold"
+            [ test "of sumIntUsingFold.0" <|
+                \() ->
+                    Empty
+                        |> BTree.sumIntUsingFold
+                        |> Expect.equal (Safe 0)
+            , test "of sumIntUsingFold.1" <|
+                \() ->
+                    1
+                        |> singleton
+                        |> BTree.sumIntUsingFold
+                        |> Expect.equal (Safe 1)
+            , test "of sumIntUsingFold.2" <|
+                \() ->
+                    [maxSafeInt, 2, -3]
+                        |> fromList
+                        |> BTree.sumIntUsingFold
+                        |> Expect.equal Unsafe
+            , test "of sumIntUsingFold.3" <|
                 \() ->
                     let
                         tree = fromList [4, 7, 5, 6, 1]
                     in
-                        Expect.equal (sumInt tree) (sumUsingFold tree)
-        , describe "BTree.sumUsingFold"
-            [ test "of empty" <|
+                        Expect.equal (sumInt tree) (BTree.sumIntUsingFold tree)
+            , test "of sumIntUsingFold.4" <|
                 \() ->
-                    Empty
-                        |> sumUsingFold
-                        |> Expect.equal 0
-            , test "of singleton" <|
-                \() ->
-                    1
-                        |> singleton
-                        |> sumUsingFold
-                        |> Expect.equal 1
-            , test "of 3 levels" <|
-                \() ->
-                    [1, 2, 3]
-                        |> fromList
-                        |> sumUsingFold
-                        |> Expect.equal 6
+                    let
+                        tree = fromList [4, 7, 5, 6, 1000^1000]
+                    in
+                        Expect.equal (sumInt tree) (BTree.sumIntUsingFold tree)
             ]
-        , describe "BTree.sumInt"
-            [ test "of empty" <|
+        , describe "BTree.sumFloatUsingFold"
+            [ test "of sumFloatUsingFold.0" <|
                 \() ->
                     Empty
-                        |> sumInt
-                        |> Expect.equal 0
-            , test "of singleton" <|
+                        |> BTree.sumFloatUsingFold
+                        |> Expect.equal 0.0
+            , test "of sumFloatUsingFold.1" <|
                 \() ->
-                    1
+                    1.0
                         |> singleton
-                        |> sumInt
-                        |> Expect.equal 1
-            , test "of 3 levels" <|
+                        |> BTree.sumFloatUsingFold
+                        |> Expect.equal 1.0
+            , test "of sumFloatUsingFold.2" <|
                 \() ->
-                    [1, 2, 3]
+                    [toFloat maxSafeInt + 1.0, 2.0, -5.0]
                         |> fromList
-                        |> sumInt
-                        |> Expect.equal 6
+                        |> BTree.sumFloatUsingFold
+                        |> Expect.equal (toFloat maxSafeInt + 1.0 + 2.0 - 5.0)
             ]
         , describe "BTree.sumString"
-            [ test "of empty" <|
+            [ test "of sumString.0" <|
                 \() ->
                     Empty
-                        |> sumString
+                        |> BTree.sumString
                         |> Expect.equal ""
-            , test "of singleton" <|
+            , test "of sumString.1" <|
                 \() ->
                     "abc"
                         |> singleton
-                        |> sumString
+                        |> BTree.sumString
                         |> Expect.equal "abc"
-            , test "of 3 levels" <|
+            , test "of sumString.2" <|
                 \() ->
                     ["abc", "def", "ghi"]
                         |> fromList
-                        |> sumString
+                        |> BTree.sumString
                         |> Expect.equal "ghidefabc"
             ]
         , describe "BTree.flattenUsingFold"
-            [ test "of 'Flatten a tree into a list'" <|
+            [ test "of flattenUsingFold.1" <|
                 \() ->
                     let
                         tree = fromList [4, 7, 5, 6, 1]
                     in
-                        Expect.equal (List.sort (flatten tree)) (List.sort (flattenUsingFold tree))
+                        Expect.equal (List.sort (flatten tree)) (List.sort (BTree.flattenUsingFold tree))
             ]
         , describe "BTree.isElementUsingFold"
-            [ test "of 'Check to see if an element is in a given tree', empty tree" <|
+            [ test "of isElementUsingFold.1" <|
                 \() ->
                     let
                         a = 5
                         tree = Empty
                     in
-                        Expect.equal (isElement a tree) (isElementUsingFold a tree)
+                        Expect.equal (isElement a tree) (BTree.isElementUsingFold a tree)
             ]
-            , test "of 'Check to see if an element is in a given tree', yes found" <|
+            , test "of isElementUsingFold.2" <|
                 \() ->
                     let
                         a = 5
                         tree = fromList [4, 7, 5, 6, 1]
                     in
-                        Expect.equal (isElement a tree) (isElementUsingFold a tree)
-            , test "of 'Check to see if an element is in a given tree', not found" <|
+                        Expect.equal (isElement a tree) (BTree.isElementUsingFold a tree)
+            , test "of isElementUsingFold.3" <|
                 \() ->
                     let
                         a = 50
                         tree = fromList [4, 7, 5, 6, 1]
                     in
-                        Expect.equal (isElement a tree) (isElementUsingFold a tree)
+                        Expect.equal (isElement a tree) (BTree.isElementUsingFold a tree)
             ]
          , describe "BTree.toTreeDiagramTree" -- not much of a test because constructors are not exposed
-            [ test "of empty" <|
+            [ test "of toTreeDiagramTree.0" <|
                 \() ->
-                    Expect.equal Nothing (toTreeDiagramTree Empty)
-            , test "of singleton" <|
+                    Expect.equal Nothing (BTree.toTreeDiagramTree Empty)
+            , test "of toTreeDiagramTree.1" <|
                 \() ->
-                    Expect.equal (Just (TD.node (Just 1) [])) (toTreeDiagramTree (singleton 1))
-            , test "of 2 values" <|
+                    Expect.equal (Just (TD.node (Just 1) [])) (BTree.toTreeDiagramTree (singleton 1))
+            , test "of toTreeDiagramTree.2" <|
                 \() ->
-                    Expect.equal (Just (TD.node (Just 1) [TD.node (Just 2) []])) (toTreeDiagramTree (fromList [1,2]))
+                    Expect.equal (Just (TD.node (Just 1) [TD.node (Just 2) []])) (BTree.toTreeDiagramTree (fromList [1,2]))
             ]
          , describe "BTree.sort"
-            [ test "of empty" <|
+            [ test "of sort.0" <|
                 \() ->
                     Expect.equal (Empty) (BTree.sort Empty)
-            , test "of singleton" <|
+            , test "of sort.1" <|
                 \() ->
                     Expect.equal (singleton 1) (BTree.sort (singleton 1))
-            , test "of 5 values" <|
+            , test "of sort.2" <|
                 \() ->
                     Expect.equal (fromList [1,2,3,4,5]) (BTree.sort (fromList [4,1,3,5,2]))
             ]
          , describe "BTree.sortBy"
-            [ test "of empty" <|
+            [ test "of sortBy.0" <|
                 \() ->
                     Expect.equal (Empty) (BTree.sortBy (MusicNote.sorter) Empty)
-            , test "of singleton" <|
+            , test "of sortBy.1" <|
                 \() ->
                     Expect.equal (singleton A) (BTree.sortBy (MusicNote.sorter) (singleton A))
-            , test "of 5 values" <|
+            , test "of sortBy.2" <|
                 \() ->
                     Expect.equal (fromListBy (MusicNote.sorter) [A, B, D, E, G]) (BTree.sortBy (MusicNote.sorter) (fromListBy (MusicNote.sorter) [D, A, E, G, B]))
             ]
         , describe "BTree.fromList"
-            [ test "from empty list" <|
+            [ test "of fromList.0" <|
                 \() ->
                     []
-                        |> fromList
+                        |> BTree.fromList
                         |> Expect.equal Empty
-            , test "from single element list" <|
+            , test "of fromList.1" <|
                 \() ->
                     ['a']
-                        |> fromList
+                        |> BTree.fromList
                         |> Expect.equal (singleton 'a')
-            , test "from ordered-ascending list" <|
+            , test "of fromList.2" <|
                 \() ->
                     ['a', 'b', 'c']
-                        |> fromList
+                        |> BTree.fromList
                         |> Expect.equal (Node 'a' Empty (Node 'b' Empty (singleton 'c')))
-            , test "from ordered-descending list" <|
+            , test "of fromList.3" <|
                 \() ->
                     ['c', 'b', 'a']
-                        |> fromList
+                        |> BTree.fromList
                         |> Expect.equal (Node 'c' (Node 'b' (singleton 'a') Empty) Empty)
-            , test "from unordered list" <|
+            , test "of fromList.4" <|
                 \() ->
                     ['c', 'a', 'b']
-                        |> fromList
+                        |> BTree.fromList
                         |> Expect.equal (Node 'c' (Node 'a' Empty (singleton 'b')) Empty)
-            , test "from list with duplications" <|
+            , test "of fromList.5" <|
                 \() ->
                     ['a', 'b', 'b']
-                        |> fromList
+                        |> BTree.fromList
                         |> Expect.equal (Node 'a' Empty (Node 'b' Empty (singleton 'b')))
             ]
-        , describe "BTree.fromListBy"
-            [ test "from empty list" <|
+        , describe "BTree.fromIntList"
+            [ test "of fromIntList.0" <|
                 \() ->
                     []
-                        |> fromListBy (MusicNote.sorter)
+                        |> BTree.fromIntList
                         |> Expect.equal Empty
-            , test "from single element list" <|
+            , test "of fromIntList.1" <|
+                \() ->
+                    [1]
+                        |> BTree.fromIntList
+                        |> Expect.equal (singleton <| Safe 1)
+            , test "of fromIntList.2" <|
+                \() ->
+                    [1, 2]
+                        |> BTree.fromIntList
+                        |> Expect.equal (Node (Safe 1) Empty (singleton <| Safe 2))
+            , test "of fromIntList.3" <|
+                \() ->
+                    [maxSafeInt, maxSafeInt + 1]
+                        |> BTree.fromIntList
+                        |> Expect.equal (Node (Safe maxSafeInt) Empty (singleton <| Unsafe))
+            ]
+        , describe "BTree.fromListBy"
+            [ test "of fromListBy.0" <|
+                \() ->
+                    []
+                        |> BTree.fromListBy (MusicNote.sorter)
+                        |> Expect.equal Empty
+            , test "of fromListBy.1" <|
                 \() ->
                     [A]
-                        |> fromListBy (MusicNote.sorter)
+                        |> BTree.fromListBy (MusicNote.sorter)
                         |> Expect.equal (singleton A)
-            , test "from ordered-ascending list" <|
+            , test "of fromListBy.2" <|
                 \() ->
                     [A, B, C]
-                        |> fromListBy (MusicNote.sorter)
+                        |> BTree.fromListBy (MusicNote.sorter)
                         |> Expect.equal (Node A Empty (Node B Empty (singleton C)))
-            , test "from ordered-descending list" <|
+            , test "of fromListBy.3" <|
                 \() ->
                     [C, B, A]
-                        |> fromListBy (MusicNote.sorter)
+                        |> BTree.fromListBy (MusicNote.sorter)
                         |> Expect.equal (Node C (Node B (singleton A) Empty) Empty)
-            , test "from unordered list" <|
+            , test "of fromListBy.4" <|
                 \() ->
                     [C, A, B]
-                        |> fromListBy (MusicNote.sorter)
+                        |> BTree.fromListBy (MusicNote.sorter)
                         |> Expect.equal (Node C (Node A Empty (singleton B)) Empty)
-            , test "from list with duplications" <|
+            , test "of fromListBy.5" <|
                 \() ->
                     [A, B, B]
-                        |> fromListBy (MusicNote.sorter)
+                        |> BTree.fromListBy (MusicNote.sorter)
                         |> Expect.equal (Node A Empty (Node B Empty (singleton B)))
             ]
         , describe "BTree.insert"
-            [ test "insert into empty tree" <|
+            [ test "of insert.0" <|
                 \() ->
                     let
                         target = Empty
                         newValue = 1
                     in
-                        Expect.equal (singleton newValue) (insert newValue target)
-            , test "insert larger value on right" <|
+                        Expect.equal (singleton newValue) (BTree.insert newValue target)
+            , test "of insert.1" <|
                  \() ->
                     let
                         currentValue = 'b'
@@ -388,8 +509,8 @@ bTree =
                         target = singleton currentValue
                         newChild = singleton newValue
                     in
-                        Expect.equal (Node currentValue Empty newChild) (insert newValue target)
-            , test "insert smaller value on left" <|
+                        Expect.equal (Node currentValue Empty newChild) (BTree.insert newValue target)
+            , test "of insert.2" <|
                  \() ->
                     let
                         currentValue = 'b'
@@ -397,25 +518,25 @@ bTree =
                         target = singleton currentValue
                         newChild = singleton newValue
                     in
-                        Expect.equal (Node currentValue newChild Empty) (insert newValue target)
-            , test "insert duplicate" <|
+                        Expect.equal (Node currentValue newChild Empty) (BTree.insert newValue target)
+            , test "of insert.3" <|
                  \() ->
                     let
                         currentValue = 'b'
                         newValue = 'b'
                         target = singleton currentValue
                     in
-                        Expect.equal (Node 'b' Empty (singleton 'b')) (insert newValue target)
+                        Expect.equal (Node 'b' Empty (singleton 'b')) (BTree.insert newValue target)
             ]
         , describe "BTree.insertBy"
-            [ test "insertBy into empty tree" <|
+            [ test "of insertBy.0" <|
                 \() ->
                     let
                         target = Empty
                         newValue = A
                     in
-                        Expect.equal (singleton newValue) (insertBy (MusicNote.sorter) newValue target)
-            , test "insert larger value on right" <|
+                        Expect.equal (singleton newValue) (BTree.insertBy (MusicNote.sorter) newValue target)
+            , test "of insertBy.1" <|
                  \() ->
                     let
                         currentValue = B
@@ -423,8 +544,8 @@ bTree =
                         target = singleton currentValue
                         newChild = singleton newValue
                     in
-                        Expect.equal (Node currentValue Empty newChild) (insertBy (MusicNote.sorter) newValue target)
-            , test "insert smaller value on left" <|
+                        Expect.equal (Node currentValue Empty newChild) (BTree.insertBy (MusicNote.sorter) newValue target)
+            , test "of insertBy.2" <|
                  \() ->
                     let
                         currentValue = B
@@ -432,68 +553,68 @@ bTree =
                         target = singleton currentValue
                         newChild = singleton newValue
                     in
-                        Expect.equal (Node currentValue newChild Empty) (insertBy (MusicNote.sorter) newValue target)
-            , test "insert duplicate" <|
+                        Expect.equal (Node currentValue newChild Empty) (BTree.insertBy (MusicNote.sorter) newValue target)
+            , test "of insertBy.3" <|
                  \() ->
                     let
                         currentValue = B
                         newValue = B
                         target = singleton currentValue
                     in
-                        Expect.equal (Node B Empty (singleton B)) (insertBy (MusicNote.sorter) newValue target)
+                        Expect.equal (Node B Empty (singleton B)) (BTree.insertBy (MusicNote.sorter) newValue target)
             ]
-         , describe "BTree.removeDuplicates"
-            [ test "of empty" <|
+         , describe "BTree.deDuplicate"
+            [ test "of deDuplicate.0" <|
                 \() ->
-                    Expect.equal (Empty) (BTree.removeDuplicates Empty)
-            , test "of singleton" <|
+                    Expect.equal (Empty) (BTree.deDuplicate Empty)
+            , test "of deDuplicate.1" <|
                 \() ->
-                    Expect.equal (singleton 1) (BTree.removeDuplicates (singleton 1))
-            , test "of 5 values" <|
+                    Expect.equal (singleton 1) (BTree.deDuplicate (singleton 1))
+            , test "of deDuplicate.2" <|
                 \() ->
-                    Expect.equal (fromList [4, 1, 3, 5]) (BTree.removeDuplicates (fromList [4, 1, 3, 5, 1]))
+                    Expect.equal (fromList [4, 1, 3, 5]) (BTree.deDuplicate (fromList [4, 1, 3, 5, 1]))
             ]
-         , describe "BTree.removeDuplicatesBy"
-            [ test "of empty" <|
+         , describe "BTree.deDuplicateBy"
+            [ test "of deDuplicateBy.0" <|
                 \() ->
-                    Expect.equal (Empty) (BTree.removeDuplicatesBy (MusicNote.sorter) Empty)
-            , test "of singleton" <|
+                    Expect.equal (Empty) (BTree.deDuplicateBy (MusicNote.sorter) Empty)
+            , test "of deDuplicateBy.1" <|
                 \() ->
-                    Expect.equal (singleton A) (BTree.removeDuplicatesBy (MusicNote.sorter) (singleton A))
-            , test "of 5 values" <|
+                    Expect.equal (singleton A) (BTree.deDuplicateBy (MusicNote.sorter) (singleton A))
+            , test "of deDuplicateBy.2" <|
                 \() ->
-                    Expect.equal (fromListBy (MusicNote.sorter) [D, A, E, B]) (BTree.removeDuplicatesBy (MusicNote.sorter) (fromListBy (MusicNote.sorter) [D, A, E, A, B]))
+                    Expect.equal (fromListBy (MusicNote.sorter) [D, A, E, B]) (BTree.deDuplicateBy (MusicNote.sorter) (fromListBy (MusicNote.sorter) [D, A, E, A, B]))
             ]
          , describe "BTree.isAllNothing"
-            [ test "of empty" <|
+            [ test "of isAllNothing.0" <|
                 \() ->
                     Expect.equal True (BTree.isAllNothing Empty)
-            , test "of all nothing" <|
+            , test "of isAllNothing.1" <|
                 \() ->
                     Expect.equal True (BTree.isAllNothing (singleton (Nothing)))
-            , test "of something" <|
+            , test "of isAllNothing.2" <|
                 \() ->
                     Expect.equal False (BTree.isAllNothing (Node Nothing Empty (singleton (Just 1))))
             ]
          , describe "BTree.isEmpty"
-            [ test "of empty" <|
+            [ test "of isEmpty.0" <|
                 \() ->
                     Expect.equal True (BTree.isEmpty Empty)
-            , test "of all nothing" <|
+            , test "of isEmpty.1" <|
                 \() ->
                     Expect.equal False (BTree.isEmpty (singleton (Nothing)))
-            , test "of something" <|
+            , test "of isEmpty.2" <|
                 \() ->
                     Expect.equal False (BTree.isEmpty (Node Nothing Empty (singleton (Just 1))))
             ]
          , describe "BTree.toNothingNodes"
-            [ test "of empty" <|
+            [ test "of toNothingNodes.0" <|
                 \() ->
                     Expect.equal Empty (BTree.toNothingNodes Empty)
-            , test "of singleton" <|
+            , test "of toNothingNodes.1" <|
                 \() ->
                     Expect.equal (singleton NothingNode) (BTree.toNothingNodes (singleton 3))
-            , test "of 3 nodes" <|
+            , test "of toNothingNodes.2" <|
                 \() ->
                     Expect.equal (Node NothingNode (singleton NothingNode) (singleton NothingNode)) (BTree.toNothingNodes (Node 1 (singleton 2) (singleton 3)))
             ]

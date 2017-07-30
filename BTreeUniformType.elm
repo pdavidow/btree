@@ -1,9 +1,9 @@
-module BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, depth, sumInt, sumString, sort, removeDuplicates, isAllNothing)
+module BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, depth, sumInt, sort, deDuplicate, isAllNothing)
 
 import Arithmetic exposing (isPrime)
 -- import Basics.Extra exposing (isSafeInteger) -- todo https://github.com/elm-community/basics-extra/issues/7
 
-import BTree exposing (BTree, depth, map, removeDuplicatesBy, singleton, sumMaybeSafeInt , sumString , sort, sortBy, isEmpty, toNothingNodes)
+import BTree exposing (BTree, depth, map, deDuplicateBy, singleton, sumMaybeSafeInt , sumString , sort, sortBy, isEmpty, toNothingNodes)
 import NodeTag exposing (NodeTag(..))
 import MusicNote exposing (MusicNote, mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), sorter)
@@ -188,25 +188,7 @@ sumInt bTreeUniformType =
             Nothing
 
 
-sumString : BTreeUniformType -> Maybe String
-sumString bTreeUniformType =
-    case bTreeUniformType of
-        BTreeInt bTree ->
-            Nothing
-
-        BTreeString bTree ->
-            Just (BTree.sumString bTree)
-
-        BTreeBool bTree ->
-            Nothing
-
-        BTreeMusicNotePlayer bTree ->
-            Nothing
-
-        BTreeNothing bTree ->
-            Nothing
-
-
+-- todo Why does this return Maybe ???
 sort : BTreeUniformType -> Maybe BTreeUniformType
 sort bTreeUniformType =
     case bTreeUniformType of
@@ -226,23 +208,23 @@ sort bTreeUniformType =
             Just bTreeUniformType
 
 
-removeDuplicates : BTreeUniformType -> BTreeUniformType
-removeDuplicates bTreeUniformType =
+deDuplicate : BTreeUniformType -> BTreeUniformType
+deDuplicate bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            BTreeInt (BTree.removeDuplicatesBy toString bTree)
+            BTreeInt (BTree.deDuplicateBy toString bTree)
 
         BTreeString bTree ->
-            BTreeString (BTree.removeDuplicates bTree)
+            BTreeString (BTree.deDuplicate bTree)
 
         BTreeBool bTree ->
-            BTreeBool (BTree.removeDuplicatesBy toString bTree)
+            BTreeBool (BTree.deDuplicateBy toString bTree)
 
         BTreeMusicNotePlayer bTree ->
-            BTreeMusicNotePlayer (BTree.removeDuplicatesBy MusicNotePlayer.sorter bTree)
+            BTreeMusicNotePlayer (BTree.deDuplicateBy MusicNotePlayer.sorter bTree)
 
         BTreeNothing bTree ->
-            BTreeNothing (singleton OnlyNothing)
+            BTreeNothing <| BTree.deDuplicateBy toString bTree
 
 
 isAllNothing : BTreeUniformType -> Bool

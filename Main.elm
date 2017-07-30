@@ -16,7 +16,7 @@ import Lazy exposing (lazy)
 
 import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes)
 import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, hasAnyIntNodes)
-import BTree exposing (BTree(..), fromListBy, fromMaybeSafeInts, singleton, toTreeDiagramTree)
+import BTree exposing (BTree(..), fromListBy, fromIntList, singleton, toTreeDiagramTree)
 import NodeTag exposing (NodeTag(..))
 import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intNodeEvenColor, intNodeOddColor)
 import UniversalConstants exposing (nothingString)
@@ -190,12 +190,13 @@ viewHeader model =
                 , T.yellow
                 , T.hover_black
                 , T.hover_bg_yellow
+                , T.baskerville
                 ]
             ]
             [ text "with the "
             , span
                 [ classes
-                    [ T.courier
+                    [ --T.courier
                     ]
                 ]
                 [ text "MaybeSafe" ]
@@ -203,7 +204,6 @@ viewHeader model =
                 [ classes
                     [ T.i
                     , T.b
-                    , T.baskerville
                     ]
                 ]
                 [ text " Prince of Ints" ]
@@ -635,7 +635,7 @@ update msg model =
 
         ReceiveRandomIntList list ->
             (   { model
-                | intTree = BTreeInt (BTree.fromMaybeSafeInts list)
+                | intTree = BTreeInt (BTree.fromIntList list)
                 }
             , Cmd.none
             )
@@ -842,7 +842,7 @@ removeDuplicates model =
 removeDuplicatesUniformTrees : Model -> Model
 removeDuplicatesUniformTrees model =
     let
-        fn = BTreeUniformType.removeDuplicates
+        fn = BTreeUniformType.deDuplicate
     in
         changeUniformTrees fn model
 
@@ -850,7 +850,7 @@ removeDuplicatesUniformTrees model =
 removeDuplicatesVariedTrees : Model -> Model
 removeDuplicatesVariedTrees model =
     let
-        fn = BTreeVariedType.removeDuplicates
+        fn = BTreeVariedType.deDuplicate
     in
         changeVariedTrees fn model
 

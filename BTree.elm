@@ -1,4 +1,4 @@
-module BTree exposing (BTree(..), singleton, depth, map, sumInt, flatten, isElement, fold, sumUsingFold, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromListBy, insert, insertBy, removeDuplicates, removeDuplicatesBy, isAllNothing, isEmpty, toNothingNodes, sumMaybeSafeInt, fromMaybeSafeInts)
+module BTree exposing (BTree(..), singleton, depth, map, flatten, isElement, fold, sumInt, sumMaybeSafeInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromIntList, fromListBy, insert, insertBy, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes)
 
 -- http://elm-lang.org/examples/binary-Tree
 
@@ -6,7 +6,7 @@ import TreeDiagram as TD exposing (node, Tree)
 import List.Extra exposing (uniqueBy)
 import Maybe.Extra exposing (unwrap, values)
 
-import MaybeSafe exposing (MaybeSafe(..), sumInt, toMaybeSafeInt, isSafe)
+import MaybeSafe exposing (MaybeSafe(..), sumMaybeSafeInt, toMaybeSafeInt, isSafe)
 import NodeTag exposing (NodeTag(..))
 
 -- todo ?? fromList flatten fromList REVERSIBLE or not?
@@ -44,57 +44,26 @@ map fn bTree =
 
 sumInt : BTree Int -> MaybeSafe Int
 sumInt bTree =
-    let
-        sumOfNonEmpty : BTree Int -> MaybeSafe Int
-        sumOfNonEmpty bTree =
-            case bTree of
-                -- todo https://elmlang.slack.com/archives/C0CJ3SBBM/p1500928211761545
-                Empty -> -- should never get here
-                    Safe 0
-
-                Node num left right ->
-                    let
-                        mbsNum = toMaybeSafeInt num
-                    in
-                        case mbsNum of
-                            Unsafe ->
-                                Unsafe
-
-                            Safe num ->
-                                let
-                                    leftResult = if isEmpty left
-                                        then Safe 0
-                                        else sumOfNonEmpty left
-
-                                    rightResult = if isEmpty right
-                                        then Safe 0
-                                        else sumOfNonEmpty right
-                                in
-                                    MaybeSafe.sumInt [mbsNum, leftResult, rightResult]
-    in
-        case bTree of
-            Empty -> Safe 0 -- modeled on: List.sum [] == 0
-            _-> sumOfNonEmpty bTree
+    bTree
+        |> map toMaybeSafeInt
+        |> sumMaybeSafeInt
 
 
 sumMaybeSafeInt : BTree (MaybeSafe Int) -> MaybeSafe Int
 sumMaybeSafeInt bTree =
-    if isEmpty bTree
-        then
-            Safe 0 -- modeled on: List.sum [] == 0
-        else
-            if isAllSafe bTree
-                then
-                    let
-                        fn = \mbsInt -> case mbsInt of
-                            Unsafe -> 0 -- should never get here
-                            Safe int -> int
-                    in
-                        bTree
-                            |> map fn
-                            |> sumInt
-                else
-                    Unsafe
+    bTree
+        |> flatten
+        |> MaybeSafe.sumMaybeSafeInt
+
+
+sumFloat : BTree Float -> Float
+sumFloat bTree =
+    case bTree of
+        Empty ->
+            0.0
+
+        Node number left right ->
+            number + (sumFloat left) + (sumFloat right)
 
 
 isAllSafe : BTree (MaybeSafe a) -> Bool
@@ -138,11 +107,20 @@ fold fn accumulator bTree =
                 fold fn leftAccumulator right
 
 
-sumUsingFold : BTree number -> number
-sumUsingFold bTree =
+sumIntUsingFold : BTree Int -> MaybeSafe Int
+sumIntUsingFold bTree =
+    let
+        fn = \int mbsInt -> MaybeSafe.sumMaybeSafeInt <| [toMaybeSafeInt int, mbsInt]
+        seed = Safe 0
+    in
+        fold fn seed bTree
+
+
+sumFloatUsingFold : BTree Float -> Float
+sumFloatUsingFold bTree =
     let
         fn = (+)
-        seed = 0
+        seed = 0.0
     in
         fold fn seed bTree
 
@@ -183,7 +161,7 @@ toTreeDiagramTree bTree =
         toTreeDiagramTreeOfNonEmpty : BTree a -> TD.Tree (Maybe a)
         toTreeDiagramTreeOfNonEmpty bTree =
             case bTree of
-                Empty -> -- should never get here
+                Empty -> -- should never get here -- todo : get here and use properly!
                     TD.node Nothing []
 
                 Node v left right ->
@@ -231,8 +209,8 @@ fromListBy fn xs =
     List.foldl (insertBy fn) Empty xs
 
 
-fromMaybeSafeInts : List Int -> BTree (MaybeSafe Int)
-fromMaybeSafeInts ints =
+fromIntList : List Int -> BTree (MaybeSafe Int)
+fromIntList ints =
     ints
         |> List.map toMaybeSafeInt
         |> fromListBy toString
@@ -256,13 +234,13 @@ insertBy fn x bTree =
             Node y (insertBy fn x left) right
 
 
-removeDuplicates : BTree comparable -> BTree comparable
-removeDuplicates bTree =
-    removeDuplicatesBy identity bTree
+deDuplicate : BTree comparable -> BTree comparable
+deDuplicate bTree =
+    deDuplicateBy identity bTree
 
 
-removeDuplicatesBy : (a -> comparable) -> BTree a -> BTree a
-removeDuplicatesBy fn bTree =
+deDuplicateBy : (a -> comparable) -> BTree a -> BTree a
+deDuplicateBy fn bTree =
     bTree
         |> flatten
         |> List.Extra.uniqueBy fn

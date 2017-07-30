@@ -1,4 +1,4 @@
-module MaybeSafe exposing (MaybeSafe(..), isSafeInt, toMaybeSafe, toMaybeSafeInt, maxSafeInt, sumInt, isSafe)
+module MaybeSafe exposing (MaybeSafe(..), isSafe, isSafeInt, toMaybeSafe, toMaybeSafeInt, maxSafeInt, sumMaybeSafeInt)
 
 import List.Extra exposing (last)
 
@@ -31,8 +31,8 @@ toMaybeSafeInt int =
     toMaybeSafe isSafeInt int
 
 
-sumInt : List (MaybeSafe Int) -> MaybeSafe Int
-sumInt list =
+sumMaybeSafeInt : List (MaybeSafe Int) -> MaybeSafe Int
+sumMaybeSafeInt list =
     if List.any isUnsafe list
         then
             Unsafe

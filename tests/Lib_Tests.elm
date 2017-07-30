@@ -2,6 +2,8 @@ module Lib_Tests exposing (..)
 
 import Lib exposing (lazyUnwrap, digitCount)
 
+import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
+
 import Lazy exposing (lazy)
 
 import Test exposing (..)
@@ -30,16 +32,16 @@ lib =
          , describe "Lib.digitCount"
             [ test "positive" <|
                 \() ->
-                    Expect.equal 5 (Lib.digitCount 12321)
+                    Expect.equal (Safe 5) (Lib.digitCount <| Safe <| 12321)
             , test "negative" <|
                 \() ->
-                    Expect.equal 5 (Lib.digitCount -12321)
+                    Expect.equal (Safe 5) (Lib.digitCount  <| Safe <| -12321)
             , test "zero" <|
                 \() ->
-                    Expect.equal 1 (Lib.digitCount 0)
-            , test "Infinity" <|
+                    Expect.equal (Safe 1) (Lib.digitCount  <| Safe <| 0)
+            , test "Unsafe" <|
                 \() ->
-                    Expect.equal True (isInfinite (toFloat (digitCount (1234 ^ 5678))))
+                    Expect.equal Unsafe (Lib.digitCount <| toMaybeSafeInt <| 1234 ^ 5678)
             ]
         ]
 
