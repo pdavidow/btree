@@ -162,52 +162,35 @@ viewHeader : Model -> Html Msg
 viewHeader model =
     header
         [ classes
-           [ T.bg_green
-           , T.fixed
-           , T.w_100
-           , T.h3
-           , T.ph3
-           , T.pv2
-           , T.z_max
-           ]
+            [ T.bg_green
+            , T.fixed
+            , T.w_100
+            , T.h3
+            , T.f2
+            , T.ph3
+            , T.pv2
+            , T.b
+            , T.pl2
+            , T.pr2
+            , T.z_max
+            ]
         ]
         [ span
             [ classes
-                [ T.f2
-                , T.b
-                , T.pl2
-                , T.pr2
-                , T.hover_yellow
+                [ T.hover_yellow
                 , T.hover_bg_black
                 ]
             ]
-            [ text "BinaryTree Playground" ]
+            [ text "BinaryTree" ]
         , span
             [ classes
-                [ T.f3
-                , T.pl2
-                , T.pr2
-                , T.yellow
-                , T.hover_black
-                , T.hover_bg_yellow
-                , T.baskerville
+                [ T.purple
+                , T.hover_yellow
+                , T.hover_bg_purple
+                , ml2
                 ]
             ]
-            [ text "with the "
-            , span
-                [ classes
-                    [ --T.courier
-                    ]
-                ]
-                [ text "MaybeSafe" ]
-            , span
-                [ classes
-                    [ T.i
-                    , T.b
-                    ]
-                ]
-                [ text " Prince of Ints" ]
-            ]
+            [ text "Playground" ]
         , span
             [ classes
                 [ T.fr
