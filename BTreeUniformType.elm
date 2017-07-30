@@ -188,24 +188,23 @@ sumInt bTreeUniformType =
             Nothing
 
 
--- todo Why does this return Maybe ???
-sort : BTreeUniformType -> Maybe BTreeUniformType
+sort : BTreeUniformType -> BTreeUniformType
 sort bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            Just (BTreeInt (BTree.sortBy toString bTree))
+            BTreeInt <| BTree.sortBy toString bTree
 
         BTreeString bTree ->
-            Just (BTreeString (BTree.sort bTree))
+            BTreeString <| BTree.sort bTree
 
         BTreeBool bTree ->
-            Just (BTreeBool (BTree.sortBy toString bTree))
+            BTreeBool <| BTree.sortBy toString bTree
 
         BTreeMusicNotePlayer bTree ->
-            Just (BTreeMusicNotePlayer (BTree.sortBy MusicNotePlayer.sorter bTree))
+            BTreeMusicNotePlayer <| BTree.sortBy MusicNotePlayer.sorter bTree
 
         BTreeNothing bTree ->
-            Just bTreeUniformType
+            bTreeUniformType
 
 
 deDuplicate : BTreeUniformType -> BTreeUniformType

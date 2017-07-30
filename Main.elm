@@ -6,7 +6,6 @@ import Html.Attributes as A exposing (class, style, type_, value, href, target, 
 import Tachyons exposing (classes, tachyons)
 import Tachyons.Classes as T exposing (..)
 
-import Pivot exposing (withRollback)
 import Maybe.Extra exposing (unwrap)
 import List.Extra exposing (last)
 import Random
@@ -809,10 +808,7 @@ shiftVariedTrees operand fn model =
 
 sortUniformTrees : Model -> Model
 sortUniformTrees model =
-    let
-        fn = withRollback BTreeUniformType.sort
-    in
-        changeUniformTrees fn model
+    changeUniformTrees BTreeUniformType.sort model
 
 
 removeDuplicates : Model -> Model
