@@ -161,11 +161,11 @@ toTreeDiagramTree bTree =
         toTreeDiagramTreeOfNonEmpty : BTree a -> TD.Tree (Maybe a)
         toTreeDiagramTreeOfNonEmpty bTree =
             case bTree of
-                Empty -> -- should never get here -- todo : get here and use properly!
+                Empty -> -- should never get here
                     TD.node Nothing []
 
                 Node v left right ->
-                    let -- todo https://elmlang.slack.com/archives/C0CJ3SBBM/p1500928211761545
+                    let
                         leftResult = if isEmpty left
                             then []
                             else [ toTreeDiagramTreeOfNonEmpty left ]
