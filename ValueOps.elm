@@ -20,43 +20,32 @@ decrementMappers = Mappers decrementInt decrementString decrementBool decrementM
 raiseMappers = Mappers raiseInt raiseString raiseBool raiseMusicNoteInPlayer
 
 
-incrementInt : Int -> MaybeSafe Int -> MaybeSafe Int
-incrementInt delta mbsInt =
-    case mbsInt of -- todo refactor...
+intOp : (Int -> Int -> Int) -> Int -> MaybeSafe Int -> MaybeSafe Int
+intOp fn delta mbsInt =
+    case mbsInt of
         Unsafe ->
             Unsafe
 
         Safe int ->
             delta
                 |> abs
-                |> (+) int
+                |> fn int
                 |> toMaybeSafeInt
+
+
+incrementInt : Int -> MaybeSafe Int -> MaybeSafe Int
+incrementInt delta mbsInt =
+    intOp (+) delta mbsInt
 
 
 decrementInt : Int -> MaybeSafe Int -> MaybeSafe Int
 decrementInt delta mbsInt =
-    case mbsInt of -- todo refactor...
-        Unsafe ->
-            Unsafe
-
-        Safe int ->
-            delta
-                |> abs
-                |> (-) int
-                |> toMaybeSafeInt
+    intOp (-) delta mbsInt
 
 
 raiseInt : Int -> MaybeSafe Int -> MaybeSafe Int
 raiseInt exp mbsInt =
-    case mbsInt of -- todo refactor...
-        Unsafe ->
-            Unsafe
-
-        Safe int ->
-            exp
-                |> abs
-                |> (^) int
-                |> toMaybeSafeInt
+    intOp (^) exp mbsInt
 
 
 incrementString : Int -> String -> String
