@@ -2,7 +2,7 @@ module BTreeUniformType_Tests exposing (..)
 
 import BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, depth, sumInt, sort, deDuplicate, isAllNothing)
 
-import BTree exposing (..) -- todo specify
+import BTree exposing (BTree(..), fromIntList, fromList, singleton)
 import NodeTag exposing (NodeTag(..))
 import MusicNote exposing (MusicNote(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..), on)
@@ -46,7 +46,7 @@ bTreeUniformType =
          [ describe "BTreeUniformType.toNothing"
             [ test "of toNothing.0" <|
                 \() ->
-                    Expect.equal (BTreeNothing Empty) (toNothing (BTreeInt Empty))
+                    Expect.equal (BTreeNothing Empty) (BTreeUniformType.toNothing (BTreeInt Empty))
             , test "of toNothing.1" <|
                 \() ->
                     1

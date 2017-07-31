@@ -2,7 +2,7 @@ module BTreeVariedType_Tests exposing (..)
 
 import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, deDuplicate, hasAnyIntNodes)
 
-import BTree exposing (..) -- todo specify
+import BTree exposing (BTree(..), singleton)
 import NodeTag exposing (NodeTag(..))
 import MusicNote exposing (MusicNote(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..), on)
