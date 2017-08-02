@@ -1,23 +1,26 @@
 module ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
 
 import Arithmetic exposing (isEven)
+import BigInt exposing (BigInt, add, sub)
 
 import MusicNote exposing ((:+:), (:-:))
 import MusicNotePlayer exposing (MusicNotePlayer(..))
 import MaybeSafe exposing (MaybeSafe(..), isSafeInt, toMaybeSafeInt)
+import Lib exposing (raiseBigInt)
 
 
 type alias Mappers =
     { int : Int -> MaybeSafe Int -> MaybeSafe Int
+    , bigInt : Int -> BigInt -> BigInt
     , string : Int -> String -> String
     , bool : Int -> Maybe Bool -> Maybe Bool
     , musicNotePlayer : Int -> MusicNotePlayer -> MusicNotePlayer
     }
 
 
-incrementMappers = Mappers incrementInt incrementString incrementBool incrementMusicNoteInPlayer
-decrementMappers = Mappers decrementInt decrementString decrementBool decrementMusicNoteInPlayer
-raiseMappers = Mappers raiseInt raiseString raiseBool raiseMusicNoteInPlayer
+incrementMappers = Mappers incrementInt incrementBigInt incrementString incrementBool incrementMusicNoteInPlayer
+decrementMappers = Mappers decrementInt decrementBigInt decrementString decrementBool decrementMusicNoteInPlayer
+raiseMappers = Mappers raiseInt raiseBigInt raiseString raiseBool raiseMusicNoteInPlayer
 
 
 intOp : (Int -> Int -> Int) -> Int -> MaybeSafe Int -> MaybeSafe Int
@@ -46,6 +49,21 @@ decrementInt delta mbsInt =
 raiseInt : Int -> MaybeSafe Int -> MaybeSafe Int
 raiseInt exp mbsInt =
     intOp (^) exp mbsInt
+
+
+incrementBigInt : Int -> BigInt -> BigInt
+incrementBigInt delta bigInt =
+    BigInt.add bigInt (BigInt.fromInt <| abs delta)
+
+
+decrementBigInt : Int -> BigInt -> BigInt
+decrementBigInt delta bigInt =
+    BigInt.sub bigInt <| BigInt.fromInt <| abs delta
+
+
+raiseBigInt : Int -> BigInt -> BigInt
+raiseBigInt exp bigInt =
+    Lib.raiseBigInt (abs exp) bigInt
 
 
 incrementString : Int -> String -> String

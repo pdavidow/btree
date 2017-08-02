@@ -1,11 +1,12 @@
 module BTree_Tests exposing (..)
 
-import BTree exposing (BTree(..), singleton, depth, map, flatten, isElement, fold, sumInt, sumMaybeSafeInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromListBy, insert, insertBy, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes)
+import BTree exposing (BTree(..), singleton, depth, map, flatten, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromListBy, insert, insertBy, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes)
 import NodeTag exposing (NodeTag(..))
 import MusicNote exposing (MusicNote(..), sorter)
 import MaybeSafe exposing (MaybeSafe(..), maxSafeInt)
 
 import TreeDiagram as TD exposing (node)
+import BigInt exposing (fromInt)
 
 import Test exposing (..)
 import Expect
@@ -259,6 +260,55 @@ bTree =
                     Node (Safe maxSafeInt) (singleton <| Safe 1) Empty
                         |> BTree.sumMaybeSafeInt
                         |> Expect.equal (Unsafe)
+            ]
+        , describe "BTree.sumBigInt"
+            [ test "of sumBigInt.0" <|
+                \() ->
+                    Empty
+                        |> BTree.sumBigInt
+                        |> Expect.equal (BigInt.fromInt 0)
+            , test "of sumBigInt.1" <|
+                \() ->
+                    BigInt.fromInt 1
+                        |> singleton
+                        |> BTree.sumBigInt
+                        |> Expect.equal (BigInt.fromInt 1)
+            , test "of sumBigInt.2" <|
+                \() ->
+                    [BigInt.fromInt 1, BigInt.fromInt 2, BigInt.fromInt 3]
+                        |> fromListBy toString
+                        |> BTree.sumBigInt
+                        |> Expect.equal (BigInt.fromInt 6)
+            , test "of sumBigInt.3" <|
+                \() ->
+                    BigInt.fromInt maxSafeInt
+                        |> singleton
+                        |> BTree.sumBigInt
+                        |> Expect.equal (BigInt.add (BigInt.fromInt 0) (BigInt.fromInt maxSafeInt))
+            , test "of sumBigInt.4" <|
+                \() ->
+                    BigInt.fromInt (maxSafeInt + 1)
+                        |> singleton
+                        |> BTree.sumBigInt
+                        |> Expect.equal (BigInt.add (BigInt.fromInt 0) (BigInt.fromInt <| maxSafeInt + 1))
+            , test "of sumBigInt.5" <|
+                \() ->
+                    (BigInt.fromInt <| negate <| maxSafeInt + 1)
+                        |> singleton
+                        |> BTree.sumBigInt
+                        |> Expect.equal (BigInt.add (BigInt.fromInt 0) (BigInt.fromInt <| negate <| maxSafeInt + 1))
+            , test "of sumBigInt.6" <|
+                \() ->
+                    [BigInt.fromInt <| maxSafeInt + 1, BigInt.fromInt 2, BigInt.fromInt 3]
+                        |> fromListBy toString
+                        |> BTree.sumBigInt
+                        |> Expect.equal (BigInt.add (BigInt.add (BigInt.add (BigInt.fromInt 0) (BigInt.fromInt <| maxSafeInt + 1)) (BigInt.fromInt 2)) (BigInt.fromInt 3))
+            , test "of sumBigInt.7" <|
+                \() ->
+                    [BigInt.fromInt maxSafeInt, BigInt.fromInt 2, BigInt.fromInt -3]
+                        |> fromListBy toString
+                        |> BTree.sumBigInt
+                        |> Expect.equal (BigInt.add (BigInt.add (BigInt.add (BigInt.fromInt 0) (BigInt.fromInt <| maxSafeInt)) (BigInt.fromInt 2)) (BigInt.fromInt -3))
             ]
         , describe "BTree.sumFloat"
             [ test "of sumFloat.0" <|

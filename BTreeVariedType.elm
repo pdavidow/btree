@@ -2,13 +2,14 @@ module BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, in
 
 import Arithmetic exposing (isPrime)
 -- import Basics.Extra exposing (isSafeInteger) todo
+import BigInt exposing (toString)
 
 import BTree exposing (BTree, map)
 import NodeTag exposing (NodeTag(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..))
 import MusicNote exposing (mbSorter)
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
-import Lib exposing (digitCount)
+import Lib exposing (digitCount, digitCountBigInt)
 import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 
 type BTreeVariedType = BTreeVaried (BTree NodeTag)
@@ -20,7 +21,10 @@ toLength (BTreeVaried bTree) =
         fn : NodeTag -> NodeTag
         fn nodeTag = case nodeTag of
             IntNode mbsInt ->
-                IntNode (digitCount mbsInt)
+                IntNode <|digitCount mbsInt
+
+            BigIntNode bigInt ->
+                IntNode <| digitCountBigInt bigInt
 
             StringNode s ->
                 IntNode <| toMaybeSafeInt <| (String.length s)
@@ -56,6 +60,9 @@ toIsIntPrime (BTreeVaried bTree) =
                 in
                     BoolNode mbBool
 
+            BigIntNode x ->
+                NothingNode
+
             StringNode x ->
                 NothingNode
 
@@ -79,6 +86,9 @@ mapVariedTree operand mappers (BTreeVaried bTree) =
             case nodeTag of
                 IntNode mbsInt ->
                     IntNode (mappers.int operand mbsInt)
+
+                BigIntNode bigInt ->
+                    BigIntNode (mappers.bigInt operand bigInt)
 
                 StringNode x ->
                     StringNode (mappers.string operand x)
@@ -116,19 +126,22 @@ deDuplicate (BTreeVaried bTree) =
         fn = \node ->
             case node of
                 IntNode x ->
-                    toString node
+                    Basics.toString node
+
+                BigIntNode x ->
+                    BigInt.toString x
 
                 StringNode x ->
-                    toString node
+                    Basics.toString node
 
                 BoolNode x ->
-                    toString node
+                    Basics.toString node
 
                 MusicNoteNode (MusicNotePlayer params) ->
                     "MusicNoteNode " ++ (MusicNote.mbSorter params.mbNote)
 
                 NothingNode ->
-                    toString node
+                    Basics.toString node
     in
         BTreeVaried (BTree.deDuplicateBy fn bTree)
 
@@ -140,7 +153,11 @@ hasAnyIntNodes (BTreeVaried bTree) =
         isIntNode node =
             case node of
                 IntNode x -> True
-                _ -> False
+                BigIntNode x -> True
+                StringNode x -> False
+                BoolNode x -> False
+                MusicNoteNode x -> False
+                NothingNode -> False
     in
         BTree.flatten bTree
             |> List.any isIntNode

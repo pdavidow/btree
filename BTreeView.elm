@@ -13,6 +13,7 @@ import Text exposing (fromString, style, defaultStyle)
 import Arithmetic exposing (isEven)
 import TachyonsColor exposing (TachyonsColor, tachyonsColorToColor)
 import Tachyons.Classes as T exposing (..)
+import BigInt exposing (BigInt, toString)
 
 import BTree exposing (BTree, toTreeDiagramTree)
 import NodeTag exposing (NodeTag(..))
@@ -22,6 +23,7 @@ import MusicNote exposing (displayString)
 import MusicNotePlayer exposing (MusicNotePlayer(..))
 import UniversalConstants exposing (nothingString, unsafeString)
 import MaybeSafe exposing (MaybeSafe(..))
+import Lib exposing (isEvenBigInt)
 
 bTreeUniformTypeDiagram : BTreeUniformType -> Html msg
 bTreeUniformTypeDiagram bTreeUniformType =
@@ -88,7 +90,8 @@ drawNode mbNodeTag =
                                 ]
                         Safe int ->
                             let
-                                stringLength = String.length (toString int)
+                                intString = Basics.toString int
+                                stringLength = String.length intString
                                 width = toFloat (30 + (10 * stringLength))
                                 height = 30
 
@@ -102,8 +105,28 @@ drawNode mbNodeTag =
                                 group
                                     [ oval width height |> filled (colorizer int)
                                     , oval width height |> outlined treeLineStyle
-                                    , toString int |> fromString |> style treeNodeStyle |> text |> moveY 4
+                                    , intString |> fromString |> style treeNodeStyle |> text |> moveY 4
                                     ]
+
+                BigIntNode bigInt ->
+                    let
+                        bigIntString = BigInt.toString bigInt
+                        stringLength = String.length bigIntString
+                        width = toFloat (30 + (10 * stringLength))
+                        height = 30
+
+                        colorizer : BigInt -> Color
+                        colorizer i =
+                            tachyonsColorToColor <|
+                                if Lib.isEvenBigInt i
+                                    then intNodeEvenColor
+                                    else intNodeOddColor
+                    in
+                        group
+                            [ oval width height |> filled (colorizer bigInt)
+                            , oval width height |> outlined treeThickLineStyle
+                            , bigIntString |> fromString |> style treeNodeStyle |> text |> moveY 4
+                            ]
 
                 StringNode s ->
                     let
@@ -198,6 +221,11 @@ treeNilStyle =
 treeLineStyle : LineStyle
 treeLineStyle =
     { defaultLine | width = 1 }
+
+
+treeThickLineStyle : LineStyle
+treeThickLineStyle =
+    { defaultLine | width = 3 }
 
 
 treeLineHighlightStyle : LineStyle

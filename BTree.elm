@@ -1,10 +1,11 @@
-module BTree exposing (BTree(..), singleton, depth, map, flatten, isElement, fold, sumInt, sumMaybeSafeInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromIntList, fromListBy, insert, insertBy, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes)
+module BTree exposing (BTree(..), singleton, depth, map, flatten, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromIntList, fromListBy, insert, insertBy, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes)
 
 -- http://elm-lang.org/examples/binary-Tree
 
 import TreeDiagram as TD exposing (node, Tree)
 import List.Extra exposing (uniqueBy)
 import Maybe.Extra exposing (unwrap, values)
+import BigInt exposing (BigInt, add)
 
 import MaybeSafe exposing (MaybeSafe(..), sumMaybeSafeInt, toMaybeSafeInt, isSafe)
 import NodeTag exposing (NodeTag(..))
@@ -54,6 +55,13 @@ sumMaybeSafeInt bTree =
     bTree
         |> flatten
         |> MaybeSafe.sumMaybeSafeInt
+
+
+sumBigInt : BTree BigInt -> BigInt
+sumBigInt bTree =
+    bTree
+        |> flatten
+        |> List.foldl BigInt.add (BigInt.fromInt 0)
 
 
 sumFloat : BTree Float -> Float

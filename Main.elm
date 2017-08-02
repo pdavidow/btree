@@ -12,6 +12,7 @@ import Random
 import Random.Pcg exposing (Seed, initialSeed, step)
 import Uuid exposing (Uuid, uuidGenerator)
 import Lazy exposing (lazy)
+import BigInt exposing (fromInt)
 
 import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes)
 import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, hasAnyIntNodes)
@@ -23,7 +24,7 @@ import MusicNote exposing (MusicNote(..), mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter)
 import TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote)
 import Ports exposing (port_startPlayNote, port_donePlayNote, port_donePlayNotes)
-import Lib exposing (lazyUnwrap)
+import Lib exposing (IntFlex(..), lazyUnwrap)
 import MaybeSafe exposing (MaybeSafe(..), maxSafeInt, toMaybeSafeInt)
 ------------------------------------------------
 
@@ -53,12 +54,14 @@ type Msg =
 
 type alias Model =
     { intTree : BTreeUniformType
+    , bigIntTree : BTreeUniformType
     , stringTree : BTreeUniformType
     , boolTree : BTreeUniformType
     , initialMusicNoteTree : BTreeUniformType
     , musicNoteTree : BTreeUniformType
     , variedTree : BTreeVariedType
     , intTreeCache : BTreeUniformType
+    , bigIntTreeCache : BTreeUniformType
     , stringTreeCache : BTreeUniformType
     , boolTreeCache : BTreeUniformType
     , musicNoteTreeCache : BTreeUniformType
@@ -73,13 +76,15 @@ type alias Model =
 
 initialModel: Model
 initialModel =
-    { intTree = BTreeInt (Node (toMaybeSafeInt <| maxSafeInt) (singleton <| toMaybeSafeInt 4) (Node (toMaybeSafeInt -9) Empty (singleton <| toMaybeSafeInt 4)))
-    , stringTree = BTreeString (Node "Max Safe Int" (singleton "four") (Node "-nine" Empty (singleton "four")))
-    , boolTree = BTreeBool (Node (Just True) (singleton <| Just True) (singleton <| Just False))
+    { intTree = BTreeInt <| Node (toMaybeSafeInt <| maxSafeInt) (singleton <| toMaybeSafeInt 4) (Node (toMaybeSafeInt -9) Empty (singleton <| toMaybeSafeInt 4))
+    , bigIntTree = BTreeBigInt <| Node (BigInt.fromInt <| maxSafeInt) (singleton <| BigInt.fromInt 4) (Node (BigInt.fromInt -9) Empty (singleton <| BigInt.fromInt 4))
+    , stringTree = BTreeString <| Node "Max Safe Int" (singleton "four") (Node "-nine" Empty (singleton "four"))
+    , boolTree = BTreeBool <| Node (Just True) (singleton <| Just True) (singleton <| Just False)
     , initialMusicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
     , musicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
-    , variedTree = BTreeVaried (Node (IntNode <| toMaybeSafeInt <| maxSafeInt) (Node (StringNode "A") (singleton <| MusicNoteNode <| MusicNotePlayer.on A) (singleton <| IntNode <| toMaybeSafeInt 123)) ((Node (BoolNode <| Just True)) (singleton <| MusicNoteNode <| MusicNotePlayer.on A) (singleton <| BoolNode <| Just True)))
+    , variedTree = BTreeVaried <| Node (BigIntNode <| BigInt.fromInt maxSafeInt) (Node (StringNode "A") (singleton <| MusicNoteNode <| MusicNotePlayer.on A) (singleton <| IntNode <| toMaybeSafeInt 123)) ((Node (BoolNode <| Just True)) (singleton <| MusicNoteNode <| MusicNotePlayer.on A) (singleton <| BoolNode <| Just True))
     , intTreeCache = BTreeInt Empty
+    , bigIntTreeCache = BTreeBigInt Empty
     , stringTreeCache = BTreeString Empty
     , boolTreeCache = BTreeBool Empty
     , musicNoteTreeCache = BTreeMusicNotePlayer Empty
@@ -339,6 +344,7 @@ viewTrees model =
         cards =
             [ viewUniformTreeCard model.musicNoteTree
             , viewUniformTreeCard model.intTree
+            , viewUniformTreeCard model.bigIntTree
             , viewUniformTreeCard model.stringTree
             , viewUniformTreeCard model.boolTree
             , viewVariedTreeCard model.variedTree
@@ -393,35 +399,39 @@ bTreeUniformTitle bTreeUniformType =
         |> Maybe.withDefault ""
 
 
-treeStatus : Int -> Maybe (MaybeSafe Int) -> Html msg
-treeStatus depth mbMbsSum =
+treeStatus : Int -> Maybe IntFlex -> Html msg
+treeStatus depth mbIxSum =
     let
         sumDisplay =
             let
-                result = \mbsSum ->
-                    case mbsSum of
-                        Unsafe ->
-                            span
-                                [ classes
-                                    [ unsafeColor
-                                    ]
-                                ]
-                                [ text "unsafe" ]
-                        Safe sum ->
-                            span
-                                []
-                                [ text <| toString sum]
+                okSum = \string ->
+                    span
+                        []
+                        [ text string]
+
+                result = \ixSum ->
+                    case ixSum of
+                        IntVal mbsInt ->
+                            case mbsInt of
+                                Unsafe ->
+                                    span
+                                        [ classes [unsafeColor] ]
+                                        [ text "unsafe" ]
+                                Safe sum ->
+                                    okSum <| Basics.toString sum
+                        BigIntVal sum ->
+                            okSum <| BigInt.toString sum
             in
                 Maybe.Extra.unwrap
                     [span [][]]
-                    (\mbsSum ->
+                    (\ixSum ->
                         [ span
                             []
                             [ text "; sum " ]
-                        , result mbsSum
+                        , result ixSum
                         ]
                     )
-                    mbMbsSum
+                    mbIxSum
     in
         article
             [ classes
@@ -445,9 +455,9 @@ bTreeUniformStatus : BTreeUniformType -> Html msg
 bTreeUniformStatus bTreeUniformType =
     let
         depth = BTreeUniformType.depth bTreeUniformType
-        mbMbsSum = BTreeUniformType.sumInt bTreeUniformType
+        mbIntFlex = BTreeUniformType.sumInt bTreeUniformType
     in
-        treeStatus depth mbMbsSum
+        treeStatus depth mbIntFlex
 
 
 bTreeVariedStatus : BTreeVariedType -> Html msg
@@ -465,6 +475,9 @@ bTreeUniformLegend bTreeUniformType =
         BTreeInt bTree ->
             Just bTreeIntCardLegend
 
+        BTreeBigInt bTree ->
+            Just bTreeBigIntCardLegend
+
         BTreeString bTree ->
             Nothing
 
@@ -476,6 +489,11 @@ bTreeUniformLegend bTreeUniformType =
 
         BTreeNothing bTree ->
             Nothing
+
+
+bTreeBigIntCardLegend : Html msg
+bTreeBigIntCardLegend =
+    bTreeIntCardLegend
 
 
 bTreeIntCardLegend : Html msg
@@ -608,7 +626,7 @@ update msg model =
 
         RemoveDuplicates ->
             ( model
-                |> removeDuplicates
+                |> deDuplicate
             , Cmd.none
             )
 
@@ -793,6 +811,7 @@ cacheAllTrees : Model -> Model
 cacheAllTrees model =
     {model
         | intTreeCache = model.intTree
+        , bigIntTreeCache = model.bigIntTree
         , stringTreeCache = model.stringTree
         , boolTreeCache = model.boolTree
         , musicNoteTreeCache = model.musicNoteTree
@@ -804,6 +823,7 @@ unCacheAllTrees : Model -> Model
 unCacheAllTrees model =
     {model
         | intTree = model.intTreeCache
+        , bigIntTree = model.bigIntTreeCache
         , stringTree = model.stringTreeCache
         , boolTree= model.boolTreeCache
         , musicNoteTree = model.musicNoteTreeCache
@@ -815,6 +835,7 @@ changeUniformTrees : (BTreeUniformType -> BTreeUniformType) -> Model -> Model
 changeUniformTrees fn model =
     {model
         | intTree = fn model.intTree
+        , bigIntTree = fn model.bigIntTree
         , stringTree = fn model.stringTree
         , boolTree = fn model.boolTree
         , musicNoteTree = fn model.musicNoteTree
@@ -849,23 +870,23 @@ sortUniformTrees model =
     changeUniformTrees BTreeUniformType.sort model
 
 
-removeDuplicates : Model -> Model
-removeDuplicates model =
+deDuplicate : Model -> Model
+deDuplicate model =
     model
-        |> removeDuplicatesUniformTrees
-        |> removeDuplicatesVariedTrees
+        |> deDuplicateUniformTrees
+        |> deDuplicateVariedTrees
 
 
-removeDuplicatesUniformTrees : Model -> Model
-removeDuplicatesUniformTrees model =
+deDuplicateUniformTrees : Model -> Model
+deDuplicateUniformTrees model =
     let
         fn = BTreeUniformType.deDuplicate
     in
         changeUniformTrees fn model
 
 
-removeDuplicatesVariedTrees : Model -> Model
-removeDuplicatesVariedTrees model =
+deDuplicateVariedTrees : Model -> Model
+deDuplicateVariedTrees model =
     let
         fn = BTreeVariedType.deDuplicate
     in

@@ -3,20 +3,22 @@ module BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes
 import Arithmetic exposing (isPrime)
 -- import Basics.Extra exposing (isSafeInteger) -- todo https://github.com/elm-community/basics-extra/issues/7
 
-import BTree exposing (BTree, depth, map, deDuplicateBy, singleton, sumMaybeSafeInt , sumString , sort, sortBy, isEmpty, toNothingNodes)
+import BTree exposing (BTree, depth, map, deDuplicateBy, singleton, sumMaybeSafeInt, sumBigInt, sumString , sort, sortBy, isEmpty, toNothingNodes)
 import NodeTag exposing (NodeTag(..))
 import MusicNote exposing (MusicNote, mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), sorter)
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
 import BTreeVariedType exposing (BTreeVariedType(..))
-import Lib exposing (digitCount)
+import Lib exposing (IntFlex(..), digitCount, digitCountBigInt)
 import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
+import BigInt exposing (BigInt)
 
 
 type OnlyNothing = OnlyNothing
 
 type BTreeUniformType
     = BTreeInt (BTree (MaybeSafe Int))
+    | BTreeBigInt (BTree BigInt)
     | BTreeString (BTree String)
     | BTreeBool (BTree (Maybe Bool))
     | BTreeMusicNotePlayer (BTree MusicNotePlayer)
@@ -32,6 +34,9 @@ toNothing bTreeUniformType =
     in
         case bTreeUniformType of
             BTreeInt bTree ->
+                nothing bTree
+
+            BTreeBigInt bTree ->
                 nothing bTree
 
             BTreeString bTree ->
@@ -53,6 +58,9 @@ toTaggedNodes bTreeUniformType =
         BTreeInt bTree ->
             map IntNode bTree
 
+        BTreeBigInt bTree ->
+            map BigIntNode bTree
+
         BTreeString bTree ->
             map StringNode bTree
 
@@ -70,13 +78,16 @@ toLength : BTreeUniformType -> Maybe BTreeUniformType
 toLength bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            Just (BTreeInt (map digitCount bTree))
+            Just <| BTreeInt <| map digitCount bTree
+
+        BTreeBigInt bTree ->
+            Just <| BTreeInt <| map digitCountBigInt bTree
 
         BTreeString bTree ->
             let
                 fn = \s -> toMaybeSafeInt <| String.length s
             in
-                Just <| BTreeInt (map fn bTree)
+                Just <| BTreeInt <| map fn bTree
 
         BTreeBool bTree ->
             Nothing
@@ -103,6 +114,9 @@ toIsIntPrime bTreeUniformType =
             in
                 Just (BTreeBool (map fn bTree))
 
+        BTreeBigInt bTree ->
+            Nothing
+
         BTreeString bTree ->
             Nothing
 
@@ -121,6 +135,9 @@ mapUniformTree operand mappers bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
             BTreeInt (map (mappers.int operand) bTree)
+
+        BTreeBigInt bTree ->
+            BTreeBigInt (map (mappers.bigInt operand) bTree)
 
         BTreeString bTree ->
             BTreeString (map (mappers.string operand) bTree)
@@ -156,6 +173,9 @@ depth bTreeUniformType =
         BTreeInt bTree ->
             BTree.depth bTree
 
+        BTreeBigInt bTree ->
+            BTree.depth bTree
+
         BTreeString bTree ->
             BTree.depth bTree
 
@@ -169,11 +189,14 @@ depth bTreeUniformType =
             BTree.depth bTree
 
 
-sumInt : BTreeUniformType -> Maybe (MaybeSafe Int)
+sumInt : BTreeUniformType -> Maybe IntFlex
 sumInt bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            Just <| BTree.sumMaybeSafeInt bTree
+            Just <| IntVal <| BTree.sumMaybeSafeInt bTree
+
+        BTreeBigInt bTree ->
+            Just <| BigIntVal <| BTree.sumBigInt bTree
 
         BTreeString bTree ->
             Nothing
@@ -194,6 +217,9 @@ sort bTreeUniformType =
         BTreeInt bTree ->
             BTreeInt <| BTree.sortBy toString bTree
 
+        BTreeBigInt bTree ->
+            BTreeBigInt <| BTree.sortBy toString bTree
+
         BTreeString bTree ->
             BTreeString <| BTree.sort bTree
 
@@ -213,6 +239,9 @@ deDuplicate bTreeUniformType =
         BTreeInt bTree ->
             BTreeInt (BTree.deDuplicateBy toString bTree)
 
+        BTreeBigInt bTree ->
+            BTreeBigInt (BTree.deDuplicateBy toString bTree)
+
         BTreeString bTree ->
             BTreeString (BTree.deDuplicate bTree)
 
@@ -230,6 +259,9 @@ isAllNothing : BTreeUniformType -> Bool
 isAllNothing bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
+            isEmpty bTree
+
+        BTreeBigInt bTree ->
             isEmpty bTree
 
         BTreeString bTree ->
