@@ -49,6 +49,7 @@ type Msg =
     | StartPlayNote (String)
     | DonePlayNote (String)
     | DonePlayNotes (Bool)
+    | ToggleShowBigInt
     | Reset
 
 
@@ -69,6 +70,7 @@ type alias Model =
     , delta : Int
     , exponent : Int
     , isPlayNotes : Bool
+    , isShowBigInt : Bool
     , isTreeCaching : Bool
     , uuidSeed : Seed
     }
@@ -78,7 +80,7 @@ initialModel: Model
 initialModel =
     { intTree = BTreeInt <| Node (toMaybeSafeInt <| maxSafeInt) (singleton <| toMaybeSafeInt 4) (Node (toMaybeSafeInt -9) Empty (singleton <| toMaybeSafeInt 4))
     , bigIntTree = BTreeBigInt <| Node (BigInt.fromInt <| maxSafeInt) (singleton <| BigInt.fromInt 4) (Node (BigInt.fromInt -9) Empty (singleton <| BigInt.fromInt 4))
-    , stringTree = BTreeString <| Node "Max Safe Int" (singleton "four") (Node "-nine" Empty (singleton "four"))
+    , stringTree = BTreeString <| Node "maxSafeInt" (singleton "four") (Node "-nine" Empty (singleton "four"))
     , boolTree = BTreeBool <| Node (Just True) (singleton <| Just True) (singleton <| Just False)
     , initialMusicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
     , musicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
@@ -92,6 +94,7 @@ initialModel =
     , delta = 1
     , exponent = 2
     , isPlayNotes = False
+    , isShowBigInt = False
     , isTreeCaching = False
     , uuidSeed = initialSeed 0 -- placeholder
     }
@@ -315,36 +318,67 @@ isEnablePlayNotesButton model =
 
 viewDashboardBottom : Model -> List (Html Msg)
 viewDashboardBottom model =
-    viewInputs model
+    [ span
+        []
+        (viewInputs model)
+    , span
+        [classes [T.pl4]]
+        (viewToggleShowBigInt model)
+    ]
 
 
 viewInputs : Model -> List (Html Msg)
 viewInputs model =
     [ span
         []
-        [ (text "Delta: ")
+        [ text "Delta: "
         , input
-            [classes [T.f4, T.w3], A.type_ "number", A.min "1", value (toString model.delta), onInput Delta]
+            [ classes [T.f4, T.w3]
+            , A.type_ "number"
+            , A.min "1"
+            , value (toString model.delta)
+            , onInput Delta
+            ]
             []
         ]
     , span
         [classes [T.pl3]]
-        [ (text "Exp: ")
+        [ text "Exp: "
         , input
-            [classes [T.f4, T.w3], A.type_ "number", A.min "1", value (toString model.exponent), onInput Exponent]
+            [ classes [T.f4, T.w3]
+            , A.type_ "number"
+            , A.min "1"
+            , value (toString model.exponent)
+            , onInput Exponent
+            ]
             []
         ]
     ]
 
 
+viewToggleShowBigInt : Model -> List (Html Msg)
+viewToggleShowBigInt model =
+    let
+        instructions = if model.isShowBigInt
+            then "Show Int"
+            else "Show BigInt"
+    in
+        [ button
+            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick ToggleShowBigInt]
+            [text instructions]
+        ]
+
+
 viewTrees : Model -> Html Msg
 viewTrees model =
-    -- http://tachyons.io/components/layout/five-column-collapse-one/index.html
     let
+        requestedIntTree = if model.isShowBigInt
+            then model.bigIntTree
+            else model.intTree
+
         cards =
             [ viewUniformTreeCard model.musicNoteTree
-            , viewUniformTreeCard model.intTree
-            , viewUniformTreeCard model.bigIntTree
+            , viewUniformTreeCard requestedIntTree
             , viewUniformTreeCard model.stringTree
             , viewUniformTreeCard model.boolTree
             , viewVariedTreeCard model.variedTree
@@ -779,6 +813,13 @@ update msg model =
         DonePlayNotes isDone ->
             (   { model
                 | isPlayNotes = not isDone
+                }
+            , Cmd.none
+            )
+
+        ToggleShowBigInt ->
+            (   { model
+                | isShowBigInt = not model.isShowBigInt
                 }
             , Cmd.none
             )

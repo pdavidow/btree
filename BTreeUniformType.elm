@@ -11,7 +11,7 @@ import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMapp
 import BTreeVariedType exposing (BTreeVariedType(..))
 import Lib exposing (IntFlex(..), digitCount, digitCountBigInt)
 import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
-import BigInt exposing (BigInt)
+import BigInt exposing (BigInt, toString)
 
 
 type OnlyNothing = OnlyNothing
@@ -215,16 +215,16 @@ sort : BTreeUniformType -> BTreeUniformType
 sort bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            BTreeInt <| BTree.sortBy toString bTree
+            BTreeInt <| BTree.sortBy Basics.toString bTree
 
         BTreeBigInt bTree ->
-            BTreeBigInt <| BTree.sortBy toString bTree
+            BTreeBigInt <| BTree.sortBy BigInt.toString bTree
 
         BTreeString bTree ->
             BTreeString <| BTree.sort bTree
 
         BTreeBool bTree ->
-            BTreeBool <| BTree.sortBy toString bTree
+            BTreeBool <| BTree.sortBy Basics.toString bTree
 
         BTreeMusicNotePlayer bTree ->
             BTreeMusicNotePlayer <| BTree.sortBy MusicNotePlayer.sorter bTree
@@ -237,22 +237,22 @@ deDuplicate : BTreeUniformType -> BTreeUniformType
 deDuplicate bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            BTreeInt (BTree.deDuplicateBy toString bTree)
+            BTreeInt (BTree.deDuplicateBy Basics.toString bTree)
 
         BTreeBigInt bTree ->
-            BTreeBigInt (BTree.deDuplicateBy toString bTree)
+            BTreeBigInt (BTree.deDuplicateBy BigInt.toString bTree)
 
         BTreeString bTree ->
             BTreeString (BTree.deDuplicate bTree)
 
         BTreeBool bTree ->
-            BTreeBool (BTree.deDuplicateBy toString bTree)
+            BTreeBool (BTree.deDuplicateBy Basics.toString bTree)
 
         BTreeMusicNotePlayer bTree ->
             BTreeMusicNotePlayer (BTree.deDuplicateBy MusicNotePlayer.sorter bTree)
 
         BTreeNothing bTree ->
-            BTreeNothing <| BTree.deDuplicateBy toString bTree
+            BTreeNothing <| BTree.deDuplicateBy Basics.toString bTree
 
 
 isAllNothing : BTreeUniformType -> Bool
