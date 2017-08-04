@@ -706,9 +706,9 @@ update msg model =
 
         RequestRandomIntList ->
             let
-                maxRandomInt = 99
+                maxRandomInt = 999
                 minListLength = 1
-                maxListLength = 6
+                maxListLength = 8
 
                 randomIntList : Int -> Random.Generator (List Int)
                 randomIntList length =
@@ -734,6 +734,7 @@ update msg model =
         ReceiveRandomIntList list ->
             (   { model
                 | intTree = BTreeInt (BTree.fromIntList list)
+                , bigIntTree = BTreeBigInt (BTree.fromListBy BigInt.toString <| List.map BigInt.fromInt list)
                 }
             , Cmd.none
             )

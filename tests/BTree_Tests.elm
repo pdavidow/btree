@@ -276,7 +276,7 @@ bTree =
             , test "of sumBigInt.2" <|
                 \() ->
                     [BigInt.fromInt 1, BigInt.fromInt 2, BigInt.fromInt 3]
-                        |> fromListBy toString
+                        |> fromListBy BigInt.toString
                         |> BTree.sumBigInt
                         |> Expect.equal (BigInt.fromInt 6)
             , test "of sumBigInt.3" <|
@@ -300,13 +300,13 @@ bTree =
             , test "of sumBigInt.6" <|
                 \() ->
                     [BigInt.fromInt <| maxSafeInt + 1, BigInt.fromInt 2, BigInt.fromInt 3]
-                        |> fromListBy toString
+                        |> fromListBy BigInt.toString
                         |> BTree.sumBigInt
                         |> Expect.equal (BigInt.add (BigInt.add (BigInt.add (BigInt.fromInt 0) (BigInt.fromInt <| maxSafeInt + 1)) (BigInt.fromInt 2)) (BigInt.fromInt 3))
             , test "of sumBigInt.7" <|
                 \() ->
                     [BigInt.fromInt maxSafeInt, BigInt.fromInt 2, BigInt.fromInt -3]
-                        |> fromListBy toString
+                        |> fromListBy BigInt.toString
                         |> BTree.sumBigInt
                         |> Expect.equal (BigInt.add (BigInt.add (BigInt.add (BigInt.fromInt 0) (BigInt.fromInt <| maxSafeInt)) (BigInt.fromInt 2)) (BigInt.fromInt -3))
             ]
