@@ -1,8 +1,8 @@
 module Main exposing (..)
 
-import Html exposing (Html, div, span, header, main_, section, article, a, button, text, input, h1, h2, programWithFlags)
+import Html exposing (Html, div, span, header, main_, section, article, a, button, text, input, h1, h2, label, programWithFlags)
 import Html.Events exposing (onClick, onMouseUp, onMouseDown, onMouseLeave, onInput)
-import Html.Attributes as A exposing (class, style, type_, value, href, target, disabled)
+import Html.Attributes as A exposing (class, checked, style, type_, value, href, target, disabled)
 import Tachyons exposing (classes, tachyons)
 import Tachyons.Classes as T exposing (..)
 
@@ -29,8 +29,14 @@ import MaybeSafe exposing (MaybeSafe(..), maxSafeInt, toMaybeSafeInt)
 ------------------------------------------------
 
 
-type Msg =
-      Increment
+type IntView
+    = Int
+    | BigInt
+    | Both
+
+
+type Msg
+    = Increment
     | Decrement
     | Raise
     | SortUniformTrees
@@ -49,7 +55,7 @@ type Msg =
     | StartPlayNote (String)
     | DonePlayNote (String)
     | DonePlayNotes (Bool)
-    | ToggleShowBigInt
+    | SwitchToIntView (IntView)
     | Reset
 
 
@@ -70,8 +76,8 @@ type alias Model =
     , delta : Int
     , exponent : Int
     , isPlayNotes : Bool
-    , isShowBigInt : Bool
     , isTreeCaching : Bool
+    , intView : IntView
     , uuidSeed : Seed
     }
 
@@ -94,8 +100,8 @@ initialModel =
     , delta = 1
     , exponent = 2
     , isPlayNotes = False
-    , isShowBigInt = False
     , isTreeCaching = False
+    , intView = Int
     , uuidSeed = initialSeed 0 -- placeholder
     }
 
@@ -322,8 +328,8 @@ viewDashboardBottom model =
         []
         (viewInputs model)
     , span
-        [classes [T.pl4]]
-        (viewToggleShowBigInt model)
+        [classes [T.pl3]]
+        (viewIntTreeChoice model)
     ]
 
 
@@ -356,32 +362,52 @@ viewInputs model =
     ]
 
 
-viewToggleShowBigInt : Model -> List (Html Msg)
-viewToggleShowBigInt model =
+radio : String -> String -> msg -> Html msg
+radio value currentSelection msg =
+    label
+        [ classes [T.pa2] ]
+        [ input
+            [ type_ "radio"
+            , checked <| currentSelection == value
+            , onClick msg
+            ]
+            []
+        , text value
+        ]
+
+
+viewIntTreeChoice : Model -> List (Html Msg)
+viewIntTreeChoice model =
     let
-        instructions = if model.isShowBigInt
-            then "Show Int"
-            else "Show BigInt"
+        currentSelection = toString model.intView
     in
-        [ button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick ToggleShowBigInt]
-            [text instructions]
+        [ span
+            [ classes [T.pt1, T.pb1, T.mt2, T.mb2, T.f6, T.ba, T.br2] ]
+            [ radio "Int" currentSelection (SwitchToIntView Int)
+            , radio "BigInt" currentSelection (SwitchToIntView BigInt)
+            , radio "Both" currentSelection (SwitchToIntView Both)
+            ]
         ]
 
 
 viewTrees : Model -> Html Msg
 viewTrees model =
     let
-        requestedIntTree = if model.isShowBigInt
-            then model.bigIntTree
-            else model.intTree
+        intTreesOfInterest = case model.intView of
+            Int -> [model.intTree]
+            BigInt -> [model.bigIntTree]
+            Both -> [model.intTree, model.bigIntTree]
 
-        cards =
-            [ viewUniformTreeCard model.musicNoteTree
-            , viewUniformTreeCard requestedIntTree
-            , viewUniformTreeCard model.stringTree
-            , viewUniformTreeCard model.boolTree
-            , viewVariedTreeCard model.variedTree
+        intTreeCards = List.map viewUniformTreeCard intTreesOfInterest
+
+        cards = List.concat
+            [   [ viewUniformTreeCard model.musicNoteTree
+                ]
+            ,   intTreeCards
+            ,   [ viewUniformTreeCard model.stringTree
+                , viewUniformTreeCard model.boolTree
+                , viewVariedTreeCard model.variedTree
+                ]
             ]
     in
         section
@@ -817,9 +843,9 @@ update msg model =
             , Cmd.none
             )
 
-        ToggleShowBigInt ->
+        SwitchToIntView intView ->
             (   { model
-                | isShowBigInt = not model.isShowBigInt
+                | intView = intView
                 }
             , Cmd.none
             )
