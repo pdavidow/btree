@@ -16,7 +16,7 @@ import BigInt exposing (fromInt)
 
 import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes)
 import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, hasAnyIntNodes)
-import BTree exposing (BTree(..), fromListBy, fromIntList, singleton, toTreeDiagramTree)
+import BTree exposing (BTree(..), fromListBy, fromListAsIs, singleton, toTreeDiagramTree)
 import NodeTag exposing (NodeTag(..))
 import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
 import UniversalConstants exposing (nothingString)
@@ -186,6 +186,7 @@ viewHeader model =
             , T.pl2
             , T.pr2
             , T.z_max
+            , T.tc
             ]
         ]
         [ span
@@ -707,8 +708,8 @@ update msg model =
         RequestRandomIntList ->
             let
                 maxRandomInt = 999
-                minListLength = 1
-                maxListLength = 8
+                minListLength = 3
+                maxListLength = 9
 
                 randomIntList : Int -> Random.Generator (List Int)
                 randomIntList length =
@@ -733,8 +734,8 @@ update msg model =
 
         ReceiveRandomIntList list ->
             (   { model
-                | intTree = BTreeInt (BTree.fromIntList list)
-                , bigIntTree = BTreeBigInt (BTree.fromListBy BigInt.toString <| List.map BigInt.fromInt list)
+                | intTree = BTreeInt <| BTree.fromListAsIs <| List.map toMaybeSafeInt list
+                , bigIntTree = BTreeBigInt <| BTree.fromListAsIs <| List.map BigInt.fromInt list
                 }
             , Cmd.none
             )

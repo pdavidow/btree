@@ -1,4 +1,4 @@
-module BTree exposing (BTree(..), singleton, depth, map, flatten, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromIntList, fromListBy, insert, insertBy, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes)
+module BTree exposing (BTree(..), singleton, depth, map, flatten, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromIntList, fromListBy, insert, insertBy, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes,   sortWith, fromListAsIs, fromListWith, insertWith, insertAsIs_left)
 
 -- http://elm-lang.org/examples/binary-Tree
 
@@ -7,7 +7,7 @@ import List.Extra exposing (uniqueBy)
 import Maybe.Extra exposing (unwrap, values)
 import BigInt exposing (BigInt, add)
 
-import MaybeSafe exposing (MaybeSafe(..), sumMaybeSafeInt, toMaybeSafeInt, isSafe)
+import MaybeSafe exposing (MaybeSafe(..), compare, sumMaybeSafeInt, toMaybeSafeInt, isSafe)
 import NodeTag exposing (NodeTag(..))
 
 -- todo ?? fromList flatten fromList REVERSIBLE or not?
@@ -199,12 +199,22 @@ sort bTree =
     sortBy identity bTree
 
 
+ordererBy: (a -> comparable) -> (a -> a -> Order)
+ordererBy fn =
+    \a1 a2 -> Basics.compare (fn a1) (fn a2)
+
+
 sortBy : (a -> comparable) -> BTree a -> BTree a
 sortBy fn bTree =
+    sortWith (ordererBy fn) bTree
+
+
+sortWith : (a -> a -> Order) -> BTree a -> BTree a
+sortWith fn bTree =
     bTree
         |> flatten
-        |> List.sortBy fn
-        |> fromListBy fn
+        |> List.sortWith fn
+        |> fromListAsIs
 
 
 fromList : List comparable -> BTree comparable
@@ -214,14 +224,24 @@ fromList xs =
 
 fromListBy : (a -> comparable) -> List a -> BTree a
 fromListBy fn xs =
-    List.foldl (insertBy fn) Empty xs
+    fromListWith (ordererBy fn) xs
+
+
+fromListWith : (a -> a -> Order) -> List a -> BTree a
+fromListWith fn xs =
+    List.foldl (insertWith fn) Empty xs
+
+
+fromListAsIs : List a -> BTree a
+fromListAsIs xs =
+    List.foldl insertAsIs_left Empty xs
 
 
 fromIntList : List Int -> BTree (MaybeSafe Int)
 fromIntList ints =
     ints
         |> List.map toMaybeSafeInt
-        |> fromListBy toString
+        |> fromListWith MaybeSafe.compare
 
 
 insert : comparable -> BTree comparable -> BTree comparable
@@ -231,15 +251,42 @@ insert x bTree =
 
 insertBy : (a -> comparable) -> a -> BTree a -> BTree a
 insertBy fn x bTree =
+    insertWith (ordererBy fn) x bTree
+
+
+insertWith : (a -> a -> Order) -> a -> BTree a -> BTree a
+insertWith fn x bTree =
     case bTree of
       Empty ->
           singleton x
 
       Node y left right ->
-          if fn x >= fn y then
-            Node y left (insertBy fn x right)
-          else
-            Node y (insertBy fn x left) right
+        let
+            insertLeft = Node y (insertWith fn x left) right
+            insertRight = Node y left (insertWith fn x right)
+        in
+            case fn x y of
+                LT -> insertLeft
+                EQ -> insertRight
+                GT -> insertRight
+
+
+insertAsIs_left : a -> BTree a -> BTree a
+insertAsIs_left x bTree =
+    case bTree of
+      Empty ->
+          singleton x
+
+      Node val left right ->
+          case (left, right) of
+            (Empty, _) ->
+                Node val (singleton x) right
+
+            (_, Empty) ->
+                Node val left (singleton x)
+
+            _ ->
+                Node val (insertAsIs_left x left) right
 
 
 deDuplicate : BTree comparable -> BTree comparable
@@ -249,10 +296,13 @@ deDuplicate bTree =
 
 deDuplicateBy : (a -> comparable) -> BTree a -> BTree a
 deDuplicateBy fn bTree =
-    bTree
-        |> flatten
-        |> List.Extra.uniqueBy fn
-        |> fromListBy fn
+    let
+        potentialSet = flatten bTree
+        set = List.Extra.uniqueBy fn potentialSet
+    in
+        if potentialSet == set
+            then bTree
+            else fromListAsIs set
 
 
 isAllNothing : BTree (Maybe a) -> Bool

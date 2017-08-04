@@ -3,14 +3,14 @@ module BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes
 import Arithmetic exposing (isPrime)
 -- import Basics.Extra exposing (isSafeInteger) -- todo https://github.com/elm-community/basics-extra/issues/7
 
-import BTree exposing (BTree, depth, map, deDuplicateBy, singleton, sumMaybeSafeInt, sumBigInt, sumString , sort, sortBy, isEmpty, toNothingNodes)
+import BTree exposing (BTree, depth, map, deDuplicateBy, singleton, sumMaybeSafeInt, sumBigInt, sumString, sort, sortBy, sortWith, isEmpty, toNothingNodes)
 import NodeTag exposing (NodeTag(..))
 import MusicNote exposing (MusicNote, mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), sorter)
 import ValueOps exposing (Mappers, incrementMappers, decrementMappers, raiseMappers)
 import BTreeVariedType exposing (BTreeVariedType(..))
 import Lib exposing (IntFlex(..), digitCount, digitCountBigInt)
-import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
+import MaybeSafe exposing (MaybeSafe(..), compare, toMaybeSafeInt)
 import BigInt exposing (BigInt, toString)
 
 
@@ -48,7 +48,7 @@ toNothing bTreeUniformType =
             BTreeMusicNotePlayer bTree ->
                 nothing bTree
 
-            BTreeNothing bTree ->
+            BTreeNothing _ ->
                 bTreeUniformType
 
 
@@ -89,13 +89,13 @@ toLength bTreeUniformType =
             in
                 Just <| BTreeInt <| map fn bTree
 
-        BTreeBool bTree ->
+        BTreeBool _ ->
             Nothing
 
-        BTreeMusicNotePlayer bTree ->
+        BTreeMusicNotePlayer _ ->
             Nothing
 
-        BTreeNothing bTree ->
+        BTreeNothing _ ->
             Nothing
 
 
@@ -114,19 +114,19 @@ toIsIntPrime bTreeUniformType =
             in
                 Just (BTreeBool (map fn bTree))
 
-        BTreeBigInt bTree ->
+        BTreeBigInt _ -> -- todo. not found in BigInt module
             Nothing
 
-        BTreeString bTree ->
+        BTreeString _ ->
             Nothing
 
-        BTreeBool bTree ->
+        BTreeBool _ ->
             Nothing
 
-        BTreeMusicNotePlayer bTree ->
+        BTreeMusicNotePlayer _ ->
             Nothing
 
-        BTreeNothing bTree ->
+        BTreeNothing _ ->
             Nothing
 
 
@@ -148,7 +148,7 @@ mapUniformTree operand mappers bTreeUniformType =
         BTreeMusicNotePlayer bTree ->
             BTreeMusicNotePlayer (map (mappers.musicNotePlayer operand) bTree)
 
-        BTreeNothing bTree ->
+        BTreeNothing _ ->
             bTreeUniformType
 
 
@@ -198,16 +198,16 @@ sumInt bTreeUniformType =
         BTreeBigInt bTree ->
             Just <| BigIntVal <| BTree.sumBigInt bTree
 
-        BTreeString bTree ->
+        BTreeString _ ->
             Nothing
 
-        BTreeBool bTree ->
+        BTreeBool _ ->
             Nothing
 
-        BTreeMusicNotePlayer bTree ->
+        BTreeMusicNotePlayer _ ->
             Nothing
 
-        BTreeNothing bTree ->
+        BTreeNothing _ ->
             Nothing
 
 
@@ -215,10 +215,10 @@ sort : BTreeUniformType -> BTreeUniformType
 sort bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            BTreeInt <| BTree.sortBy Basics.toString bTree
+            BTreeInt <| BTree.sortWith MaybeSafe.compare bTree
 
         BTreeBigInt bTree ->
-            BTreeBigInt <| BTree.sortBy BigInt.toString bTree
+            BTreeBigInt <| BTree.sortWith BigInt.compare bTree
 
         BTreeString bTree ->
             BTreeString <| BTree.sort bTree

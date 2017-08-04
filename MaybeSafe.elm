@@ -1,4 +1,4 @@
-module MaybeSafe exposing (MaybeSafe(..), isSafe, isSafeInt, toMaybeSafe, toMaybeSafeInt, maxSafeInt, sumMaybeSafeInt)
+module MaybeSafe exposing (MaybeSafe(..), isSafe, isSafeInt, toMaybeSafe, toMaybeSafeInt, maxSafeInt, sumMaybeSafeInt    , compare)
 
 import List.Extra exposing (last)
 
@@ -83,3 +83,13 @@ withDefault default mbsA =
     case mbsA of
         Unsafe -> default
         Safe a -> a
+
+
+compare: MaybeSafe comparable -> MaybeSafe comparable -> Order
+compare mbsC mbsD =
+    -- arbitrarily hold that Safe < Unsafe (Unsafe reminds of Infinity for Int)
+    case (mbsC, mbsD) of
+        (Safe c, Safe d) -> Basics.compare c d
+        (Safe _, Unsafe) -> LT
+        (Unsafe, Unsafe) -> EQ
+        (Unsafe, Safe _) -> GT

@@ -1367,6 +1367,11 @@ bTreeUniformType =
                     Expect.equal
                     (BTreeInt <| Node (toMaybeSafeInt -9) Empty (Node (toMaybeSafeInt 4) Empty (Node (toMaybeSafeInt 4) Empty (singleton <| toMaybeSafeInt maxSafeInt))))
                     (BTreeUniformType.sort <| BTreeInt <| Node (toMaybeSafeInt <| maxSafeInt) (singleton <| toMaybeSafeInt 4) (Node (toMaybeSafeInt -9) Empty (singleton <| toMaybeSafeInt 4)))
+            , test "of non-empty.BTreeInt.3" <|
+                \() ->
+                    Expect.equal
+                    (BTreeInt <| Node (toMaybeSafeInt <| 66) Empty (Node (toMaybeSafeInt 286) Empty (singleton <| toMaybeSafeInt 971)))
+                    (BTreeUniformType.sort <| BTreeInt <| Node (toMaybeSafeInt <| 286) Empty (Node (toMaybeSafeInt 66) Empty (singleton <| toMaybeSafeInt 971)))
             , test "of non-empty.BTreeBigInt.1" <|
                 \() ->
                     Expect.equal
@@ -1377,6 +1382,11 @@ bTreeUniformType =
                     Expect.equal
                         (BTreeBigInt <| Node (BigInt.fromInt -9) Empty (Node (BigInt.fromInt 4) Empty (Node (BigInt.fromInt 4) Empty (singleton <| BigInt.fromInt maxSafeInt))))
                         (BTreeUniformType.sort <| BTreeBigInt <| Node (BigInt.fromInt <| maxSafeInt) (singleton <| BigInt.fromInt 4) (Node (BigInt.fromInt -9) Empty (singleton <| BigInt.fromInt 4)))
+            , test "of non-empty.BTreeBigInt.3" <|
+                \() ->
+                    Expect.equal
+                    (BTreeBigInt <| Node (BigInt.fromInt <| 66) Empty (Node (BigInt.fromInt 286) Empty (singleton <| BigInt.fromInt 971)))
+                    (BTreeUniformType.sort <| BTreeBigInt <| Node (BigInt.fromInt <| 286) Empty (Node (BigInt.fromInt 66) Empty (singleton <| BigInt.fromInt 971)))
             , test "of non-empty.BTreeString.1" <|
                 \() ->
                     Expect.equal
