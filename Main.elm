@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Html exposing (Html, div, span, header, main_, section, article, a, button, text, input, h1, h2, label, programWithFlags)
 import Html.Events exposing (onClick, onMouseUp, onMouseDown, onMouseEnter, onMouseLeave, onMouseOver, onMouseOut, onInput)
-import Html.Attributes as A exposing (attribute, class, checked, style, type_, value, href, target, disabled)
+import Html.Attributes as A exposing (attribute, property, class, checked, style, type_, value, href, target, disabled)
 import Tachyons exposing (classes, tachyons)
 import Tachyons.Classes as T exposing (..)
 
@@ -39,16 +39,16 @@ type Msg
     = Increment
     | Decrement
     | Raise
-    | SortUniformTrees
+    | SortUniformTrees (Bool)
     | RemoveDuplicates
     | Delta String
     | Exponent String
-    | RequestRandomInts Bool
+    | RequestRandomInts (Bool)
     | RequestRandomPairsIntBool
     | ReceiveRandomInts (List Int)
     | ReceiveRandomPairsIntBool (List (Int, Bool))
     | RequestRandomDelta
-    | ReceiveRandomDelta Int
+    | ReceiveRandomDelta (Int)
     | StartShowLength
     | StopShowLength
     | StartShowIsIntPrime
@@ -58,7 +58,10 @@ type Msg
     | DonePlayNote (String)
     | DonePlayNotes (Bool)
     | SwitchToIntView (IntView)
+    | ToggleShowSortDropdown
+    | StopShowSortDropdown
     | ToggleShowRandomDropdown
+    | StopShowRandomDropdown
     | Reset
 
 
@@ -80,6 +83,8 @@ type alias Model =
     , exponent : Int
     , isPlayNotes : Bool
     , isTreeCaching : Bool
+    , isInsertRightForSort : Bool
+    , isShowSortDropdown : Bool
     , isInsertRightForRandom : Bool
     , isShowRandomDropdown : Bool
     , intView : IntView
@@ -92,7 +97,7 @@ initialModel =
     { intTree = BTreeInt <| Node (toMaybeSafeInt <| maxSafeInt) (singleton <| toMaybeSafeInt 4) (Node (toMaybeSafeInt -9) Empty (singleton <| toMaybeSafeInt 4))
     , bigIntTree = BTreeBigInt <| Node (BigInt.fromInt <| maxSafeInt) (singleton <| BigInt.fromInt 4) (Node (BigInt.fromInt -9) Empty (singleton <| BigInt.fromInt 4))
     , stringTree = BTreeString <| Node "maxSafeInt" (singleton "four") (Node "-nine" Empty (singleton "four"))
-    , boolTree = BTreeBool <| Node (Just True) (singleton <| Just True) (singleton <| Just False)
+    , boolTree = BTreeBool <| Node (Just True) (singleton <| Just True) (Node (Just False) Empty (Node (Just True) Empty (singleton <| Just False)))
     , initialMusicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
     , musicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
     , variedTree = BTreeVaried <| Node (BigIntNode <| BigInt.fromInt maxSafeInt) (Node (StringNode "A") (singleton <| MusicNoteNode <| MusicNotePlayer.on A) (singleton <| IntNode <| toMaybeSafeInt 123)) ((Node (BoolNode <| Just True)) (singleton <| MusicNoteNode <| MusicNotePlayer.on A) (singleton <| BoolNode <| Just True))
@@ -106,6 +111,8 @@ initialModel =
     , exponent = 2
     , isPlayNotes = False
     , isTreeCaching = False
+    , isInsertRightForSort = True
+    , isShowSortDropdown = False
     , isInsertRightForRandom = True
     , isShowRandomDropdown = False
     , intView = IntView
@@ -278,44 +285,26 @@ viewDashboard model =
 viewDashboardTop : Model -> List (Html Msg)
 viewDashboardTop model =
     [ span
-        [classes [T.ml2, T.mr2]]
+        [classes [T.mh2]]
         [ button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick PlayNotes, disabled (not (isEnablePlayNotesButton model))]
+            [classes [T.hover_bg_light_green, T.mv1], onClick PlayNotes, disabled (not (isEnablePlayNotesButton model))]
             [text "Play"]
         ]
     , span
-        [classes [T.ml2, T.mr2]]
+        [classes [T.mh2]]
         [ button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick Increment, disabled model.isPlayNotes]
+            [classes [T.hover_bg_light_green, T.mv1], onClick Increment, disabled model.isPlayNotes]
             [text "+ Delta"]
         , button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick Decrement, disabled model.isPlayNotes]
+            [classes [T.hover_bg_light_green, T.mv1], onClick Decrement, disabled model.isPlayNotes]
             [text "- Delta"]
         , button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick Raise, disabled model.isPlayNotes]
+            [classes [T.hover_bg_light_green, T.mv1], onClick Raise, disabled model.isPlayNotes]
             [text "^ Exp"]
         ]
     , span
-        [classes [T.ml2, T.mr2]]
-        [ button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick SortUniformTrees, disabled model.isPlayNotes]
-            [text "Sort"]
-        , button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick RemoveDuplicates, disabled model.isPlayNotes]
-            [text "Dedup"]
-        ]
-    , span
-        [classes [T.ml2, T.mr2]]
-        [ button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onMouseDown StartShowIsIntPrime, onMouseUp StopShowIsIntPrime, onMouseLeave StopShowIsIntPrime]
-            [text "Prime?"]
-        , button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onMouseDown StartShowLength, onMouseUp StopShowLength, onMouseLeave StopShowLength]
-            [text "Length"]
-        ]
-    , span
-        [ classes [T.ml2, T.mr2] ]
-        [ div
+        [classes [T.mh2]]
+        [ div -- from https://www.w3schools.com/howto/howto_js_dropdown.asp
             [ classes
                 [ T.relative
                 , T.dib
@@ -324,26 +313,85 @@ viewDashboardTop model =
             [ button
                 [ classes
                     [ T.hover_bg_light_green
-                    , T.mt1
-                    , T.mb1
                     ]
-                , onClick ToggleShowRandomDropdown
+                , disabled model.isPlayNotes
+                , onClick ToggleShowSortDropdown
                 ]
-                [ text "Random Integers" ]
+                [ text "Sort" ]
             , div
                 [ classes
                      [ T.absolute
-                     , (if model.isShowRandomDropdown then T.db else T.dn)
-                     , T.bg_washed_green
-                     , T.pl2
-                     , T.pr2
+                     , (if model.isShowSortDropdown then T.db else T.dn)
+                     , T.bg_washed_yellow
                      , T.ba
+                     , T.w5
                      ]
+                , disabled model.isPlayNotes
+                , onMouseLeave StopShowSortDropdown
                 ]
                 [ a
                     [ classes
                         [ T.db
                         , T.hover_bg_light_green
+                        , T.pa2
+                        ]
+                    , onClick (SortUniformTrees False)
+                    ]
+                    [text "insert left"]
+                , a
+                    [ classes
+                        [ T.db
+                        , T.hover_bg_light_green
+                        , T.pa2
+                        ]
+                    , onClick (SortUniformTrees True)
+                    ]
+                    [text "insert right"]
+                ]
+            ]
+        , button
+            [classes [T.hover_bg_light_green, T.mv1], onClick RemoveDuplicates, disabled model.isPlayNotes]
+            [text "Dedup"]
+        ]
+    , span
+        [classes [T.mh2]]
+        [ button
+            [classes [T.hover_bg_light_green, T.mv1], onMouseDown StartShowIsIntPrime, onMouseUp StopShowIsIntPrime, onMouseLeave StopShowIsIntPrime]
+            [text "Prime?"]
+        , button
+            [classes [T.hover_bg_light_green, T.mv1], onMouseDown StartShowLength, onMouseUp StopShowLength, onMouseLeave StopShowLength]
+            [text "Length"]
+        ]
+    , span
+        [ classes [T.mh2] ]
+        [ div -- from https://www.w3schools.com/howto/howto_js_dropdown.asp
+            [ classes
+                [ T.relative
+                , T.dib
+                ]
+            ]
+            [ button
+                [ classes
+                    [ T.hover_bg_light_green
+                    ]
+                , onClick ToggleShowRandomDropdown
+                ]
+                [ text "Random Ints" ]
+            , div
+                [ classes
+                     [ T.absolute
+                     , (if model.isShowRandomDropdown then T.db else T.dn)
+                     , T.bg_washed_yellow
+                     , T.ba
+                     , T.w5
+                     ]
+                , onMouseLeave StopShowRandomDropdown
+                ]
+                [ a
+                    [ classes
+                        [ T.db
+                        , T.hover_bg_light_green
+                        , T.pa2
                         ]
                     , onClick RequestRandomPairsIntBool
                     ]
@@ -352,6 +400,7 @@ viewDashboardTop model =
                     [ classes
                         [ T.db
                         , T.hover_bg_light_green
+                        , T.pa2
                         ]
                     , onClick (RequestRandomInts False)
                     ]
@@ -360,6 +409,7 @@ viewDashboardTop model =
                     [ classes
                         [ T.db
                         , T.hover_bg_light_green
+                        , T.pa2
                         ]
                     , onClick (RequestRandomInts True)
                     ]
@@ -367,11 +417,11 @@ viewDashboardTop model =
                 ]
             ]
         , button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick RequestRandomDelta]
+            [classes [T.hover_bg_light_green, T.mv1], onClick RequestRandomDelta]
             [text "Random Delta"]
         ]
     , button
-        [classes [T.fr, T.hover_bg_light_yellow, T.mt1, T.mb1, T.mr2], onClick Reset, disabled model.isPlayNotes]
+        [classes [T.fr, T.hover_bg_light_yellow, T.mv1, T.mr2], onClick Reset, disabled model.isPlayNotes]
         [text "Reset"]
     ]
 
@@ -421,32 +471,35 @@ viewInputs model =
     ]
 
 
-radio : String -> String -> msg -> Html msg
-radio value currentSelection msg =
-    label
-        [ classes [T.pa2] ]
-        [ input
-            [ type_ "radio"
-            , checked <| currentSelection == value
-            , onClick msg
+radioIntView : IntView -> Model -> Html Msg
+radioIntView intView model =
+    let
+        labelFor intView = case intView of
+             IntView -> "Int"
+             BigIntView -> "BigInt"
+             BothView -> "Both"
+    in
+        label
+            [ classes [T.pa2] ]
+            [ input
+                [ type_ "radio"
+                , checked <| model.intView == intView
+                , onClick (SwitchToIntView intView)
+                ]
+                []
+            , text <| labelFor intView
             ]
-            []
-        , text value
-        ]
 
 
 viewIntTreeChoice : Model -> List (Html Msg)
 viewIntTreeChoice model =
-    let
-        currentSelection = toString model.intView
-    in
-        [ span
-            [ classes [T.pt1, T.pb1, T.mt2, T.mb2, T.f6, T.ba, T.br2] ]
-            [ radio "Int" currentSelection (SwitchToIntView IntView)
-            , radio "BigInt" currentSelection (SwitchToIntView BigIntView)
-            , radio "Both" currentSelection (SwitchToIntView BothView)
-            ]
+    [ span
+        [ classes [T.pt1, T.pb1, T.mt2, T.mb2, T.f6, T.ba, T.br2] ]
+        [ radioIntView IntView model
+        , radioIntView BigIntView model
+        , radioIntView BothView model
         ]
+    ]
 
 
 viewTrees : Model -> Html Msg
@@ -737,9 +790,9 @@ update msg model =
                 , Cmd.none
                 )
 
-        SortUniformTrees ->
+        SortUniformTrees isInsertRight ->
             ( model
-                |> sortUniformTrees
+                |> sortUniformTrees isInsertRight
             , Cmd.none
             )
 
@@ -769,17 +822,12 @@ update msg model =
                 randomInts length =
                     Random.list length (Random.int 1 maxRandomInt)
 
-                generatorListLength : Random.Generator Int
-                generatorListLength =
-                    Random.int minRandomListLength maxRandomListLength
-
                 generatorInts : Random.Generator (List Int)
                 generatorInts =
-                    Random.andThen randomInts generatorListLength
+                    Random.andThen randomInts generatorRandomListLength
             in
                 (   { model
                     | isInsertRightForRandom = isInsertRight
-                    , isShowRandomDropdown = False
                     }
                 , Random.generate ReceiveRandomInts generatorInts
                 )
@@ -790,17 +838,11 @@ update msg model =
                 randomPairsIntBool length =
                     Random.list length <| Random.pair (Random.int 1 maxRandomInt) Random.bool
 
-                generatorListLength : Random.Generator Int
-                generatorListLength =
-                    Random.int minRandomListLength maxRandomListLength
-
                 generatorPairsIntBool : Random.Generator (List (Int, Bool))
                 generatorPairsIntBool =
-                    Random.andThen randomPairsIntBool generatorListLength
+                    Random.andThen randomPairsIntBool generatorRandomListLength
             in
-                (   { model
-                    | isShowRandomDropdown = False
-                    }
+                ( model
                 , Random.generate ReceiveRandomPairsIntBool generatorPairsIntBool
                 )
 
@@ -940,9 +982,30 @@ update msg model =
             , Cmd.none
             )
 
+        ToggleShowSortDropdown ->
+            (   { model
+                | isShowSortDropdown = not model.isShowSortDropdown
+                }
+            , Cmd.none
+            )
+
+        StopShowSortDropdown ->
+            (   { model
+                | isShowSortDropdown = False
+                }
+            , Cmd.none
+            )
+
         ToggleShowRandomDropdown ->
             (   { model
                 | isShowRandomDropdown = not model.isShowRandomDropdown
+                }
+            , Cmd.none
+            )
+
+        StopShowRandomDropdown ->
+            (   { model
+                | isShowRandomDropdown = False
                 }
             , Cmd.none
             )
@@ -959,6 +1022,11 @@ update msg model =
                     }
                 , Cmd.none
                 )
+
+
+generatorRandomListLength : Random.Generator Int
+generatorRandomListLength =
+    Random.int minRandomListLength maxRandomListLength
 
 
 positiveDelta : Model -> Int
@@ -1029,9 +1097,9 @@ shiftVariedTrees operand fn model =
         changeVariedTrees shift model
 
 
-sortUniformTrees : Model -> Model
-sortUniformTrees model =
-    changeUniformTrees BTreeUniformType.sort model
+sortUniformTrees : Bool -> Model -> Model
+sortUniformTrees isInsertRight model =
+    changeUniformTrees (BTreeUniformType.sort isInsertRight) model
 
 
 deDuplicate : Model -> Model

@@ -194,27 +194,27 @@ toTreeDiagramTree bTree =
                 Just <| toTreeDiagramTreeOfNonEmpty bTree
 
 
-sort: BTree comparable -> BTree comparable
-sort bTree =
-    sortBy identity bTree
-
-
 ordererBy: (a -> comparable) -> (a -> a -> Order)
 ordererBy fn =
     \a1 a2 -> Basics.compare (fn a1) (fn a2)
 
 
-sortBy : (a -> comparable) -> BTree a -> BTree a
-sortBy fn bTree =
-    sortWith (ordererBy fn) bTree
+sort: Bool -> BTree comparable -> BTree comparable
+sort isInsertRight bTree =
+    sortBy identity isInsertRight bTree
 
 
-sortWith : (a -> a -> Order) -> BTree a -> BTree a
-sortWith fn bTree =
+sortBy : (a -> comparable) -> Bool -> BTree a -> BTree a
+sortBy fn isInsertRight bTree =
+    sortWith (ordererBy fn) isInsertRight bTree
+
+
+sortWith : (a -> a -> Order) -> Bool -> BTree a -> BTree a
+sortWith fn isInsertRight bTree =
     bTree
         |> flatten
         |> List.sortWith fn
-        |> fromListAsIs_left
+        |> fromListAsIsBy isInsertRight
 
 
 fromList : List comparable -> BTree comparable

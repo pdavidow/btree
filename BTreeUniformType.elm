@@ -211,23 +211,23 @@ sumInt bTreeUniformType =
             Nothing
 
 
-sort : BTreeUniformType -> BTreeUniformType
-sort bTreeUniformType =
+sort : Bool -> BTreeUniformType -> BTreeUniformType
+sort isInsertRight bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            BTreeInt <| BTree.sortWith MaybeSafe.compare bTree
+            BTreeInt <| BTree.sortWith MaybeSafe.compare isInsertRight bTree
 
         BTreeBigInt bTree ->
-            BTreeBigInt <| BTree.sortWith BigInt.compare bTree
+            BTreeBigInt <| BTree.sortWith BigInt.compare isInsertRight bTree
 
         BTreeString bTree ->
-            BTreeString <| BTree.sort bTree
+            BTreeString <| BTree.sort isInsertRight bTree
 
         BTreeBool bTree ->
-            BTreeBool <| BTree.sortBy Basics.toString bTree
+            BTreeBool <| BTree.sortBy Basics.toString isInsertRight bTree
 
         BTreeMusicNotePlayer bTree ->
-            BTreeMusicNotePlayer <| BTree.sortBy MusicNotePlayer.sorter bTree
+            BTreeMusicNotePlayer <| BTree.sortBy MusicNotePlayer.sorter isInsertRight bTree
 
         BTreeNothing bTree ->
             bTreeUniformType
