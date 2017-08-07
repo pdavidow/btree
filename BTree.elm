@@ -1,4 +1,4 @@
-module BTree exposing (BTree(..), singleton, depth, map, flatten, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromIntList, fromListBy, insert, insertBy, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes,   sortWith, fromListAsIs, fromListWith, insertWith, insertAsIs_left)
+module BTree exposing (BTree(..), singleton, depth, map, flatten, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromIntList, fromListBy, insert, insertBy, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes,   sortWith, fromListAsIsBy, fromListAsIs_directed, fromListWith, insertWith, insertAsIsBy, insertAsIs_directed)
 
 -- http://elm-lang.org/examples/binary-Tree
 
@@ -214,7 +214,7 @@ sortWith fn bTree =
     bTree
         |> flatten
         |> List.sortWith fn
-        |> fromListAsIs
+        |> fromListAsIs_left
 
 
 fromList : List comparable -> BTree comparable
@@ -232,9 +232,24 @@ fromListWith fn xs =
     List.foldl (insertWith fn) Empty xs
 
 
-fromListAsIs : List a -> BTree a
-fromListAsIs xs =
+fromListAsIsBy : Bool -> List a -> BTree a
+fromListAsIsBy isInsertRight xs =
+    List.foldl (insertAsIsBy isInsertRight) Empty xs
+
+
+fromListAsIs_left : List a -> BTree a -- todo del
+fromListAsIs_left xs =
     List.foldl insertAsIs_left Empty xs
+
+
+fromListAsIs_right : List a -> BTree a -- todo del
+fromListAsIs_right xs =
+    List.foldl insertAsIs_right Empty xs
+
+
+fromListAsIs_directed : List (a, Bool) -> BTree a
+fromListAsIs_directed xs =
+    List.foldl insertAsIs_directed Empty xs
 
 
 fromIntList : List Int -> BTree (MaybeSafe Int)
@@ -271,22 +286,38 @@ insertWith fn x bTree =
                 GT -> insertRight
 
 
-insertAsIs_left : a -> BTree a -> BTree a
+insertAsIsBy : Bool -> a -> BTree a -> BTree a
+insertAsIsBy isInsertRight x bTree =
+     insertAsIs_directed (x, isInsertRight) bTree
+
+
+insertAsIs_left : a -> BTree a -> BTree a --todo del
 insertAsIs_left x bTree =
+    insertAsIs_directed (x, False) bTree
+
+
+insertAsIs_right : a -> BTree a -> BTree a -- todo del
+insertAsIs_right x bTree =
+    insertAsIs_directed (x, True) bTree
+
+
+insertAsIs_directed : (a, Bool) -> BTree a -> BTree a
+insertAsIs_directed (x, isInsertRight) bTree =
     case bTree of
-      Empty ->
+        Empty ->
           singleton x
 
-      Node val left right ->
-          case (left, right) of
-            (Empty, _) ->
-                Node val (singleton x) right
-
-            (_, Empty) ->
-                Node val left (singleton x)
-
-            _ ->
-                Node val (insertAsIs_left x left) right
+        Node val left right ->
+            let
+                insertBy isInsertRight = if isInsertRight
+                    then Node val left (insertAsIs_directed (x, isInsertRight) right)
+                    else Node val (insertAsIs_directed (x, isInsertRight) left) right
+            in
+                case (left, right) of
+                    (Empty, Empty) -> insertBy isInsertRight
+                    (Empty, _) -> Node val (singleton x) right
+                    (_, Empty) -> Node val left (singleton x)
+                    (_, _) -> insertBy isInsertRight
 
 
 deDuplicate : BTree comparable -> BTree comparable
@@ -302,7 +333,7 @@ deDuplicateBy fn bTree =
     in
         if potentialSet == set
             then bTree
-            else fromListAsIs set
+            else fromListAsIs_left set
 
 
 isAllNothing : BTree (Maybe a) -> Bool

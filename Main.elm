@@ -1,14 +1,14 @@
 module Main exposing (..)
 
 import Html exposing (Html, div, span, header, main_, section, article, a, button, text, input, h1, h2, label, programWithFlags)
-import Html.Events exposing (onClick, onMouseUp, onMouseDown, onMouseLeave, onInput)
-import Html.Attributes as A exposing (class, checked, style, type_, value, href, target, disabled)
+import Html.Events exposing (onClick, onMouseUp, onMouseDown, onMouseEnter, onMouseLeave, onMouseOver, onMouseOut, onInput)
+import Html.Attributes as A exposing (attribute, class, checked, style, type_, value, href, target, disabled)
 import Tachyons exposing (classes, tachyons)
 import Tachyons.Classes as T exposing (..)
 
 import Maybe.Extra exposing (unwrap)
 import List.Extra exposing (last)
-import Random
+import Random exposing (int, bool, pair, list, andThen, generate)
 import Random.Pcg exposing (Seed, initialSeed, step)
 import Uuid exposing (Uuid, uuidGenerator)
 import Lazy exposing (lazy)
@@ -16,7 +16,7 @@ import BigInt exposing (fromInt)
 
 import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes)
 import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, hasAnyIntNodes)
-import BTree exposing (BTree(..), fromListBy, fromListAsIs, singleton, toTreeDiagramTree)
+import BTree exposing (BTree(..), fromListBy, insertAsIsBy, fromListAsIsBy, fromListAsIs_directed, singleton, toTreeDiagramTree)
 import NodeTag exposing (NodeTag(..))
 import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
 import UniversalConstants exposing (nothingString)
@@ -30,9 +30,9 @@ import MaybeSafe exposing (MaybeSafe(..), maxSafeInt, toMaybeSafeInt)
 
 
 type IntView
-    = Int
-    | BigInt
-    | Both
+    = IntView
+    | BigIntView
+    | BothView
 
 
 type Msg
@@ -43,8 +43,10 @@ type Msg
     | RemoveDuplicates
     | Delta String
     | Exponent String
-    | RequestRandomIntList
-    | ReceiveRandomIntList (List Int)
+    | RequestRandomInts Bool
+    | RequestRandomPairsIntBool
+    | ReceiveRandomInts (List Int)
+    | ReceiveRandomPairsIntBool (List (Int, Bool))
     | RequestRandomDelta
     | ReceiveRandomDelta Int
     | StartShowLength
@@ -56,6 +58,7 @@ type Msg
     | DonePlayNote (String)
     | DonePlayNotes (Bool)
     | SwitchToIntView (IntView)
+    | ToggleShowRandomDropdown
     | Reset
 
 
@@ -77,6 +80,8 @@ type alias Model =
     , exponent : Int
     , isPlayNotes : Bool
     , isTreeCaching : Bool
+    , isInsertRightForRandom : Bool
+    , isShowRandomDropdown : Bool
     , intView : IntView
     , uuidSeed : Seed
     }
@@ -101,10 +106,15 @@ initialModel =
     , exponent = 2
     , isPlayNotes = False
     , isTreeCaching = False
-    , intView = Int
+    , isInsertRightForRandom = True
+    , isShowRandomDropdown = False
+    , intView = IntView
     , uuidSeed = initialSeed 0 -- placeholder
     }
 
+maxRandomInt = 999
+minRandomListLength = 3
+maxRandomListLength = 12
 
 generateIds : Int -> Seed -> ( List Uuid, Seed )
 generateIds count startSeed =
@@ -304,10 +314,58 @@ viewDashboardTop model =
             [text "Length"]
         ]
     , span
-        [classes [T.ml2, T.mr2]]
-        [ button
-            [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick RequestRandomIntList]
-            [text "Random Int-Tree"]
+        [ classes [T.ml2, T.mr2] ]
+        [ div
+            [ classes
+                [ T.relative
+                , T.dib
+                ]
+            ]
+            [ button
+                [ classes
+                    [ T.hover_bg_light_green
+                    , T.mt1
+                    , T.mb1
+                    ]
+                , onClick ToggleShowRandomDropdown
+                ]
+                [ text "Random Integers" ]
+            , div
+                [ classes
+                     [ T.absolute
+                     , (if model.isShowRandomDropdown then T.db else T.dn)
+                     , T.bg_washed_green
+                     , T.pl2
+                     , T.pr2
+                     , T.ba
+                     ]
+                ]
+                [ a
+                    [ classes
+                        [ T.db
+                        , T.hover_bg_light_green
+                        ]
+                    , onClick RequestRandomPairsIntBool
+                    ]
+                    [text "insert random"]
+                , a
+                    [ classes
+                        [ T.db
+                        , T.hover_bg_light_green
+                        ]
+                    , onClick (RequestRandomInts False)
+                    ]
+                    [text "insert left"]
+                , a
+                    [ classes
+                        [ T.db
+                        , T.hover_bg_light_green
+                        ]
+                    , onClick (RequestRandomInts True)
+                    ]
+                    [text "insert right"]
+                ]
+            ]
         , button
             [classes [T.hover_bg_light_green, T.mt1, T.mb1], onClick RequestRandomDelta]
             [text "Random Delta"]
@@ -384,9 +442,9 @@ viewIntTreeChoice model =
     in
         [ span
             [ classes [T.pt1, T.pb1, T.mt2, T.mb2, T.f6, T.ba, T.br2] ]
-            [ radio "Int" currentSelection (SwitchToIntView Int)
-            , radio "BigInt" currentSelection (SwitchToIntView BigInt)
-            , radio "Both" currentSelection (SwitchToIntView Both)
+            [ radio "Int" currentSelection (SwitchToIntView IntView)
+            , radio "BigInt" currentSelection (SwitchToIntView BigIntView)
+            , radio "Both" currentSelection (SwitchToIntView BothView)
             ]
         ]
 
@@ -395,9 +453,9 @@ viewTrees : Model -> Html Msg
 viewTrees model =
     let
         intTreesOfInterest = case model.intView of
-            Int -> [model.intTree]
-            BigInt -> [model.bigIntTree]
-            Both -> [model.intTree, model.bigIntTree]
+            IntView -> [model.intTree]
+            BigIntView -> [model.bigIntTree]
+            BothView -> [model.intTree, model.bigIntTree]
 
         intTreeCards = List.map viewUniformTreeCard intTreesOfInterest
 
@@ -705,26 +763,45 @@ update msg model =
             , Cmd.none
             )
 
-        RequestRandomIntList ->
+        RequestRandomInts isInsertRight ->
             let
-                maxRandomInt = 999
-                minListLength = 3
-                maxListLength = 9
-
-                randomIntList : Int -> Random.Generator (List Int)
-                randomIntList length =
+                randomInts : Int -> Random.Generator (List Int)
+                randomInts length =
                     Random.list length (Random.int 1 maxRandomInt)
 
                 generatorListLength : Random.Generator Int
                 generatorListLength =
-                    Random.int minListLength maxListLength
+                    Random.int minRandomListLength maxRandomListLength
 
-                generatorIntList : Random.Generator (List Int)
-                generatorIntList =
-                    Random.andThen randomIntList generatorListLength
+                generatorInts : Random.Generator (List Int)
+                generatorInts =
+                    Random.andThen randomInts generatorListLength
             in
-                ( model
-                , Random.generate ReceiveRandomIntList generatorIntList
+                (   { model
+                    | isInsertRightForRandom = isInsertRight
+                    , isShowRandomDropdown = False
+                    }
+                , Random.generate ReceiveRandomInts generatorInts
+                )
+
+        RequestRandomPairsIntBool ->
+            let
+                randomPairsIntBool : Int -> Random.Generator (List (Int, Bool))
+                randomPairsIntBool length =
+                    Random.list length <| Random.pair (Random.int 1 maxRandomInt) Random.bool
+
+                generatorListLength : Random.Generator Int
+                generatorListLength =
+                    Random.int minRandomListLength maxRandomListLength
+
+                generatorPairsIntBool : Random.Generator (List (Int, Bool))
+                generatorPairsIntBool =
+                    Random.andThen randomPairsIntBool generatorListLength
+            in
+                (   { model
+                    | isShowRandomDropdown = False
+                    }
+                , Random.generate ReceiveRandomPairsIntBool generatorPairsIntBool
                 )
 
         RequestRandomDelta ->
@@ -732,13 +809,24 @@ update msg model =
             , Random.generate ReceiveRandomDelta (Random.int 1 100)
             )
 
-        ReceiveRandomIntList list ->
+        ReceiveRandomInts list ->
             (   { model
-                | intTree = BTreeInt <| BTree.fromListAsIs <| List.map toMaybeSafeInt list
-                , bigIntTree = BTreeBigInt <| BTree.fromListAsIs <| List.map BigInt.fromInt list
+                | intTree = BTreeInt <| BTree.fromListAsIsBy  model.isInsertRightForRandom <| List.map toMaybeSafeInt list
+                , bigIntTree = BTreeBigInt <| BTree.fromListAsIsBy model.isInsertRightForRandom <| List.map BigInt.fromInt list
                 }
             , Cmd.none
             )
+
+        ReceiveRandomPairsIntBool list ->
+            let
+                fn = \transformFn (int, bool) -> (transformFn int, bool)
+            in
+                (   { model
+                    | intTree = BTreeInt <| BTree.fromListAsIs_directed <| List.map (fn toMaybeSafeInt) list
+                    , bigIntTree = BTreeBigInt <| BTree.fromListAsIs_directed <| List.map (fn BigInt.fromInt) list
+                    }
+                , Cmd.none
+                )
 
         ReceiveRandomDelta i ->
             (   { model
@@ -848,6 +936,13 @@ update msg model =
         SwitchToIntView intView ->
             (   { model
                 | intView = intView
+                }
+            , Cmd.none
+            )
+
+        ToggleShowRandomDropdown ->
+            (   { model
+                | isShowRandomDropdown = not model.isShowRandomDropdown
                 }
             , Cmd.none
             )
