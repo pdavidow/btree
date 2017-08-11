@@ -840,7 +840,7 @@ bTreeVariedType =
                      Expect.equal (BTreeVaried <| Node (StringNode "A") (singleton (MusicNoteNode (MusicNotePlayer.on A))) Empty) (BTreeVariedType.deDuplicate (BTreeVaried <| Node (StringNode "A") (singleton (MusicNoteNode (MusicNotePlayer.on A))) Empty))
             , test "of IntNode" <|
                 \() ->
-                     Expect.equal (BTreeVaried <| Node (IntNode <| Safe 2) Empty (singleton <| IntNode Unsafe)) (BTreeVariedType.deDuplicate (BTreeVaried <| Node (IntNode <| Safe 2) (singleton <| IntNode <| Safe 2) (Node (IntNode Unsafe) (singleton <| IntNode Unsafe) Empty)))
+                     Expect.equal (BTreeVaried <| Node (IntNode <| Safe 2) (singleton <| IntNode Unsafe) Empty) (BTreeVariedType.deDuplicate (BTreeVaried <| Node (IntNode <| Safe 2) (singleton <| IntNode <| Safe 2) (Node (IntNode Unsafe) (singleton <| IntNode Unsafe) Empty)))
             , test "of BigIntNode" <|
                 \() ->
                      Expect.equal (BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt + 2) (BTreeVariedType.deDuplicate (BTreeVaried <| Node (BigIntNode <| BigInt.fromInt <| maxSafeInt + 2) (singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt + 2) Empty))

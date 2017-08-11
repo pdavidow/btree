@@ -3,7 +3,7 @@ module BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes
 import Arithmetic exposing (isPrime)
 -- import Basics.Extra exposing (isSafeInteger) -- todo https://github.com/elm-community/basics-extra/issues/7
 
-import BTree exposing (BTree, depth, map, deDuplicateBy, singleton, sumMaybeSafeInt, sumBigInt, sumString, sort, sortBy, sortWith, isEmpty, toNothingNodes)
+import BTree exposing (BTree, Direction, depth, map, deDuplicateBy, singleton, sumMaybeSafeInt, sumBigInt, sumString, sortTo, sortByTo, sortWithTo, isEmpty, toNothingNodes)
 import NodeTag exposing (NodeTag(..))
 import MusicNote exposing (MusicNote, mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), sorter)
@@ -211,23 +211,23 @@ sumInt bTreeUniformType =
             Nothing
 
 
-sort : Bool -> BTreeUniformType -> BTreeUniformType
-sort isInsertRight bTreeUniformType =
+sort : Direction -> BTreeUniformType -> BTreeUniformType
+sort direction bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
-            BTreeInt <| BTree.sortWith MaybeSafe.compare isInsertRight bTree
+            BTreeInt <| BTree.sortWithTo MaybeSafe.compare direction bTree
 
         BTreeBigInt bTree ->
-            BTreeBigInt <| BTree.sortWith BigInt.compare isInsertRight bTree
+            BTreeBigInt <| BTree.sortWithTo BigInt.compare direction bTree
 
         BTreeString bTree ->
-            BTreeString <| BTree.sort isInsertRight bTree
+            BTreeString <| BTree.sortTo direction bTree
 
         BTreeBool bTree ->
-            BTreeBool <| BTree.sortBy Basics.toString isInsertRight bTree
+            BTreeBool <| BTree.sortByTo Basics.toString direction bTree
 
         BTreeMusicNotePlayer bTree ->
-            BTreeMusicNotePlayer <| BTree.sortBy MusicNotePlayer.sorter isInsertRight bTree
+            BTreeMusicNotePlayer <| BTree.sortByTo MusicNotePlayer.sorter direction bTree
 
         BTreeNothing bTree ->
             bTreeUniformType

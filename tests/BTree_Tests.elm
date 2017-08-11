@@ -1,6 +1,6 @@
 module BTree_Tests exposing (..)
 
-import BTree exposing (BTree(..), singleton, depth, map, flatten, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromListBy, insert, insertBy, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes)
+import BTree exposing (BTree(..), TraversalOrder(..), Direction(..), singleton, depth, map, flatten, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortTo, sortByTo, sortWithTo, fromList, fromListBy, insert, insertBy, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes,   flattenBy, flattenUsingFoldBy)
 import NodeTag exposing (NodeTag(..))
 import MusicNote exposing (MusicNote(..), sorter)
 import MaybeSafe exposing (MaybeSafe(..), maxSafeInt)
@@ -36,10 +36,9 @@ bTree =
                         |> Expect.equal 1
             , test "of depth.2" <|
                 \() ->
-                    ['a', 'b', 'c']
-                        |> fromList
+                    (Node "+" (Node "*" (Node "/" (singleton "A") (Node "**" (singleton "B") (singleton "C"))) (singleton "D")) (singleton "E"))
                         |> BTree.depth
-                        |> Expect.equal 3
+                        |> Expect.equal 5
             ]
         , describe "BTree.map"
             [ test "of map.0" <|
@@ -61,41 +60,45 @@ bTree =
                         |> Expect.equal (fromList [1, 4, 9])
             ]
         , describe "BTree.flatten"
-            [ test "of flatten.0" <|
+            [ test "of flatten" <|
                 \() ->
-                    let
-                        list = []
-                        tree = fromList list
-                    in
-                        Expect.equal (list) (BTree.flatten tree)
-            , test "of flatten.1" <|
+                    Expect.equal
+                        (["+","*","/","A","**","B","C","D","E"])
+                        (BTree.flatten <| Node "+" (Node "*" (Node "/" (singleton "A") (Node "**" (singleton "B") (singleton "C"))) (singleton "D")) (singleton "E"))
+            ]
+        , describe "BTree.flattenBy"
+            [ test "of InOrder" <|
                 \() ->
-                    let
-                        list = [1]
-                        tree = fromList list
-                    in
-                        Expect.equal (list) (BTree.flatten tree)
-            , test "of flatten.2" <|
+                    Expect.equal
+                        (["A","/","B","**","C","*","D","+","E"])
+                        (BTree.flattenBy InOrder <| Node "+" (Node "*" (Node "/" (singleton "A") (Node "**" (singleton "B") (singleton "C"))) (singleton "D")) (singleton "E"))
+            , test "of PreOrder" <|
                 \() ->
-                    let
-                        list = [1, 2, 3]
-                        tree = fromList list
-                    in
-                        Expect.equal (list) (BTree.flatten tree)
-            , test "of flatten.3" <|
+                    Expect.equal
+                        (["+","*","/","A","**","B","C","D","E"])
+                        (BTree.flattenBy PreOrder <| Node "+" (Node "*" (Node "/" (singleton "A") (Node "**" (singleton "B") (singleton "C"))) (singleton "D")) (singleton "E"))
+            , test "of PostOrder" <|
                 \() ->
-                    let
-                        list = [3, 2, 1]
-                        tree = fromList list
-                    in
-                        Expect.equal (list) (BTree.flatten tree)
-            , test "of flatten.4" <|
+                    Expect.equal
+                        (["A","B","C","**","/","D","*","E","+"])
+                        (BTree.flattenBy PostOrder <| Node "+" (Node "*" (Node "/" (singleton "A") (Node "**" (singleton "B") (singleton "C"))) (singleton "D")) (singleton "E"))
+            ]
+        , describe "BTree.flattenUsingFoldBy"
+            [ test "of InOrder" <|
                 \() ->
-                    let
-                        list = [3, 1, 2]
-                        tree = fromList list
-                    in
-                        Expect.equal (list) (BTree.flatten tree)
+                    Expect.equal
+                        (["A","/","B","**","C","*","D","+","E"])
+                        (BTree.flattenUsingFoldBy InOrder <| Node "+" (Node "*" (Node "/" (singleton "A") (Node "**" (singleton "B") (singleton "C"))) (singleton "D")) (singleton "E"))
+            , test "of PreOrder" <|
+                \() ->
+                    Expect.equal
+                        (["+","*","/","A","**","B","C","D","E"])
+                        (BTree.flattenUsingFoldBy PreOrder <| Node "+" (Node "*" (Node "/" (singleton "A") (Node "**" (singleton "B") (singleton "C"))) (singleton "D")) (singleton "E"))
+            , test "of PostOrder" <|
+                \() ->
+                    Expect.equal
+                        (["A","B","C","**","/","D","*","E","+"])
+                        (BTree.flattenUsingFoldBy PostOrder <| Node "+" (Node "*" (Node "/" (singleton "A") (Node "**" (singleton "B") (singleton "C"))) (singleton "D")) (singleton "E"))
             ]
         , describe "BTree.isElement"
             [ test "of isElement.0" <|
@@ -395,10 +398,17 @@ bTree =
         , describe "BTree.flattenUsingFold"
             [ test "of flattenUsingFold.1" <|
                 \() ->
+                    Expect.equal
+                        (["+","*","/","A","**","B","C","D","E"])
+                        (BTree.flattenUsingFold <| Node "+" (Node "*" (Node "/" (singleton "A") (Node "**" (singleton "B") (singleton "C"))) (singleton "D")) (singleton "E"))
+            , test "of flattenUsingFold.2" <|
+                \() ->
                     let
                         tree = fromList [4, 7, 5, 6, 1]
                     in
-                        Expect.equal (List.sort (flatten tree)) (List.sort (BTree.flattenUsingFold tree))
+                        Expect.equal
+                            (List.sort (flatten tree))
+                            (List.sort (BTree.flattenUsingFold tree))
             ]
         , describe "BTree.isElementUsingFold"
             [ test "of isElementUsingFold.1" <|
@@ -433,29 +443,328 @@ bTree =
                     Expect.equal (Just (TD.node (Just 1) [])) (BTree.toTreeDiagramTree (singleton 1))
             , test "of toTreeDiagramTree.2" <|
                 \() ->
-                    Expect.equal (Just (TD.node (Just 1) [TD.node (Just 2) []])) (BTree.toTreeDiagramTree (fromList [1,2]))
+                    let
+                        expected = Just <|
+                            TD.node (Just 1)
+                                (   [ TD.node (Just 2)
+                                        []
+                                    , TD.node (Just 4)
+                                        (   [ TD.node (Just 3)
+                                                []
+                                            ]
+                                        )
+                                    ]
+                                )
+
+                        result = BTree.toTreeDiagramTree <|
+                            Node 1
+                                (singleton 2)
+                                (Node 4
+                                    Empty
+                                    (singleton 3)
+                                )
+                    in
+                        Expect.equal
+                            expected
+                            result
             ]
          , describe "BTree.sort"
             [ test "of sort.0" <|
                 \() ->
-                    Expect.equal (Empty) (BTree.sort Empty)
+                    Expect.equal
+                        (Empty)
+                        (BTree.sort Empty)
             , test "of sort.1" <|
                 \() ->
-                    Expect.equal (singleton 1) (BTree.sort (singleton 1))
+                    Expect.equal
+                        (singleton 1)
+                        (BTree.sort (singleton 1))
             , test "of sort.2" <|
                 \() ->
-                    Expect.equal (fromList [1,2,3,4,5]) (BTree.sort (fromList [4,1,3,5,2]))
+                    let
+                        expected =
+                            Node "A"
+                                (Node "A_sharp"
+                                    (Node "E"
+                                        (singleton <| "F")
+                                        (singleton <| "G")
+                                    )
+                                    (singleton <| "E")
+                                )
+                                (singleton <| "C_sharp")
+
+
+                        result = BTree.sort <|
+                            Node "F"
+                                (Node "E"
+                                    (Node "C_sharp"
+                                        (Node "A"
+                                            Empty
+                                            (singleton <| "A_sharp")
+                                        )
+                                        Empty
+                                    )
+                                    (singleton <| "E")
+                                )
+                                (singleton <| "G")
+                    in
+                        Expect.equal
+                            expected
+                            result
             ]
-         , describe "BTree.sortBy"
-            [ test "of sortBy.0" <|
+         , describe "BTree.sortTo"
+            [ test "of sortTo.0a" <|
                 \() ->
-                    Expect.equal (Empty) (BTree.sortBy (MusicNote.sorter) Empty)
-            , test "of sortBy.1" <|
+                    Expect.equal
+                        (Empty)
+                        (BTree.sortTo Right Empty)
+            , test "of sortTo.0b" <|
                 \() ->
-                    Expect.equal (singleton A) (BTree.sortBy (MusicNote.sorter) (singleton A))
-            , test "of sortBy.2" <|
+                    Expect.equal
+                        (Empty)
+                        (BTree.sortTo Left Empty)
+            , test "of sortTo.1a" <|
                 \() ->
-                    Expect.equal (fromListBy (MusicNote.sorter) [A, B, D, E, G]) (BTree.sortBy (MusicNote.sorter) (fromListBy (MusicNote.sorter) [D, A, E, G, B]))
+                    Expect.equal
+                        (singleton 1)
+                        (BTree.sortTo Right <| singleton 1)
+            , test "of sortTo.1b" <|
+                \() ->
+                    Expect.equal
+                        (singleton 1)
+                        (BTree.sortTo Left <| singleton 1)
+            , test "of sortTo.2a" <|
+                \() ->
+                    let
+                        expected =
+                            Node "A"
+                                (singleton <| "C_sharp")
+                                (Node "A_sharp"
+                                    (singleton <| "E")
+                                    (Node "E"
+                                        (singleton <| "G")
+                                        (singleton <| "F")
+                                    )
+                                )
+
+                        result = BTree.sortTo Right <|
+                            Node "F"
+                                (Node "E"
+                                    (Node "C_sharp"
+                                        (Node "A"
+                                            Empty
+                                            (singleton <| "A_sharp")
+                                        )
+                                        Empty
+                                    )
+                                    (singleton <| "E")
+                                )
+                                (singleton <| "G")
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of sortTo.2b" <|
+                \() ->
+                    let
+                        expected =
+                            Node "A"
+                                (Node
+                                    "A_sharp"
+                                    (Node "E"
+                                        (singleton <| "F")
+                                        (singleton <| "G")
+                                    )
+                                    (singleton <| "E")
+                                )
+                                (singleton <| "C_sharp")
+
+
+                        result = BTree.sortTo Left <|
+                            Node "F"
+                                (Node "E"
+                                    (Node "C_sharp"
+                                        (Node "A"
+                                            Empty
+                                            (singleton <| "A_sharp")
+                                        )
+                                        Empty
+                                    )
+                                    (singleton <| "E")
+                                )
+                                (singleton <| "G")
+                    in
+                        Expect.equal
+                            expected
+                            result
+            ]
+         , describe "BTree.sortByTo"
+            [ test "of sortByTo.0a" <|
+                \() ->
+                    Expect.equal
+                        (Empty)
+                        (BTree.sortByTo MusicNote.sorter Right Empty)
+            , test "of sortByTo.0b" <|
+                \() ->
+                    Expect.equal
+                        (Empty)
+                        (BTree.sortByTo MusicNote.sorter Left Empty)
+            , test "of sortByTo.1a" <|
+                \() ->
+                    Expect.equal
+                        (singleton A)
+                        (BTree.sortByTo MusicNote.sorter Right (singleton A))
+            , test "of sortByTo.1b" <|
+                \() ->
+                    Expect.equal
+                        (singleton A)
+                        (BTree.sortByTo MusicNote.sorter Left (singleton A))
+            , test "of sortByTo.2a" <|
+                \() ->
+                    let
+                        expected =
+                            Node A
+                                (singleton <| C_sharp)
+                                (Node A_sharp
+                                    (singleton <| E)
+                                    (Node E
+                                        (singleton <| G)
+                                        (singleton <| F)
+                                    )
+                                )
+
+                        result = BTree.sortByTo MusicNote.sorter Right <|
+                            Node F
+                                (Node E
+                                    (Node C_sharp
+                                        (Node A
+                                            Empty
+                                            (singleton <| A_sharp)
+                                        )
+                                        Empty
+                                    )
+                                    (singleton <| E)
+                                )
+                                (singleton <| G)
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of sortByTo.2b" <|
+                \() ->
+                    let
+                        expected =
+                            Node A
+                                (Node A_sharp
+                                    (Node E
+                                        (singleton <| F)
+                                        (singleton <| G)
+                                    )
+                                    (singleton <| E)
+                                )
+                                (singleton <| C_sharp)
+
+                        result = BTree.sortByTo MusicNote.sorter Left <|
+                            Node F
+                                (Node E
+                                    (Node C_sharp
+                                        (Node A
+                                            Empty
+                                            (singleton <| A_sharp)
+                                        )
+                                        Empty
+                                    )
+                                    (singleton <| E)
+                                )
+                                (singleton <| G)
+                    in
+                        Expect.equal
+                            expected
+                            result
+            ]
+         , describe "BTree.sortWithTo"
+            [ test "of sortWithTo.0a" <|
+                \() ->
+                    Expect.equal
+                        (Empty)
+                        (BTree.sortWithTo BigInt.compare Right Empty)
+            , test "of sortWithTo.0b" <|
+                \() ->
+                    Expect.equal
+                        (Empty)
+                        (BTree.sortWithTo BigInt.compare Left Empty)
+            , test "of sortWithTo.1a" <|
+                \() ->
+                    Expect.equal
+                        (singleton <| BigInt.fromInt 1)
+                        (BTree.sortWithTo BigInt.compare Right (singleton <| BigInt.fromInt 1))
+            , test "of sortWithTo.1b" <|
+                \() ->
+                    Expect.equal
+                        (singleton <| BigInt.fromInt 1)
+                        (BTree.sortWithTo BigInt.compare Left (singleton <| BigInt.fromInt 1))
+            , test "of sortWithTo.2a" <|
+                \() ->
+                    let
+                        expected =
+                            Node (BigInt.fromInt 1)
+                                (singleton <| BigInt.fromInt 5)
+                                (Node (BigInt.fromInt 2)
+                                    (singleton <| BigInt.fromInt 8)
+                                    (Node (BigInt.fromInt 8)
+                                        (singleton <| BigInt.fromInt 10)
+                                        (singleton <| BigInt.fromInt 9)
+                                    )
+                                )
+
+                        result = BTree.sortWithTo BigInt.compare Right <|
+                            Node (BigInt.fromInt 9)
+                                (Node (BigInt.fromInt 8)
+                                    (Node (BigInt.fromInt 5)
+                                        (Node (BigInt.fromInt 1)
+                                            Empty
+                                            (singleton <| BigInt.fromInt 2)
+                                        )
+                                        Empty
+                                    )
+                                    (singleton <| BigInt.fromInt 8)
+                                )
+                                (singleton <| BigInt.fromInt 10)
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of sortWithTo.2b" <|
+                \() ->
+                    let
+                        expected =
+                            Node (BigInt.fromInt 1)
+                                (Node (BigInt.fromInt 2)
+                                    (Node (BigInt.fromInt 8)
+                                        (singleton <| BigInt.fromInt 9)
+                                        (singleton <| BigInt.fromInt 10)
+                                    )
+                                    (singleton <| BigInt.fromInt 8)
+                                )
+                                (singleton <| BigInt.fromInt 5)
+
+                        result = BTree.sortWithTo BigInt.compare Left <|
+                            Node (BigInt.fromInt 9)
+                                (Node (BigInt.fromInt 8)
+                                    (Node (BigInt.fromInt 5)
+                                        (Node (BigInt.fromInt 1)
+                                            Empty
+                                            (singleton <| BigInt.fromInt 2)
+                                        )
+                                        Empty
+                                    )
+                                    (singleton <| BigInt.fromInt 8)
+                                )
+                                (singleton <| BigInt.fromInt 10)
+                    in
+                        Expect.equal
+                            expected
+                            result
             ]
         , describe "BTree.fromList"
             [ test "of fromList.0" <|
@@ -622,7 +931,23 @@ bTree =
                     Expect.equal (singleton 1) (BTree.deDuplicate (singleton 1))
             , test "of deDuplicate.2" <|
                 \() ->
-                    Expect.equal (fromList [4, 1, 3, 5]) (BTree.deDuplicate (fromList [4, 1, 3, 5, 1]))
+                    let
+                        expected =
+                            Node 444
+                                (singleton 4)
+                                (singleton -9)
+
+                        result = BTree.deDuplicate <|
+                            Node 444
+                                (singleton 4)
+                                (Node -9
+                                    Empty
+                                    (singleton 4)
+                                )
+                    in
+                        Expect.equal
+                            expected
+                            result
             ]
          , describe "BTree.deDuplicateBy"
             [ test "of deDuplicateBy.0" <|
@@ -633,7 +958,20 @@ bTree =
                     Expect.equal (singleton A) (BTree.deDuplicateBy (MusicNote.sorter) (singleton A))
             , test "of deDuplicateBy.2" <|
                 \() ->
-                    Expect.equal (fromListBy (MusicNote.sorter) [D, A, E, B]) (BTree.deDuplicateBy (MusicNote.sorter) (fromListBy (MusicNote.sorter) [D, A, E, A, B]))
+                    let
+                        expected =
+                            Node E
+                                (singleton F)
+                                Empty
+
+                        result = BTree.deDuplicateBy (MusicNote.sorter) <|
+                            Node E
+                                (singleton F)
+                                (singleton E)
+                    in
+                        Expect.equal
+                            expected
+                            result
             ]
          , describe "BTree.isAllNothing"
             [ test "of isAllNothing.0" <|

@@ -55,7 +55,7 @@ treeMusicPlayer =
                 \() ->
                     let
                         tree = BTreeMusicNotePlayer (singleton (MusicNotePlayer.on A))
-                        result = "{ type = \"node\", branches = [{ type = \"leaf\", home = \"port_playNote\", value = { freq = 220, id = \"\", startOffset = 0, duration = 1, isLast = True } }] }"
+                        result = "{ type = \"node\", branches = [{ type = \"leaf\", home = \"port_playNote\", value = { freq = 220, id = \"\", startOffset = 0, duration = 0.75, isLast = True } }] }"
 
                     in
                         Expect.equal result (toString (treeMusicPlay tree))

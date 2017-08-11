@@ -1,4 +1,4 @@
-module BTree exposing (BTree(..), singleton, depth, map, flatten, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortBy, fromList, fromIntList, fromListBy, insert, insertBy, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes,   sortWith, fromListAsIsBy, fromListAsIs_directed, fromListWith, insertWith, insertAsIsBy, insertAsIs_directed)
+module BTree exposing (BTree(..), TraversalOrder(..), Direction(..), singleton, depth, map, flatten, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortTo, sortByTo, sortWithTo, fromList, fromIntList, fromListBy, insert, insertBy, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes,    fromListAsIsBy, fromListAsIs_left, fromListAsIs_right, fromListAsIs_directed, fromListWith, insertWith, insertWith_directed, insertAsIsBy, insertAsIs_directed, flattenBy, flattenUsingFoldBy)
 
 -- http://elm-lang.org/examples/binary-Tree
 
@@ -10,12 +10,23 @@ import BigInt exposing (BigInt, add)
 import MaybeSafe exposing (MaybeSafe(..), compare, sumMaybeSafeInt, toMaybeSafeInt, isSafe)
 import NodeTag exposing (NodeTag(..))
 
--- todo ?? fromList flatten fromList REVERSIBLE or not?
+-- todo ?? fromList flatten fromList REVERSIBLE
 
 
 type BTree a
     = Empty
     | Node a (BTree a) (BTree a)
+
+
+type TraversalOrder
+    = InOrder
+    | PreOrder
+    | PostOrder
+
+
+type Direction
+    = Right
+    | Left
 
 
 singleton : a -> BTree a
@@ -81,16 +92,6 @@ isAllSafe bTree =
         |> List.all MaybeSafe.isSafe
 
 
-flatten : BTree a -> List a
-flatten bTree =
-    case bTree of
-        Empty ->
-            []
-
-        Node v left right ->
-            v :: ((flatten left) ++ (flatten right))
-
-
 isElement : a -> BTree a -> Bool
 isElement a bTree =
     case bTree of
@@ -102,17 +103,77 @@ isElement a bTree =
             else (isElement a left) || (isElement a right)
 
 
+flatten : BTree a -> List a
+flatten bTree =
+    flattenBy PreOrder bTree
+
+
+flattenBy : TraversalOrder -> BTree a -> List a
+flattenBy order bTree =
+    case bTree of
+        Empty ->
+            []
+
+        Node val left right ->
+            case order of
+                InOrder ->
+                    let
+                        resultLeft = flattenBy order left
+                        resultRight = flattenBy order right
+                    in
+                        resultLeft ++ [val] ++ resultRight
+
+                PreOrder ->
+                    let
+                        resultLeft = flattenBy order left
+                        resultRight = flattenBy order right
+                    in
+                        [val] ++ resultLeft ++ resultRight
+
+                PostOrder ->
+                    let
+                        resultLeft = flattenBy order left
+                        resultRight = flattenBy order right
+                    in
+                        resultLeft ++ resultRight ++ [val]
+
+
 fold : (a -> b -> b) -> b -> BTree a -> b
 fold fn accumulator bTree =
+    foldBy PreOrder fn accumulator bTree
+
+
+foldBy : TraversalOrder -> (a -> b -> b) -> b -> BTree a -> b
+foldBy order fn accumulator bTree =
     case bTree of
         Empty ->
             accumulator
 
-        Node v left right ->
-            let
-                leftAccumulator = fold fn (fn v accumulator) left
-            in
-                fold fn leftAccumulator right
+        Node val left right ->
+            case order of
+                InOrder ->
+                    let
+                        resultLeft = foldBy order fn accumulator left
+                        resultEval = fn val resultLeft
+                        resultRight = foldBy order fn resultEval right
+                    in
+                        resultRight
+
+                PreOrder ->
+                    let
+                        resultEval = fn val accumulator
+                        resultLeft = foldBy order fn resultEval left
+                        resultRight = foldBy order fn resultLeft right
+                    in
+                        resultRight
+
+                PostOrder ->
+                    let
+                        resultLeft = foldBy order fn accumulator left
+                        resultRight = foldBy order fn resultLeft right
+                        resultEval = fn val resultRight
+                    in
+                        resultEval
 
 
 sumIntUsingFold : BTree Int -> MaybeSafe Int
@@ -144,20 +205,25 @@ sumString bTree =
 
 flattenUsingFold : BTree a -> List a
 flattenUsingFold bTree =
+    flattenUsingFoldBy PreOrder bTree
+
+
+flattenUsingFoldBy : TraversalOrder -> BTree a -> List a
+flattenUsingFoldBy order bTree =
     let
-        fn = (::)
+        fn = \a list -> list ++ [a]
         seed = []
     in
-        fold fn seed bTree
+        foldBy order fn seed bTree
 
 
 isElementUsingFold : a -> BTree a -> Bool
 isElementUsingFold a bTree =
     let
-        fn v acc =
-            if acc.isFound then acc
-            else if acc.a == v then {acc | isFound = True}
-            else acc
+        fn v accumulator =
+            if accumulator.isFound then accumulator
+            else if accumulator.a == v then {accumulator | isFound = True}
+            else accumulator
         seed = {a = a, isFound = False}
     in
         (fold fn seed bTree).isFound
@@ -199,22 +265,27 @@ ordererBy fn =
     \a1 a2 -> Basics.compare (fn a1) (fn a2)
 
 
-sort: Bool -> BTree comparable -> BTree comparable
-sort isInsertRight bTree =
-    sortBy identity isInsertRight bTree
+sort: BTree comparable -> BTree comparable
+sort bTree =
+    sortTo Left bTree
 
 
-sortBy : (a -> comparable) -> Bool -> BTree a -> BTree a
-sortBy fn isInsertRight bTree =
-    sortWith (ordererBy fn) isInsertRight bTree
+sortTo: Direction -> BTree comparable -> BTree comparable
+sortTo direction bTree =
+    sortByTo identity direction bTree
 
 
-sortWith : (a -> a -> Order) -> Bool -> BTree a -> BTree a
-sortWith fn isInsertRight bTree =
+sortByTo : (a -> comparable) -> Direction -> BTree a -> BTree a
+sortByTo fn direction bTree =
+    sortWithTo (ordererBy fn) direction bTree
+
+
+sortWithTo : (a -> a -> Order) -> Direction -> BTree a -> BTree a
+sortWithTo fn direction bTree =
     bTree
         |> flatten
         |> List.sortWith fn
-        |> fromListAsIsBy isInsertRight
+        |> fromListAsIsBy direction
 
 
 fromList : List comparable -> BTree comparable
@@ -232,22 +303,22 @@ fromListWith fn xs =
     List.foldl (insertWith fn) Empty xs
 
 
-fromListAsIsBy : Bool -> List a -> BTree a
-fromListAsIsBy isInsertRight xs =
-    List.foldl (insertAsIsBy isInsertRight) Empty xs
+fromListAsIsBy : Direction -> List a -> BTree a
+fromListAsIsBy direction xs =
+    List.foldl (insertAsIsBy direction) Empty xs
 
 
-fromListAsIs_left : List a -> BTree a -- todo del
+fromListAsIs_left : List a -> BTree a
 fromListAsIs_left xs =
     List.foldl insertAsIs_left Empty xs
 
 
-fromListAsIs_right : List a -> BTree a -- todo del
+fromListAsIs_right : List a -> BTree a
 fromListAsIs_right xs =
     List.foldl insertAsIs_right Empty xs
 
 
-fromListAsIs_directed : List (a, Bool) -> BTree a
+fromListAsIs_directed : List (a, Direction) -> BTree a
 fromListAsIs_directed xs =
     List.foldl insertAsIs_directed Empty xs
 
@@ -271,53 +342,64 @@ insertBy fn x bTree =
 
 insertWith : (a -> a -> Order) -> a -> BTree a -> BTree a
 insertWith fn x bTree =
+    insertWith_directed Left fn x bTree
+
+
+insertWith_directed : Direction -> (a -> a -> Order) -> a -> BTree a -> BTree a
+insertWith_directed direction fn x bTree =
     case bTree of
       Empty ->
           singleton x
 
       Node y left right ->
         let
-            insertLeft = Node y (insertWith fn x left) right
-            insertRight = Node y left (insertWith fn x right)
+            order = fn x y
+
+            insertLeft = \unit -> Node y (insertWith fn x left) right
+            insertRight = \unit -> Node y left (insertWith fn x right)
         in
-            case fn x y of
-                LT -> insertLeft
-                EQ -> insertRight
-                GT -> insertRight
+            case (order, direction) of
+                (LT, Right) -> insertRight ()
+                (EQ, Right) -> insertLeft ()
+                (GT, Right) -> insertLeft ()
+                -------------------------
+                (LT, Left) -> insertLeft ()
+                (EQ, Left) -> insertRight ()
+                (GT, Left) -> insertRight ()
 
 
-insertAsIsBy : Bool -> a -> BTree a -> BTree a
-insertAsIsBy isInsertRight x bTree =
-     insertAsIs_directed (x, isInsertRight) bTree
+insertAsIsBy : Direction -> a -> BTree a -> BTree a
+insertAsIsBy direction x bTree =
+     insertAsIs_directed (x, direction) bTree
 
 
 insertAsIs_left : a -> BTree a -> BTree a --todo del
 insertAsIs_left x bTree =
-    insertAsIs_directed (x, False) bTree
+    insertAsIs_directed (x, Left) bTree
 
 
 insertAsIs_right : a -> BTree a -> BTree a -- todo del
 insertAsIs_right x bTree =
-    insertAsIs_directed (x, True) bTree
+    insertAsIs_directed (x, Right) bTree
 
 
-insertAsIs_directed : (a, Bool) -> BTree a -> BTree a
-insertAsIs_directed (x, isInsertRight) bTree =
+insertAsIs_directed : (a, Direction) -> BTree a -> BTree a
+insertAsIs_directed (x, direction) bTree =
     case bTree of
         Empty ->
           singleton x
 
-        Node val left right ->
+        Node val leftTree rightTree ->
             let
-                insertBy isInsertRight = if isInsertRight
-                    then Node val left (insertAsIs_directed (x, isInsertRight) right)
-                    else Node val (insertAsIs_directed (x, isInsertRight) left) right
+                continue = \unit -> case direction of
+                    Right -> Node val leftTree (insertAsIs_directed (x, direction) rightTree)
+                    Left -> Node val (insertAsIs_directed (x, direction) leftTree) rightTree
             in
-                case (left, right) of
-                    (Empty, Empty) -> insertBy isInsertRight
-                    (Empty, _) -> Node val (singleton x) right
-                    (_, Empty) -> Node val left (singleton x)
-                    (_, _) -> insertBy isInsertRight
+                case (leftTree, rightTree) of
+                    (Empty, Empty) -> continue ()
+                    (Empty, _) -> Node val (singleton x) rightTree
+                    (_, Empty) -> Node val leftTree (singleton x)
+                    (_, _) -> continue ()
 
 
 deDuplicate : BTree comparable -> BTree comparable

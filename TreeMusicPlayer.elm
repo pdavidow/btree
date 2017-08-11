@@ -1,10 +1,10 @@
-module TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote)
+module TreeMusicPlayer exposing (treeMusicPlay, treeMusicPlayBy, startPlayNote, donePlayNote)
 
 import Time exposing (Time, millisecond, inMilliseconds)
 import Uuid exposing (Uuid)
 
 import BTreeUniformType exposing (BTreeUniformType(..))
-import BTree exposing (flatten, map)
+import BTree exposing (TraversalOrder(..), flattenBy, flattenUsingFoldBy, map)
 import MusicNote exposing (Freq(..), toFreq)
 import MusicNotePlayer exposing (MusicNotePlayer(..), isPlayable)
 import AudioNote exposing (AudioNote, audioNote)
@@ -13,9 +13,14 @@ import Ports exposing (port_playNote)
 
 treeMusicPlay : BTreeUniformType -> Cmd msg
 treeMusicPlay bTreeUniformType =
+    treeMusicPlayBy PreOrder bTreeUniformType
+
+
+treeMusicPlayBy : TraversalOrder -> BTreeUniformType -> Cmd msg
+treeMusicPlayBy order bTreeUniformType =
     case bTreeUniformType of
         BTreeMusicNotePlayer bTree ->
-            flatten bTree
+            flattenBy order bTree
                 |> List.filter isPlayable
                 |> toAudioNotes
                 |> List.map port_playNote
@@ -28,8 +33,8 @@ treeMusicPlay bTreeUniformType =
 toAudioNotes : List MusicNotePlayer -> List AudioNote
 toAudioNotes players =
     let
-        noteDuration = 1000 * millisecond
-        gapDuration = 0.0 * millisecond
+        noteDuration = 750 * millisecond
+        gapDuration = 250 * millisecond
 
         interval = noteDuration + gapDuration
         lastIndex = (List.length players) - 1

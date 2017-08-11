@@ -16,13 +16,13 @@ import BigInt exposing (fromInt)
 
 import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes)
 import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, hasAnyIntNodes)
-import BTree exposing (BTree(..), fromListBy, insertAsIsBy, fromListAsIsBy, fromListAsIs_directed, singleton, toTreeDiagramTree)
+import BTree exposing (BTree(..), Direction(..), TraversalOrder(..), fromListBy, insertAsIsBy, fromListAsIsBy, fromListAsIs_directed, singleton, toTreeDiagramTree)
 import NodeTag exposing (NodeTag(..))
 import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
 import UniversalConstants exposing (nothingString)
 import MusicNote exposing (MusicNote(..), mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter)
-import TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote)
+import TreeMusicPlayer exposing (treeMusicPlayBy, startPlayNote, donePlayNote)
 import Ports exposing (port_startPlayNote, port_donePlayNote, port_donePlayNotes)
 import Lib exposing (IntFlex(..), lazyUnwrap)
 import MaybeSafe exposing (MaybeSafe(..), maxSafeInt, toMaybeSafeInt)
@@ -39,25 +39,27 @@ type Msg
     = Increment
     | Decrement
     | Raise
-    | SortUniformTrees (Bool)
+    | SortUniformTrees (Direction)
     | RemoveDuplicates
     | Delta String
     | Exponent String
-    | RequestRandomInts (Bool)
-    | RequestRandomPairsIntBool
+    | RequestRandomInts (Direction)
+    | RequestRandomPairsIntDirection
     | ReceiveRandomInts (List Int)
-    | ReceiveRandomPairsIntBool (List (Int, Bool))
+    | ReceiveRandomPairsIntDirection (List (Int, Direction))
     | RequestRandomDelta
     | ReceiveRandomDelta (Int)
     | StartShowLength
     | StopShowLength
     | StartShowIsIntPrime
     | StopShowIsIntPrime
-    | PlayNotes
+    | PlayNotes (TraversalOrder)
     | StartPlayNote (String)
     | DonePlayNote (String)
     | DonePlayNotes (Bool)
     | SwitchToIntView (IntView)
+    | ToggleShowPlayDropdown
+    | StopShowPlayDropdown
     | ToggleShowSortDropdown
     | StopShowSortDropdown
     | ToggleShowRandomDropdown
@@ -83,9 +85,10 @@ type alias Model =
     , exponent : Int
     , isPlayNotes : Bool
     , isTreeCaching : Bool
-    , isInsertRightForSort : Bool
+    , isShowPlayDropdown : Bool
+    , directionForSort : Direction
     , isShowSortDropdown : Bool
-    , isInsertRightForRandom : Bool
+    , directionForRandom : Direction
     , isShowRandomDropdown : Bool
     , intView : IntView
     , uuidSeed : Seed
@@ -111,9 +114,10 @@ initialModel =
     , exponent = 2
     , isPlayNotes = False
     , isTreeCaching = False
-    , isInsertRightForSort = True
+    , isShowPlayDropdown = False
+    , directionForSort = Left
     , isShowSortDropdown = False
-    , isInsertRightForRandom = True
+    , directionForRandom = Left
     , isShowRandomDropdown = False
     , intView = IntView
     , uuidSeed = initialSeed 0 -- placeholder
@@ -152,7 +156,7 @@ generateIds count startSeed =
 idedMusicNoteTree : Seed -> (BTreeUniformType, Seed)
 idedMusicNoteTree startSeed =
     let
-        notes = [F, E, C_sharp, E]
+        notes = [F, E, C_sharp, E, G, A, A_sharp]
         ( ids, endSeed ) = generateIds (List.length notes) startSeed
 
         tree = List.map2 (\id note -> MusicNotePlayer.idedOn (Just id) note) ids notes
@@ -284,12 +288,73 @@ viewDashboard model =
 
 viewDashboardTop : Model -> List (Html Msg)
 viewDashboardTop model =
-    [ span
-        [classes [T.mh2]]
-        [ button
-            [classes [T.hover_bg_light_green, T.mv1], onClick PlayNotes, disabled (not (isEnablePlayNotesButton model))]
-            [text "Play"]
-        ]
+    let
+        isPlayDisabled = not <| isEnablePlayNotesWidgetry model
+    in
+        [ span
+            [classes [T.mh2]]
+            [ div
+                [ classes
+                    [ T.relative
+                    , T.dib
+                    ]
+                ]
+                [ button
+                    [ classes
+                        ([ T.hover_bg_light_green
+                        ] ++ (if model.isShowSortDropdown then [T.bg_light_green] else []))
+                    , disabled isPlayDisabled
+                    , onClick ToggleShowPlayDropdown
+                    ]
+                    [ text "Play" ]
+                , div
+                    [ classes
+                         [ T.absolute
+                         , (if model.isShowPlayDropdown then T.db else T.dn)
+                         , T.ba
+                         , T.w5
+                         ]
+                    , onMouseLeave StopShowPlayDropdown
+                    ]
+                    [ button
+                        [ classes
+                            [ T.db
+                            , T.hover_bg_light_green
+                            , T.pa2
+                            , T.tl
+                            , w_100
+                            ]
+                        , disabled isPlayDisabled
+                        , onClick (PlayNotes PreOrder)
+                        ]
+                        [text "pre-order"]
+                    , button
+                        [ classes
+                            [ T.db
+                            , T.hover_bg_light_green
+                            , T.pa2
+                            , w_100
+                            , T.tl
+                            ]
+                        , disabled isPlayDisabled
+                        , onClick (PlayNotes InOrder)
+                        ]
+                        [text "in-order"]
+                    , button
+                        [ classes
+                            [ T.db
+                            , T.hover_bg_light_green
+                            , T.pa2
+                            , T.tl
+                            , w_100
+                            ]
+                        , disabled isPlayDisabled
+                        , onClick (PlayNotes PostOrder)
+                        ]
+                        [text "post-order"]
+                    ]
+                ]
+            ]
     , span
         [classes [T.mh2]]
         [ button
@@ -304,7 +369,7 @@ viewDashboardTop model =
         ]
     , span
         [classes [T.mh2]]
-        [ div -- from https://www.w3schools.com/howto/howto_js_dropdown.asp
+        [ div
             [ classes
                 [ T.relative
                 , T.dib
@@ -312,8 +377,8 @@ viewDashboardTop model =
             ]
             [ button
                 [ classes
-                    [ T.hover_bg_light_green
-                    ]
+                    ([ T.hover_bg_light_green
+                    ] ++ (if model.isShowSortDropdown then [T.bg_light_green] else []))
                 , disabled model.isPlayNotes
                 , onClick ToggleShowSortDropdown
                 ]
@@ -322,29 +387,33 @@ viewDashboardTop model =
                 [ classes
                      [ T.absolute
                      , (if model.isShowSortDropdown then T.db else T.dn)
-                     , T.bg_washed_yellow
                      , T.ba
                      , T.w5
                      ]
-                , disabled model.isPlayNotes
                 , onMouseLeave StopShowSortDropdown
                 ]
-                [ a
+                [ button
                     [ classes
                         [ T.db
                         , T.hover_bg_light_green
                         , T.pa2
+                        , w_100
+                        , T.tl
                         ]
-                    , onClick (SortUniformTrees False)
+                    , disabled model.isPlayNotes
+                    , onClick (SortUniformTrees Left)
                     ]
                     [text "insert left"]
-                , a
+                , button
                     [ classes
                         [ T.db
                         , T.hover_bg_light_green
                         , T.pa2
+                        , w_100
+                        , T.tl
                         ]
-                    , onClick (SortUniformTrees True)
+                    , disabled model.isPlayNotes
+                    , onClick (SortUniformTrees Right)
                     ]
                     [text "insert right"]
                 ]
@@ -364,7 +433,7 @@ viewDashboardTop model =
         ]
     , span
         [ classes [T.mh2] ]
-        [ div -- from https://www.w3schools.com/howto/howto_js_dropdown.asp
+        [ div
             [ classes
                 [ T.relative
                 , T.dib
@@ -372,8 +441,8 @@ viewDashboardTop model =
             ]
             [ button
                 [ classes
-                    [ T.hover_bg_light_green
-                    ]
+                    ([ T.hover_bg_light_green
+                    ] ++ (if model.isShowRandomDropdown then [T.bg_light_green] else []))
                 , onClick ToggleShowRandomDropdown
                 ]
                 [ text "Random Ints" ]
@@ -381,37 +450,51 @@ viewDashboardTop model =
                 [ classes
                      [ T.absolute
                      , (if model.isShowRandomDropdown then T.db else T.dn)
-                     , T.bg_washed_yellow
                      , T.ba
                      , T.w5
                      ]
                 , onMouseLeave StopShowRandomDropdown
                 ]
-                [ a
+                [ button
                     [ classes
                         [ T.db
                         , T.hover_bg_light_green
                         , T.pa2
+                        , w_100
+                        , T.tl
                         ]
-                    , onClick RequestRandomPairsIntBool
+                    , onClick RequestRandomPairsIntDirection
                     ]
                     [text "insert random"]
-                , a
+                , div -- divider line
+                    [ classes
+                        [ T.db
+                        , T.w_100
+                        , T.bt
+                        , T.bw1
+                        ]
+                    ]
+                    []
+                , button
                     [ classes
                         [ T.db
                         , T.hover_bg_light_green
                         , T.pa2
+                        , w_100
+                        , T.tl
                         ]
-                    , onClick (RequestRandomInts False)
+                    , onClick (RequestRandomInts Left)
                     ]
                     [text "insert left"]
-                , a
+                , button
                     [ classes
                         [ T.db
                         , T.hover_bg_light_green
                         , T.pa2
+                        , w_100
+                        , T.tl
                         ]
-                    , onClick (RequestRandomInts True)
+                    , onClick (RequestRandomInts Right)
                     ]
                     [text "insert right"]
                 ]
@@ -426,8 +509,8 @@ viewDashboardTop model =
     ]
 
 
-isEnablePlayNotesButton : Model -> Bool
-isEnablePlayNotesButton model =
+isEnablePlayNotesWidgetry : Model -> Bool
+isEnablePlayNotesWidgetry model =
     not (model.isPlayNotes) && not (BTreeUniformType.isAllNothing model.musicNoteTree)
 
 
@@ -790,9 +873,9 @@ update msg model =
                 , Cmd.none
                 )
 
-        SortUniformTrees isInsertRight ->
+        SortUniformTrees direction ->
             ( model
-                |> sortUniformTrees isInsertRight
+                |> sortUniformTrees direction
             , Cmd.none
             )
 
@@ -816,7 +899,7 @@ update msg model =
             , Cmd.none
             )
 
-        RequestRandomInts isInsertRight ->
+        RequestRandomInts direction ->
             let
                 randomInts : Int -> Random.Generator (List Int)
                 randomInts length =
@@ -827,23 +910,28 @@ update msg model =
                     Random.andThen randomInts generatorRandomListLength
             in
                 (   { model
-                    | isInsertRightForRandom = isInsertRight
+                    | directionForRandom = direction
                     }
                 , Random.generate ReceiveRandomInts generatorInts
                 )
 
-        RequestRandomPairsIntBool ->
+        RequestRandomPairsIntDirection ->
             let
-                randomPairsIntBool : Int -> Random.Generator (List (Int, Bool))
-                randomPairsIntBool length =
-                    Random.list length <| Random.pair (Random.int 1 maxRandomInt) Random.bool
+                randomPairsIntDirection : Int -> Random.Generator (List (Int, Direction))
+                randomPairsIntDirection length =
+                    let
+                        fn = \bool -> case bool of
+                            True -> Right
+                            False -> Left
+                    in
+                        Random.list length <| Random.pair (Random.int 1 maxRandomInt) (Random.map fn Random.bool)
 
-                generatorPairsIntBool : Random.Generator (List (Int, Bool))
-                generatorPairsIntBool =
-                    Random.andThen randomPairsIntBool generatorRandomListLength
+                generatorPairsIntDirection : Random.Generator (List (Int, Direction))
+                generatorPairsIntDirection =
+                    Random.andThen randomPairsIntDirection generatorRandomListLength
             in
                 ( model
-                , Random.generate ReceiveRandomPairsIntBool generatorPairsIntBool
+                , Random.generate ReceiveRandomPairsIntDirection generatorPairsIntDirection
                 )
 
         RequestRandomDelta ->
@@ -853,15 +941,15 @@ update msg model =
 
         ReceiveRandomInts list ->
             (   { model
-                | intTree = BTreeInt <| BTree.fromListAsIsBy  model.isInsertRightForRandom <| List.map toMaybeSafeInt list
-                , bigIntTree = BTreeBigInt <| BTree.fromListAsIsBy model.isInsertRightForRandom <| List.map BigInt.fromInt list
+                | intTree = BTreeInt <| BTree.fromListAsIsBy  model.directionForRandom <| List.map toMaybeSafeInt list
+                , bigIntTree = BTreeBigInt <| BTree.fromListAsIsBy model.directionForRandom <| List.map BigInt.fromInt list
                 }
             , Cmd.none
             )
 
-        ReceiveRandomPairsIntBool list ->
+        ReceiveRandomPairsIntDirection list ->
             let
-                fn = \transformFn (int, bool) -> (transformFn int, bool)
+                fn = \transformFn (int, direction) -> (transformFn int, direction)
             in
                 (   { model
                     | intTree = BTreeInt <| BTree.fromListAsIs_directed <| List.map (fn toMaybeSafeInt) list
@@ -927,11 +1015,11 @@ update msg model =
                 , Cmd.none
                 )
 
-        PlayNotes ->
+        PlayNotes order ->
             (   { model
                 | isPlayNotes = True
                 }
-            , treeMusicPlay model.musicNoteTree
+            , treeMusicPlayBy order model.musicNoteTree
             )
 
         StartPlayNote id ->
@@ -978,6 +1066,20 @@ update msg model =
         SwitchToIntView intView ->
             (   { model
                 | intView = intView
+                }
+            , Cmd.none
+            )
+
+        ToggleShowPlayDropdown ->
+            (   { model
+                | isShowPlayDropdown = not model.isShowPlayDropdown
+                }
+            , Cmd.none
+            )
+
+        StopShowPlayDropdown ->
+            (   { model
+                | isShowPlayDropdown = False
                 }
             , Cmd.none
             )
@@ -1097,9 +1199,9 @@ shiftVariedTrees operand fn model =
         changeVariedTrees shift model
 
 
-sortUniformTrees : Bool -> Model -> Model
-sortUniformTrees isInsertRight model =
-    changeUniformTrees (BTreeUniformType.sort isInsertRight) model
+sortUniformTrees : Direction -> Model -> Model
+sortUniformTrees direction model =
+    changeUniformTrees (BTreeUniformType.sort direction) model
 
 
 deDuplicate : Model -> Model

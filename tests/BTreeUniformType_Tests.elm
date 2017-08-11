@@ -2,7 +2,7 @@ module BTreeUniformType_Tests exposing (..)
 
 import BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, depth, sumInt, sort, deDuplicate, isAllNothing)
 
-import BTree exposing (BTree(..), fromIntList, fromList, singleton)
+import BTree exposing (BTree(..), Direction(..), fromIntList, fromList, singleton)
 import NodeTag exposing (NodeTag(..))
 import MusicNote exposing (MusicNote(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..), on)
@@ -1336,7 +1336,7 @@ bTreeUniformType =
                         )
             ]
          , describe "BTreeUniformType.sort"
-            [ test "of empty" <|
+            [ test "of empty.1" <|
                 \() ->
                     Expect.equal
                         (
@@ -1349,69 +1349,574 @@ bTreeUniformType =
                             ]
                         )
                         (
-                            [ BTreeUniformType.sort <| BTreeInt <| Empty
-                            , BTreeUniformType.sort <| BTreeBigInt <| Empty
-                            , BTreeUniformType.sort <| BTreeString <| Empty
-                            , BTreeUniformType.sort <| BTreeBool <| Empty
-                            , BTreeUniformType.sort <| BTreeMusicNotePlayer <| Empty
-                            , BTreeUniformType.sort <| BTreeNothing <| Empty
+                            [ BTreeUniformType.sort Right <| BTreeInt <| Empty
+                            , BTreeUniformType.sort Right <| BTreeBigInt <| Empty
+                            , BTreeUniformType.sort Right <| BTreeString <| Empty
+                            , BTreeUniformType.sort Right <| BTreeBool <| Empty
+                            , BTreeUniformType.sort Right <| BTreeMusicNotePlayer <| Empty
+                            , BTreeUniformType.sort Right <| BTreeNothing <| Empty
                             ]
                         )
-            , test "of non-empty.BTreeInt.1" <|
+            , test "of empty.2" <|
                 \() ->
                     Expect.equal
-                        (BTreeInt <| Node (Safe 1) Empty (singleton <| Safe 2))
-                        (BTreeUniformType.sort <| BTreeInt <| Node (Safe 2) Empty (singleton <| Safe 1))
-            , test "of non-empty.BTreeInt.2" <|
+                        (
+                            [ BTreeInt Empty
+                            , BTreeBigInt Empty
+                            , BTreeString Empty
+                            , BTreeBool Empty
+                            , BTreeMusicNotePlayer Empty
+                            , BTreeNothing Empty
+                            ]
+                        )
+                        (
+                            [ BTreeUniformType.sort Left <| BTreeInt <| Empty
+                            , BTreeUniformType.sort Left <| BTreeBigInt <| Empty
+                            , BTreeUniformType.sort Left<| BTreeString <| Empty
+                            , BTreeUniformType.sort Left<| BTreeBool <| Empty
+                            , BTreeUniformType.sort Left <| BTreeMusicNotePlayer <| Empty
+                            , BTreeUniformType.sort Left <| BTreeNothing <| Empty
+                            ]
+                        )
+            , test "of non-empty.BTreeInt.1a" <|
                 \() ->
-                    Expect.equal
-                    (BTreeInt <| Node (toMaybeSafeInt -9) Empty (Node (toMaybeSafeInt 4) Empty (Node (toMaybeSafeInt 4) Empty (singleton <| toMaybeSafeInt maxSafeInt))))
-                    (BTreeUniformType.sort <| BTreeInt <| Node (toMaybeSafeInt <| maxSafeInt) (singleton <| toMaybeSafeInt 4) (Node (toMaybeSafeInt -9) Empty (singleton <| toMaybeSafeInt 4)))
-            , test "of non-empty.BTreeInt.3" <|
+                    let
+                        expected =
+                            BTreeInt <|
+                                Node (Safe 1)
+                                    Empty
+                                    (singleton <| Safe 2)
+
+                        result = BTreeUniformType.sort Right <|
+                            BTreeInt <|
+                                Node (Safe 2)
+                                    Empty
+                                    (singleton <| Safe 1)
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeInt.1b" <|
                 \() ->
-                    Expect.equal
-                    (BTreeInt <| Node (toMaybeSafeInt <| 66) Empty (Node (toMaybeSafeInt 286) Empty (singleton <| toMaybeSafeInt 971)))
-                    (BTreeUniformType.sort <| BTreeInt <| Node (toMaybeSafeInt <| 286) Empty (Node (toMaybeSafeInt 66) Empty (singleton <| toMaybeSafeInt 971)))
-            , test "of non-empty.BTreeBigInt.1" <|
+                    let
+                        expected =
+                            BTreeInt <|
+                                Node (Safe 1)
+                                    (singleton <| Safe 2)
+                                    Empty
+
+                        result = BTreeUniformType.sort Left <|
+                            BTreeInt <|
+                                Node (Safe 2)
+                                    Empty
+                                    (singleton <| Safe 1)
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeInt.2a" <|
                 \() ->
-                    Expect.equal
-                        (BTreeBigInt <| Node (BigInt.fromInt 1) Empty (singleton <| BigInt.fromInt 2))
-                        (BTreeUniformType.sort <| BTreeBigInt <| Node (BigInt.fromInt 2) Empty (singleton <| BigInt.fromInt 1))
-            , test "of non-empty.BTreeBigInt.2" <|
+                    let
+                        expected =
+                            BTreeInt <|
+                                Node (toMaybeSafeInt -9)
+                                    (singleton <| toMaybeSafeInt 4)
+                                    (Node (toMaybeSafeInt 4)
+                                        Empty
+                                        (singleton <| toMaybeSafeInt maxSafeInt)
+                                    )
+
+                        result = BTreeUniformType.sort Right <|
+                            BTreeInt <|
+                                Node (toMaybeSafeInt <| maxSafeInt)
+                                    (singleton <| toMaybeSafeInt 4)
+                                    (Node (toMaybeSafeInt -9)
+                                        Empty
+                                        (singleton <| toMaybeSafeInt 4)
+                                    )
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeInt.2b" <|
                 \() ->
-                    Expect.equal
-                        (BTreeBigInt <| Node (BigInt.fromInt -9) Empty (Node (BigInt.fromInt 4) Empty (Node (BigInt.fromInt 4) Empty (singleton <| BigInt.fromInt maxSafeInt))))
-                        (BTreeUniformType.sort <| BTreeBigInt <| Node (BigInt.fromInt <| maxSafeInt) (singleton <| BigInt.fromInt 4) (Node (BigInt.fromInt -9) Empty (singleton <| BigInt.fromInt 4)))
-            , test "of non-empty.BTreeBigInt.3" <|
+                    let
+                        expected =
+                            BTreeInt <|
+                                Node (toMaybeSafeInt -9)
+                                    (Node (toMaybeSafeInt 4)
+                                        (singleton <| toMaybeSafeInt <| maxSafeInt)
+                                        Empty
+                                    )
+                                    (singleton <| toMaybeSafeInt 4)
+
+
+                        result = BTreeUniformType.sort Left <|
+                            BTreeInt <|
+                                Node (toMaybeSafeInt <| maxSafeInt)
+                                    (singleton <| toMaybeSafeInt 4)
+                                    (Node (toMaybeSafeInt -9)
+                                        Empty
+                                        (singleton <| toMaybeSafeInt 4)
+                                    )
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeInt.3a" <|
                 \() ->
-                    Expect.equal
-                    (BTreeBigInt <| Node (BigInt.fromInt <| 66) Empty (Node (BigInt.fromInt 286) Empty (singleton <| BigInt.fromInt 971)))
-                    (BTreeUniformType.sort <| BTreeBigInt <| Node (BigInt.fromInt <| 286) Empty (Node (BigInt.fromInt 66) Empty (singleton <| BigInt.fromInt 971)))
-            , test "of non-empty.BTreeString.1" <|
+                    let
+                        expected =
+                            BTreeInt <|
+                                Node (toMaybeSafeInt 66)
+                                    (singleton <| toMaybeSafeInt 971)
+                                    (singleton <| toMaybeSafeInt 286)
+
+                        result = BTreeUniformType.sort Right <|
+                            BTreeInt <|
+                                Node (toMaybeSafeInt <| 286)
+                                    Empty
+                                    (Node (toMaybeSafeInt 66)
+                                        Empty
+                                        (singleton <| toMaybeSafeInt 971)
+                                    )
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeInt.3b" <|
                 \() ->
-                    Expect.equal
-                        (BTreeString <| Node "a" Empty (singleton "b"))
-                        (BTreeUniformType.sort <| BTreeString <| Node "b" Empty (singleton "a"))
-            , test "of non-empty.BTreeString.2" <|
+                    let
+                        expected =
+                            BTreeInt <|
+                                Node (toMaybeSafeInt 66)
+                                    (singleton <| toMaybeSafeInt 286)
+                                    (singleton <| toMaybeSafeInt 971)
+
+                        result = BTreeUniformType.sort Left <|
+                            BTreeInt <|
+                                Node (toMaybeSafeInt <| 286)
+                                    Empty
+                                    (Node (toMaybeSafeInt 66)
+                                        Empty
+                                        (singleton <| toMaybeSafeInt 971)
+                                    )
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeBigInt.1a" <|
                 \() ->
-                    Expect.equal
-                        (BTreeString <| Node "a" Empty (Node "b" Empty (singleton "b")))
-                        (BTreeUniformType.sort <| BTreeString <| Node "b" Empty (Node "a" Empty (singleton "b")))
-            , test "of non-empty.BTreeBool.1" <|
+                    let
+                        expected =
+                            BTreeBigInt <|
+                                Node (BigInt.fromInt 1)
+                                    Empty
+                                    (singleton <| BigInt.fromInt 2)
+
+                        result = BTreeUniformType.sort Right <|
+                            BTreeBigInt <|
+                                Node (BigInt.fromInt 2)
+                                    Empty
+                                    (singleton <| BigInt.fromInt 1)
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeBigInt.1b" <|
+                \() ->
+                    let
+                        expected =
+                            BTreeBigInt <|
+                                Node (BigInt.fromInt 1)
+                                    (singleton <| BigInt.fromInt 2)
+                                    Empty
+
+                        result = BTreeUniformType.sort Left <|
+                            BTreeBigInt <|
+                                Node (BigInt.fromInt 2)
+                                    Empty
+                                    (singleton <| BigInt.fromInt 1)
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeBigInt.2a" <|
+                \() ->
+                    let
+                        expected =
+                            BTreeBigInt <|
+                                Node (BigInt.fromInt -9)
+                                    (singleton <| BigInt.fromInt 4)
+                                    (Node (BigInt.fromInt 4)
+                                        Empty
+                                        (singleton <| BigInt.fromInt maxSafeInt)
+                                    )
+
+                        result = BTreeUniformType.sort Right <|
+                            BTreeBigInt <|
+                                Node (BigInt.fromInt <| maxSafeInt)
+                                    (singleton <| BigInt.fromInt 4)
+                                    (Node (BigInt.fromInt -9)
+                                        Empty
+                                        (singleton <| BigInt.fromInt 4)
+                                    )
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeBigInt.2b" <|
+                \() ->
+                    let
+                        expected =
+                            BTreeBigInt <|
+                                Node (BigInt.fromInt -9)
+                                    (Node (BigInt.fromInt 4)
+                                        (singleton <| BigInt.fromInt <| maxSafeInt)
+                                        Empty
+                                    )
+                                    (singleton <| BigInt.fromInt 4)
+
+
+                        result = BTreeUniformType.sort Left <|
+                            BTreeBigInt <|
+                                Node (BigInt.fromInt <| maxSafeInt)
+                                    (singleton <| BigInt.fromInt 4)
+                                    (Node (BigInt.fromInt -9)
+                                        Empty
+                                        (singleton <| BigInt.fromInt 4)
+                                    )
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeBigInt.3a" <|
+                \() ->
+                    let
+                        expected =
+                            BTreeBigInt <|
+                                Node (BigInt.fromInt 66)
+                                    (singleton <| BigInt.fromInt 971)
+                                    (singleton <| BigInt.fromInt 286)
+
+                        result = BTreeUniformType.sort Right <|
+                            BTreeBigInt <|
+                                Node (BigInt.fromInt <| 286)
+                                    Empty
+                                    (Node (BigInt.fromInt 66)
+                                        Empty
+                                        (singleton <| BigInt.fromInt 971)
+                                    )
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeBigInt.3b" <|
+                \() ->
+                    let
+                        expected =
+                            BTreeBigInt <|
+                                Node (BigInt.fromInt 66)
+                                    (singleton <| BigInt.fromInt 286)
+                                    (singleton <| BigInt.fromInt 971)
+
+                        result = BTreeUniformType.sort Left <|
+                            BTreeBigInt <|
+                                Node (BigInt.fromInt <| 286)
+                                    Empty
+                                    (Node (BigInt.fromInt 66)
+                                        Empty
+                                        (singleton <| BigInt.fromInt 971)
+                                    )
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeString.1a" <|
+                \() ->
+                    let
+                        expected =
+                            BTreeString <|
+                                Node "Safe 1"
+                                    Empty
+                                    (singleton <| "Safe 2")
+
+                        result = BTreeUniformType.sort Right <|
+                            BTreeString <|
+                                Node "Safe 2"
+                                    Empty
+                                    (singleton <| "Safe 1")
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeString.1b" <|
+                \() ->
+                    let
+                        expected =
+                            BTreeString <|
+                                Node "Safe 1"
+                                    (singleton <| "Safe 2")
+                                    Empty
+
+                        result = BTreeUniformType.sort Left <|
+                            BTreeString <|
+                                Node "Safe 2"
+                                    Empty
+                                    (singleton <| "Safe 1")
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeString.2a" <|
+                \() ->
+                    let
+                        expected =
+                            BTreeString <|
+                                Node "-9"
+                                    (singleton <| "4")
+                                    (Node "4"
+                                        Empty
+                                        (singleton <| "444")
+                                    )
+
+                        result = BTreeUniformType.sort Right <|
+                            BTreeString <|
+                                Node "444"
+                                    (singleton <| "4")
+                                    (Node "-9"
+                                        Empty
+                                        (singleton <| "4")
+                                    )
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeString.2b" <|
+                \() ->
+                    let
+                        expected =
+                            BTreeString <|
+                                Node "-9"
+                                    (Node "4"
+                                        (singleton <| "444")
+                                        Empty
+                                    )
+                                    (singleton <| "4")
+
+                        result = BTreeUniformType.sort Left <|
+                            BTreeString <|
+                                Node "444"
+                                    (singleton <| "4")
+                                    (Node "-9"
+                                        Empty
+                                        (singleton <| "4")
+                                    )
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeString.3a" <|
+                \() ->
+                    let
+                        expected =
+                            BTreeString <|
+                                Node "286"
+                                    (singleton <| "971")
+                                    (singleton <| "66")
+
+                        result = BTreeUniformType.sort Right <|
+                            BTreeString <|
+                                Node "286"
+                                    Empty
+                                    (Node "66"
+                                        Empty
+                                        (singleton <| "971")
+                                    )
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeString.3b" <|
+                \() ->
+                    let
+                        expected =
+                            BTreeString <|
+                                Node "286"
+                                    (singleton <| "66")
+                                    (singleton <| "971")
+
+                        result = BTreeUniformType.sort Left <|
+                            BTreeString <|
+                                Node "286"
+                                    Empty
+                                    (Node "66"
+                                        Empty
+                                        (singleton <| "971")
+                                    )
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeBool.1a" <|
                 \() ->
                     Expect.equal
                         (BTreeBool <| Node (Just False) Empty (singleton <| Just True))
-                        (BTreeUniformType.sort <| BTreeBool <| Node (Just True) Empty (singleton <| Just False))
-            , test "of non-empty.BTreeMusicNote.1" <|
+                        (BTreeUniformType.sort Right <| BTreeBool <| Node (Just True) Empty (singleton <| Just False))
+            , test "of non-empty.BTreeBool.1b" <|
                 \() ->
                     Expect.equal
-                        (BTreeMusicNotePlayer <| Node (MusicNotePlayer.on A) Empty (singleton (MusicNotePlayer.on E)))
-                        (BTreeUniformType.sort <| BTreeMusicNotePlayer <| Node (MusicNotePlayer.on E) Empty (singleton (MusicNotePlayer.on A)))
-            , test "of non-empty.BTreeNothing.1" <|
+                        (BTreeBool <| Node (Just False) (singleton <| Just True) Empty)
+                        (BTreeUniformType.sort Left <| BTreeBool <| Node (Just True) Empty (singleton <| Just False))
+            , test "of non-empty.BTreeBool.2a" <|
+                \() ->
+                    let
+                        expected =
+                            BTreeBool <|
+                                Node (Just False)
+                                    (singleton <| Just True)
+                                    (Node (Just False)
+                                        (singleton <| Just True)
+                                        (singleton <| Just True)
+                                    )
+
+                        result = BTreeUniformType.sort Right <|
+                            BTreeBool <|
+                                Node (Just True)
+                                    (singleton <| Just True)
+                                    (Node (Just False)
+                                        Empty
+                                        (Node (Just True)
+                                            Empty
+                                            (singleton <| Just False)
+                                        )
+                                    )
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeBool.2b" <|
+                \() ->
+                    let
+                        expected =
+                            BTreeBool <|
+                                Node (Just False)
+                                    (Node (Just False)
+                                        (singleton <| Just True)
+                                        (singleton <| Just True)
+                                    )
+                                    (singleton <| Just True)
+
+                        result = BTreeUniformType.sort Left <|
+                            BTreeBool <|
+                                Node (Just True)
+                                    (singleton <| Just True)
+                                    (Node (Just False)
+                                        Empty
+                                        (Node (Just True)
+                                            Empty
+                                            (singleton <| Just False)
+                                        )
+                                    )
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeMusicNote.1a" <|
+                \() ->
+                    let
+                        expected =
+                            BTreeMusicNotePlayer <|
+                                Node (MusicNotePlayer.on A)
+                                    Empty
+                                    (singleton <| MusicNotePlayer.on E)
+
+                        result = BTreeUniformType.sort Right <|
+                            BTreeMusicNotePlayer <|
+                                Node (MusicNotePlayer.on E)
+                                    Empty
+                                    (singleton <| MusicNotePlayer.on A)
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeMusicNote.1b" <|
+                \() ->
+                    let
+                        expected =
+                            BTreeMusicNotePlayer <|
+                                Node (MusicNotePlayer.on A)
+                                    (singleton <| MusicNotePlayer.on E)
+                                    Empty
+
+                        result = BTreeUniformType.sort Left <|
+                            BTreeMusicNotePlayer <|
+                                Node (MusicNotePlayer.on E)
+                                    Empty
+                                    (singleton <| MusicNotePlayer.on A)
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeMusicNote.2a" <|
+                \() ->
+                    let
+                        expected =
+                            BTreeMusicNotePlayer <|
+                                Node (MusicNotePlayer.on C_sharp)
+                                    (singleton <| MusicNotePlayer.on E)
+                                    (Node (MusicNotePlayer.on E)
+                                        Empty
+                                        (singleton <| MusicNotePlayer.on F)
+                                    )
+
+                        result = BTreeUniformType.sort Right <|
+                            BTreeMusicNotePlayer <|
+                                Node (MusicNotePlayer.on F)
+                                    (Node (MusicNotePlayer.on E)
+                                        (singleton <| MusicNotePlayer.on C_sharp)
+                                        (singleton <| MusicNotePlayer.on E)
+                                    )
+                                Empty
+
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeMusicNote.2b" <|
+                \() ->
+                    let
+                        expected =
+                            BTreeMusicNotePlayer <|
+                                Node (MusicNotePlayer.on C_sharp)
+                                    (Node (MusicNotePlayer.on E)
+                                        (singleton <| MusicNotePlayer.on F)
+                                        Empty
+                                    )
+                                    (singleton <| MusicNotePlayer.on E)
+
+                        result = BTreeUniformType.sort Left <|
+                            BTreeMusicNotePlayer <|
+                                Node (MusicNotePlayer.on F)
+                                    (Node (MusicNotePlayer.on E)
+                                        (singleton <| MusicNotePlayer.on C_sharp)
+                                        (singleton <| MusicNotePlayer.on E)
+                                    )
+                                Empty
+                    in
+                        Expect.equal
+                            expected
+                            result
+            , test "of non-empty.BTreeNothing.1a" <|
                 \() ->
                     Expect.equal
                         (nothing3Nodes)
-                        (BTreeUniformType.sort nothing3Nodes)
+                        (BTreeUniformType.sort Right nothing3Nodes)
+            , test "of non-empty.BTreeNothing.1b" <|
+                \() ->
+                    Expect.equal
+                        (nothing3Nodes)
+                        (BTreeUniformType.sort Left nothing3Nodes)
             ]
          , describe "BTreeUniformType.deDuplicate"
             [ test "of empty" <|
@@ -1437,39 +1942,136 @@ bTreeUniformType =
                         )
             , test "of non-empty.BTreeInt.1" <|
                 \() ->
-                    Expect.equal
-                        (BTreeInt (Node (Safe 1) Empty (singleton <| Safe 2)))
-                        (BTreeUniformType.deDuplicate (BTreeInt (Node (Safe 1) (singleton <| Safe 2) (singleton <| Safe 1))))
+                    let
+                        expected =
+                            BTreeInt <|
+                                Node (Safe 1)
+                                    (singleton <| Safe 2)
+                                    Empty
+
+                        result = BTreeUniformType.deDuplicate <|
+                            BTreeInt <|
+                                Node (Safe 1)
+                                    (singleton <| Safe 2)
+                                    (singleton <| Safe 1)
+                    in
+                        Expect.equal
+                            expected
+                            result
             , test "of non-empty.BTreeInt.2" <|
                 \() ->
-                    Expect.equal
-                        (BTreeInt <| Node (toMaybeSafeInt <| maxSafeInt) (Node (toMaybeSafeInt 4) (singleton <| toMaybeSafeInt -9) Empty) Empty)
-                        (BTreeUniformType.deDuplicate (BTreeInt <| Node (toMaybeSafeInt <| maxSafeInt) (singleton <| toMaybeSafeInt 4) (Node (toMaybeSafeInt -9) Empty (singleton <| toMaybeSafeInt 4))))
+                    let
+                        expected =
+                            BTreeInt <|
+                                Node (Safe maxSafeInt)
+                                    (singleton <| Safe 4)
+                                    (singleton <| Safe -9)
+
+                        result = BTreeUniformType.deDuplicate <|
+                            BTreeInt <|
+                                Node (Safe maxSafeInt)
+                                    (singleton <| Safe 4)
+                                    (Node (Safe -9)
+                                        Empty
+                                        (singleton <| Safe 4)
+                                    )
+                    in
+                        Expect.equal
+                            expected
+                            result
             , test "of non-empty.BTreeBigInt.1" <|
                 \() ->
-                    Expect.equal
-                        (BTreeBigInt (Node (BigInt.fromInt 1) Empty (singleton <| BigInt.fromInt 2)))
-                        (BTreeUniformType.deDuplicate (BTreeBigInt (Node (BigInt.fromInt 1) (singleton <| BigInt.fromInt 2) (singleton <| BigInt.fromInt 1))))
+                    let
+                        expected =
+                            BTreeBigInt <|
+                                Node (BigInt.fromInt 1)
+                                    (singleton <| BigInt.fromInt 2)
+                                    Empty
+
+                        result = BTreeUniformType.deDuplicate <|
+                            BTreeBigInt <|
+                                Node (BigInt.fromInt 1)
+                                    (singleton <| BigInt.fromInt 2)
+                                    (singleton <| BigInt.fromInt 1)
+                    in
+                        Expect.equal
+                            expected
+                            result
             , test "of non-empty.BTreeBigInt.2" <|
                 \() ->
-                    Expect.equal
-                        (BTreeBigInt <| Node (BigInt.fromInt <| maxSafeInt) (Node (BigInt.fromInt 4) (singleton <| BigInt.fromInt -9) Empty) Empty)
-                        (BTreeUniformType.deDuplicate (BTreeBigInt <| Node (BigInt.fromInt <| maxSafeInt) (singleton <| BigInt.fromInt 4) (Node (BigInt.fromInt -9) Empty (singleton <| BigInt.fromInt 4))))
-            , test "of non-empty.BTreeString.1" <|
+                    let
+                        expected =
+                            BTreeBigInt <|
+                                Node (BigInt.fromInt maxSafeInt)
+                                    (singleton <| BigInt.fromInt 4)
+                                    (singleton <| BigInt.fromInt -9)
+
+                        result = BTreeUniformType.deDuplicate <|
+                            BTreeBigInt <|
+                                Node (BigInt.fromInt maxSafeInt)
+                                    (singleton <| BigInt.fromInt 4)
+                                    (Node (BigInt.fromInt -9)
+                                        Empty
+                                        (singleton <| BigInt.fromInt 4)
+                                    )
+                    in
+                        Expect.equal
+                            expected
+                            result
+           , test "of non-empty.BTreeString.1" <|
                 \() ->
-                    Expect.equal
-                        (BTreeString (Node "a" Empty (singleton "b")))
-                        (BTreeUniformType.deDuplicate (BTreeString (Node "a" (singleton "b") (singleton "a"))))
+                    let
+                        expected =
+                            BTreeString <|
+                                Node "a"
+                                    (singleton <| "b")
+                                    Empty
+
+                        result = BTreeUniformType.deDuplicate <|
+                            BTreeString <|
+                                Node "a"
+                                    (singleton <| "b")
+                                    (singleton <| "a")
+                    in
+                        Expect.equal
+                            expected
+                            result
             , test "of non-empty.BTreeBool.1" <|
                 \() ->
-                    Expect.equal
-                        (BTreeBool (Node (Just True) (singleton <| Just False) Empty))
-                        (BTreeUniformType.deDuplicate (BTreeBool (Node (Just True) (singleton <| Just False) (singleton <| Just True))))
+                    let
+                        expected =
+                            BTreeBool <|
+                                Node (Just True)
+                                    (singleton <| Just False)
+                                    Empty
+
+                        result = BTreeUniformType.deDuplicate <|
+                            BTreeBool <|
+                                Node (Just True)
+                                    (singleton <| Just False)
+                                    (singleton <| Just True)
+                    in
+                        Expect.equal
+                            expected
+                            result
             , test "of non-empty.BTreeMusicNotePlayer.1" <|
                 \() ->
-                    Expect.equal
-                        (BTreeMusicNotePlayer (Node (MusicNotePlayer.on F) (singleton (MusicNotePlayer.on E)) Empty))
-                        (BTreeUniformType.deDuplicate (BTreeMusicNotePlayer (Node (MusicNotePlayer.on F) (singleton (MusicNotePlayer.on E)) (singleton (MusicNotePlayer.on F)))))
+                    let
+                        expected =
+                            BTreeMusicNotePlayer <|
+                                Node (MusicNotePlayer.on E)
+                                    (singleton <| MusicNotePlayer.on F)
+                                    Empty
+
+                        result = BTreeUniformType.deDuplicate <|
+                            BTreeMusicNotePlayer <|
+                                Node (MusicNotePlayer.on E)
+                                    (singleton <| MusicNotePlayer.on F)
+                                    (singleton <| MusicNotePlayer.on E)
+                    in
+                        Expect.equal
+                            expected
+                            result
             ]
          , describe "BTreeUniformType.isAllNothing"
             [ test "of empty" <|
