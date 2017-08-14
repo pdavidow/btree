@@ -441,7 +441,7 @@ viewDashboardTop model =
                     , disabled model.isPlayNotes
                     , onClick (SortUniformTrees Left)
                     ]
-                    [text "insert left"]
+                    [text "left"]
                 , button
                     [ classes
                         [ T.db
@@ -453,7 +453,7 @@ viewDashboardTop model =
                     , disabled model.isPlayNotes
                     , onClick (SortUniformTrees Right)
                     ]
-                    [text "insert right"]
+                    [text "right"]
                 ]
             ]
         , button
@@ -503,7 +503,7 @@ viewDashboardTop model =
                         ]
                     , onClick RequestRandomPairsIntDirection
                     ]
-                    [text "insert random"]
+                    [text "insert random l/r"]
                 , div -- divider line
                     [ classes
                         [ T.db
