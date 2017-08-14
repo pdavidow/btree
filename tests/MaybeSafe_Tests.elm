@@ -1,6 +1,6 @@
 module MaybeSafe_Tests exposing (..)
 
-import MaybeSafe exposing (MaybeSafe(..), isSafe, isSafeInt, toMaybeSafe, toMaybeSafeInt, maxSafeInt, sumMaybeSafeInt)
+import MaybeSafe exposing (MaybeSafe(..), isSafe, isSafeInt, toMaybeSafe, toMaybeSafeInt, maxSafeInt, sumMaybeSafeInt, compare)
 
 import Test exposing (..)
 import Expect
@@ -82,6 +82,26 @@ maybeSafe =
             , test "sumMaybeSafeInt.8" <|
                 \() ->
                     Expect.equal (Unsafe) (MaybeSafe.sumMaybeSafeInt [Safe maxSafeInt, Safe 1, Safe -2])
+            ]
+         , describe "MaybeSafe.compare"
+            [ test "compare.Safe Safe LT" <|
+                \() ->
+                    Expect.equal LT (MaybeSafe.compare (Safe 0) (Safe 1))
+            , test "compare.Safe Safe EQ" <|
+                \() ->
+                    Expect.equal EQ (MaybeSafe.compare (Safe 0) (Safe 0))
+            , test "compare.Safe Safe GT" <|
+                \() ->
+                    Expect.equal GT (MaybeSafe.compare (Safe 1) (Safe 0))
+            , test "compare.(Safe _, Unsafe) -> LT" <|
+                \() ->
+                    Expect.equal LT (MaybeSafe.compare (MaybeSafe.toMaybeSafeInt <| maxSafeInt) (MaybeSafe.toMaybeSafeInt <| negate <| maxSafeInt + 1))
+            , test "compare.(Unsafe, Unsafe) -> EQ" <|
+                \() ->
+                    Expect.equal EQ (MaybeSafe.compare (MaybeSafe.toMaybeSafeInt <| maxSafeInt + 1) (MaybeSafe.toMaybeSafeInt <| negate <| maxSafeInt + 1))
+            , test "compare.(Unsafe, Safe _) -> GT" <|
+                \() ->
+                    Expect.equal GT (MaybeSafe.compare (MaybeSafe.toMaybeSafeInt <| negate <| maxSafeInt + 1) (MaybeSafe.toMaybeSafeInt <| maxSafeInt))
             ]
         ]
 

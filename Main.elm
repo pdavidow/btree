@@ -97,13 +97,49 @@ type alias Model =
 
 initialModel: Model
 initialModel =
-    { intTree = BTreeInt <| Node (toMaybeSafeInt <| maxSafeInt) (singleton <| toMaybeSafeInt 4) (Node (toMaybeSafeInt -9) Empty (singleton <| toMaybeSafeInt 4))
-    , bigIntTree = BTreeBigInt <| Node (BigInt.fromInt <| maxSafeInt) (singleton <| BigInt.fromInt 4) (Node (BigInt.fromInt -9) Empty (singleton <| BigInt.fromInt 4))
-    , stringTree = BTreeString <| Node "maxSafeInt" (singleton "four") (Node "-nine" Empty (singleton "four"))
-    , boolTree = BTreeBool <| Node (Just True) (singleton <| Just True) (Node (Just False) Empty (Node (Just True) Empty (singleton <| Just False)))
+    { intTree = BTreeInt <|
+        Node (toMaybeSafeInt <| maxSafeInt)
+            (singleton <| toMaybeSafeInt 4)
+            (Node (toMaybeSafeInt -9)
+                Empty
+                (singleton <| toMaybeSafeInt 4)
+            )
+    , bigIntTree = BTreeBigInt <|
+        Node (BigInt.fromInt <| maxSafeInt)
+            (singleton <| BigInt.fromInt 4)
+            (Node (BigInt.fromInt -9)
+                Empty
+                (singleton <| BigInt.fromInt 4)
+            )
+    , stringTree = BTreeString <|
+        Node "maxSafeInt"
+            (singleton "four")
+            (Node "-nine"
+                Empty
+                (singleton "four")
+            )
+    , boolTree = BTreeBool <|
+        Node (Just True)
+            (singleton <| Just True)
+            (Node (Just False)
+                Empty
+                (Node (Just True)
+                    Empty
+                    (singleton <| Just False)
+                )
+            )
     , initialMusicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
     , musicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
-    , variedTree = BTreeVaried <| Node (BigIntNode <| BigInt.fromInt maxSafeInt) (Node (StringNode "A") (singleton <| MusicNoteNode <| MusicNotePlayer.on A) (singleton <| IntNode <| toMaybeSafeInt 123)) ((Node (BoolNode <| Just True)) (singleton <| MusicNoteNode <| MusicNotePlayer.on A) (singleton <| BoolNode <| Just True))
+    , variedTree = BTreeVaried <|
+        Node (BigIntNode <| BigInt.fromInt maxSafeInt)
+            (Node (StringNode "A")
+                (singleton <| MusicNoteNode <| MusicNotePlayer.on A)
+                (singleton <| IntNode <| toMaybeSafeInt 123)
+            )
+            ((Node (BoolNode <| Just True))
+                (singleton <| MusicNoteNode <| MusicNotePlayer.on A)
+                (singleton <| BoolNode <| Just True)
+            )
     , intTreeCache = BTreeInt Empty
     , bigIntTreeCache = BTreeBigInt Empty
     , stringTreeCache = BTreeString Empty
@@ -123,9 +159,11 @@ initialModel =
     , uuidSeed = initialSeed 0 -- placeholder
     }
 
+
 maxRandomInt = 999
 minRandomListLength = 3
 maxRandomListLength = 12
+
 
 generateIds : Int -> Seed -> ( List Uuid, Seed )
 generateIds count startSeed =

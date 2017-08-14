@@ -1,14 +1,14 @@
 module TreeMusicPlayer_Tests exposing (..)
 
-import TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote)
+import TreeMusicPlayer exposing (treeMusicPlayBy, startPlayNote, donePlayNote)
 
 import BTreeUniformType exposing (BTreeUniformType(..))
-import BTree exposing (BTree(..), singleton)
+import BTree exposing (BTree(..), TraversalOrder(..), singleton)
 import MusicNote exposing (MusicNote(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..), on)
 
 import Random.Pcg exposing (initialSeed, step)
-import Uuid exposing (uuidGenerator)
+import Uuid exposing (uuidGenerator, fromString)
 
 import Test exposing (..)
 import Expect
@@ -39,26 +39,44 @@ setPlayMode isPlaying =
             Nothing -> not isPlaying -- should never get here, but might as well
 
 
+testTree : BTreeUniformType
+testTree =
+    BTreeMusicNotePlayer <|
+        Node (MusicNotePlayer { mbNote = Just A, isPlaying = False, mbId = Uuid.fromString "435d0606-136a-4a3e-b093-e96e0a310d35" })
+            (Node (MusicNotePlayer { mbNote = Just A_sharp, isPlaying = False, mbId = Uuid.fromString "22de94eb-cdfc-42ee-a397-1ef94d79e7cb" })
+                (Node (MusicNotePlayer { mbNote = Just E, isPlaying = False, mbId = Uuid.fromString "03d1f029-e0fa-433e-aa2b-25ceb1c19216" })
+                    (singleton <| MusicNotePlayer { mbNote = Just F, isPlaying = False, mbId = Uuid.fromString "0b9d1ebb-db5e-483a-b9aa-39b5f390ecd3" })
+                    (singleton <| MusicNotePlayer { mbNote = Just G, isPlaying = False, mbId = Uuid.fromString "96f92b9f-9cb8-4815-9f7f-12c497551382" })
+                )
+                (singleton <| MusicNotePlayer { mbNote = Just E, isPlaying = False, mbId = Uuid.fromString "217e28d2-205f-4952-bf5b-4128e85a5901" })
+            )
+            (singleton <| MusicNotePlayer { mbNote = Just C_sharp, isPlaying = False, mbId = Uuid.fromString "c778e0da-65a5-4460-ac78-869f76b3c964" })
+
+
 treeMusicPlayer : Test
 treeMusicPlayer =
     describe "TreeMusicPlayer module"
          [ describe "TreeMusicPlayer.playTreeMusic"
-            [ test "invalid" <|
+            [ test "empty" <|
                 \() ->
-                    let
-                        tree = BTreeInt Empty
-                        result = Cmd.none
-
-                    in
-                        Expect.equal result (treeMusicPlay tree)
-            , test "valid" <|
+                    Expect.equal
+                        Cmd.none
+                        (treeMusicPlayBy PreOrder <| BTreeInt Empty)
+            , test "non-empty, PreOrder" <|
                 \() ->
-                    let
-                        tree = BTreeMusicNotePlayer (singleton (MusicNotePlayer.on A))
-                        result = "{ type = \"node\", branches = [{ type = \"leaf\", home = \"port_playNote\", value = { freq = 220, id = \"\", startOffset = 0, duration = 0.75, isLast = True } }] }"
-
-                    in
-                        Expect.equal result (toString (treeMusicPlay tree))
+                    Expect.equal
+                        "{ type = \"node\", branches = [{ type = \"leaf\", home = \"port_playNote\", value = { freq = 220, id = \"435d0606-136a-4a3e-b093-e96e0a310d35\", startOffset = 0, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 233.08, id = \"22de94eb-cdfc-42ee-a397-1ef94d79e7cb\", startOffset = 1, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 329.63, id = \"03d1f029-e0fa-433e-aa2b-25ceb1c19216\", startOffset = 2, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 349.23, id = \"0b9d1ebb-db5e-483a-b9aa-39b5f390ecd3\", startOffset = 3, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 392, id = \"96f92b9f-9cb8-4815-9f7f-12c497551382\", startOffset = 4, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 329.63, id = \"217e28d2-205f-4952-bf5b-4128e85a5901\", startOffset = 5, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 277.18, id = \"c778e0da-65a5-4460-ac78-869f76b3c964\", startOffset = 6, duration = 0.75, isLast = True } }] }"
+                        (toString (treeMusicPlayBy PreOrder testTree))
+            , test "non-empty, InOrder" <|
+                \() ->
+                    Expect.equal
+                        "{ type = \"node\", branches = [{ type = \"leaf\", home = \"port_playNote\", value = { freq = 349.23, id = \"0b9d1ebb-db5e-483a-b9aa-39b5f390ecd3\", startOffset = 0, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 329.63, id = \"03d1f029-e0fa-433e-aa2b-25ceb1c19216\", startOffset = 1, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 392, id = \"96f92b9f-9cb8-4815-9f7f-12c497551382\", startOffset = 2, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 233.08, id = \"22de94eb-cdfc-42ee-a397-1ef94d79e7cb\", startOffset = 3, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 329.63, id = \"217e28d2-205f-4952-bf5b-4128e85a5901\", startOffset = 4, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 220, id = \"435d0606-136a-4a3e-b093-e96e0a310d35\", startOffset = 5, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 277.18, id = \"c778e0da-65a5-4460-ac78-869f76b3c964\", startOffset = 6, duration = 0.75, isLast = True } }] }"
+                        (toString (treeMusicPlayBy InOrder testTree))
+            , test "non-empty, PostOrder" <|
+                \() ->
+                    Expect.equal
+                        "{ type = \"node\", branches = [{ type = \"leaf\", home = \"port_playNote\", value = { freq = 349.23, id = \"0b9d1ebb-db5e-483a-b9aa-39b5f390ecd3\", startOffset = 0, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 392, id = \"96f92b9f-9cb8-4815-9f7f-12c497551382\", startOffset = 1, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 329.63, id = \"03d1f029-e0fa-433e-aa2b-25ceb1c19216\", startOffset = 2, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 329.63, id = \"217e28d2-205f-4952-bf5b-4128e85a5901\", startOffset = 3, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 233.08, id = \"22de94eb-cdfc-42ee-a397-1ef94d79e7cb\", startOffset = 4, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 277.18, id = \"c778e0da-65a5-4460-ac78-869f76b3c964\", startOffset = 5, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 220, id = \"435d0606-136a-4a3e-b093-e96e0a310d35\", startOffset = 6, duration = 0.75, isLast = True } }] }"
+                        (toString (treeMusicPlayBy PostOrder testTree))
             ]
          , describe "TreeMusicPlayer.startPlayNote"
             [ test "startPlayNote" <|

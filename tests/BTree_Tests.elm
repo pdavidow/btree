@@ -1,6 +1,6 @@
 module BTree_Tests exposing (..)
 
-import BTree exposing (BTree(..), TraversalOrder(..), Direction(..), singleton, depth, map, flatten, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortTo, sortByTo, sortWithTo, fromList, fromListBy, insert, insertBy, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes,   flattenBy, flattenUsingFoldBy)
+import BTree exposing (BTree(..), TraversalOrder(..), Direction(..), singleton, depth, map, flatten, flattenBy, flattenUsingFold, flattenUsingFoldBy, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, isElementUsingFold, toTreeDiagramTree, sort, sortTo, sortByTo, sortWithTo, fromList, fromIntList, fromListBy, fromListWith, fromListAsIsBy, fromListAsIs_left, fromListAsIs_right, fromListAsIs_directed, insert, insertBy, insertWith, insertWith_directed, insertAsIsBy, insertAsIs_directed, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes)
 import NodeTag exposing (NodeTag(..))
 import MusicNote exposing (MusicNote(..), sorter)
 import MaybeSafe exposing (MaybeSafe(..), maxSafeInt)
@@ -852,6 +852,127 @@ bTree =
                         |> BTree.fromListBy (MusicNote.sorter)
                         |> Expect.equal (Node A Empty (Node B Empty (singleton B)))
             ]
+        , describe "BTree.fromListWith"
+            [ test "of fromListWith.0" <|
+                \() ->
+                    []
+                        |> BTree.fromListWith (BigInt.compare)
+                        |> Expect.equal Empty
+            , test "of fromListWith.1" <|
+                \() ->
+                    [BigInt.fromInt 1, BigInt.fromInt 2]
+                        |> BTree.fromListWith (BigInt.compare)
+                        |> Expect.equal (Node (BigInt.fromInt 1) Empty (singleton <| BigInt.fromInt 2))
+            , test "of fromListWith.2" <|
+                \() ->
+                    [BigInt.fromInt 2, BigInt.fromInt 1]
+                        |> BTree.fromListWith (BigInt.compare)
+                        |> Expect.equal (Node (BigInt.fromInt 2) (singleton <| BigInt.fromInt 1) Empty)
+            ]
+         , describe "BTree.fromListAsIsBy"
+            [ test "of fromListAsIsBy.0 Left" <|
+                \() ->
+                    Expect.equal Empty (BTree.fromListAsIsBy Left [])
+            , test "of fromListAsIsBy.0 Right" <|
+                \() ->
+                    Expect.equal Empty (BTree.fromListAsIsBy Right [])
+            , test "of fromListAsIsBy.1 Left" <|
+                \() ->
+                    Expect.equal
+                        (Node 1
+                            (Node 2
+                                (singleton 4)
+                                Empty
+                            )
+                            (singleton 3)
+                         )
+                        (BTree.fromListAsIsBy Left [1,2,3,4])
+            , test "of fromListAsIsBy.1 Right" <|
+                \() ->
+                    Expect.equal
+                        (Node 1
+                            (singleton 3)
+                            (Node 2
+                                Empty
+                                (singleton 4)
+                            )
+                        )
+                        (BTree.fromListAsIsBy Right [1,2,3,4])
+            ]
+         , describe "BTree.fromListAsIs_left"
+            [ test "of fromListAsIs_left.0" <|
+                \() ->
+                    Expect.equal Empty (BTree.fromListAsIs_left [])
+            , test "of fromListAsIs_left.1" <|
+                \() ->
+                    Expect.equal
+                        (Node 1
+                            (Node 2
+                                (singleton 4)
+                                Empty
+                            )
+                            (singleton 3)
+                         )
+                        (BTree.fromListAsIs_left [1,2,3,4])
+            ]
+         , describe "BTree.fromListAsIs_right"
+            [ test "of fromListAsIs_right.0" <|
+                \() ->
+                    Expect.equal Empty (BTree.fromListAsIs_right [])
+            , test "of fromListAsIs_right.1" <|
+                \() ->
+                    Expect.equal
+                        (Node 1
+                            (singleton 3)
+                            (Node 2
+                                Empty
+                                (singleton 4)
+                            )
+                        )
+                        (BTree.fromListAsIs_right [1,2,3,4])
+            ]
+         , describe "BTree.fromListAsIs_directed"
+            [ test "of fromListAsIs_directed.0" <|
+                \() ->
+                    Expect.equal Empty (BTree.fromListAsIs_directed [])
+            , test "of fromListAsIs_directed.1a" <|
+                \() ->
+                    Expect.equal (singleton 1) (BTree.fromListAsIs_directed [(1, Left)])
+            , test "of fromListAsIs_directed.1b" <|
+                \() ->
+                    Expect.equal (singleton 1) (BTree.fromListAsIs_directed [(1, Right)])
+            , test "of fromListAsIs_directed.2" <|
+                \() ->
+                    Expect.equal
+                        (Node 535
+                            (singleton 589)
+                            (Node 817
+                                (singleton 842)
+                                (singleton 554)
+                            )
+                        )
+                        (BTree.fromListAsIs_directed [(535,Right),(817,Right),(589,Left),(554,Right),(842,Right)])
+            , test "of fromListAsIs_directed.3" <|
+                \() ->
+                    Expect.equal
+                        (Node 258
+                            (Node 305
+                                (Node 220
+                                    (singleton 156)
+                                    Empty
+                                )
+                                (singleton 486)
+                            )
+                            (Node 5
+                                (singleton 697)
+                                (Node 801
+                                    (singleton 323)
+                                    (singleton 871)
+                                )
+                            )
+                        )
+                        (BTree.fromListAsIs_directed [(258,Left),(305,Left),(5,Right),(801,Right),(220,Left),(697,Right),(486,Left),(156,Left),(871,Right),(323,Right)])
+            ]
         , describe "BTree.insert"
             [ test "of insert.0" <|
                 \() ->
@@ -894,7 +1015,7 @@ bTree =
                         target = Empty
                         newValue = A
                     in
-                        Expect.equal (singleton newValue) (BTree.insertBy (MusicNote.sorter) newValue target)
+                        Expect.equal (singleton newValue) (BTree.insertBy MusicNote.sorter newValue target)
             , test "of insertBy.1" <|
                  \() ->
                     let
@@ -903,7 +1024,7 @@ bTree =
                         target = singleton currentValue
                         newChild = singleton newValue
                     in
-                        Expect.equal (Node currentValue Empty newChild) (BTree.insertBy (MusicNote.sorter) newValue target)
+                        Expect.equal (Node currentValue Empty newChild) (BTree.insertBy MusicNote.sorter newValue target)
             , test "of insertBy.2" <|
                  \() ->
                     let
@@ -912,15 +1033,331 @@ bTree =
                         target = singleton currentValue
                         newChild = singleton newValue
                     in
-                        Expect.equal (Node currentValue newChild Empty) (BTree.insertBy (MusicNote.sorter) newValue target)
+                        Expect.equal (Node currentValue newChild Empty) (BTree.insertBy MusicNote.sorter newValue target)
             , test "of insertBy.3" <|
                  \() ->
                     let
                         currentValue = B
                         newValue = B
                         target = singleton currentValue
+                        newChild = singleton newValue
                     in
-                        Expect.equal (Node B Empty (singleton B)) (BTree.insertBy (MusicNote.sorter) newValue target)
+                        Expect.equal (Node currentValue Empty newChild) (BTree.insertBy MusicNote.sorter newValue target)
+            ]
+        , describe "BTree.insertWith"
+            [ test "of insertWith.0" <|
+                \() ->
+                    let
+                        target = Empty
+                        newValue = BigInt.fromInt 1
+                    in
+                        Expect.equal (singleton newValue) (BTree.insertWith BigInt.compare newValue target)
+            , test "of insertWith.1" <|
+                 \() ->
+                    let
+                        currentValue = BigInt.fromInt 2
+                        newValue = BigInt.fromInt 3
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue Empty newChild) (BTree.insertWith BigInt.compare newValue target)
+            , test "of insertWith.2" <|
+                 \() ->
+                    let
+                        currentValue = BigInt.fromInt 2
+                        newValue = BigInt.fromInt 1
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue newChild Empty) (BTree.insertWith BigInt.compare newValue target)
+            , test "of insertWith.3" <|
+                 \() ->
+                    let
+                        currentValue = BigInt.fromInt 2
+                        newValue = BigInt.fromInt 2
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue Empty newChild) (BTree.insertWith BigInt.compare newValue target)
+
+            ]
+        , describe "BTree.insertWith_directed"
+            [ test "of insertWith_directed.0a" <|
+                \() ->
+                    let
+                        target = Empty
+                        newValue = BigInt.fromInt 1
+                    in
+                        Expect.equal (singleton newValue) (BTree.insertWith_directed Left BigInt.compare newValue target)
+            , test "of insertWith_directed.0b" <|
+                \() ->
+                    let
+                        target = Empty
+                        newValue = BigInt.fromInt 1
+                    in
+                        Expect.equal (singleton newValue) (BTree.insertWith_directed Right BigInt.compare newValue target)
+            , test "of insertWith_directed.1a" <|
+                 \() ->
+                    let
+                        currentValue = BigInt.fromInt 2
+                        newValue = BigInt.fromInt 3
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue Empty newChild) (BTree.insertWith_directed Left BigInt.compare newValue target)
+            , test "of insertWith_directed.1b" <|
+                 \() ->
+                    let
+                        currentValue = BigInt.fromInt 2
+                        newValue = BigInt.fromInt 3
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue newChild Empty) (BTree.insertWith_directed Right BigInt.compare newValue target)
+            , test "of insertWith_directed.2a" <|
+                 \() ->
+                    let
+                        currentValue = BigInt.fromInt 2
+                        newValue = BigInt.fromInt 1
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue newChild Empty) (BTree.insertWith_directed Left BigInt.compare newValue target)
+            , test "of insertWith_directed.2b" <|
+                 \() ->
+                    let
+                        currentValue = BigInt.fromInt 2
+                        newValue = BigInt.fromInt 1
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue Empty newChild) (BTree.insertWith_directed Right BigInt.compare newValue target)
+            , test "of insertWith_directed.3a" <|
+                 \() ->
+                    let
+                        currentValue = BigInt.fromInt 2
+                        newValue = BigInt.fromInt 2
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue Empty newChild) (BTree.insertWith_directed Left BigInt.compare newValue target)
+            , test "of insertWith_directed.3b" <|
+                 \() ->
+                    let
+                        currentValue = BigInt.fromInt 2
+                        newValue = BigInt.fromInt 2
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue newChild Empty) (BTree.insertWith_directed Right BigInt.compare newValue target)
+            ]
+        , describe "BTree.insertAsIsBy"
+            [ test "of insertAsIsBy.0a" <|
+                \() ->
+                    let
+                        target = Empty
+                        newValue = 1
+                    in
+                        Expect.equal (singleton newValue) (BTree.insertAsIsBy Left newValue target)
+            , test "of insertAsIsBy.0b" <|
+                \() ->
+                    let
+                        target = Empty
+                        newValue = 1
+                    in
+                        Expect.equal (singleton newValue) (BTree.insertAsIsBy Right newValue target)
+            , test "of insertAsIsBy.1a" <|
+                 \() ->
+                    let
+                        currentValue = 2
+                        newValue = 3
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue newChild Empty) (BTree.insertAsIsBy Left newValue target)
+            , test "of insertAsIsBy.1b" <|
+                 \() ->
+                    let
+                        currentValue = 2
+                        newValue = 3
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue Empty newChild) (BTree.insertAsIsBy Right newValue target)
+            , test "of insertAsIsBy.2a" <|
+                 \() ->
+                    let
+                        currentValue = 2
+                        newValue = 1
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue newChild Empty) (BTree.insertAsIsBy Left newValue target)
+            , test "of insertAsIsBy.2b" <|
+                 \() ->
+                    let
+                        currentValue = 2
+                        newValue = 1
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue Empty newChild) (BTree.insertAsIsBy Right newValue target)
+            , test "of insertAsIsBy.3a" <|
+                 \() ->
+                    let
+                        currentValue = 2
+                        newValue = 2
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue newChild Empty) (BTree.insertAsIsBy Left newValue target)
+            , test "of insertAsIsBy.3b" <|
+                 \() ->
+                    let
+                        currentValue = 2
+                        newValue = 2
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue Empty newChild) (BTree.insertAsIsBy Right newValue target)
+            , test "of insertAsIsBy.4a" <|
+                 \() ->
+                    Expect.equal
+                        (Node 0
+                            (Node 1
+                                (singleton 3)
+                                Empty
+                            )
+                            (singleton 2)
+                        )
+                        (BTree.insertAsIsBy Left 3
+                            (Node 0
+                                (singleton 1)
+                                (singleton 2)
+                            )
+                        )
+            , test "of insertAsIsBy.4b" <|
+                 \() ->
+                    Expect.equal
+                        (Node 0
+                            (singleton 1)
+                            (Node 2
+                                Empty
+                                (singleton 3)
+                            )
+                        )
+                        (BTree.insertAsIsBy Right 3
+                            (Node 0
+                                (singleton 1)
+                                (singleton 2)
+                            )
+                        )
+            ]
+        , describe "BTree.insertAsIs_directed"
+            [ test "of insertAsIs_directed.0a" <|
+                \() ->
+                    let
+                        target = Empty
+                        newValue = 1
+                        direction = Left
+                        insert = (newValue, direction)
+                    in
+                        Expect.equal (singleton newValue) (BTree.insertAsIs_directed insert target)
+            , test "of insertAsIs_directed.0b" <|
+                \() ->
+                    let
+                        target = Empty
+                        newValue = 1
+                        direction = Right
+                        insert = (newValue, direction)
+                    in
+                        Expect.equal (singleton newValue) (BTree.insertAsIs_directed insert target)
+            , test "of insertAsIs_directed.1a" <|
+                \() ->
+                    let
+                        currentValue = 2
+                        newValue = 3
+                        direction = Left
+                        insert = (newValue, direction)
+                    in
+                        Expect.equal (Node currentValue (singleton newValue) Empty) (BTree.insertAsIs_directed insert (singleton currentValue))
+            , test "of insertAsIs_directed.1b" <|
+                \() ->
+                    let
+                        currentValue = 2
+                        newValue = 3
+                        direction = Right
+                        insert = (newValue, direction)
+                    in
+                        Expect.equal (Node currentValue Empty (singleton newValue)) (BTree.insertAsIs_directed insert (singleton currentValue))
+            , test "of insertAsIs_directed.2a" <|
+                \() ->
+                    let
+                        currentValue = 2
+                        newValue = 1
+                        direction = Left
+                        insert = (newValue, direction)
+                    in
+                        Expect.equal (Node currentValue (singleton newValue) Empty) (BTree.insertAsIs_directed insert (singleton currentValue))
+            , test "of insertAsIs_directed.2b" <|
+                \() ->
+                    let
+                        currentValue = 2
+                        newValue = 1
+                        direction = Right
+                        insert = (newValue, direction)
+                    in
+                        Expect.equal (Node currentValue Empty (singleton newValue)) (BTree.insertAsIs_directed insert (singleton currentValue))
+            , test "of insertAsIs_directed.3a" <|
+                \() ->
+                    let
+                        currentValue = 2
+                        newValue = 2
+                        direction = Left
+                        insert = (newValue, direction)
+                    in
+                        Expect.equal (Node currentValue (singleton newValue) Empty) (BTree.insertAsIs_directed insert (singleton currentValue))
+            , test "of insertAsIs_directed.3b" <|
+                \() ->
+                    let
+                        currentValue = 2
+                        newValue = 2
+                        direction = Right
+                        insert = (newValue, direction)
+                    in
+                        Expect.equal (Node currentValue Empty (singleton newValue)) (BTree.insertAsIs_directed insert (singleton currentValue))
+            , test "of insertAsIs_directed.4a" <|
+                 \() ->
+                    Expect.equal
+                        (Node 0
+                            (Node 1
+                                (singleton 3)
+                                Empty
+                            )
+                            (singleton 2)
+                        )
+                        (BTree.insertAsIs_directed (3, Left)
+                            (Node 0
+                                (singleton 1)
+                                (singleton 2)
+                            )
+                        )
+            , test "of insertAsIs_directed.4b" <|
+                 \() ->
+                    Expect.equal
+                        (Node 0
+                            (singleton 1)
+                            (Node 2
+                                Empty
+                                (singleton 3)
+                            )
+                        )
+                        (BTree.insertAsIs_directed (3, Right)
+                            (Node 0
+                                (singleton 1)
+                                (singleton 2)
+                            )
+                        )
             ]
          , describe "BTree.deDuplicate"
             [ test "of deDuplicate.0" <|
@@ -1007,4 +1444,3 @@ bTree =
                     Expect.equal (Node NothingNode (singleton NothingNode) (singleton NothingNode)) (BTree.toNothingNodes (Node 1 (singleton 2) (singleton 3)))
             ]
         ]
-

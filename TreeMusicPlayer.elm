@@ -1,4 +1,4 @@
-module TreeMusicPlayer exposing (treeMusicPlay, treeMusicPlayBy, startPlayNote, donePlayNote)
+module TreeMusicPlayer exposing (treeMusicPlayBy, startPlayNote, donePlayNote)
 
 import Time exposing (Time, millisecond, inMilliseconds)
 import Uuid exposing (Uuid)
@@ -9,11 +9,6 @@ import MusicNote exposing (Freq(..), toFreq)
 import MusicNotePlayer exposing (MusicNotePlayer(..), isPlayable)
 import AudioNote exposing (AudioNote, audioNote)
 import Ports exposing (port_playNote)
-
-
-treeMusicPlay : BTreeUniformType -> Cmd msg
-treeMusicPlay bTreeUniformType =
-    treeMusicPlayBy PreOrder bTreeUniformType
 
 
 treeMusicPlayBy : TraversalOrder -> BTreeUniformType -> Cmd msg

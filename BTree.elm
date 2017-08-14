@@ -1,4 +1,4 @@
-module BTree exposing (BTree(..), TraversalOrder(..), Direction(..), singleton, depth, map, flatten, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, flattenUsingFold, isElementUsingFold, toTreeDiagramTree, sort, sortTo, sortByTo, sortWithTo, fromList, fromIntList, fromListBy, insert, insertBy, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes,    fromListAsIsBy, fromListAsIs_left, fromListAsIs_right, fromListAsIs_directed, fromListWith, insertWith, insertWith_directed, insertAsIsBy, insertAsIs_directed, flattenBy, flattenUsingFoldBy)
+module BTree exposing (BTree(..), TraversalOrder(..), Direction(..), singleton, depth, map, flatten, flattenBy, flattenUsingFold, flattenUsingFoldBy, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, isElementUsingFold, toTreeDiagramTree, sort, sortTo, sortByTo, sortWithTo, fromList, fromIntList, fromListBy, fromListWith, fromListAsIsBy, fromListAsIs_left, fromListAsIs_right, fromListAsIs_directed, insert, insertBy, insertWith, insertWith_directed, insertAsIsBy, insertAsIs_directed, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes)
 
 -- http://elm-lang.org/examples/binary-Tree
 
@@ -355,8 +355,8 @@ insertWith_directed direction fn x bTree =
         let
             order = fn x y
 
-            insertLeft = \unit -> Node y (insertWith fn x left) right
-            insertRight = \unit -> Node y left (insertWith fn x right)
+            insertLeft = \unit -> Node y (insertWith_directed direction fn x left) right
+            insertRight = \unit -> Node y left (insertWith_directed direction fn x right)
         in
             case (order, direction) of
                 (LT, Right) -> insertRight ()

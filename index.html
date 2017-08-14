@@ -16,8 +16,6 @@
 
 
             app.ports.port_playNote.subscribe((note) => {
-                console.log ("port_playNote note", note);
-
                 const {freq, id, startOffset, duration, isLast} = note;
                 const soundOscillator = audioContext.createOscillator();
                 const silentOscillator = audioContext.createOscillator(); // hack for lack of .onstarted, start sound shifted to compensate
