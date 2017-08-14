@@ -1,6 +1,6 @@
 module BTree_Tests exposing (..)
 
-import BTree exposing (BTree(..), TraversalOrder(..), Direction(..), singleton, depth, map, flatten, flattenBy, flattenUsingFold, flattenUsingFoldBy, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, isElementUsingFold, toTreeDiagramTree, sort, sortTo, sortByTo, sortWithTo, fromList, fromIntList, fromListBy, fromListWith, fromListAsIsBy, fromListAsIs_left, fromListAsIs_right, fromListAsIs_directed, insert, insertBy, insertWith, insertWith_directed, insertAsIsBy, insertAsIs_directed, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes)
+import BTree exposing (BTree(..), TraversalOrder(..), Direction(..), singleton, depth, map, flatten, flattenBy, flattenUsingFold, flattenUsingFoldBy, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, isElementUsingFold, toTreeDiagramTree, sort, sortTo, sortByTo, sortWithTo, fromList, fromIntList, fromListBy, fromListWith, fromListAsIsBy, fromListAsIs_left, fromListAsIs_right, fromListAsIs_directed, insert, insertBy, insertWith, insertWith_directed, insertAsIs_left, insertAsIs_right, insertAsIsBy, insertAsIs_directed, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes)
 import NodeTag exposing (NodeTag(..))
 import MusicNote exposing (MusicNote(..), sorter)
 import MaybeSafe exposing (MaybeSafe(..), maxSafeInt)
@@ -1150,6 +1150,110 @@ bTree =
                         newChild = singleton newValue
                     in
                         Expect.equal (Node currentValue newChild Empty) (BTree.insertWith_directed Right BigInt.compare newValue target)
+            ]
+        , describe "BTree.insertAsIs_left"
+            [ test "of insertAsIs_left.0" <|
+                \() ->
+                    let
+                        target = Empty
+                        newValue = 1
+                    in
+                        Expect.equal (singleton newValue) (BTree.insertAsIs_left newValue target)
+            , test "of insertAsIs_left.1" <|
+                 \() ->
+                    let
+                        currentValue = 2
+                        newValue = 3
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue newChild Empty) (BTree.insertAsIs_left newValue target)
+            , test "of insertAsIs_left.2" <|
+                 \() ->
+                    let
+                        currentValue = 2
+                        newValue = 1
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue newChild Empty) (BTree.insertAsIs_left newValue target)
+            , test "of insertAsIs_left.3" <|
+                 \() ->
+                    let
+                        currentValue = 2
+                        newValue = 2
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue newChild Empty) (BTree.insertAsIs_left newValue target)
+            , test "of insertAsIs_left.4" <|
+                 \() ->
+                    Expect.equal
+                        (Node 0
+                            (Node 1
+                                (singleton 3)
+                                Empty
+                            )
+                            (singleton 2)
+                        )
+                        (BTree.insertAsIs_left 3
+                            (Node 0
+                                (singleton 1)
+                                (singleton 2)
+                            )
+                        )
+            ]
+        , describe "BTree.insertAsIs_right"
+            [ test "of insertAsIs_right.0" <|
+                \() ->
+                    let
+                        target = Empty
+                        newValue = 1
+                    in
+                        Expect.equal (singleton newValue) (BTree.insertAsIs_right newValue target)
+            , test "of insertAsIs_right.1" <|
+                 \() ->
+                    let
+                        currentValue = 2
+                        newValue = 3
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue Empty newChild) (BTree.insertAsIs_right newValue target)
+            , test "of insertAsIs_right.2" <|
+                 \() ->
+                    let
+                        currentValue = 2
+                        newValue = 1
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue Empty newChild) (BTree.insertAsIs_right newValue target)
+            , test "of insertAsIs_right.3" <|
+                 \() ->
+                    let
+                        currentValue = 2
+                        newValue = 2
+                        target = singleton currentValue
+                        newChild = singleton newValue
+                    in
+                        Expect.equal (Node currentValue Empty newChild) (BTree.insertAsIs_right newValue target)
+            , test "of insertAsIs_right.4" <|
+                 \() ->
+                    Expect.equal
+                        (Node 0
+                            (singleton 1)
+                            (Node 2
+                                Empty
+                                (singleton 3)
+                            )
+                        )
+                        (BTree.insertAsIsBy Right 3
+                            (Node 0
+                                (singleton 1)
+                                (singleton 2)
+                            )
+                        )
             ]
         , describe "BTree.insertAsIsBy"
             [ test "of insertAsIsBy.0a" <|

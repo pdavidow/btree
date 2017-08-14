@@ -1,6 +1,4 @@
-module BTree exposing (BTree(..), TraversalOrder(..), Direction(..), singleton, depth, map, flatten, flattenBy, flattenUsingFold, flattenUsingFoldBy, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, isElementUsingFold, toTreeDiagramTree, sort, sortTo, sortByTo, sortWithTo, fromList, fromIntList, fromListBy, fromListWith, fromListAsIsBy, fromListAsIs_left, fromListAsIs_right, fromListAsIs_directed, insert, insertBy, insertWith, insertWith_directed, insertAsIsBy, insertAsIs_directed, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes)
-
--- http://elm-lang.org/examples/binary-Tree
+module BTree exposing (BTree(..), TraversalOrder(..), Direction(..), singleton, depth, map, flatten, flattenBy, flattenUsingFold, flattenUsingFoldBy, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, isElementUsingFold, toTreeDiagramTree, sort, sortTo, sortByTo, sortWithTo, fromList, fromIntList, fromListBy, fromListWith, fromListAsIsBy, fromListAsIs_left, fromListAsIs_right, fromListAsIs_directed, insert, insertBy, insertWith, insertWith_directed, insertAsIs_left, insertAsIs_right, insertAsIsBy, insertAsIs_directed, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes)
 
 import TreeDiagram as TD exposing (node, Tree)
 import List.Extra exposing (uniqueBy)
@@ -373,12 +371,12 @@ insertAsIsBy direction x bTree =
      insertAsIs_directed (x, direction) bTree
 
 
-insertAsIs_left : a -> BTree a -> BTree a --todo del
+insertAsIs_left : a -> BTree a -> BTree a
 insertAsIs_left x bTree =
     insertAsIs_directed (x, Left) bTree
 
 
-insertAsIs_right : a -> BTree a -> BTree a -- todo del
+insertAsIs_right : a -> BTree a -> BTree a
 insertAsIs_right x bTree =
     insertAsIs_directed (x, Right) bTree
 
