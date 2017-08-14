@@ -365,7 +365,7 @@ viewDashboardTop model =
                         , disabled isPlayDisabled
                         , onClick (PlayNotes PreOrder)
                         ]
-                        [text "pre-order"]
+                        [text "Pre-Order"]
                     , button
                         [ classes
                             [ T.db
@@ -377,7 +377,7 @@ viewDashboardTop model =
                         , disabled isPlayDisabled
                         , onClick (PlayNotes InOrder)
                         ]
-                        [text "in-order"]
+                        [text "In-Order"]
                     , button
                         [ classes
                             [ T.db
@@ -389,7 +389,7 @@ viewDashboardTop model =
                         , disabled isPlayDisabled
                         , onClick (PlayNotes PostOrder)
                         ]
-                        [text "post-order"]
+                        [text "Post-Order"]
                     ]
                 ]
             ]
@@ -441,7 +441,7 @@ viewDashboardTop model =
                     , disabled model.isPlayNotes
                     , onClick (SortUniformTrees Left)
                     ]
-                    [text "left"]
+                    [text "Left"]
                 , button
                     [ classes
                         [ T.db
@@ -453,7 +453,7 @@ viewDashboardTop model =
                     , disabled model.isPlayNotes
                     , onClick (SortUniformTrees Right)
                     ]
-                    [text "right"]
+                    [text "Right"]
                 ]
             ]
         , button
@@ -503,7 +503,7 @@ viewDashboardTop model =
                         ]
                     , onClick RequestRandomPairsIntDirection
                     ]
-                    [text "insert random l/r"]
+                    [text "Insert Random L/R"]
                 , div -- divider line
                     [ classes
                         [ T.db
@@ -523,7 +523,7 @@ viewDashboardTop model =
                         ]
                     , onClick (RequestRandomInts Left)
                     ]
-                    [text "insert left"]
+                    [text "Insert Left"]
                 , button
                     [ classes
                         [ T.db
@@ -534,7 +534,7 @@ viewDashboardTop model =
                         ]
                     , onClick (RequestRandomInts Right)
                     ]
-                    [text "insert right"]
+                    [text "Insert Right"]
                 ]
             ]
         , button
