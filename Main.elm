@@ -13,6 +13,8 @@ import Random.Pcg exposing (Seed, initialSeed, step)
 import Uuid exposing (Uuid, uuidGenerator)
 import Lazy exposing (lazy)
 import BigInt exposing (fromInt)
+import Debouncer exposing (DebouncerState, SelfMsg, bounce, create, process)
+import Time exposing (Time, millisecond)
 
 import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes)
 import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, hasAnyIntNodes)
@@ -58,12 +60,28 @@ type Msg
     | DonePlayNote (String)
     | DonePlayNotes (Bool)
     | SwitchToIntView (IntView)
+
     | ToggleShowPlayDropdown
-    | StopShowPlayDropdown
     | ToggleShowSortDropdown
-    | StopShowSortDropdown
     | ToggleShowRandomDropdown
-    | StopShowRandomDropdown
+
+    | MouseLeftPlayButton
+    | MouseLeftSortButton
+    | MouseLeftRandomButton
+
+    | MouseEnteredPlayDropdown
+    | MouseEnteredSortDropdown
+    | MouseEnteredRandomDropdown
+
+    | CheckIfMouseEnteredPlayDropdown
+    | CheckIfMouseEnteredSortDropdown
+    | CheckIfMouseEnteredRandomDropdown
+
+    | MouseLeftPlayDropdown
+    | MouseLeftSortDropdown
+    | MouseLeftRandomDropdown
+
+    | DebouncerSelfMsg (Debouncer.SelfMsg Msg)
     | Reset
 
 
@@ -85,13 +103,17 @@ type alias Model =
     , exponent : Int
     , isPlayNotes : Bool
     , isTreeCaching : Bool
-    , isShowPlayDropdown : Bool
     , directionForSort : Direction
-    , isShowSortDropdown : Bool
     , directionForRandom : Direction
-    , isShowRandomDropdown : Bool
     , intView : IntView
     , uuidSeed : Seed
+    , isShowPlayDropdown : Bool
+    , isShowSortDropdown : Bool
+    , isShowRandomDropdown : Bool
+    , isMouseEnteredPlayDropdown : Bool
+    , isMouseEnteredSortDropdown : Bool
+    , isMouseEnteredRandomDropdown : Bool
+    , menuDropdownDebouncer : Debouncer.DebouncerState
     }
 
 
@@ -150,13 +172,17 @@ initialModel =
     , exponent = 2
     , isPlayNotes = False
     , isTreeCaching = False
-    , isShowPlayDropdown = False
     , directionForSort = Left
-    , isShowSortDropdown = False
     , directionForRandom = Left
-    , isShowRandomDropdown = False
     , intView = IntView
     , uuidSeed = initialSeed 0 -- placeholder
+    , isShowPlayDropdown = False
+    , isShowSortDropdown = False
+    , isShowRandomDropdown = False
+    , isMouseEnteredPlayDropdown = False
+    , isMouseEnteredSortDropdown = False
+    , isMouseEnteredRandomDropdown = False
+    , menuDropdownDebouncer = Debouncer.create (5 * Time.millisecond)
     }
 
 
@@ -343,6 +369,7 @@ viewDashboardTop model =
                         ] ++ (if model.isShowSortDropdown then [T.bg_light_green] else []))
                     , disabled isPlayDisabled
                     , onClick ToggleShowPlayDropdown
+                    , onMouseLeave MouseLeftPlayButton
                     ]
                     [ text "Play" ]
                 , div
@@ -352,7 +379,8 @@ viewDashboardTop model =
                          , T.ba
                          , T.w5
                          ]
-                    , onMouseLeave StopShowPlayDropdown
+                    , onMouseEnter MouseEnteredPlayDropdown
+                    , onMouseLeave MouseLeftPlayDropdown
                     ]
                     [ button
                         [ classes
@@ -419,6 +447,7 @@ viewDashboardTop model =
                     ] ++ (if model.isShowSortDropdown then [T.bg_light_green] else []))
                 , disabled model.isPlayNotes
                 , onClick ToggleShowSortDropdown
+                , onMouseLeave MouseLeftSortButton
                 ]
                 [ text "Sort" ]
             , div
@@ -428,7 +457,8 @@ viewDashboardTop model =
                      , T.ba
                      , T.w5
                      ]
-                , onMouseLeave StopShowSortDropdown
+                    , onMouseEnter MouseEnteredSortDropdown
+                    , onMouseLeave MouseLeftSortDropdown
                 ]
                 [ button
                     [ classes
@@ -482,6 +512,7 @@ viewDashboardTop model =
                     ([ T.hover_bg_light_green
                     ] ++ (if model.isShowRandomDropdown then [T.bg_light_green] else []))
                 , onClick ToggleShowRandomDropdown
+                , onMouseLeave MouseLeftRandomButton
                 ]
                 [ text "Random Ints" ]
             , div
@@ -491,7 +522,8 @@ viewDashboardTop model =
                      , T.ba
                      , T.w5
                      ]
-                , onMouseLeave StopShowRandomDropdown
+                    , onMouseEnter MouseEnteredRandomDropdown
+                    , onMouseLeave MouseLeftRandomDropdown
                 ]
                 [ button
                     [ classes
@@ -885,57 +917,40 @@ update msg model =
             let
                 operand = positiveDelta model
             in
-                ( model
+                (model
                     |> shiftUniformTrees operand BTreeUniformType.incrementNodes
                     |> shiftVariedTrees operand BTreeVariedType.incrementNodes
-                , Cmd.none
-                )
+                ) ! []
 
         Decrement ->
             let
                 operand = positiveDelta model
             in
-                ( model
+                (model
                     |> shiftUniformTrees operand BTreeUniformType.decrementNodes
                     |> shiftVariedTrees operand BTreeVariedType.decrementNodes
-                , Cmd.none
-                )
+                ) ! []
 
         Raise ->
             let
                 operand = positiveExponent model
             in
-                ( model
+                (model
                     |> shiftUniformTrees operand BTreeUniformType.raiseNodes
                     |> shiftVariedTrees operand BTreeVariedType.raiseNodes
-                , Cmd.none
-                )
+                ) ! []
 
         SortUniformTrees direction ->
-            ( model
-                |> sortUniformTrees direction
-            , Cmd.none
-            )
+            (sortUniformTrees direction model) ! []
 
         RemoveDuplicates ->
-            ( model
-                |> deDuplicate
-            , Cmd.none
-            )
+            (deDuplicate model) ! []
 
         Delta s ->
-            (   { model
-                | delta = intFromInput s
-                }
-            , Cmd.none
-            )
+            { model | delta = intFromInput s } ! []
 
         Exponent s ->
-            (   { model
-                | exponent = intFromInput s
-                }
-            , Cmd.none
-            )
+            { model | exponent = intFromInput s } ! []
 
         RequestRandomInts direction ->
             let
@@ -947,11 +962,9 @@ update msg model =
                 generatorInts =
                     Random.andThen randomInts generatorRandomListLength
             in
-                (   { model
-                    | directionForRandom = direction
-                    }
-                , Random.generate ReceiveRandomInts generatorInts
-                )
+                { model
+                | directionForRandom = direction
+                } ! [Random.generate ReceiveRandomInts generatorInts]
 
         RequestRandomPairsIntDirection ->
             let
@@ -968,40 +981,28 @@ update msg model =
                 generatorPairsIntDirection =
                     Random.andThen randomPairsIntDirection generatorRandomListLength
             in
-                ( model
-                , Random.generate ReceiveRandomPairsIntDirection generatorPairsIntDirection
-                )
+                model ! [Random.generate ReceiveRandomPairsIntDirection generatorPairsIntDirection]
 
         RequestRandomDelta ->
-            ( model
-            , Random.generate ReceiveRandomDelta (Random.int 1 100)
-            )
+            model ! [Random.generate ReceiveRandomDelta (Random.int 1 100)]
 
         ReceiveRandomInts list ->
-            (   { model
-                | intTree = BTreeInt <| BTree.fromListAsIsBy  model.directionForRandom <| List.map toMaybeSafeInt list
-                , bigIntTree = BTreeBigInt <| BTree.fromListAsIsBy model.directionForRandom <| List.map BigInt.fromInt list
-                }
-            , Cmd.none
-            )
+            { model
+            | intTree = BTreeInt <| BTree.fromListAsIsBy  model.directionForRandom <| List.map toMaybeSafeInt list
+            , bigIntTree = BTreeBigInt <| BTree.fromListAsIsBy model.directionForRandom <| List.map BigInt.fromInt list
+            } ! []
 
         ReceiveRandomPairsIntDirection list ->
             let
                 fn = \transformFn (int, direction) -> (transformFn int, direction)
             in
-                (   { model
-                    | intTree = BTreeInt <| BTree.fromListAsIs_directed <| List.map (fn toMaybeSafeInt) list
-                    , bigIntTree = BTreeBigInt <| BTree.fromListAsIs_directed <| List.map (fn BigInt.fromInt) list
-                    }
-                , Cmd.none
-                )
+                { model
+                | intTree = BTreeInt <| BTree.fromListAsIs_directed <| List.map (fn toMaybeSafeInt) list
+                , bigIntTree = BTreeBigInt <| BTree.fromListAsIs_directed <| List.map (fn BigInt.fromInt) list
+                } ! []
 
         ReceiveRandomDelta i ->
-            (   { model
-                | delta = i
-                }
-            , Cmd.none
-            )
+            { model | delta = i } ! []
 
         StartShowIsIntPrime ->
             (   { model
@@ -1010,8 +1011,7 @@ update msg model =
                     |> cacheAllTrees
                     |> morphUniformTrees BTreeUniformType.toIsIntPrime
                     |> morphVariedTrees BTreeVariedType.toIsIntPrime
-            , Cmd.none
-            )
+            ) ! []
 
         StopShowIsIntPrime ->
             let
@@ -1024,9 +1024,7 @@ update msg model =
                     else
                         model
             in
-                ( newModel
-                , Cmd.none
-                )
+                newModel ! []
 
         StartShowLength ->
             (   { model
@@ -1035,8 +1033,7 @@ update msg model =
                     |> cacheAllTrees
                     |> morphUniformTrees BTreeUniformType.toLength
                     |> morphVariedTrees BTreeVariedType.toLength
-            , Cmd.none
-            )
+            ) ! []
 
         StopShowLength ->
             let
@@ -1049,16 +1046,12 @@ update msg model =
                     else
                         model
             in
-                ( newModel
-                , Cmd.none
-                )
+                newModel ! []
 
         PlayNotes order ->
-            (   { model
-                | isPlayNotes = True
-                }
-            , treeMusicPlayBy order model.musicNoteTree
-            )
+            { model
+            | isPlayNotes = True
+            } ! [treeMusicPlayBy order model.musicNoteTree]
 
         StartPlayNote id ->
             let
@@ -1071,11 +1064,8 @@ update msg model =
                     Nothing ->
                         model.musicNoteTree
             in
-            (   { model
-                | musicNoteTree = updatedTree
-                }
-            , Cmd.none
-            )
+                { model | musicNoteTree = updatedTree } ! []
+
 
         DonePlayNote id ->
             let
@@ -1088,80 +1078,97 @@ update msg model =
                     Nothing ->
                         model.musicNoteTree
             in
-            (   { model
-                | musicNoteTree = updatedTree
-                }
-            , Cmd.none
-            )
+                { model | musicNoteTree = updatedTree } ! []
 
         DonePlayNotes isDone ->
-            (   { model
-                | isPlayNotes = not isDone
-                }
-            , Cmd.none
-            )
+            { model | isPlayNotes = not isDone } ! []
 
         SwitchToIntView intView ->
-            (   { model
-                | intView = intView
-                }
-            , Cmd.none
-            )
+            { model | intView = intView } ! []
 
         ToggleShowPlayDropdown ->
-            (   { model
-                | isShowPlayDropdown = not model.isShowPlayDropdown
-                }
-            , Cmd.none
-            )
-
-        StopShowPlayDropdown ->
-            (   { model
-                | isShowPlayDropdown = False
-                }
-            , Cmd.none
-            )
+            { model | isShowPlayDropdown = not model.isShowPlayDropdown } ! []
 
         ToggleShowSortDropdown ->
-            (   { model
-                | isShowSortDropdown = not model.isShowSortDropdown
-                }
-            , Cmd.none
-            )
-
-        StopShowSortDropdown ->
-            (   { model
-                | isShowSortDropdown = False
-                }
-            , Cmd.none
-            )
+            { model | isShowSortDropdown = not model.isShowSortDropdown } ! []
 
         ToggleShowRandomDropdown ->
-            (   { model
-                | isShowRandomDropdown = not model.isShowRandomDropdown
-                }
-            , Cmd.none
-            )
+            { model| isShowRandomDropdown = not model.isShowRandomDropdown } ! []
 
-        StopShowRandomDropdown ->
-            (   { model
-                | isShowRandomDropdown = False
-                }
-            , Cmd.none
-            )
+        MouseLeftPlayButton ->
+            let
+                (debouncer, debouncerCmd) =
+                    model.menuDropdownDebouncer |> Debouncer.bounce { id = "MouseLeftPlayButton", msgToSend = CheckIfMouseEnteredPlayDropdown }
+            in
+                { model | menuDropdownDebouncer = debouncer } ! [debouncerCmd |> Cmd.map DebouncerSelfMsg]
+
+        MouseLeftSortButton ->
+            let
+                (debouncer, debouncerCmd) =
+                    model.menuDropdownDebouncer |> Debouncer.bounce { id = "MouseLeftSortButton", msgToSend = CheckIfMouseEnteredSortDropdown }
+            in
+                { model | menuDropdownDebouncer = debouncer } ! [debouncerCmd |> Cmd.map DebouncerSelfMsg]
+
+        MouseLeftRandomButton ->
+            let
+                (debouncer, debouncerCmd) =
+                    model.menuDropdownDebouncer |> Debouncer.bounce { id = "MouseLeftRandomButton", msgToSend = CheckIfMouseEnteredRandomDropdown }
+            in
+                { model | menuDropdownDebouncer = debouncer } ! [debouncerCmd |> Cmd.map DebouncerSelfMsg]
+
+        MouseEnteredPlayDropdown ->
+            { model | isMouseEnteredPlayDropdown = True } ! []
+
+        MouseEnteredSortDropdown ->
+            { model | isMouseEnteredSortDropdown = True } ! []
+
+        MouseEnteredRandomDropdown ->
+            { model | isMouseEnteredRandomDropdown = True } ! []
+
+        MouseLeftPlayDropdown ->
+            { model
+            | isMouseEnteredPlayDropdown = False
+            , isShowPlayDropdown = False
+            } ! []
+
+        MouseLeftSortDropdown ->
+            { model
+            | isMouseEnteredSortDropdown = False
+            , isShowSortDropdown = False
+            } ! []
+
+        MouseLeftRandomDropdown ->
+            { model
+            | isMouseEnteredRandomDropdown = False
+            , isShowRandomDropdown = False
+            } ! []
+
+        CheckIfMouseEnteredPlayDropdown ->
+            { model | isShowPlayDropdown = model.isMouseEnteredPlayDropdown } ! []
+
+        CheckIfMouseEnteredSortDropdown ->
+            { model | isShowSortDropdown = model.isMouseEnteredSortDropdown } ! []
+
+        CheckIfMouseEnteredRandomDropdown ->
+            { model | isShowRandomDropdown = model.isMouseEnteredRandomDropdown } ! []
+
+        DebouncerSelfMsg debouncerMsg ->
+            let
+                ( debouncer, cmd ) =
+                    model.menuDropdownDebouncer |> Debouncer.process debouncerMsg
+            in
+                { model | menuDropdownDebouncer = debouncer } ! [cmd]
 
         Reset ->
             let
                 tree = model.initialMusicNoteTree
                 seed = model.uuidSeed
             in
-                (   { initialModel
-                    | initialMusicNoteTree = tree
-                    , musicNoteTree = tree
-                    , uuidSeed = seed
-                    }
-                , Cmd.none
-                )
+                { initialModel
+                | initialMusicNoteTree = tree
+                , musicNoteTree = tree
+                , uuidSeed = seed
+                } ! []
 
 
 generatorRandomListLength : Random.Generator Int
