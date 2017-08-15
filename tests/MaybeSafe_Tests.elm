@@ -1,6 +1,6 @@
 module MaybeSafe_Tests exposing (..)
 
-import MaybeSafe exposing (MaybeSafe(..), isSafe, isSafeInt, toMaybeSafe, toMaybeSafeInt, maxSafeInt, sumMaybeSafeInt, compare)
+import MaybeSafe exposing (MaybeSafe(..), isSafe, isSafeInt, toMaybeSafe, toMaybeSafeInt, maxSafeInt, sumMaybeSafeInt, compare, withDefault)
 
 import Test exposing (..)
 import Expect
@@ -102,6 +102,14 @@ maybeSafe =
             , test "compare.(Unsafe, Safe _) -> GT" <|
                 \() ->
                     Expect.equal GT (MaybeSafe.compare (MaybeSafe.toMaybeSafeInt <| negate <| maxSafeInt + 1) (MaybeSafe.toMaybeSafeInt <| maxSafeInt))
+            ]
+         , describe "MaybeSafe.withDefault"
+            [ test "Unsafe" <|
+                \() ->
+                    Expect.equal 0 (MaybeSafe.withDefault 0 <| MaybeSafe.toMaybeSafeInt <| maxSafeInt + 1)
+            , test "Safe" <|
+                \() ->
+                    Expect.equal maxSafeInt (MaybeSafe.withDefault 0 <| MaybeSafe.toMaybeSafeInt <| maxSafeInt)
             ]
         ]
 
