@@ -1,7 +1,5 @@
 module BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
 
--- https://github.com/brenden/elm-tree-diagram/blob/master/examples/canvas/RedBlackTree.elm
-
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
 
@@ -14,16 +12,18 @@ import Arithmetic exposing (isEven)
 import TachyonsColor exposing (TachyonsColor, tachyonsColorToColor)
 import Tachyons.Classes as T exposing (..)
 import BigInt exposing (BigInt, toString)
+import Maybe.Extra exposing (unwrap)
 
-import BTree exposing (BTree, toTreeDiagramTree)
+import BTree exposing (BTree, flatten, toTreeDiagramTree)
 import NodeTag exposing (NodeTag(..))
 import BTreeUniformType exposing (BTreeUniformType(..), toTaggedNodes)
 import BTreeVariedType exposing (BTreeVariedType(..))
 import MusicNote exposing (displayString)
 import MusicNotePlayer exposing (MusicNotePlayer(..))
 import UniversalConstants exposing (nothingString, unsafeString)
-import MaybeSafe exposing (MaybeSafe(..))
-import Lib exposing (isEvenBigInt)
+import MaybeSafe exposing (MaybeSafe(..), withDefault)
+import Lib exposing (isEvenBigInt, digitCount, digitCountBigInt)
+
 
 bTreeUniformTypeDiagram : BTreeUniformType -> Html msg
 bTreeUniformTypeDiagram bTreeUniformType =
@@ -39,12 +39,12 @@ bTreeDiagram : BTree NodeTag -> Html msg
 bTreeDiagram bTree =
     bTree
         |> toTreeDiagramTree
-        |> treeElement
+        |> treeElement (maxNodeDisplayLength bTree)
         |> Element.toHtml
 
 
-treeElement : Maybe (TD.Tree (Maybe NodeTag)) -> Element
-treeElement mbTdTree =
+treeElement : Int -> Maybe (TD.Tree (Maybe NodeTag)) -> Element
+treeElement maxLength mbTdTree =
     case mbTdTree of
         Nothing ->
             Element.empty
@@ -53,11 +53,53 @@ treeElement mbTdTree =
             TreeDiagram.Canvas.draw
                 { defaultTreeLayout
                 | padding = 100
-                , siblingDistance = 80
+                , siblingDistance = if maxLength < 13 then 80 else 150
+                , subtreeDistance = if maxLength < 13 then 150 else 200
                 }
                 drawNode
                 drawEdge
                 tdTree
+
+
+maxNodeDisplayLength : BTree NodeTag -> Int
+maxNodeDisplayLength bTree =
+    BTree.flatten bTree
+        |> List.map nodeDisplayLength
+        |> List.maximum
+        |> Maybe.withDefault 0
+
+
+nodeDisplayLength : NodeTag -> Int
+nodeDisplayLength nodeTag =
+    case nodeTag of
+        IntNode mbsInt ->
+            case mbsInt of -- todo create MaybeSafe.unwrap ~ Maybe.Extra.unwrap
+                Unsafe ->
+                    0
+
+                Safe int ->
+                    case digitCount <| Safe int of
+                        Unsafe -> 0
+                        Safe count -> count
+
+        BigIntNode bigInt ->
+            MaybeSafe.withDefault 0 <| digitCountBigInt bigInt
+
+        StringNode string ->
+            String.length string
+
+        BoolNode mbBool ->
+            Maybe.Extra.unwrap 0 (\a -> 1) mbBool
+
+        MusicNoteNode (MusicNotePlayer params) ->
+            let
+                fn = \note -> MusicNote.displayString note
+                    |> String.length
+            in
+                Maybe.Extra.unwrap 0 fn <| params.mbNote
+
+        NothingNode ->
+            0
 
 
 intNodeEvenColor : TachyonsColor
@@ -131,7 +173,7 @@ drawNode mbNodeTag =
                 StringNode s ->
                     let
                         stringLength = String.length s
-                        width = toFloat (30 + (10 * stringLength))
+                        width = toFloat <| 10 * stringLength
                         height = 30
                     in
                         group

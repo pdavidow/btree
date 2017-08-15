@@ -40,79 +40,101 @@ bTreeVariedType =
             ,  test "of non-empty.IntNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe 2
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe 2
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt -12
+                        ( BTreeVariedType.toLength <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt -12
                         )
             ,  test "of non-empty.IntNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe 5
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe 5
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt 34567
+                        ( BTreeVariedType.toLength <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt 34567
                         )
             ,  test "of non-empty.IntNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Unsafe
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Unsafe
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt <| maxSafeInt + 1
+                        ( BTreeVariedType.toLength <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt <| maxSafeInt + 1
                         )
             ,  test "of non-empty.BigIntNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe 2
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe 2
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt -12
+                        ( BTreeVariedType.toLength <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt -12
                         )
             ,  test "of non-empty.BigIntNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe 5
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe 5
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt 34567
+                        ( BTreeVariedType.toLength <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt 34567
                         )
             ,  test "of non-empty.BigIntNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe 16
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe 16
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt + 1
+                        ( BTreeVariedType.toLength <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt + 1
                         )
             ,  test "of non-empty.StringNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe 2
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe 2
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| singleton <| StringNode "ab"
+                        ( BTreeVariedType.toLength <| BTreeVaried <|
+                            singleton <| StringNode "ab"
                         )
             ,  test "of non-empty.StringNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe 5
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe 5
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| singleton <| StringNode "cdefg"
+                        ( BTreeVariedType.toLength <| BTreeVaried <|
+                            singleton <| StringNode "cdefg"
                         )
             ,  test "of non-empty.BoolNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVaried <|
+                            singleton <| NothingNode
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVariedType.toLength <| BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
             ,  test "of non-empty.MusicNoteNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVaried <|
+                            singleton <| NothingNode
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on A
+                        ( BTreeVariedType.toLength <| BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on A
                         )
             ,  test "of non-empty.NothingNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVaried <|
+                            singleton <| NothingNode
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVariedType.toLength <| BTreeVaried <|
+                            singleton <| NothingNode
                         )
             ]
          , describe "BTreeVariedType.toIsIntPrime"
@@ -122,72 +144,92 @@ bTreeVariedType =
             ,  test "of non-empty.IntNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Nothing
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Nothing
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt <| maxSafeInt + 1
+                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt <| maxSafeInt + 1
                         )
             ,  test "of non-empty.IntNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just False
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just False
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt <| negate <| maxSafeInt
+                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt <| negate <| maxSafeInt
                         )
             ,  test "of non-empty.IntNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt 13
+                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt 13
                         )
             ,  test "of non-empty.BigIntNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVaried <|
+                            singleton <| NothingNode
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt + 1
+                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt + 1
                         )
             ,  test "of non-empty.BigIntNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVaried <|
+                            singleton <| NothingNode
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| negate <| maxSafeInt
+                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| negate <| maxSafeInt
                         )
             ,  test "of non-empty.BigIntNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVaried <|
+                            singleton <| NothingNode
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt 13
+                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt 13
                         )
             ,  test "of non-empty.StringNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVaried <|
+                            singleton <| NothingNode
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| singleton <| StringNode "a"
+                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <|
+                            singleton <| StringNode "a"
                         )
             ,  test "of non-empty.BoolNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVaried <|
+                            singleton <| NothingNode
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
             ,  test "of non-empty.MusicNoteNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVaried <|
+                            singleton <| NothingNode
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on A
+                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on A
                         )
             ,  test "of non-empty.NothingNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVaried <|
+                            singleton <| NothingNode
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <|
+                            singleton <| NothingNode
                         )
             ]
          , describe "BTreeVariedType.incrementNodes"
@@ -197,205 +239,263 @@ bTreeVariedType =
             ,  test "of non-empty.IntNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe 4
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe 4
                         )
-                        ( BTreeVariedType.incrementNodes -3 <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt <| 1
+                        ( BTreeVariedType.incrementNodes -3 <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt <| 1
                         )
             ,  test "of non-empty.IntNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe 1
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe 1
                         )
-                        ( BTreeVariedType.incrementNodes 0 <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt <| 1
+                        ( BTreeVariedType.incrementNodes 0 <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt <| 1
                         )
             ,  test "of non-empty.IntNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe 4
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe 4
                         )
-                        ( BTreeVariedType.incrementNodes 1 <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt <| 3
+                        ( BTreeVariedType.incrementNodes 1 <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt <| 3
                         )
             ,  test "of non-empty.IntNode.4" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Unsafe
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Unsafe
                         )
-                        ( BTreeVariedType.incrementNodes 3 <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt <| maxSafeInt - 2
+                        ( BTreeVariedType.incrementNodes 3 <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt <| maxSafeInt - 2
                         )
             ,  test "of non-empty.IntNode.5" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Unsafe
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Unsafe
                         )
-                        ( BTreeVariedType.incrementNodes 3 <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt <| negate <| maxSafeInt + 2
+                        ( BTreeVariedType.incrementNodes 3 <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt <| negate <| maxSafeInt + 2
                         )
             ,  test "of non-empty.IntNode.6" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe <| negate <| maxSafeInt - 3
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe <| negate <| maxSafeInt - 3
                         )
-                        ( BTreeVariedType.incrementNodes 3 <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt <| negate <| maxSafeInt
+                        ( BTreeVariedType.incrementNodes 3 <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt <| negate <| maxSafeInt
                         )
             ,  test "of non-empty.BigIntNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BigIntNode <| BigInt.add (BigInt.fromInt 1) (BigInt.fromInt 3)
+                        ( BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.add (BigInt.fromInt 1) (BigInt.fromInt 3)
                         )
-                        ( BTreeVariedType.incrementNodes -3 <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| 1
+                        ( BTreeVariedType.incrementNodes -3 <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| 1
                         )
             ,  test "of non-empty.BigIntNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BigIntNode <| BigInt.add (BigInt.fromInt 1) (BigInt.fromInt 0)
+                        ( BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.add (BigInt.fromInt 1) (BigInt.fromInt 0)
                         )
-                        ( BTreeVariedType.incrementNodes 0 <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| 1
+                        ( BTreeVariedType.incrementNodes 0 <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| 1
                         )
             ,  test "of non-empty.BigIntNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BigIntNode <| BigInt.add (BigInt.fromInt 3) (BigInt.fromInt 1)
+                        ( BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.add (BigInt.fromInt 3) (BigInt.fromInt 1)
                         )
-                        ( BTreeVariedType.incrementNodes 1 <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| 3
+                        ( BTreeVariedType.incrementNodes 1 <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| 3
                         )
             ,  test "of non-empty.BigIntNode.4" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BigIntNode <| BigInt.add (BigInt.fromInt <| maxSafeInt - 2) (BigInt.fromInt 3)
+                        ( BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.add (BigInt.fromInt <| maxSafeInt - 2) (BigInt.fromInt 3)
                         )
-                        ( BTreeVariedType.incrementNodes 3 <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt - 2
+                        ( BTreeVariedType.incrementNodes 3 <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt - 2
                         )
             ,  test "of non-empty.BigIntNode.5" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BigIntNode <| BigInt.add (BigInt.fromInt <| negate <| maxSafeInt + 2) (BigInt.fromInt 3)
+                        ( BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.add (BigInt.fromInt <| negate <| maxSafeInt + 2) (BigInt.fromInt 3)
                         )
-                        ( BTreeVariedType.incrementNodes 3 <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| negate <| maxSafeInt + 2
+                        ( BTreeVariedType.incrementNodes 3 <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| negate <| maxSafeInt + 2
                         )
             ,  test "of non-empty.BigIntNode.6" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BigIntNode <| BigInt.add (BigInt.fromInt <| negate <| maxSafeInt) (BigInt.fromInt 3)
+                        ( BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.add (BigInt.fromInt <| negate <| maxSafeInt) (BigInt.fromInt 3)
                         )
-                        ( BTreeVariedType.incrementNodes 3 <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| negate <| maxSafeInt
+                        ( BTreeVariedType.incrementNodes 3 <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| negate <| maxSafeInt
                         )
             ,  test "of non-empty.StringNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| StringNode "a3"
+                        ( BTreeVaried <|
+                            singleton <| StringNode "a3"
                         )
-                        ( BTreeVariedType.incrementNodes -3 <| BTreeVaried <| singleton <| StringNode "a"
+                        ( BTreeVariedType.incrementNodes -3 <| BTreeVaried <|
+                            singleton <| StringNode "a"
                         )
             ,  test "of non-empty.StringNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| StringNode "a0"
+                        ( BTreeVaried <|
+                            singleton <| StringNode "a0"
                         )
-                        ( BTreeVariedType.incrementNodes 0 <| BTreeVaried <| singleton <| StringNode "a"
+                        ( BTreeVariedType.incrementNodes 0 <| BTreeVaried <|
+                            singleton <| StringNode "a"
                         )
             ,  test "of non-empty.StringNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| StringNode "a3"
+                        ( BTreeVaried <|
+                            singleton <| StringNode "a3"
                         )
-                        ( BTreeVariedType.incrementNodes 3 <| BTreeVaried <| singleton <| StringNode "a"
+                        ( BTreeVariedType.incrementNodes 3 <| BTreeVaried <|
+                            singleton <| StringNode "a"
                         )
             ,  test "of non-empty.BoolNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just False
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just False
                         )
-                        ( BTreeVariedType.incrementNodes -3 <| BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVariedType.incrementNodes -3 <| BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
             ,  test "of non-empty.BoolNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
-                        ( BTreeVariedType.incrementNodes 0 <| BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVariedType.incrementNodes 0 <| BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
             ,  test "of non-empty.BoolNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just False
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just False
                         )
-                        ( BTreeVariedType.incrementNodes 3 <| BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVariedType.incrementNodes 3 <| BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
             ,  test "of non-empty.BoolNode.4" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
-                        ( BTreeVariedType.incrementNodes -3 <| BTreeVaried <| singleton <| BoolNode <| Just False
+                        ( BTreeVariedType.incrementNodes -3 <| BTreeVaried <|
+                            singleton <| BoolNode <| Just False
                         )
             ,  test "of non-empty.BoolNode.5" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
-                        ( BTreeVariedType.incrementNodes 8 <| BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVariedType.incrementNodes 8 <| BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
             ,  test "of non-empty.BoolNode.6" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just False
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just False
                         )
-                        ( BTreeVariedType.incrementNodes 8 <| BTreeVaried <| singleton <| BoolNode <| Just False
+                        ( BTreeVariedType.incrementNodes 8 <| BTreeVaried <|
+                            singleton <| BoolNode <| Just False
                         )
             ,  test "of non-empty.MusicNoteNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on G_sharp
+                        ( BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on G_sharp
                         )
-                        ( BTreeVariedType.incrementNodes -1 <| BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on G
+                        ( BTreeVariedType.incrementNodes -1 <| BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on G
                         )
             ,  test "of non-empty.MusicNoteNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on G
+                        ( BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on G
                         )
-                        ( BTreeVariedType.incrementNodes 0 <| BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on G
+                        ( BTreeVariedType.incrementNodes 0 <| BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on G
                         )
             ,  test "of non-empty.MusicNoteNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on G_sharp
+                        ( BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on G_sharp
                         )
-                        ( BTreeVariedType.incrementNodes 1 <| BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on G
+                        ( BTreeVariedType.incrementNodes 1 <| BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on G
                         )
             ,  test "of non-empty.MusicNoteNode.4" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| MusicNoteNode <| musicNotePlayerOnNothing
+                        ( BTreeVaried <|
+                            singleton <| MusicNoteNode <| musicNotePlayerOnNothing
                         )
-                        ( BTreeVariedType.incrementNodes 1 <| BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on G_sharp
+                        ( BTreeVariedType.incrementNodes 1 <| BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on G_sharp
                         )
             ,  test "of non-empty.MusicNoteNode.5" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| MusicNoteNode <| musicNotePlayerOnNothing
+                        ( BTreeVaried <|
+                            singleton <| MusicNoteNode <| musicNotePlayerOnNothing
                         )
-                        ( BTreeVariedType.incrementNodes 1 <| BTreeVaried <| singleton <| MusicNoteNode <| musicNotePlayerOnNothing
+                        ( BTreeVariedType.incrementNodes 1 <| BTreeVaried <|
+                            singleton <| MusicNoteNode <| musicNotePlayerOnNothing
                         )
             ,  test "of non-empty.NothingNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVaried <|
+                            singleton <| NothingNode
                         )
-                        ( BTreeVariedType.incrementNodes -1 <| BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVariedType.incrementNodes -1 <| BTreeVaried <|
+                            singleton <| NothingNode
                         )
             ,  test "of non-empty.NothingNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVaried <|
+                            singleton <| NothingNode
                         )
-                        ( BTreeVariedType.incrementNodes 0 <| BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVariedType.incrementNodes 0 <| BTreeVaried <|
+                            singleton <| NothingNode
                         )
             ,  test "of non-empty.NothingNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVaried <|
+                            singleton <| NothingNode
                         )
-                        ( BTreeVariedType.incrementNodes 1 <| BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVariedType.incrementNodes 1 <| BTreeVaried <|
+                            singleton <| NothingNode
                         )
             ]
          , describe "BTreeVariedType.decrementNodes"
@@ -405,219 +505,281 @@ bTreeVariedType =
             ,  test "of non-empty.IntNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe -2
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe -2
                         )
-                        ( BTreeVariedType.decrementNodes -3 <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt <| 1
+                        ( BTreeVariedType.decrementNodes -3 <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt <| 1
                         )
             ,  test "of non-empty.IntNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe 1
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe 1
                         )
-                        ( BTreeVariedType.decrementNodes 0 <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt <| 1
+                        ( BTreeVariedType.decrementNodes 0 <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt <| 1
                         )
             ,  test "of non-empty.IntNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe 4
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe 4
                         )
-                        ( BTreeVariedType.decrementNodes 1 <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt <| 5
+                        ( BTreeVariedType.decrementNodes 1 <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt <| 5
                         )
             ,  test "of non-empty.IntNode.4" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Unsafe
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Unsafe
                         )
-                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt <| negate <| maxSafeInt - 2
+                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt <| negate <| maxSafeInt - 2
                         )
             ,  test "of non-empty.IntNode.5" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Unsafe
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Unsafe
                         )
-                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt <| maxSafeInt + 2
+                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt <| maxSafeInt + 2
                         )
             ,  test "of non-empty.IntNode.6" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe <| maxSafeInt - 3
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe <| maxSafeInt - 3
                         )
-                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt maxSafeInt
+                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt maxSafeInt
                         )
             ,  test "of non-empty.BigIntNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BigIntNode <| BigInt.sub (BigInt.fromInt <| 1) (BigInt.fromInt <| 3)
+                        ( BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.sub (BigInt.fromInt <| 1) (BigInt.fromInt <| 3)
                         )
-                        ( BTreeVariedType.decrementNodes -3 <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| 1
+                        ( BTreeVariedType.decrementNodes -3 <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| 1
                         )
             ,  test "of non-empty.BigIntNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BigIntNode <| BigInt.sub (BigInt.fromInt <| 1) (BigInt.fromInt <| 0)
+                        ( BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.sub (BigInt.fromInt <| 1) (BigInt.fromInt <| 0)
                         )
-                        ( BTreeVariedType.decrementNodes 0 <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| 1
+                        ( BTreeVariedType.decrementNodes 0 <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| 1
                         )
             ,  test "of non-empty.BigIntNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BigIntNode <| BigInt.sub (BigInt.fromInt <| 5) (BigInt.fromInt <| 1)
+                        ( BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.sub (BigInt.fromInt <| 5) (BigInt.fromInt <| 1)
                         )
-                        ( BTreeVariedType.decrementNodes 1 <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| 5
+                        ( BTreeVariedType.decrementNodes 1 <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| 5
                         )
             ,  test "of non-empty.BigIntNode.4" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BigIntNode <| BigInt.sub (BigInt.fromInt <| negate <| maxSafeInt - 2) (BigInt.fromInt <| 3)
+                        ( BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.sub (BigInt.fromInt <| negate <| maxSafeInt - 2) (BigInt.fromInt <| 3)
                         )
-                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| negate <| maxSafeInt - 2
+                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| negate <| maxSafeInt - 2
                         )
             ,  test "of non-empty.BigIntNode.5" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BigIntNode <| BigInt.sub (BigInt.fromInt <| maxSafeInt + 2) (BigInt.fromInt <| 3)
+                        ( BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.sub (BigInt.fromInt <| maxSafeInt + 2) (BigInt.fromInt <| 3)
                         )
-                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt + 2
+                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt + 2
                         )
             ,  test "of non-empty.BigIntNode.6" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BigIntNode <| BigInt.sub (BigInt.fromInt <| maxSafeInt) (BigInt.fromInt <| 3)
+                        ( BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.sub (BigInt.fromInt <| maxSafeInt) (BigInt.fromInt <| 3)
                         )
-                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt
+                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt
                         )
             ,  test "of non-empty.StringNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| StringNode ""
+                        ( BTreeVaried <|
+                            singleton <| StringNode ""
                         )
-                        ( BTreeVariedType.decrementNodes -1 <| BTreeVaried <| singleton <| StringNode ""
+                        ( BTreeVariedType.decrementNodes -1 <| BTreeVaried <|
+                            singleton <| StringNode ""
                         )
             ,  test "of non-empty.StringNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| StringNode "a"
+                        ( BTreeVaried <|
+                            singleton <| StringNode "a"
                         )
-                        ( BTreeVariedType.decrementNodes 0 <| BTreeVaried <| singleton <| StringNode "a"
+                        ( BTreeVariedType.decrementNodes 0 <| BTreeVaried <|
+                            singleton <| StringNode "a"
                         )
             ,  test "of non-empty.StringNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| StringNode ""
+                        ( BTreeVaried <|
+                            singleton <| StringNode ""
                         )
-                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <| singleton <| StringNode "abc"
+                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <|
+                            singleton <| StringNode "abc"
                         )
             ,  test "of non-empty.StringNode.4" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| StringNode "a"
+                        ( BTreeVaried <|
+                            singleton <| StringNode "a"
                         )
-                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <| singleton <| StringNode "abcd"
+                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <|
+                            singleton <| StringNode "abcd"
                         )
             ,  test "of non-empty.StringNode.5" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| StringNode "ab"
+                        ( BTreeVaried <|
+                            singleton <| StringNode "ab"
                         )
-                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <| singleton <| StringNode "abcde"
+                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <|
+                            singleton <| StringNode "abcde"
                         )
             ,  test "of non-empty.BoolNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just False
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just False
                         )
-                        ( BTreeVariedType.decrementNodes -3 <| BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVariedType.decrementNodes -3 <| BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
             ,  test "of non-empty.BoolNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
-                        ( BTreeVariedType.decrementNodes 0 <| BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVariedType.decrementNodes 0 <| BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
             ,  test "of non-empty.BoolNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just False
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just False
                         )
-                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVariedType.decrementNodes 3 <| BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
             ,  test "of non-empty.BoolNode.4" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
-                        ( BTreeVariedType.decrementNodes -3 <| BTreeVaried <| singleton <| BoolNode <| Just False
+                        ( BTreeVariedType.decrementNodes -3 <| BTreeVaried <|
+                            singleton <| BoolNode <| Just False
                         )
             ,  test "of non-empty.BoolNode.5" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
-                        ( BTreeVariedType.decrementNodes 8 <| BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVariedType.decrementNodes 8 <| BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
             ,  test "of non-empty.BoolNode.6" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just False
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just False
                         )
-                        ( BTreeVariedType.decrementNodes 8 <| BTreeVaried <| singleton <| BoolNode <| Just False
+                        ( BTreeVariedType.decrementNodes 8 <| BTreeVaried <|
+                            singleton <| BoolNode <| Just False
                         )
             ,  test "of non-empty.MusicNoteNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on A
+                        ( BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on A
                         )
-                        ( BTreeVariedType.decrementNodes -1 <| BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on A_sharp
+                        ( BTreeVariedType.decrementNodes -1 <| BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on A_sharp
                         )
             ,  test "of non-empty.MusicNoteNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on A_sharp
+                        ( BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on A_sharp
                         )
-                        ( BTreeVariedType.decrementNodes 0 <| BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on A_sharp
+                        ( BTreeVariedType.decrementNodes 0 <| BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on A_sharp
                         )
             ,  test "of non-empty.MusicNoteNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on A
+                        ( BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on A
                         )
-                        ( BTreeVariedType.decrementNodes 1 <| BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on A_sharp
+                        ( BTreeVariedType.decrementNodes 1 <| BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on A_sharp
                         )
             ,  test "of non-empty.MusicNoteNode.4" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| MusicNoteNode <| musicNotePlayerOnNothing
+                        ( BTreeVaried <|
+                            singleton <| MusicNoteNode <| musicNotePlayerOnNothing
                         )
-                        ( BTreeVariedType.decrementNodes 1 <| BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on A
+                        ( BTreeVariedType.decrementNodes 1 <| BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on A
                         )
             ,  test "of non-empty.MusicNoteNode.5" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| MusicNoteNode <| musicNotePlayerOnNothing
+                        ( BTreeVaried <|
+                            singleton <| MusicNoteNode <| musicNotePlayerOnNothing
                         )
-                        ( BTreeVariedType.decrementNodes 1 <| BTreeVaried <| singleton <| MusicNoteNode <| musicNotePlayerOnNothing
+                        ( BTreeVariedType.decrementNodes 1 <| BTreeVaried <|
+                            singleton <| MusicNoteNode <| musicNotePlayerOnNothing
                         )
             ,  test "of non-empty.NothingNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVaried <|
+                            singleton <| NothingNode
                         )
-                        ( BTreeVariedType.decrementNodes -1 <| BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVariedType.decrementNodes -1 <| BTreeVaried <|
+                            singleton <| NothingNode
                         )
             ,  test "of non-empty.NothingNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVaried <|
+                            singleton <| NothingNode
                         )
-                        ( BTreeVariedType.decrementNodes 0 <| BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVariedType.decrementNodes 0 <| BTreeVaried <|
+                            singleton <| NothingNode
                         )
             ,  test "of non-empty.NothingNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVaried <|
+                            singleton <| NothingNode
                         )
-                        ( BTreeVariedType.decrementNodes 1 <| BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVariedType.decrementNodes 1 <| BTreeVaried <|
+                            singleton <| NothingNode
                         )
             ]
          , describe "BTreeVariedType.raiseNodes"
@@ -627,205 +789,263 @@ bTreeVariedType =
             ,  test "of non-empty.IntNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe 8
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe 8
                         )
-                        ( BTreeVariedType.raiseNodes -3 <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt <| 2
+                        ( BTreeVariedType.raiseNodes -3 <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt <| 2
                         )
             ,  test "of non-empty.IntNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe 1
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe 1
                         )
-                        ( BTreeVariedType.raiseNodes 0 <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt <| 2
+                        ( BTreeVariedType.raiseNodes 0 <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt <| 2
                         )
             ,  test "of non-empty.IntNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe 8
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe 8
                         )
-                        ( BTreeVariedType.raiseNodes 3 <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt <| 2
+                        ( BTreeVariedType.raiseNodes 3 <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt <| 2
                         )
             ,  test "of non-empty.IntNode.4" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe <| negate <| maxSafeInt - 2
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe <| negate <| maxSafeInt - 2
                         )
-                        ( BTreeVariedType.raiseNodes 1 <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt <| negate <| maxSafeInt - 2
+                        ( BTreeVariedType.raiseNodes 1 <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt <| negate <| maxSafeInt - 2
                         )
             ,  test "of non-empty.IntNode.5" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Safe <| maxSafeInt
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Safe <| maxSafeInt
                         )
-                        ( BTreeVariedType.raiseNodes 1 <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt <| maxSafeInt
+                        ( BTreeVariedType.raiseNodes 1 <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt <| maxSafeInt
                         )
             ,  test "of non-empty.IntNode.6" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| IntNode <| Unsafe
+                        ( BTreeVaried <|
+                            singleton <| IntNode <| Unsafe
                         )
-                        ( BTreeVariedType.raiseNodes 2 <| BTreeVaried <| singleton <| IntNode <| toMaybeSafeInt maxSafeInt
+                        ( BTreeVariedType.raiseNodes 2 <| BTreeVaried <|
+                            singleton <| IntNode <| toMaybeSafeInt maxSafeInt
                         )
             ,  test "of non-empty.BigIntNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt 8
+                        ( BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt 8
                         )
-                        ( BTreeVariedType.raiseNodes -3 <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| 2
+                        ( BTreeVariedType.raiseNodes -3 <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| 2
                         )
             ,  test "of non-empty.BigIntNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt 1
+                        ( BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt 1
                         )
-                        ( BTreeVariedType.raiseNodes 0 <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| 2
+                        ( BTreeVariedType.raiseNodes 0 <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| 2
                         )
             ,  test "of non-empty.BigIntNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt 8
+                        ( BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt 8
                         )
-                        ( BTreeVariedType.raiseNodes 3 <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| 2
+                        ( BTreeVariedType.raiseNodes 3 <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| 2
                         )
             ,  test "of non-empty.BigIntNode.4" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| negate <| maxSafeInt - 2
+                        ( BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| negate <| maxSafeInt - 2
                         )
-                        ( BTreeVariedType.raiseNodes 1 <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| negate <| maxSafeInt - 2
+                        ( BTreeVariedType.raiseNodes 1 <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| negate <| maxSafeInt - 2
                         )
             ,  test "of non-empty.BigIntNode.5" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt
+                        ( BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt
                         )
-                        ( BTreeVariedType.raiseNodes 1 <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt
+                        ( BTreeVariedType.raiseNodes 1 <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt
                         )
             ,  test "of non-empty.BigIntNode.6" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BigIntNode <| BigInt.mul (BigInt.fromInt <| maxSafeInt) (BigInt.fromInt <| maxSafeInt)
+                        ( BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.mul (BigInt.fromInt <| maxSafeInt) (BigInt.fromInt <| maxSafeInt)
                         )
-                        ( BTreeVariedType.raiseNodes 2 <| BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt
+                        ( BTreeVariedType.raiseNodes 2 <| BTreeVaried <|
+                            singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt
                         )
             ,  test "of non-empty.StringNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| StringNode ""
+                        ( BTreeVaried <|
+                            singleton <| StringNode ""
                         )
-                        ( BTreeVariedType.raiseNodes -1 <| BTreeVaried <| singleton <| StringNode ""
+                        ( BTreeVariedType.raiseNodes -1 <| BTreeVaried <|
+                            singleton <| StringNode ""
                         )
             ,  test "of non-empty.StringNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| StringNode "a"
+                        ( BTreeVaried <|
+                            singleton <| StringNode "a"
                         )
-                        ( BTreeVariedType.raiseNodes 0 <| BTreeVaried <| singleton <| StringNode "a"
+                        ( BTreeVariedType.raiseNodes 0 <| BTreeVaried <|
+                            singleton <| StringNode "a"
                         )
             ,  test "of non-empty.StringNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| StringNode "abc"
+                        ( BTreeVaried <|
+                            singleton <| StringNode "abc"
                         )
-                        ( BTreeVariedType.raiseNodes 3 <| BTreeVaried <| singleton <| StringNode "abc"
+                        ( BTreeVariedType.raiseNodes 3 <| BTreeVaried <|
+                            singleton <| StringNode "abc"
                         )
             ,  test "of non-empty.StringNode.4" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| StringNode "abcd"
+                        ( BTreeVaried <|
+                            singleton <| StringNode "abcd"
                         )
-                        ( BTreeVariedType.raiseNodes 3 <| BTreeVaried <| singleton <| StringNode "abcd"
+                        ( BTreeVariedType.raiseNodes 3 <| BTreeVaried <|
+                            singleton <| StringNode "abcd"
                         )
             ,  test "of non-empty.BoolNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
-                        ( BTreeVariedType.raiseNodes -3 <| BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVariedType.raiseNodes -3 <| BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
             ,  test "of non-empty.BoolNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
-                        ( BTreeVariedType.raiseNodes 0 <| BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVariedType.raiseNodes 0 <| BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
             ,  test "of non-empty.BoolNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
-                        ( BTreeVariedType.raiseNodes 3 <| BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVariedType.raiseNodes 3 <| BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
             ,  test "of non-empty.BoolNode.4" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just False
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just False
                         )
-                        ( BTreeVariedType.raiseNodes -3 <| BTreeVaried <| singleton <| BoolNode <| Just False
+                        ( BTreeVariedType.raiseNodes -3 <| BTreeVaried <|
+                            singleton <| BoolNode <| Just False
                         )
             ,  test "of non-empty.BoolNode.5" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
-                        ( BTreeVariedType.raiseNodes 8 <| BTreeVaried <| singleton <| BoolNode <| Just True
+                        ( BTreeVariedType.raiseNodes 8 <| BTreeVaried <|
+                            singleton <| BoolNode <| Just True
                         )
             ,  test "of non-empty.BoolNode.6" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| BoolNode <| Just False
+                        ( BTreeVaried <|
+                            singleton <| BoolNode <| Just False
                         )
-                        ( BTreeVariedType.raiseNodes 8 <| BTreeVaried <| singleton <| BoolNode <| Just False
+                        ( BTreeVariedType.raiseNodes 8 <| BTreeVaried <|
+                            singleton <| BoolNode <| Just False
                         )
             ,  test "of non-empty.MusicNoteNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on A
+                        ( BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on A
                         )
-                        ( BTreeVariedType.raiseNodes -1 <| BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on A
+                        ( BTreeVariedType.raiseNodes -1 <| BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on A
                         )
             ,  test "of non-empty.MusicNoteNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on A
+                        ( BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on A
                         )
-                        ( BTreeVariedType.raiseNodes 0 <| BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on A
+                        ( BTreeVariedType.raiseNodes 0 <| BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on A
                         )
             ,  test "of non-empty.MusicNoteNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on A
+                        ( BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on A
                         )
-                        ( BTreeVariedType.raiseNodes 1 <| BTreeVaried <| singleton <| MusicNoteNode <| MusicNotePlayer.on A
+                        ( BTreeVariedType.raiseNodes 1 <| BTreeVaried <|
+                            singleton <| MusicNoteNode <| MusicNotePlayer.on A
                         )
             ,  test "of non-empty.MusicNoteNode.4" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| MusicNoteNode <| musicNotePlayerOnNothing
+                        ( BTreeVaried <|
+                            singleton <| MusicNoteNode <| musicNotePlayerOnNothing
                         )
-                        ( BTreeVariedType.raiseNodes 1 <| BTreeVaried <| singleton <| MusicNoteNode <| musicNotePlayerOnNothing
+                        ( BTreeVariedType.raiseNodes 1 <| BTreeVaried <|
+                            singleton <| MusicNoteNode <| musicNotePlayerOnNothing
                         )
             ,  test "of non-empty.NothingNode.1" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVaried <|
+                            singleton <| NothingNode
                         )
-                        ( BTreeVariedType.raiseNodes -1 <| BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVariedType.raiseNodes -1 <| BTreeVaried <|
+                            singleton <| NothingNode
                         )
             ,  test "of non-empty.NothingNode.2" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVaried <|
+                            singleton <| NothingNode
                         )
-                        ( BTreeVariedType.raiseNodes 0 <| BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVariedType.raiseNodes 0 <| BTreeVaried <|
+                            singleton <| NothingNode
                         )
             ,  test "of non-empty.NothingNode.3" <|
                 \() ->
                     Expect.equal
-                        ( BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVaried <|
+                            singleton <| NothingNode
                         )
-                        ( BTreeVariedType.raiseNodes 1 <| BTreeVaried <| singleton <| NothingNode
+                        ( BTreeVariedType.raiseNodes 1 <| BTreeVaried <|
+                            singleton <| NothingNode
                         )
             ]
          , describe "BTreeVariedType.deDuplicate"
@@ -834,13 +1054,42 @@ bTreeVariedType =
                     Expect.equal (BTreeVaried Empty) (BTreeVariedType.deDuplicate (BTreeVaried Empty))
             , test "of singleton" <|
                 \() ->
-                    Expect.equal (BTreeVaried <| singleton (IntNode <| Safe 2)) (BTreeVariedType.deDuplicate (BTreeVaried (singleton (IntNode <| Safe 2))))
+                    Expect.equal
+                        ( BTreeVaried <|
+                            (singleton <| IntNode <| Safe 2)
+                        )
+                        ( BTreeVariedType.deDuplicate <| BTreeVaried <|
+                            (singleton <| IntNode <| Safe 2)
+                        )
             , test "of StringNode A, MusicNoteNode... A" <|
                 \() ->
-                     Expect.equal (BTreeVaried <| Node (StringNode "A") (singleton (MusicNoteNode (MusicNotePlayer.on A))) Empty) (BTreeVariedType.deDuplicate (BTreeVaried <| Node (StringNode "A") (singleton (MusicNoteNode (MusicNotePlayer.on A))) Empty))
+                     Expect.equal
+                        ( BTreeVaried <|
+                            Node (StringNode "A")
+                                (singleton <| MusicNoteNode <| MusicNotePlayer.on A)
+                                Empty
+                        )
+                        ( BTreeVariedType.deDuplicate <| BTreeVaried <|
+                            Node (StringNode "A")
+                                (singleton <| MusicNoteNode <| MusicNotePlayer.on A)
+                                Empty
+                        )
             , test "of IntNode" <|
                 \() ->
-                     Expect.equal (BTreeVaried <| Node (IntNode <| Safe 2) (singleton <| IntNode Unsafe) Empty) (BTreeVariedType.deDuplicate (BTreeVaried <| Node (IntNode <| Safe 2) (singleton <| IntNode <| Safe 2) (Node (IntNode Unsafe) (singleton <| IntNode Unsafe) Empty)))
+                     Expect.equal
+                        ( BTreeVaried <|
+                            Node (IntNode <| Safe 2)
+                                (singleton <| IntNode Unsafe)
+                                Empty
+                        )
+                        ( BTreeVariedType.deDuplicate <| BTreeVaried <|
+                            Node (IntNode <| Safe 2)
+                                (singleton <| IntNode <| Safe 2)
+                                (Node (IntNode Unsafe)
+                                    (singleton <| IntNode Unsafe)
+                                    Empty
+                                )
+                        )
             , test "of BigIntNode" <|
                 \() ->
                      Expect.equal (BTreeVaried <| singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt + 2) (BTreeVariedType.deDuplicate (BTreeVaried <| Node (BigIntNode <| BigInt.fromInt <| maxSafeInt + 2) (singleton <| BigIntNode <| BigInt.fromInt <| maxSafeInt + 2) Empty))
