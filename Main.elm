@@ -1096,25 +1096,13 @@ update msg model =
             { model| isShowRandomDropdown = not model.isShowRandomDropdown } ! []
 
         MouseLeftPlayButton ->
-            let
-                (debouncer, debouncerCmd) =
-                    model.menuDropdownDebouncer |> Debouncer.bounce { id = "MouseLeftPlayButton", msgToSend = CheckIfMouseEnteredPlayDropdown }
-            in
-                { model | menuDropdownDebouncer = debouncer } ! [debouncerCmd |> Cmd.map DebouncerSelfMsg]
+            waitPriorToCheckingIfMouseEnteredDropdown CheckIfMouseEnteredPlayDropdown model
 
         MouseLeftSortButton ->
-            let
-                (debouncer, debouncerCmd) =
-                    model.menuDropdownDebouncer |> Debouncer.bounce { id = "MouseLeftSortButton", msgToSend = CheckIfMouseEnteredSortDropdown }
-            in
-                { model | menuDropdownDebouncer = debouncer } ! [debouncerCmd |> Cmd.map DebouncerSelfMsg]
+            waitPriorToCheckingIfMouseEnteredDropdown CheckIfMouseEnteredSortDropdown model
 
         MouseLeftRandomButton ->
-            let
-                (debouncer, debouncerCmd) =
-                    model.menuDropdownDebouncer |> Debouncer.bounce { id = "MouseLeftRandomButton", msgToSend = CheckIfMouseEnteredRandomDropdown }
-            in
-                { model | menuDropdownDebouncer = debouncer } ! [debouncerCmd |> Cmd.map DebouncerSelfMsg]
+            waitPriorToCheckingIfMouseEnteredDropdown CheckIfMouseEnteredRandomDropdown model
 
         MouseEnteredPlayDropdown ->
             { model | isMouseEnteredPlayDropdown = True } ! []
@@ -1169,6 +1157,15 @@ update msg model =
                 , musicNoteTree = tree
                 , uuidSeed = seed
                 } ! []
+
+
+waitPriorToCheckingIfMouseEnteredDropdown : Msg -> Model -> (Model, Cmd Msg)
+waitPriorToCheckingIfMouseEnteredDropdown msg model =
+    let
+        (debouncer, debouncerCmd) =
+            model.menuDropdownDebouncer |> Debouncer.bounce { id = toString msg, msgToSend = msg }
+    in
+        { model | menuDropdownDebouncer = debouncer } ! [debouncerCmd |> Cmd.map DebouncerSelfMsg]
 
 
 generatorRandomListLength : Random.Generator Int
