@@ -21,7 +21,7 @@ import BTreeVariedType exposing (BTreeVariedType(..))
 import MusicNote exposing (displayString)
 import MusicNotePlayer exposing (MusicNotePlayer(..))
 import UniversalConstants exposing (nothingString, unsafeString)
-import MaybeSafe exposing (MaybeSafe(..), withDefault)
+import MaybeSafe exposing (MaybeSafe(..), withDefault, unwrap)
 import Lib exposing (isEvenBigInt, digitCount, digitCountBigInt)
 
 
@@ -73,14 +73,12 @@ nodeDisplayLength : NodeTag -> Int
 nodeDisplayLength nodeTag =
     case nodeTag of
         IntNode mbsInt ->
-            case mbsInt of -- todo create MaybeSafe.unwrap ~ Maybe.Extra.unwrap
-                Unsafe ->
-                    0
-
-                Safe int ->
-                    case digitCount <| Safe int of
-                        Unsafe -> 0
-                        Safe count -> count
+            let
+                fn = \int -> case digitCount <| Safe int of
+                     Unsafe -> 0
+                     Safe count -> count
+            in
+                MaybeSafe.unwrap 0 fn mbsInt
 
         BigIntNode bigInt ->
             MaybeSafe.withDefault 0 <| digitCountBigInt bigInt
@@ -173,7 +171,7 @@ drawNode mbNodeTag =
                 StringNode s ->
                     let
                         stringLength = String.length s
-                        width = toFloat <| 10 * stringLength
+                        width = toFloat <| 10 * (max 3 stringLength)
                         height = 30
                     in
                         group
