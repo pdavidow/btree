@@ -366,7 +366,7 @@ viewDashboardTop model =
                 [ button
                     [ classes
                         ([ T.hover_bg_light_green
-                        ] ++ (if model.isShowSortDropdown then [T.bg_light_green] else []))
+                        ] ++ (if model.isShowPlayDropdown then [T.bg_light_green] else []))
                     , disabled isPlayDisabled
                     , onMouseEnter MouseEnteredPlayButton
                     , onMouseLeave MouseLeftPlayButton
