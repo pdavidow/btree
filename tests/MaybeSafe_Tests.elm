@@ -1,6 +1,6 @@
 module MaybeSafe_Tests exposing (..)
 
-import MaybeSafe exposing (MaybeSafe(..), isSafe, isSafeInt, toMaybeSafe, toMaybeSafeInt, maxSafeInt, sumMaybeSafeInt, compare, withDefault, unwrap)
+import MaybeSafe exposing (MaybeSafe(..), isSafe, isSafeInt, toMaybeSafe, toMaybeSafeInt, maxSafeInt, sumMaybeSafeInt, compare, withDefault, map, unwrap, toOnlySafe, toOnlySafeInt)
 
 import Arithmetic exposing (isOdd)
 
@@ -108,18 +108,60 @@ maybeSafe =
          , describe "MaybeSafe.withDefault"
             [ test "Unsafe" <|
                 \() ->
-                    Expect.equal 0 (MaybeSafe.withDefault 0 <| MaybeSafe.toMaybeSafeInt <| maxSafeInt + 1)
+                    Expect.equal
+                        0
+                        (MaybeSafe.withDefault 0 <| MaybeSafe.toMaybeSafeInt <| maxSafeInt + 1)
             , test "Safe" <|
                 \() ->
-                    Expect.equal maxSafeInt (MaybeSafe.withDefault 0 <| MaybeSafe.toMaybeSafeInt <| maxSafeInt)
+                    Expect.equal
+                        maxSafeInt
+                        (MaybeSafe.withDefault 0 <| MaybeSafe.toMaybeSafeInt <| maxSafeInt)
+            ]
+         , describe "MaybeSafe.map"
+            [ test "Unsafe" <|
+                \() ->
+                    Expect.equal
+                        Unsafe
+                        (MaybeSafe.map (\i -> Safe <| Arithmetic.isOdd i) <| MaybeSafe.toMaybeSafeInt <| maxSafeInt + 1)
+            , test "Safe" <|
+                \() ->
+                    Expect.equal
+                        (Safe True)
+                        (MaybeSafe.map (\i -> Safe <| Arithmetic.isOdd i) <| MaybeSafe.toMaybeSafeInt <| maxSafeInt)
             ]
          , describe "MaybeSafe.unwrap"
             [ test "Unsafe" <|
                 \() ->
-                    Expect.equal False (MaybeSafe.unwrap False Arithmetic.isOdd <| MaybeSafe.toMaybeSafeInt <| maxSafeInt + 1)
+                    Expect.equal
+                        False
+                        (MaybeSafe.unwrap False Arithmetic.isOdd <| MaybeSafe.toMaybeSafeInt <| maxSafeInt + 1)
             , test "Safe" <|
                 \() ->
-                    Expect.equal True (MaybeSafe.unwrap False Arithmetic.isOdd <| MaybeSafe.toMaybeSafeInt <| maxSafeInt)
+                    Expect.equal
+                        True
+                        (MaybeSafe.unwrap False Arithmetic.isOdd <| MaybeSafe.toMaybeSafeInt <| maxSafeInt)
             ]
+         , describe "MaybeSafe.toOnlySafe"
+            [ test "empty" <|
+                \() ->
+                    Expect.equal
+                        []
+                        (MaybeSafe.toOnlySafe 'q' [])
+            , test "toOnlySafe" <|
+                \() ->
+                    Expect.equal
+                        ['a', 'c']
+                        (MaybeSafe.toOnlySafe 'q' [Safe 'a', Unsafe, Safe 'c', Unsafe])
+            ]
+         , describe "MaybeSafe.toOnlySafeInt"
+            [ test "empty" <|
+                \() ->
+                    Expect.equal
+                        []
+                        (MaybeSafe.toOnlySafeInt [])
+            , test "toOnlySafeInt" <|
+                \() ->
+                    Expect.equal
+                        [1, maxSafeInt, negate <| maxSafeInt]
+                        (MaybeSafe.toOnlySafeInt [toMaybeSafeInt 1, toMaybeSafeInt maxSafeInt, toMaybeSafeInt <| maxSafeInt + 1, toMaybeSafeInt <| negate <| maxSafeInt, toMaybeSafeInt <| negate <| maxSafeInt +1])            ]
         ]
-

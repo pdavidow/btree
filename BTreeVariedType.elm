@@ -51,14 +51,10 @@ toIsIntPrime (BTreeVaried bTree) =
         fn nodeTag = case nodeTag of
             IntNode mbsInt ->
                 let
-                    mbBool = case mbsInt of
-                        Unsafe ->
-                            Nothing
-
-                        Safe int ->
-                            Just (Arithmetic.isPrime int)
+                    fn = \int ->
+                        Just (Arithmetic.isPrime int)
                 in
-                    BoolNode mbBool
+                    BoolNode <| MaybeSafe.unwrap Nothing fn mbsInt
 
             BigIntNode x ->
                 NothingNode

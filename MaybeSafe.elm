@@ -1,4 +1,4 @@
-module MaybeSafe exposing (MaybeSafe(..), isSafe, isSafeInt, toMaybeSafe, toMaybeSafeInt, maxSafeInt, sumMaybeSafeInt, compare, withDefault, unwrap)
+module MaybeSafe exposing (MaybeSafe(..), isSafe, isSafeInt, toMaybeSafe, toMaybeSafeInt, maxSafeInt, sumMaybeSafeInt, compare, withDefault, map, unwrap, toOnlySafe, toOnlySafeInt)
 
 import List.Extra exposing (last)
 
@@ -64,13 +64,9 @@ isSafe mbsA =
 
 toOnlySafe : a -> List (MaybeSafe a) -> List a
 toOnlySafe unusedDefault list =
-    let
-        fn = \ mbsA ->
-            case mbsA of
-                Unsafe -> unusedDefault
-                Safe a -> a
-    in
-        List.map fn <| List.filter isSafe list
+    list
+        |> List.filter isSafe
+        |> List.map (withDefault unusedDefault)
 
 
 toOnlySafeInt : List (MaybeSafe Int) -> List Int
@@ -80,9 +76,12 @@ toOnlySafeInt list =
 
 withDefault : a -> MaybeSafe a -> a
 withDefault default mbsA =
-    case mbsA of
-        Unsafe -> default
-        Safe a -> a
+    unwrap default identity mbsA
+
+
+map : (a -> MaybeSafe b) -> MaybeSafe a -> MaybeSafe b
+map fn mbsA =
+    unwrap Unsafe fn mbsA
 
 
 unwrap : b -> (a -> b) -> MaybeSafe a -> b

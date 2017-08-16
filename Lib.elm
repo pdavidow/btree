@@ -3,7 +3,7 @@ module Lib exposing (IntFlex(..), lazyUnwrap, digitCount, digitCountBigInt, rais
 import Lazy exposing (Lazy, force)
 import BigInt exposing (BigInt, abs, mul, toString)
 
-import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
+import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt, map)
 
 
 type IntFlex
@@ -25,22 +25,21 @@ lazyUnwrap lazy fn mbA =
 
 digitCount : MaybeSafe Int -> MaybeSafe Int
 digitCount mbsInt =
-    case mbsInt of
-        Unsafe ->
-            Unsafe
-
-        Safe int ->
-            -- https://elmlang.slack.com/archives/C0CJ3SBBM/p1500404055237431
-            if int == 0
-                then
-                    Safe 1
-                else
-                    Basics.abs int
-                        |> toFloat
-                        |> logBase 10
-                        |> floor
-                        |> (+) 1
-                        |> toMaybeSafeInt
+    let
+        fn = \int ->
+          -- https://elmlang.slack.com/archives/C0CJ3SBBM/p1500404055237431
+          if int == 0
+              then
+                  Safe 1
+              else
+                  Basics.abs int
+                      |> toFloat
+                      |> logBase 10
+                      |> floor
+                      |> (+) 1
+                      |> toMaybeSafeInt
+    in
+        MaybeSafe.map fn mbsInt
 
 
 digitCountBigInt : BigInt -> MaybeSafe Int

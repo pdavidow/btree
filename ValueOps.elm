@@ -5,7 +5,7 @@ import BigInt exposing (BigInt, add, sub)
 
 import MusicNote exposing ((:+:), (:-:))
 import MusicNotePlayer exposing (MusicNotePlayer(..))
-import MaybeSafe exposing (MaybeSafe(..), isSafeInt, toMaybeSafeInt)
+import MaybeSafe exposing (MaybeSafe(..), isSafeInt, toMaybeSafeInt, map)
 import Lib exposing (raiseBigInt)
 
 
@@ -24,16 +24,15 @@ raiseMappers = Mappers raiseInt raiseBigInt raiseString raiseBool raiseMusicNote
 
 
 intOp : (Int -> Int -> Int) -> Int -> MaybeSafe Int -> MaybeSafe Int
-intOp fn delta mbsInt =
-    case mbsInt of
-        Unsafe ->
-            Unsafe
-
-        Safe int ->
-            delta
-                |> abs
-                |> fn int
-                |> toMaybeSafeInt
+intOp opFn delta mbsInt =
+    let
+        fn = \int ->
+          delta
+              |> abs
+              |> opFn int
+              |> toMaybeSafeInt
+    in
+        MaybeSafe.map fn mbsInt
 
 
 incrementInt : Int -> MaybeSafe Int -> MaybeSafe Int

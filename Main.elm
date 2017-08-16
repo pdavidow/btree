@@ -737,13 +737,13 @@ treeStatus depth mbIxSum =
                 result = \ixSum ->
                     case ixSum of
                         IntVal mbsInt ->
-                            case mbsInt of
-                                Unsafe ->
-                                    span
-                                        [ classes [unsafeColor] ]
-                                        [ text "unsafe" ]
-                                Safe sum ->
-                                    okSum <| Basics.toString sum
+                            MaybeSafe.unwrap
+                                (span
+                                    [ classes [unsafeColor] ]
+                                    [ text "unsafe" ]
+                                )
+                                (\sum -> okSum <| Basics.toString sum)
+                                mbsInt
                         BigIntVal sum ->
                             okSum <| BigInt.toString sum
             in
