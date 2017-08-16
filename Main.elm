@@ -37,6 +37,12 @@ type IntView
     | BothView
 
 
+type DropdownAction
+    = Play
+    | Sort
+    | Random
+
+
 type Msg
     = Increment
     | Decrement
@@ -61,25 +67,11 @@ type Msg
     | DonePlayNotes (Bool)
     | SwitchToIntView (IntView)
 
-    | MouseEnteredPlayButton
-    | MouseEnteredSortButton
-    | MouseEnteredRandomButton
-
-    | MouseLeftPlayButton
-    | MouseLeftSortButton
-    | MouseLeftRandomButton
-
-    | MouseEnteredPlayDropdown
-    | MouseEnteredSortDropdown
-    | MouseEnteredRandomDropdown
-
-    | CheckIfMouseEnteredPlayDropdown
-    | CheckIfMouseEnteredSortDropdown
-    | CheckIfMouseEnteredRandomDropdown
-
-    | MouseLeftPlayDropdown
-    | MouseLeftSortDropdown
-    | MouseLeftRandomDropdown
+    | MouseEnteredButton (DropdownAction)
+    | MouseLeftButton (DropdownAction)
+    | MouseEnteredDropdown (DropdownAction)
+    | CheckIfMouseEnteredDropdown (DropdownAction)
+    | MouseLeftDropdown (DropdownAction)
 
     | DebouncerSelfMsg (Debouncer.SelfMsg Msg)
     | Reset
@@ -107,7 +99,7 @@ type alias Model =
     , directionForRandom : Direction
     , intView : IntView
     , uuidSeed : Seed
-    , isShowPlayDropdown : Bool
+    , isShowPlayDropdown : Bool -- todo refactor?
     , isShowSortDropdown : Bool
     , isShowRandomDropdown : Bool
     , isMouseEnteredPlayDropdown : Bool
@@ -368,8 +360,8 @@ viewDashboardTop model =
                         ([ T.hover_bg_light_green
                         ] ++ (if model.isShowPlayDropdown then [T.bg_light_green] else []))
                     , disabled isPlayDisabled
-                    , onMouseEnter MouseEnteredPlayButton
-                    , onMouseLeave MouseLeftPlayButton
+                    , onMouseEnter (MouseEnteredButton Play)
+                    , onMouseLeave (MouseLeftButton Play)
                     ]
                     [ text "Play" ]
                 , div
@@ -379,8 +371,8 @@ viewDashboardTop model =
                          , T.ba
                          , T.w5
                          ]
-                    , onMouseEnter MouseEnteredPlayDropdown
-                    , onMouseLeave MouseLeftPlayDropdown
+                    , onMouseEnter (MouseEnteredDropdown Play)
+                    , onMouseLeave (MouseLeftDropdown Play)
                     ]
                     [ button
                         [ classes
@@ -446,8 +438,8 @@ viewDashboardTop model =
                     ([ T.hover_bg_light_green
                     ] ++ (if model.isShowSortDropdown then [T.bg_light_green] else []))
                 , disabled model.isPlayNotes
-                , onMouseEnter MouseEnteredSortButton
-                , onMouseLeave MouseLeftSortButton
+                    , onMouseEnter (MouseEnteredButton Sort)
+                    , onMouseLeave (MouseLeftButton Sort)
                 ]
                 [ text "Sort" ]
             , div
@@ -457,8 +449,8 @@ viewDashboardTop model =
                      , T.ba
                      , T.w5
                      ]
-                    , onMouseEnter MouseEnteredSortDropdown
-                    , onMouseLeave MouseLeftSortDropdown
+                    , onMouseEnter (MouseEnteredDropdown Sort)
+                    , onMouseLeave (MouseLeftDropdown Sort)
                 ]
                 [ button
                     [ classes
@@ -511,8 +503,8 @@ viewDashboardTop model =
                 [ classes
                     ([ T.hover_bg_light_green
                     ] ++ (if model.isShowRandomDropdown then [T.bg_light_green] else []))
-                , onMouseEnter MouseEnteredRandomButton
-                , onMouseLeave MouseLeftRandomButton
+                    , onMouseEnter (MouseEnteredButton Random)
+                    , onMouseLeave (MouseLeftButton Random)
                 ]
                 [ text "Random Ints" ]
             , div
@@ -522,8 +514,8 @@ viewDashboardTop model =
                      , T.ba
                      , T.w5
                      ]
-                    , onMouseEnter MouseEnteredRandomDropdown
-                    , onMouseLeave MouseLeftRandomDropdown
+                    , onMouseEnter (MouseEnteredDropdown Random)
+                    , onMouseLeave (MouseLeftDropdown Random)
                 ]
                 [ button
                     [ classes
@@ -1086,59 +1078,49 @@ update msg model =
         SwitchToIntView intView ->
             { model | intView = intView } ! []
 
-        MouseEnteredPlayButton ->
-            { model| isShowPlayDropdown = True } ! []
+        MouseEnteredButton action ->
+            case action of
+                Play -> { model| isShowPlayDropdown = True } ! []
+                Sort -> { model| isShowSortDropdown = True } ! []
+                Random -> { model| isShowRandomDropdown = True } ! []
 
-        MouseEnteredSortButton ->
-            { model| isShowSortDropdown = True } ! []
+        MouseLeftButton action ->
+            case action of
+                Play -> waitPriorToCheckingIfMouseEnteredDropdown (CheckIfMouseEnteredDropdown Play) model
+                Sort -> waitPriorToCheckingIfMouseEnteredDropdown (CheckIfMouseEnteredDropdown Sort) model
+                Random -> waitPriorToCheckingIfMouseEnteredDropdown (CheckIfMouseEnteredDropdown Random) model
 
-        MouseEnteredRandomButton ->
-            { model| isShowRandomDropdown = True } ! []
+        MouseEnteredDropdown action ->
+            case action of
+                Play -> { model | isMouseEnteredPlayDropdown = True } ! []
+                Sort -> { model | isMouseEnteredSortDropdown = True } ! []
+                Random -> { model | isMouseEnteredRandomDropdown = True } ! []
 
-        MouseLeftPlayButton ->
-            waitPriorToCheckingIfMouseEnteredDropdown CheckIfMouseEnteredPlayDropdown model
+        MouseLeftDropdown action ->
+            case action of
+                Play ->
+                    { model
+                    | isMouseEnteredPlayDropdown = False
+                    , isShowPlayDropdown = False
+                    } ! []
 
-        MouseLeftSortButton ->
-            waitPriorToCheckingIfMouseEnteredDropdown CheckIfMouseEnteredSortDropdown model
+                Sort ->
+                    { model
+                    | isMouseEnteredSortDropdown = False
+                    , isShowSortDropdown = False
+                    } ! []
 
-        MouseLeftRandomButton ->
-            waitPriorToCheckingIfMouseEnteredDropdown CheckIfMouseEnteredRandomDropdown model
+                Random ->
+                    { model
+                    | isMouseEnteredRandomDropdown = False
+                    , isShowRandomDropdown = False
+                    } ! []
 
-        MouseEnteredPlayDropdown ->
-            { model | isMouseEnteredPlayDropdown = True } ! []
-
-        MouseEnteredSortDropdown ->
-            { model | isMouseEnteredSortDropdown = True } ! []
-
-        MouseEnteredRandomDropdown ->
-            { model | isMouseEnteredRandomDropdown = True } ! []
-
-        MouseLeftPlayDropdown ->
-            { model
-            | isMouseEnteredPlayDropdown = False
-            , isShowPlayDropdown = False
-            } ! []
-
-        MouseLeftSortDropdown ->
-            { model
-            | isMouseEnteredSortDropdown = False
-            , isShowSortDropdown = False
-            } ! []
-
-        MouseLeftRandomDropdown ->
-            { model
-            | isMouseEnteredRandomDropdown = False
-            , isShowRandomDropdown = False
-            } ! []
-
-        CheckIfMouseEnteredPlayDropdown ->
-            { model | isShowPlayDropdown = model.isMouseEnteredPlayDropdown } ! []
-
-        CheckIfMouseEnteredSortDropdown ->
-            { model | isShowSortDropdown = model.isMouseEnteredSortDropdown } ! []
-
-        CheckIfMouseEnteredRandomDropdown ->
-            { model | isShowRandomDropdown = model.isMouseEnteredRandomDropdown } ! []
+        CheckIfMouseEnteredDropdown action ->
+            case action of
+                Play -> { model | isShowPlayDropdown = model.isMouseEnteredPlayDropdown } ! []
+                Sort -> { model | isShowSortDropdown = model.isMouseEnteredSortDropdown } ! []
+                Random -> { model | isShowRandomDropdown = model.isMouseEnteredRandomDropdown } ! []
 
         DebouncerSelfMsg debouncerMsg ->
             let
