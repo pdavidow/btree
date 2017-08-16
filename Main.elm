@@ -15,6 +15,7 @@ import Lazy exposing (lazy)
 import BigInt exposing (fromInt)
 import Debouncer exposing (DebouncerState, SelfMsg, bounce, create, process)
 import Time exposing (Time, millisecond)
+import EveryDict exposing (EveryDict, fromList, get, update)
 
 import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes)
 import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, hasAnyIntNodes)
@@ -99,12 +100,8 @@ type alias Model =
     , directionForRandom : Direction
     , intView : IntView
     , uuidSeed : Seed
-    , isShowPlayDropdown : Bool -- todo refactor?
-    , isShowSortDropdown : Bool
-    , isShowRandomDropdown : Bool
-    , isMouseEnteredPlayDropdown : Bool
-    , isMouseEnteredSortDropdown : Bool
-    , isMouseEnteredRandomDropdown : Bool
+    , isShowDropdown : EveryDict DropdownAction Bool
+    , isMouseEnteredDropdown : EveryDict DropdownAction Bool
     , menuDropdownDebouncer : Debouncer.DebouncerState
     }
 
@@ -168,12 +165,16 @@ initialModel =
     , directionForRandom = Left
     , intView = IntView
     , uuidSeed = initialSeed 0 -- placeholder
-    , isShowPlayDropdown = False
-    , isShowSortDropdown = False
-    , isShowRandomDropdown = False
-    , isMouseEnteredPlayDropdown = False
-    , isMouseEnteredSortDropdown = False
-    , isMouseEnteredRandomDropdown = False
+    , isShowDropdown = EveryDict.fromList
+        [ (Play, False)
+        , (Sort, False)
+        , (Random, False)
+        ]
+    , isMouseEnteredDropdown = EveryDict.fromList
+        [ (Play, False)
+        , (Sort, False)
+        , (Random, False)
+        ]
     , menuDropdownDebouncer = Debouncer.create (5 * Time.millisecond)
     }
 
@@ -358,7 +359,7 @@ viewDashboardTop model =
                 [ button
                     [ classes
                         ([ T.hover_bg_light_green
-                        ] ++ (if model.isShowPlayDropdown then [T.bg_light_green] else []))
+                        ] ++ (if Maybe.withDefault False (EveryDict.get Play model.isShowDropdown) then [T.bg_light_green] else []))
                     , disabled isPlayDisabled
                     , onMouseEnter (MouseEnteredButton Play)
                     , onMouseLeave (MouseLeftButton Play)
@@ -367,7 +368,7 @@ viewDashboardTop model =
                 , div
                     [ classes
                          [ T.absolute
-                         , (if model.isShowPlayDropdown then T.db else T.dn)
+                         , (if Maybe.withDefault False (EveryDict.get Play model.isShowDropdown) then T.db else T.dn)
                          , T.ba
                          , T.w5
                          ]
@@ -436,7 +437,7 @@ viewDashboardTop model =
             [ button
                 [ classes
                     ([ T.hover_bg_light_green
-                    ] ++ (if model.isShowSortDropdown then [T.bg_light_green] else []))
+                    ] ++ (if Maybe.withDefault False (EveryDict.get Sort model.isShowDropdown) then [T.bg_light_green] else []))
                 , disabled model.isPlayNotes
                     , onMouseEnter (MouseEnteredButton Sort)
                     , onMouseLeave (MouseLeftButton Sort)
@@ -445,7 +446,7 @@ viewDashboardTop model =
             , div
                 [ classes
                      [ T.absolute
-                     , (if model.isShowSortDropdown then T.db else T.dn)
+                     , (if Maybe.withDefault False (EveryDict.get Sort model.isShowDropdown) then T.db else T.dn)
                      , T.ba
                      , T.w5
                      ]
@@ -502,7 +503,7 @@ viewDashboardTop model =
             [ button
                 [ classes
                     ([ T.hover_bg_light_green
-                    ] ++ (if model.isShowRandomDropdown then [T.bg_light_green] else []))
+                    ] ++ (if Maybe.withDefault False (EveryDict.get Random model.isShowDropdown) then [T.bg_light_green] else []))
                     , onMouseEnter (MouseEnteredButton Random)
                     , onMouseLeave (MouseLeftButton Random)
                 ]
@@ -510,7 +511,7 @@ viewDashboardTop model =
             , div
                 [ classes
                      [ T.absolute
-                     , (if model.isShowRandomDropdown then T.db else T.dn)
+                     , (if Maybe.withDefault False (EveryDict.get Random model.isShowDropdown) then T.db else T.dn)
                      , T.ba
                      , T.w5
                      ]
@@ -1079,48 +1080,37 @@ update msg model =
             { model | intView = intView } ! []
 
         MouseEnteredButton action ->
-            case action of
-                Play -> { model| isShowPlayDropdown = True } ! []
-                Sort -> { model| isShowSortDropdown = True } ! []
-                Random -> { model| isShowRandomDropdown = True } ! []
+            let
+                isShowDropdown = EveryDict.update action (\mbVal -> Just True) model.isShowDropdown
+            in
+                { model| isShowDropdown = isShowDropdown } ! []
 
         MouseLeftButton action ->
-            case action of
-                Play -> waitPriorToCheckingIfMouseEnteredDropdown (CheckIfMouseEnteredDropdown Play) model
-                Sort -> waitPriorToCheckingIfMouseEnteredDropdown (CheckIfMouseEnteredDropdown Sort) model
-                Random -> waitPriorToCheckingIfMouseEnteredDropdown (CheckIfMouseEnteredDropdown Random) model
+            waitPriorToCheckingIfMouseEnteredDropdown (CheckIfMouseEnteredDropdown action) model
 
         MouseEnteredDropdown action ->
-            case action of
-                Play -> { model | isMouseEnteredPlayDropdown = True } ! []
-                Sort -> { model | isMouseEnteredSortDropdown = True } ! []
-                Random -> { model | isMouseEnteredRandomDropdown = True } ! []
+            let
+                isMouseEnteredDropdown = EveryDict.update action (\mbVal -> Just True) model.isMouseEnteredDropdown
+            in
+                { model| isMouseEnteredDropdown = isMouseEnteredDropdown } ! []
 
         MouseLeftDropdown action ->
-            case action of
-                Play ->
-                    { model
-                    | isMouseEnteredPlayDropdown = False
-                    , isShowPlayDropdown = False
-                    } ! []
+            let
+                isShowDropdown = EveryDict.update action (\mbVal -> Just False) model.isShowDropdown
+                isMouseEnteredDropdown = EveryDict.update action (\mbVal -> Just False) model.isMouseEnteredDropdown
+            in
+                { model
+                | isShowDropdown = isShowDropdown
+                , isMouseEnteredDropdown = isMouseEnteredDropdown
+                } ! []
 
-                Sort ->
-                    { model
-                    | isMouseEnteredSortDropdown = False
-                    , isShowSortDropdown = False
-                    } ! []
-
-                Random ->
-                    { model
-                    | isMouseEnteredRandomDropdown = False
-                    , isShowRandomDropdown = False
-                    } ! []
 
         CheckIfMouseEnteredDropdown action ->
-            case action of
-                Play -> { model | isShowPlayDropdown = model.isMouseEnteredPlayDropdown } ! []
-                Sort -> { model | isShowSortDropdown = model.isMouseEnteredSortDropdown } ! []
-                Random -> { model | isShowRandomDropdown = model.isMouseEnteredRandomDropdown } ! []
+            let
+                theMbBool = EveryDict.get action model.isMouseEnteredDropdown
+                isShowDropdown = EveryDict.update action (\mbBool -> theMbBool) model.isShowDropdown
+            in
+                { model| isShowDropdown = isShowDropdown } ! []
 
         DebouncerSelfMsg debouncerMsg ->
             let
