@@ -36,7 +36,7 @@ incrementWith delta nodeVariety =
     in
         case nodeVariety of
             IntVariety (IntNodeVal mbsInt) ->
-                IntVariety <| IntNodeVal <| intOp (+) absDelta mbsInt
+                IntVariety <| IntNodeVal <| intOperation (+) absDelta mbsInt
 
             BigIntVariety (BigIntNodeVal bigInt) ->
                 BigIntVariety <| BigIntNodeVal <| BigInt.add bigInt <| BigInt.fromInt absDelta
@@ -61,7 +61,7 @@ decrementWith delta nodeVariety =
     in
         case nodeVariety of
             IntVariety (IntNodeVal mbsInt) ->
-                IntVariety <| IntNodeVal <| intOp (-) absDelta mbsInt
+                IntVariety <| IntNodeVal <| intOperation (-) absDelta mbsInt
 
             BigIntVariety (BigIntNodeVal bigInt) ->
                 BigIntVariety <| BigIntNodeVal <| BigInt.sub bigInt <| BigInt.fromInt absDelta
@@ -86,7 +86,7 @@ raiseWith exp nodeVariety =
     in
         case nodeVariety of
             IntVariety (IntNodeVal mbsInt) ->
-                IntVariety <| IntNodeVal <| intOp (^) absExp mbsInt
+                IntVariety <| IntNodeVal <| intOperation (^) absExp mbsInt
 
             BigIntVariety (BigIntNodeVal bigInt) ->
                 BigIntVariety <| BigIntNodeVal <| Lib.raiseBigInt absExp bigInt
@@ -104,13 +104,12 @@ raiseWith exp nodeVariety =
                 NothingVariety NothingNodeVal
 
 
-intOp : (Int -> Int -> Int) -> Int -> MaybeSafe Int -> MaybeSafe Int
-intOp opFn delta mbsInt =
+intOperation : (Int -> Int -> Int) -> Int -> MaybeSafe Int -> MaybeSafe Int
+intOperation operation operand mbsInt =
     let
         fn = \int ->
-          delta
-              |> abs
-              |> opFn int
+          operand
+              |> operation int
               |> toMaybeSafeInt
     in
         MaybeSafe.map fn mbsInt
