@@ -384,7 +384,7 @@ viewDashboardTop model =
                             , w_100
                             ]
                         , disabled isPlayDisabled
-                        , onClick (PlayNotes PreOrder)
+                        , onClick <| PlayNotes PreOrder
                         ]
                         [text "Pre-Order"]
                     , button
@@ -396,7 +396,7 @@ viewDashboardTop model =
                             , T.tl
                             ]
                         , disabled isPlayDisabled
-                        , onClick (PlayNotes InOrder)
+                        , onClick <| PlayNotes InOrder
                         ]
                         [text "In-Order"]
                     , button
@@ -408,7 +408,7 @@ viewDashboardTop model =
                             , w_100
                             ]
                         , disabled isPlayDisabled
-                        , onClick (PlayNotes PostOrder)
+                        , onClick <| PlayNotes PostOrder
                         ]
                         [text "Post-Order"]
                     ]
@@ -417,13 +417,13 @@ viewDashboardTop model =
     , span
         [classes [T.mh2]]
         [ button
-            [classes [T.hover_bg_light_green, T.mv1], onClick <| NodeValueOperate (Increment (abs <| model.delta)), disabled model.isPlayNotes]
+            [classes [T.hover_bg_light_green, T.mv1], onClick <| NodeValueOperate <|Increment model.delta, disabled model.isPlayNotes]
             [text "+ Delta"]
         , button
-            [classes [T.hover_bg_light_green, T.mv1], onClick <| NodeValueOperate (Decrement (abs <| model.delta)), disabled model.isPlayNotes]
+            [classes [T.hover_bg_light_green, T.mv1], onClick <| NodeValueOperate <| Decrement model.delta, disabled model.isPlayNotes]
             [text "- Delta"]
         , button
-            [classes [T.hover_bg_light_green, T.mv1], onClick <| NodeValueOperate (Raise (abs <| model.exponent)), disabled model.isPlayNotes]
+            [classes [T.hover_bg_light_green, T.mv1], onClick <| NodeValueOperate <| Raise model.exponent, disabled model.isPlayNotes]
             [text "^ Exp"]
         ]
     , span
@@ -439,8 +439,8 @@ viewDashboardTop model =
                     ([ T.hover_bg_light_green
                     ] ++ (if Maybe.withDefault False (EveryDict.get Sort model.isShowDropdown) then [T.bg_light_green] else []))
                 , disabled model.isPlayNotes
-                    , onMouseEnter (MouseEnteredButton Sort)
-                    , onMouseLeave (MouseLeftButton Sort)
+                    , onMouseEnter <| MouseEnteredButton Sort
+                    , onMouseLeave <| MouseLeftButton Sort
                 ]
                 [ text "Sort" ]
             , div
@@ -450,8 +450,8 @@ viewDashboardTop model =
                      , T.ba
                      , T.w5
                      ]
-                    , onMouseEnter (MouseEnteredDropdown Sort)
-                    , onMouseLeave (MouseLeftDropdown Sort)
+                    , onMouseEnter <| MouseEnteredDropdown Sort
+                    , onMouseLeave <| MouseLeftDropdown Sort
                 ]
                 [ button
                     [ classes
@@ -462,7 +462,7 @@ viewDashboardTop model =
                         , T.tl
                         ]
                     , disabled model.isPlayNotes
-                    , onClick (SortUniformTrees Left)
+                    , onClick <| SortUniformTrees Left
                     ]
                     [text "Left"]
                 , button
@@ -474,7 +474,7 @@ viewDashboardTop model =
                         , T.tl
                         ]
                     , disabled model.isPlayNotes
-                    , onClick (SortUniformTrees Right)
+                    , onClick <| SortUniformTrees Right
                     ]
                     [text "Right"]
                 ]
@@ -504,8 +504,8 @@ viewDashboardTop model =
                 [ classes
                     ([ T.hover_bg_light_green
                     ] ++ (if Maybe.withDefault False (EveryDict.get Random model.isShowDropdown) then [T.bg_light_green] else []))
-                    , onMouseEnter (MouseEnteredButton Random)
-                    , onMouseLeave (MouseLeftButton Random)
+                    , onMouseEnter <| MouseEnteredButton Random
+                    , onMouseLeave <| MouseLeftButton Random
                 ]
                 [ text "Random Ints" ]
             , div
@@ -515,8 +515,8 @@ viewDashboardTop model =
                      , T.ba
                      , T.w5
                      ]
-                    , onMouseEnter (MouseEnteredDropdown Random)
-                    , onMouseLeave (MouseLeftDropdown Random)
+                    , onMouseEnter <| MouseEnteredDropdown Random
+                    , onMouseLeave <| MouseLeftDropdown Random
                 ]
                 [ button
                     [ classes
@@ -546,7 +546,7 @@ viewDashboardTop model =
                         , w_100
                         , T.tl
                         ]
-                    , onClick (RequestRandomInts Left)
+                    , onClick <| RequestRandomInts Left
                     ]
                     [text "Insert Left"]
                 , button
@@ -557,7 +557,7 @@ viewDashboardTop model =
                         , w_100
                         , T.tl
                         ]
-                    , onClick (RequestRandomInts Right)
+                    , onClick <| RequestRandomInts Right
                     ]
                     [text "Insert Right"]
                 ]
