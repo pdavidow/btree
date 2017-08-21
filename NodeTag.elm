@@ -1,14 +1,23 @@
-module NodeTag exposing (NodeTag(..))
+module NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 
 import MaybeSafe exposing (MaybeSafe)
 import MusicNotePlayer exposing (MusicNotePlayer)
 import BigInt exposing (BigInt)
 
+-- todo get rid of the 'Val' suffixes just like: type MusicNotePlayer = MusicNotePlayer, or perhaps: type MusicNotePlayer = MusicNotePlayerVal
+-- (see IntFlex)
+type IntNode = IntNodeVal (MaybeSafe Int)
+type BigIntNode = BigIntNodeVal (BigInt)
+type StringNode = StringNodeVal (String)
+type BoolNode = BoolNodeVal (Maybe Bool)
+type MusicNoteNode = MusicNoteNodeVal (MusicNotePlayer)
+type NothingNode = NothingNodeVal
 
-type NodeTag
-    = IntNode (MaybeSafe Int)
-    | BigIntNode BigInt
-    | StringNode String
-    | BoolNode (Maybe Bool)
-    | MusicNoteNode MusicNotePlayer
-    | NothingNode
+
+type NodeVariety
+    = IntVariety IntNode
+    | BigIntVariety BigIntNode
+    | StringVariety StringNode
+    | BoolVariety BoolNode
+    | MusicNoteVariety MusicNoteNode
+    | NothingVariety NothingNode

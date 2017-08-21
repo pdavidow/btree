@@ -9,13 +9,16 @@ import MusicNote exposing (Freq(..), toFreq)
 import MusicNotePlayer exposing (MusicNotePlayer(..), isPlayable)
 import AudioNote exposing (AudioNote, audioNote)
 import Ports exposing (port_playNote)
+import NodeTag exposing (NodeVariety(..), MusicNoteNode(..))
 
 
 treeMusicPlayBy : TraversalOrder -> BTreeUniformType -> Cmd msg
 treeMusicPlayBy order bTreeUniformType =
     case bTreeUniformType of
         BTreeMusicNotePlayer bTree ->
-            flattenBy order bTree
+            bTree
+                |> map (\(MusicNoteNodeVal player) -> player)
+                |> flattenBy order
                 |> List.filter isPlayable
                 |> toAudioNotes
                 |> List.map port_playNote
@@ -51,13 +54,13 @@ setPlayMode isPlaying uuid bTreeUniformType =
     case bTreeUniformType of
         BTreeMusicNotePlayer bTree ->
             let
-                fn = \(MusicNotePlayer params) ->
+                fn = \(MusicNoteNodeVal (MusicNotePlayer params)) ->
                     let
                         updatedParams =  if params.mbId == Just uuid
                             then {params | isPlaying = isPlaying}
                             else params
                     in
-                        MusicNotePlayer updatedParams
+                        MusicNoteNodeVal <| MusicNotePlayer updatedParams
 
                 updatedBTree = BTree.map fn bTree
             in

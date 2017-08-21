@@ -15,7 +15,7 @@ import BigInt exposing (BigInt, toString)
 import Maybe.Extra exposing (unwrap)
 
 import BTree exposing (BTree, flatten, toTreeDiagramTree)
-import NodeTag exposing (NodeTag(..))
+import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import BTreeUniformType exposing (BTreeUniformType(..), toTaggedNodes)
 import BTreeVariedType exposing (BTreeVariedType(..))
 import MusicNote exposing (displayString)
@@ -35,7 +35,7 @@ bTreeVariedTypeDiagram (BTreeVaried taggedBTree) =
     bTreeDiagram taggedBTree
 
 
-bTreeDiagram : BTree NodeTag -> Html msg
+bTreeDiagram : BTree NodeVariety -> Html msg
 bTreeDiagram bTree =
     bTree
         |> toTreeDiagramTree
@@ -43,7 +43,7 @@ bTreeDiagram bTree =
         |> Element.toHtml
 
 
-treeElement : Int -> Maybe (TD.Tree (Maybe NodeTag)) -> Element
+treeElement : Int -> Maybe (TD.Tree (Maybe NodeVariety)) -> Element
 treeElement maxLength mbTdTree =
     case mbTdTree of
         Nothing ->
@@ -61,7 +61,7 @@ treeElement maxLength mbTdTree =
                 tdTree
 
 
-maxNodeDisplayLength : BTree NodeTag -> Int
+maxNodeDisplayLength : BTree NodeVariety -> Int
 maxNodeDisplayLength bTree =
     BTree.flatten bTree
         |> List.map nodeDisplayLength
@@ -69,10 +69,10 @@ maxNodeDisplayLength bTree =
         |> Maybe.withDefault 0
 
 
-nodeDisplayLength : NodeTag -> Int
-nodeDisplayLength nodeTag =
-    case nodeTag of
-        IntNode mbsInt ->
+nodeDisplayLength : NodeVariety -> Int
+nodeDisplayLength nodeVariety =
+    case nodeVariety of
+        IntVariety (IntNodeVal mbsInt) ->
             let
                 fn = \int -> case digitCount <| Safe int of
                      Unsafe -> 0
@@ -80,23 +80,23 @@ nodeDisplayLength nodeTag =
             in
                 MaybeSafe.unwrap 0 fn mbsInt
 
-        BigIntNode bigInt ->
+        BigIntVariety (BigIntNodeVal bigInt) ->
             MaybeSafe.withDefault 0 <| digitCountBigInt bigInt
 
-        StringNode string ->
+        StringVariety (StringNodeVal string) ->
             String.length string
 
-        BoolNode mbBool ->
+        BoolVariety (BoolNodeVal mbBool) ->
             Maybe.Extra.unwrap 0 (\a -> 1) mbBool
 
-        MusicNoteNode (MusicNotePlayer params) ->
+        MusicNoteVariety (MusicNoteNodeVal (MusicNotePlayer params)) ->
             let
                 fn = \note -> MusicNote.displayString note
                     |> String.length
             in
                 Maybe.Extra.unwrap 0 fn <| params.mbNote
 
-        NothingNode ->
+        NothingVariety _ ->
             0
 
 
@@ -115,12 +115,12 @@ unsafeColor =
     T.dark_red
 
 
-drawNode : Maybe NodeTag -> Form
-drawNode mbNodeTag =
-    case mbNodeTag of
-        Just nodeTag ->
-            case nodeTag of
-                IntNode mbsInt ->
+drawNode : Maybe NodeVariety -> Form
+drawNode mbNodeVariety =
+    case mbNodeVariety of
+        Just nodeVariety ->
+            case nodeVariety of
+                IntVariety (IntNodeVal mbsInt) ->
                     case mbsInt of
                         Unsafe ->
                             group
@@ -148,7 +148,7 @@ drawNode mbNodeTag =
                                     , intString |> fromString |> style treeNodeStyle |> text |> moveY 4
                                     ]
 
-                BigIntNode bigInt ->
+                BigIntVariety (BigIntNodeVal bigInt) ->
                     let
                         bigIntString = BigInt.toString bigInt
                         stringLength = String.length bigIntString
@@ -168,19 +168,19 @@ drawNode mbNodeTag =
                             , bigIntString |> fromString |> style treeNodeStyle |> text |> moveY 4
                             ]
 
-                StringNode s ->
+                StringVariety (StringNodeVal string) ->
                     let
-                        stringLength = String.length s
+                        stringLength = String.length string
                         width = toFloat <| 10 * (max 3 stringLength)
                         height = 30
                     in
                         group
                             [ rect width height |> filled (tachyonsColorToColor T.dark_blue)
                             , rect width height |> outlined treeLineStyle
-                            , s |> fromString |> style treeNodeStyle |> text |> moveY 4
+                            , string |> fromString |> style treeNodeStyle |> text |> moveY 4
                             ]
 
-                BoolNode mbBool ->
+                BoolVariety (BoolNodeVal mbBool) ->
                     case mbBool of
                         Nothing ->
                             drawNothingNode
@@ -205,7 +205,7 @@ drawNode mbNodeTag =
                                     , displayString bool |> fromString |> style treeNodeStyle |> text |> moveY 4
                                     ]
 
-                MusicNoteNode (MusicNotePlayer params) ->
+                MusicNoteVariety (MusicNoteNodeVal (MusicNotePlayer params)) ->
                     case params.mbNote of
                         Just note ->
                             let
@@ -222,7 +222,7 @@ drawNode mbNodeTag =
                         Nothing ->
                             drawNothingNode
 
-                NothingNode ->
+                NothingVariety _ ->
                     group
                         [ oval 40 40 |> filled (tachyonsColorToColor T.light_silver)
                         , oval 40 40 |> outlined treeLineStyle
@@ -235,7 +235,7 @@ drawNode mbNodeTag =
 
 drawNothingNode : Form
 drawNothingNode =
-    drawNode (Just NothingNode)
+    drawNode (Just <| NothingVariety NothingNodeVal)
 
 
 drawEdge : ( Float, Float ) -> Form

@@ -6,7 +6,7 @@ import Maybe.Extra exposing (unwrap, values)
 import BigInt exposing (BigInt, add)
 
 import MaybeSafe exposing (MaybeSafe(..), compare, sumMaybeSafeInt, toMaybeSafeInt, isSafe)
-import NodeTag exposing (NodeTag(..))
+import NodeTag exposing (NothingNode(..))
 
 -- todo ?? fromList flatten fromList REVERSIBLE
 
@@ -429,6 +429,6 @@ isEmpty bTree =
     bTree == Empty
 
 
-toNothingNodes : BTree a -> BTree NodeTag
+toNothingNodes : BTree a -> BTree NothingNode
 toNothingNodes bTree =
-    map (\a -> NothingNode) bTree
+    map (\a -> NothingNodeVal) bTree

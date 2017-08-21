@@ -17,10 +17,10 @@ import Debouncer exposing (DebouncerState, SelfMsg, bounce, create, process)
 import Time exposing (Time, millisecond)
 import EveryDict exposing (EveryDict, fromList, get, update)
 
-import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes)
-import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, hasAnyIntNodes)
+import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, nodeValueOperate)
+import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, nodeValueOperate, hasAnyIntNodes)
 import BTree exposing (BTree(..), Direction(..), TraversalOrder(..), fromListBy, insertAsIsBy, fromListAsIsBy, fromListAsIs_directed, singleton, toTreeDiagramTree)
-import NodeTag exposing (NodeTag(..))
+import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
 import UniversalConstants exposing (nothingString)
 import MusicNote exposing (MusicNote(..), mbSorter)
@@ -29,6 +29,7 @@ import TreeMusicPlayer exposing (treeMusicPlayBy, startPlayNote, donePlayNote)
 import Ports exposing (port_startPlayNote, port_donePlayNote, port_donePlayNotes)
 import Lib exposing (IntFlex(..), lazyUnwrap)
 import MaybeSafe exposing (MaybeSafe(..), maxSafeInt, toMaybeSafeInt)
+import NodeValueOperation exposing (Operation(..))
 ------------------------------------------------
 
 
@@ -45,9 +46,7 @@ type DropdownAction
 
 
 type Msg
-    = Increment
-    | Decrement
-    | Raise
+    = NodeValueOperate (Operation)
     | SortUniformTrees (Direction)
     | RemoveDuplicates
     | Delta String
@@ -109,47 +108,47 @@ type alias Model =
 initialModel: Model
 initialModel =
     { intTree = BTreeInt <|
-        Node (toMaybeSafeInt <| maxSafeInt)
-            (singleton <| toMaybeSafeInt 4)
-            (Node (toMaybeSafeInt -9)
+        Node (IntNodeVal <| toMaybeSafeInt <| maxSafeInt)
+            (singleton <| IntNodeVal <| toMaybeSafeInt 4)
+            (Node (IntNodeVal <| toMaybeSafeInt -9)
                 Empty
-                (singleton <| toMaybeSafeInt 4)
+                (singleton <| IntNodeVal <| toMaybeSafeInt 4)
             )
     , bigIntTree = BTreeBigInt <|
-        Node (BigInt.fromInt <| maxSafeInt)
-            (singleton <| BigInt.fromInt 4)
-            (Node (BigInt.fromInt -9)
+        Node (BigIntNodeVal <| BigInt.fromInt <| maxSafeInt)
+            (singleton <| BigIntNodeVal <| BigInt.fromInt 4)
+            (Node (BigIntNodeVal <| BigInt.fromInt -9)
                 Empty
-                (singleton <| BigInt.fromInt 4)
+                (singleton <| BigIntNodeVal <| BigInt.fromInt 4)
             )
     , stringTree = BTreeString <|
-        Node "maxSafeInt"
-            (singleton "four")
-            (Node "-nine"
+        Node (StringNodeVal <| "maxSafeInt")
+            (singleton <| StringNodeVal <| "four")
+            (Node (StringNodeVal <| "-nine")
                 Empty
-                (singleton "four")
+                (singleton <| StringNodeVal <| "four")
             )
     , boolTree = BTreeBool <|
-        Node (Just True)
-            (singleton <| Just True)
-            (Node (Just False)
+        Node (BoolNodeVal <| Just True)
+            (singleton <| BoolNodeVal <| Just True)
+            (Node (BoolNodeVal <| Just False)
                 Empty
-                (Node (Just True)
+                (Node (BoolNodeVal <| Just True)
                     Empty
-                    (singleton <| Just False)
+                    (singleton <| BoolNodeVal <| Just False)
                 )
             )
     , initialMusicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
     , musicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
     , variedTree = BTreeVaried <|
-        Node (BigIntNode <| BigInt.fromInt maxSafeInt)
-            (Node (StringNode "A")
-                (singleton <| MusicNoteNode <| MusicNotePlayer.on A)
-                (singleton <| IntNode <| toMaybeSafeInt 123)
+        Node (BigIntVariety <| BigIntNodeVal <| BigInt.fromInt maxSafeInt)
+            (Node (StringVariety <| StringNodeVal <| "A")
+                (singleton <| MusicNoteVariety <| MusicNoteNodeVal <| MusicNotePlayer.on A)
+                (singleton <| IntVariety <| IntNodeVal <| toMaybeSafeInt 123)
             )
-            ((Node (BoolNode <| Just True))
-                (singleton <| MusicNoteNode <| MusicNotePlayer.on A)
-                (singleton <| BoolNode <| Just True)
+            ((Node (BoolVariety <| BoolNodeVal <| Just True))
+                (singleton <| MusicNoteVariety <| MusicNoteNodeVal <| MusicNotePlayer.on A)
+                (singleton <| BoolVariety <| BoolNodeVal <| Just True)
             )
     , intTreeCache = BTreeInt Empty
     , bigIntTreeCache = BTreeBigInt Empty
@@ -218,6 +217,7 @@ idedMusicNoteTree startSeed =
 
         tree = List.map2 (\id note -> MusicNotePlayer.idedOn (Just id) note) ids notes
             |> BTree.fromListBy MusicNotePlayer.sorter
+            |> BTree.map (\player -> MusicNoteNodeVal player)
             |> BTreeMusicNotePlayer
     in
         ( tree, endSeed )
@@ -417,13 +417,13 @@ viewDashboardTop model =
     , span
         [classes [T.mh2]]
         [ button
-            [classes [T.hover_bg_light_green, T.mv1], onClick Increment, disabled model.isPlayNotes]
+            [classes [T.hover_bg_light_green, T.mv1], onClick <| NodeValueOperate (Increment (abs <| model.delta)), disabled model.isPlayNotes]
             [text "+ Delta"]
         , button
-            [classes [T.hover_bg_light_green, T.mv1], onClick Decrement, disabled model.isPlayNotes]
+            [classes [T.hover_bg_light_green, T.mv1], onClick <| NodeValueOperate (Decrement (abs <| model.delta)), disabled model.isPlayNotes]
             [text "- Delta"]
         , button
-            [classes [T.hover_bg_light_green, T.mv1], onClick Raise, disabled model.isPlayNotes]
+            [classes [T.hover_bg_light_green, T.mv1], onClick <| NodeValueOperate (Raise (abs <| model.exponent)), disabled model.isPlayNotes]
             [text "^ Exp"]
         ]
     , span
@@ -906,32 +906,12 @@ viewTreeCard title status mbLegend mbBgColor diagram =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
-        Increment ->
-            let
-                operand = positiveDelta model
-            in
-                (model
-                    |> shiftUniformTrees operand BTreeUniformType.incrementNodes
-                    |> shiftVariedTrees operand BTreeVariedType.incrementNodes
-                ) ! []
+        NodeValueOperate operation ->
+            (model
+                |> nodeValueOperateOnUniformTrees operation
+                |> nodeValueOperateOnVariedTrees operation
+            ) ! []
 
-        Decrement ->
-            let
-                operand = positiveDelta model
-            in
-                (model
-                    |> shiftUniformTrees operand BTreeUniformType.decrementNodes
-                    |> shiftVariedTrees operand BTreeVariedType.decrementNodes
-                ) ! []
-
-        Raise ->
-            let
-                operand = positiveExponent model
-            in
-                (model
-                    |> shiftUniformTrees operand BTreeUniformType.raiseNodes
-                    |> shiftVariedTrees operand BTreeVariedType.raiseNodes
-                ) ! []
 
         SortUniformTrees direction ->
             (sortUniformTrees direction model) ! []
@@ -980,18 +960,43 @@ update msg model =
             model ! [Random.generate ReceiveRandomDelta (Random.int 1 100)]
 
         ReceiveRandomInts list ->
-            { model
-            | intTree = BTreeInt <| BTree.fromListAsIsBy  model.directionForRandom <| List.map toMaybeSafeInt list
-            , bigIntTree = BTreeBigInt <| BTree.fromListAsIsBy model.directionForRandom <| List.map BigInt.fromInt list
-            } ! []
+            let
+                intTree = list
+                    |> List.map toMaybeSafeInt
+                    |> BTree.fromListAsIsBy  model.directionForRandom
+                    |> BTree.map IntNodeVal
+                    |> BTreeInt
+
+                bigIntTree = list
+                    |> List.map BigInt.fromInt
+                    |> BTree.fromListAsIsBy model.directionForRandom
+                    |> BTree.map BigIntNodeVal
+                    |> BTreeBigInt
+            in
+                { model
+                | intTree = intTree
+                , bigIntTree = bigIntTree
+                } ! []
 
         ReceiveRandomPairsIntDirection list ->
             let
                 fn = \transformFn (int, direction) -> (transformFn int, direction)
+
+                intTree = list
+                    |> List.map (fn toMaybeSafeInt)
+                    |> BTree.fromListAsIs_directed
+                    |> BTree.map IntNodeVal
+                    |> BTreeInt
+
+                bigIntTree = list
+                    |> List.map (fn BigInt.fromInt)
+                    |> BTree.fromListAsIs_directed
+                    |> BTree.map BigIntNodeVal
+                    |> BTreeBigInt
             in
                 { model
-                | intTree = BTreeInt <| BTree.fromListAsIs_directed <| List.map (fn toMaybeSafeInt) list
-                , bigIntTree = BTreeBigInt <| BTree.fromListAsIs_directed <| List.map (fn BigInt.fromInt) list
+                | intTree = intTree
+                , bigIntTree = bigIntTree
                 } ! []
 
         ReceiveRandomDelta i ->
@@ -1145,16 +1150,6 @@ generatorRandomListLength =
     Random.int minRandomListLength maxRandomListLength
 
 
-positiveDelta : Model -> Int
-positiveDelta model =
-    abs model.delta
-
-
-positiveExponent : Model -> Int
-positiveExponent model =
-    abs model.exponent
-
-
 cacheAllTrees : Model -> Model
 cacheAllTrees model =
     {model
@@ -1197,20 +1192,14 @@ changeVariedTrees fn model =
     }
 
 
-shiftUniformTrees : Int -> (Int -> BTreeUniformType -> BTreeUniformType) -> Model -> Model
-shiftUniformTrees operand fn model =
-    let
-        shift = fn operand
-    in
-        changeUniformTrees shift model
+nodeValueOperateOnUniformTrees : Operation -> Model -> Model
+nodeValueOperateOnUniformTrees operation model =
+    changeUniformTrees (BTreeUniformType.nodeValueOperate operation) model
 
 
-shiftVariedTrees : Int -> (Int -> BTreeVariedType -> BTreeVariedType) -> Model -> Model
-shiftVariedTrees operand fn model =
-    let
-        shift = fn operand
-    in
-        changeVariedTrees shift model
+nodeValueOperateOnVariedTrees : Operation -> Model -> Model
+nodeValueOperateOnVariedTrees operation model =
+    changeVariedTrees (BTreeVariedType.nodeValueOperate operation) model
 
 
 sortUniformTrees : Direction -> Model -> Model
