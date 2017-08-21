@@ -45,15 +45,11 @@ toLength (BTreeVaried bTree) =
 toIsIntPrime : BTreeVariedType -> BTreeVariedType
 toIsIntPrime (BTreeVaried bTree) =
     let
-        -- todo https://github.com/elm-community/basics-extra/issues/7
-        isSafeInteger = \int -> (abs int) <= (2^53 - 1)
-
         fn : NodeVariety -> NodeVariety
         fn nodeVariety = case nodeVariety of
             IntVariety (IntNodeVal mbsInt) ->
                 let
-                    fn = \int ->
-                        Just (Arithmetic.isPrime int)
+                    fn = \int -> Just <| Arithmetic.isPrime int
                 in
                     BoolVariety <| BoolNodeVal <| MaybeSafe.unwrap Nothing fn mbsInt
 
@@ -120,5 +116,6 @@ hasAnyIntNodes (BTreeVaried bTree) =
                 MusicNoteVariety _ -> False
                 NothingVariety _ -> False
     in
-        BTree.flatten bTree
+        bTree
+            |> BTree.flatten
             |> List.any isIntNode

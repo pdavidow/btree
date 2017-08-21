@@ -1007,8 +1007,8 @@ update msg model =
                 | isTreeCaching = True
                 }
                     |> cacheAllTrees
-                    |> morphUniformTrees BTreeUniformType.toIsIntPrime
-                    |> morphVariedTrees BTreeVariedType.toIsIntPrime
+                    |> morphToMbUniformTrees BTreeUniformType.toIsIntPrime
+                    |> morphToVariedTrees BTreeVariedType.toIsIntPrime
             ) ! []
 
         StopShowIsIntPrime ->
@@ -1029,8 +1029,8 @@ update msg model =
                 | isTreeCaching = True
                 }
                     |> cacheAllTrees
-                    |> morphUniformTrees BTreeUniformType.toLength
-                    |> morphVariedTrees BTreeVariedType.toLength
+                    |> morphToMbUniformTrees BTreeUniformType.toLength
+                    |> morphToVariedTrees BTreeVariedType.toLength
             ) ! []
 
         StopShowLength ->
@@ -1230,16 +1230,16 @@ deDuplicateVariedTrees model =
         changeVariedTrees fn model
 
 
-morphUniformTrees : (BTreeUniformType -> Maybe BTreeUniformType) -> Model -> Model
-morphUniformTrees fn model =
+morphToMbUniformTrees : (BTreeUniformType -> Maybe BTreeUniformType) -> Model -> Model
+morphToMbUniformTrees fn model =
     let
         defaultMorph = \tree -> defaultMorphUniformTree fn tree
     in
         changeUniformTrees defaultMorph model
 
 
-morphVariedTrees : (BTreeVariedType -> BTreeVariedType) -> Model -> Model
-morphVariedTrees fn model =
+morphToVariedTrees : (BTreeVariedType -> BTreeVariedType) -> Model -> Model
+morphToVariedTrees fn model =
     changeVariedTrees fn model
 
 

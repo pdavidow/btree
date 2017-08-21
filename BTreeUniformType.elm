@@ -26,25 +26,24 @@ type BTreeUniformType
 toNothing : BTreeUniformType -> BTreeUniformType
 toNothing bTreeUniformType =
     let
-        nothing : BTree a -> BTreeUniformType
-        nothing bTree =
-            BTreeNothing (map (\a -> NothingNodeVal) bTree)
+        nothingitize : BTree a -> BTreeUniformType
+        nothingitize  = \bTree -> BTreeNothing <| toNothingNodes bTree
     in
         case bTreeUniformType of
             BTreeInt bTree ->
-                nothing bTree
+                nothingitize bTree
 
             BTreeBigInt bTree ->
-                nothing bTree
+                nothingitize bTree
 
             BTreeString bTree ->
-                nothing bTree
+                nothingitize bTree
 
             BTreeBool bTree ->
-                nothing bTree
+                nothingitize bTree
 
             BTreeMusicNotePlayer bTree ->
-                nothing bTree
+                nothingitize bTree
 
             BTreeNothing bTree ->
                 bTreeUniformType
@@ -72,7 +71,7 @@ toTaggedNodes bTreeUniformType =
             map NothingVariety bTree
 
 
-toLength : BTreeUniformType -> Maybe BTreeUniformType -- todo treat same as Varied , hence no Maybe
+toLength : BTreeUniformType -> Maybe BTreeUniformType
 toLength bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
@@ -103,7 +102,7 @@ toLength bTreeUniformType =
             Nothing
 
 
-toIsIntPrime : BTreeUniformType -> Maybe BTreeUniformType -- todo treat same as Varied , hence no Maybe
+toIsIntPrime : BTreeUniformType -> Maybe BTreeUniformType
 toIsIntPrime bTreeUniformType =
     case bTreeUniformType of
         BTreeInt bTree ->
