@@ -26,24 +26,24 @@ type BTreeUniformType
 toNothing : BTreeUniformType -> BTreeUniformType
 toNothing bTreeUniformType =
     let
-        nothingitize : BTree a -> BTreeUniformType
-        nothingitize  = \bTree -> BTreeNothing <| toNothingNodes bTree
+        toBTreeNothing : BTree a -> BTreeUniformType
+        toBTreeNothing  = \bTree -> BTreeNothing <| toNothingNodes bTree
     in
         case bTreeUniformType of
             BTreeInt bTree ->
-                nothingitize bTree
+                toBTreeNothing bTree
 
             BTreeBigInt bTree ->
-                nothingitize bTree
+                toBTreeNothing bTree
 
             BTreeString bTree ->
-                nothingitize bTree
+                toBTreeNothing bTree
 
             BTreeBool bTree ->
-                nothingitize bTree
+                toBTreeNothing bTree
 
             BTreeMusicNotePlayer bTree ->
-                nothingitize bTree
+                toBTreeNothing bTree
 
             BTreeNothing bTree ->
                 bTreeUniformType
