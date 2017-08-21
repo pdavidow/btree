@@ -130,7 +130,7 @@ toIsIntPrime bTreeUniformType =
 
 nodeValueOperate : Operation -> BTreeUniformType -> BTreeUniformType
 nodeValueOperate operation bTreeUniformType =
-        case bTreeUniformType of -- todo refactor
+        case bTreeUniformType of
             BTreeInt bTree ->
                 let
                     fn = \node ->
@@ -306,7 +306,7 @@ sort direction bTreeUniformType =
 
 deDuplicate : BTreeUniformType -> BTreeUniformType
 deDuplicate bTreeUniformType =
-    case bTreeUniformType of -- todo refactor out a sorter general purpose fn (looks like it has to be for NodeVariety)
+    case bTreeUniformType of
         BTreeInt bTree ->
             let
                 fn = \(IntNodeVal int) -> Basics.toString int

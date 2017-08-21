@@ -4,8 +4,7 @@ import MaybeSafe exposing (MaybeSafe)
 import MusicNotePlayer exposing (MusicNotePlayer)
 import BigInt exposing (BigInt)
 
--- todo get rid of the 'Val' suffixes just like: type MusicNotePlayer = MusicNotePlayer, or perhaps: type MusicNotePlayer = MusicNotePlayerVal
--- (see IntFlex)
+
 type IntNode = IntNodeVal (MaybeSafe Int)
 type BigIntNode = BigIntNodeVal (BigInt)
 type StringNode = StringNodeVal (String)
