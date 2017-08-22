@@ -1,9 +1,9 @@
 module BTreeUniformType_Tests exposing (..)
 
-import BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, incrementNodes, decrementNodes, raiseNodes, depth, sumInt, sort, deDuplicate, isAllNothing)
+import BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, nodeValueOperate, depth, sumInt, sort, deDuplicate, isAllNothing)
 
 import BTree exposing (BTree(..), Direction(..), fromIntList, fromList, singleton)
-import NodeTag exposing (NodeTag(..))
+import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import MusicNote exposing (MusicNote(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..), on)
 import BTreeVariedType exposing (BTreeVariedType(..))
@@ -28,19 +28,14 @@ musicNotePlayerOnNothing =
 
 nothingSingelton : BTreeUniformType
 nothingSingelton =
-    BTreeUniformType.toNothing <| BTreeInt <| singleton <| toMaybeSafeInt <| 1
+    BTreeUniformType.toNothing <| BTreeInt <| singleton <| IntNodeVal <| toMaybeSafeInt <| 1
 
 
 nothing3Nodes : BTreeUniformType
 nothing3Nodes =
-    BTreeUniformType.toNothing <| BTreeInt <| fromIntList [1, 2, 3]
-
+    BTreeUniformType.toNothing <| BTreeInt <| List.map IntNodeVal <| fromIntList [1, 2, 3]
 
 ----------------------------------------------------------------------------
--- NOTE:
--- Use singletons to keep things simple.
--- Using fromList can cause re-rodering,
--- and laying out tree structure (with Node) is cumbersome to read.
 
 bTreeUniformType : Test
 bTreeUniformType =
@@ -53,19 +48,22 @@ bTreeUniformType =
                 \() ->
                     1
                         |> Safe
+                        |> IntNodeVal
                         |> BTree.singleton
                         |> BTreeInt
                         |> BTreeUniformType.toNothing
-                        |> BTreeUniformType.toTaggedNodes -- called because should not expose OnlyNothing just for sake of test.
-                        |> Expect.equal (singleton NothingNode)
+                        |> Expect.equal (BTreeNothing <| singleton NothingNodeVal)
 
             , test "of toNothing.2" <|
                 \() ->
                     fromList ["a", "b"]
+                        |> List.map StringNodeVal
                         |> BTreeString
                         |> BTreeUniformType.toNothing
-                        |> BTreeUniformType.toTaggedNodes -- called because should not expose OnlyNothing just for sake of test.
-                        |> Expect.equal (Node NothingNode Empty (singleton NothingNode))
+                        |> Expect.equal (BTreeNothing <|
+                            Node NothingNodeVal
+                                Empty
+                                (singleton NothingNodeVal))
             ]
          , describe "BTreeUniformType.toTaggedNodes"
             [ test "of empty" <|
