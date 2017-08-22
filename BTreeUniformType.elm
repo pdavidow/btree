@@ -7,7 +7,7 @@ import BTree exposing (BTree, Direction, depth, map, deDuplicateBy, singleton, s
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import MusicNote exposing (MusicNote, mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), sorter)
-import NodeValueOperation exposing (Operation, operateWith)
+import NodeValueOperation exposing (Operation, operateOnInt, operateOnBigInt, operateOnString, operateOnBool, operateOnMusicNote, operateOnNothing)
 import BTreeVariedType exposing (BTreeVariedType(..))
 import Lib exposing (IntFlex(..), digitCount, digitCountBigInt)
 import MaybeSafe exposing (MaybeSafe(..), compare, toMaybeSafeInt)
@@ -132,87 +132,22 @@ nodeValueOperate : Operation -> BTreeUniformType -> BTreeUniformType
 nodeValueOperate operation bTreeUniformType =
         case bTreeUniformType of
             BTreeInt bTree ->
-                let
-                    fn = \node ->
-                        let
-                            mbNode = case operateWith operation <| IntVariety node of
-                                IntVariety node -> Just node
-                                BigIntVariety _ -> Nothing
-                                StringVariety _ -> Nothing
-                                BoolVariety _ -> Nothing
-                                MusicNoteVariety _ -> Nothing
-                                NothingVariety _ -> Nothing
-                        in
-                            Maybe.withDefault node mbNode
-                in
-                    BTreeInt <| map fn bTree
+                BTreeInt <| map (operateOnInt operation) bTree
 
             BTreeBigInt bTree ->
-                let
-                    fn = \node ->
-                        let
-                            mbNode = case operateWith operation <| BigIntVariety node of
-                                IntVariety _ -> Nothing
-                                BigIntVariety node -> Just node
-                                StringVariety _ -> Nothing
-                                BoolVariety _ -> Nothing
-                                MusicNoteVariety _ -> Nothing
-                                NothingVariety _ -> Nothing
-                        in
-                            Maybe.withDefault node mbNode
-                in
-                    BTreeBigInt <| map fn bTree
+                BTreeBigInt <| map (operateOnBigInt operation) bTree
 
             BTreeString bTree ->
-                let
-                    fn = \node ->
-                        let
-                            mbNode = case operateWith operation <| StringVariety node of
-                                IntVariety _ -> Nothing
-                                BigIntVariety _ -> Nothing
-                                StringVariety node -> Just node
-                                BoolVariety _ -> Nothing
-                                MusicNoteVariety _ -> Nothing
-                                NothingVariety _ -> Nothing
-                        in
-                            Maybe.withDefault node mbNode
-                in
-                    BTreeString <| map fn bTree
+                BTreeString <| map (operateOnString operation) bTree
 
             BTreeBool bTree ->
-                let
-                    fn = \node ->
-                        let
-                            mbNode = case operateWith operation <| BoolVariety node of
-                                IntVariety _ -> Nothing
-                                BigIntVariety _ -> Nothing
-                                StringVariety _ -> Nothing
-                                BoolVariety node -> Just node
-                                MusicNoteVariety _ -> Nothing
-                                NothingVariety _ -> Nothing
-                        in
-                            Maybe.withDefault node mbNode
-                in
-                    BTreeBool <| map fn bTree
+                BTreeBool <| map (operateOnBool operation) bTree
 
             BTreeMusicNotePlayer bTree ->
-                let
-                    fn = \node ->
-                        let
-                            mbNode = case operateWith operation <| MusicNoteVariety node of
-                                IntVariety _ -> Nothing
-                                BigIntVariety _ -> Nothing
-                                StringVariety _ -> Nothing
-                                BoolVariety _ -> Nothing
-                                MusicNoteVariety node -> Just node
-                                NothingVariety _ -> Nothing
-                        in
-                            Maybe.withDefault node mbNode
-                in
-                    BTreeMusicNotePlayer <| map fn bTree
+                BTreeMusicNotePlayer <| map (operateOnMusicNote operation) bTree
 
-            BTreeNothing _ ->
-                bTreeUniformType
+            BTreeNothing bTree ->
+                BTreeNothing <| map (operateOnNothing operation) bTree
 
 
 depth : BTreeUniformType -> Int

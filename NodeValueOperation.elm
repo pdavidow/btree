@@ -1,4 +1,4 @@
-module NodeValueOperation exposing (Operation(..), operateWith)
+module NodeValueOperation exposing (Operation(..), operateOnInt, operateOnBigInt, operateOnString, operateOnBool, operateOnMusicNote, operateOnNothing)
 
 import Arithmetic exposing (isEven)
 import BigInt exposing (BigInt, add, sub)
@@ -16,94 +16,6 @@ type Operation
     | Raise Int
 
 
-operateWith : Operation -> NodeVariety -> NodeVariety
-operateWith operation nodeVariety =
-    case operation of
-        Increment delta ->
-            incrementWith delta nodeVariety
-
-        Decrement delta ->
-            decrementWith delta nodeVariety
-
-        Raise exp ->
-            raiseWith exp nodeVariety
-
-
-incrementWith : Int -> NodeVariety -> NodeVariety
-incrementWith delta nodeVariety =
-    let
-        absDelta = abs delta
-    in
-        case nodeVariety of
-            IntVariety (IntNodeVal mbsInt) ->
-                IntVariety <| IntNodeVal <| intOperation (+) absDelta mbsInt
-
-            BigIntVariety (BigIntNodeVal bigInt) ->
-                BigIntVariety <| BigIntNodeVal <| BigInt.add bigInt <| BigInt.fromInt absDelta
-
-            StringVariety (StringNodeVal string) ->
-                StringVariety <| StringNodeVal <| string ++ toString absDelta
-
-            BoolVariety (BoolNodeVal mbBool) ->
-                BoolVariety <| BoolNodeVal <| Maybe.map (\bool -> bool == (Arithmetic.isEven <| absDelta)) mbBool
-
-            MusicNoteVariety (MusicNoteNodeVal (MusicNotePlayer params)) ->
-                MusicNoteVariety <| MusicNoteNodeVal <| MusicNotePlayer {params | mbNote = params.mbNote :+: absDelta}
-
-            NothingVariety NothingNodeVal ->
-                NothingVariety NothingNodeVal
-
-
-decrementWith : Int -> NodeVariety -> NodeVariety
-decrementWith delta nodeVariety =
-    let
-        absDelta = abs delta
-    in
-        case nodeVariety of
-            IntVariety (IntNodeVal mbsInt) ->
-                IntVariety <| IntNodeVal <| intOperation (-) absDelta mbsInt
-
-            BigIntVariety (BigIntNodeVal bigInt) ->
-                BigIntVariety <| BigIntNodeVal <| BigInt.sub bigInt <| BigInt.fromInt absDelta
-
-            StringVariety (StringNodeVal string) ->
-                StringVariety <| StringNodeVal <| String.dropRight absDelta string
-
-            BoolVariety (BoolNodeVal mbBool) ->
-                BoolVariety <| BoolNodeVal <| Maybe.map (\bool -> bool == (Arithmetic.isEven absDelta)) mbBool
-
-            MusicNoteVariety (MusicNoteNodeVal (MusicNotePlayer params)) ->
-                MusicNoteVariety <| MusicNoteNodeVal <| MusicNotePlayer {params | mbNote = params.mbNote :-: absDelta}
-
-            NothingVariety NothingNodeVal ->
-                NothingVariety NothingNodeVal
-
-
-raiseWith : Int -> NodeVariety -> NodeVariety
-raiseWith exp nodeVariety =
-    let
-        absExp = abs exp
-    in
-        case nodeVariety of
-            IntVariety (IntNodeVal mbsInt) ->
-                IntVariety <| IntNodeVal <| intOperation (^) absExp mbsInt
-
-            BigIntVariety (BigIntNodeVal bigInt) ->
-                BigIntVariety <| BigIntNodeVal <| Lib.raiseBigInt absExp bigInt
-
-            StringVariety (StringNodeVal string) ->
-                StringVariety <| StringNodeVal <| string
-
-            BoolVariety (BoolNodeVal mbBool) ->
-                BoolVariety <| BoolNodeVal <| mbBool
-
-            MusicNoteVariety (MusicNoteNodeVal player) ->
-                MusicNoteVariety <| MusicNoteNodeVal <| player
-
-            NothingVariety NothingNodeVal ->
-                NothingVariety NothingNodeVal
-
-
 intOperation : (Int -> Int -> Int) -> Int -> MaybeSafe Int -> MaybeSafe Int
 intOperation operation operand mbsInt =
     let
@@ -113,3 +25,88 @@ intOperation operation operand mbsInt =
               |> toMaybeSafeInt
     in
         MaybeSafe.map fn mbsInt
+
+
+operateOnInt : Operation -> IntNode -> IntNode
+operateOnInt operation node =
+    let
+        (IntNodeVal mbsInt) = node
+    in
+        case operation of
+            Increment delta ->
+                IntNodeVal <| intOperation (+) (abs delta) mbsInt
+
+            Decrement delta ->
+                IntNodeVal <| intOperation (-) (abs delta) mbsInt
+
+            Raise exp ->
+                IntNodeVal <| intOperation (^) (abs exp) mbsInt
+
+
+operateOnBigInt : Operation -> BigIntNode -> BigIntNode
+operateOnBigInt operation node =
+    let
+        (BigIntNodeVal bigInt) = node
+    in
+        case operation of
+            Increment delta ->
+                BigIntNodeVal <| BigInt.add bigInt <| BigInt.fromInt <| abs delta
+
+            Decrement delta ->
+                BigIntNodeVal <| BigInt.sub bigInt <| BigInt.fromInt <| abs delta
+
+            Raise exp ->
+                BigIntNodeVal <| Lib.raiseBigInt (abs exp) bigInt
+
+
+operateOnString : Operation -> StringNode -> StringNode
+operateOnString operation node =
+    let
+        (StringNodeVal string) = node
+    in
+        case operation of
+            Increment delta ->
+                StringNodeVal <| string ++ (toString <| abs delta)
+
+            Decrement delta ->
+                StringNodeVal <| String.dropRight (abs delta) string
+
+            Raise _ ->
+                node
+
+
+operateOnBool : Operation -> BoolNode -> BoolNode
+operateOnBool operation node =
+    let
+        (BoolNodeVal mbBool) = node
+    in
+        case operation of
+            Increment delta ->
+                BoolNodeVal <| Maybe.map (\bool -> bool == (Arithmetic.isEven <| abs delta)) mbBool
+
+            Decrement delta ->
+                BoolNodeVal <| Maybe.map (\bool -> bool == (Arithmetic.isEven <| abs delta)) mbBool
+
+            Raise _ ->
+                node
+
+
+operateOnMusicNote : Operation -> MusicNoteNode -> MusicNoteNode
+operateOnMusicNote operation node =
+    let
+        (MusicNoteNodeVal (MusicNotePlayer params)) = node
+    in
+        case operation of
+            Increment delta ->
+                MusicNoteNodeVal <| MusicNotePlayer {params | mbNote = params.mbNote :+: abs delta}
+
+            Decrement delta ->
+                MusicNoteNodeVal <| MusicNotePlayer {params | mbNote = params.mbNote :-: abs delta}
+
+            Raise _ ->
+                node
+
+
+operateOnNothing : Operation -> NothingNode -> NothingNode
+operateOnNothing operation node =
+    node

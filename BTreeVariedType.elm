@@ -8,7 +8,7 @@ import BTree exposing (BTree, map)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..))
 import MusicNote exposing (mbSorter)
-import NodeValueOperation exposing (Operation, operateWith)
+import NodeValueOperation exposing (Operation, operateOnInt, operateOnBigInt, operateOnString, operateOnBool, operateOnMusicNote, operateOnNothing)
 import Lib exposing (digitCount, digitCountBigInt)
 import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 
@@ -73,7 +73,28 @@ toIsIntPrime (BTreeVaried bTree) =
 
 nodeValueOperate : Operation -> BTreeVariedType -> BTreeVariedType
 nodeValueOperate operation (BTreeVaried bTree) =
-    BTreeVaried <| map (operateWith operation) bTree
+    let
+        fn = \nodeVariety ->
+            case nodeVariety of
+                IntVariety node ->
+                    IntVariety <| operateOnInt operation node
+
+                BigIntVariety node ->
+                    BigIntVariety <| operateOnBigInt operation node
+
+                StringVariety node ->
+                    StringVariety <| operateOnString operation node
+
+                BoolVariety node ->
+                    BoolVariety <| operateOnBool operation node
+
+                MusicNoteVariety node ->
+                    MusicNoteVariety <| operateOnMusicNote operation node
+
+                NothingVariety node ->
+                    NothingVariety <| operateOnNothing operation node
+    in
+        BTreeVaried <| map fn bTree
 
 
 deDuplicate : BTreeVariedType -> BTreeVariedType
