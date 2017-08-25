@@ -1,4 +1,4 @@
-module BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, depth, sumInt, sort, deDuplicate, isAllNothing, nodeValueOperate)
+module BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, depth, sumInt, sort, deDuplicate, isAllNothing, nodeValOperate)
 
 import Arithmetic exposing (isPrime)
 -- import Basics.Extra exposing (isSafeInteger) -- todo https://github.com/elm-community/basics-extra/issues/7
@@ -128,8 +128,8 @@ toIsIntPrime bTreeUniformType =
             Nothing
 
 
-nodeValueOperate : Operation -> BTreeUniformType -> BTreeUniformType
-nodeValueOperate operation bTreeUniformType =
+nodeValOperate : Operation -> BTreeUniformType -> BTreeUniformType
+nodeValOperate operation bTreeUniformType =
         case bTreeUniformType of
             BTreeInt bTree ->
                 BTreeInt <| map (operateOnInt operation) bTree

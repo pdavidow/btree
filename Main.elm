@@ -17,8 +17,8 @@ import Debouncer exposing (DebouncerState, SelfMsg, bounce, create, process)
 import Time exposing (Time, millisecond)
 import EveryDict exposing (EveryDict, fromList, get, update)
 
-import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, nodeValueOperate)
-import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, nodeValueOperate, hasAnyIntNodes)
+import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, nodeValOperate)
+import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, nodeValOperate, hasAnyIntNodes)
 import BTree exposing (BTree(..), Direction(..), TraversalOrder(..), fromListBy, insertAsIsBy, fromListAsIsBy, fromListAsIs_directed, singleton, toTreeDiagramTree)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
@@ -908,8 +908,8 @@ update msg model =
     case msg of
         NodeValueOperate operation ->
             (model
-                |> nodeValueOperateOnUniformTrees operation
-                |> nodeValueOperateOnVariedTrees operation
+                |> nodeValOperateOnUniformTrees operation
+                |> nodeValOperateOnVariedTrees operation
             ) ! []
 
 
@@ -1192,14 +1192,14 @@ changeVariedTrees fn model =
     }
 
 
-nodeValueOperateOnUniformTrees : Operation -> Model -> Model
-nodeValueOperateOnUniformTrees operation model =
-    changeUniformTrees (BTreeUniformType.nodeValueOperate operation) model
+nodeValOperateOnUniformTrees : Operation -> Model -> Model
+nodeValOperateOnUniformTrees operation model =
+    changeUniformTrees (BTreeUniformType.nodeValOperate operation) model
 
 
-nodeValueOperateOnVariedTrees : Operation -> Model -> Model
-nodeValueOperateOnVariedTrees operation model =
-    changeVariedTrees (BTreeVariedType.nodeValueOperate operation) model
+nodeValOperateOnVariedTrees : Operation -> Model -> Model
+nodeValOperateOnVariedTrees operation model =
+    changeVariedTrees (BTreeVariedType.nodeValOperate operation) model
 
 
 sortUniformTrees : Direction -> Model -> Model

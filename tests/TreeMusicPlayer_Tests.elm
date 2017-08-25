@@ -6,22 +6,21 @@ import BTreeUniformType exposing (BTreeUniformType(..))
 import BTree exposing (BTree(..), TraversalOrder(..), singleton)
 import MusicNote exposing (MusicNote(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..), on)
+import NodeTag exposing (MusicNoteNode(..))
 
 import Random.Pcg exposing (initialSeed, step)
 import Uuid exposing (uuidGenerator, fromString)
 
 import Test exposing (..)
 import Expect
-import Fuzz exposing (list, int, tuple, string)
-import String
-
+ 
 
 setPlayMode : Bool -> Bool
 setPlayMode isPlaying =
     let
         ( uuid, seed ) = step uuidGenerator (initialSeed 1)
         player = MusicNotePlayer {mbNote = Just C, isPlaying = not isPlaying, mbId = Just uuid}
-        tree = BTreeMusicNotePlayer (singleton player)
+        tree = BTreeMusicNotePlayer (singleton <| MusicNoteNodeVal <| player)
 
         bTreeUniformType = if isPlaying
             then startPlayNote uuid tree
@@ -32,25 +31,26 @@ setPlayMode isPlaying =
             _ -> Empty
 
         mbPlayer = BTree.flatten bTree
+            |> List.map (\(MusicNoteNodeVal player) -> player)
             |> List.head
     in
         case mbPlayer of
             Just (MusicNotePlayer params) -> params.isPlaying
-            Nothing -> not isPlaying -- should never get here, but might as well
+            Nothing -> not isPlaying -- should never get here
 
 
 testTree : BTreeUniformType
 testTree =
     BTreeMusicNotePlayer <|
-        Node (MusicNotePlayer { mbNote = Just A, isPlaying = False, mbId = Uuid.fromString "435d0606-136a-4a3e-b093-e96e0a310d35" })
-            (Node (MusicNotePlayer { mbNote = Just A_sharp, isPlaying = False, mbId = Uuid.fromString "22de94eb-cdfc-42ee-a397-1ef94d79e7cb" })
-                (Node (MusicNotePlayer { mbNote = Just E, isPlaying = False, mbId = Uuid.fromString "03d1f029-e0fa-433e-aa2b-25ceb1c19216" })
-                    (singleton <| MusicNotePlayer { mbNote = Just F, isPlaying = False, mbId = Uuid.fromString "0b9d1ebb-db5e-483a-b9aa-39b5f390ecd3" })
-                    (singleton <| MusicNotePlayer { mbNote = Just G, isPlaying = False, mbId = Uuid.fromString "96f92b9f-9cb8-4815-9f7f-12c497551382" })
+        Node (MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just A, isPlaying = False, mbId = Uuid.fromString "435d0606-136a-4a3e-b093-e96e0a310d35" })
+            (Node (MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just A_sharp, isPlaying = False, mbId = Uuid.fromString "22de94eb-cdfc-42ee-a397-1ef94d79e7cb" })
+                (Node (MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just E, isPlaying = False, mbId = Uuid.fromString "03d1f029-e0fa-433e-aa2b-25ceb1c19216" })
+                    (singleton <| MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just F, isPlaying = False, mbId = Uuid.fromString "0b9d1ebb-db5e-483a-b9aa-39b5f390ecd3" })
+                    (singleton <| MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just G, isPlaying = False, mbId = Uuid.fromString "96f92b9f-9cb8-4815-9f7f-12c497551382" })
                 )
-                (singleton <| MusicNotePlayer { mbNote = Just E, isPlaying = False, mbId = Uuid.fromString "217e28d2-205f-4952-bf5b-4128e85a5901" })
+                (singleton <| MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just E, isPlaying = False, mbId = Uuid.fromString "217e28d2-205f-4952-bf5b-4128e85a5901" })
             )
-            (singleton <| MusicNotePlayer { mbNote = Just C_sharp, isPlaying = False, mbId = Uuid.fromString "c778e0da-65a5-4460-ac78-869f76b3c964" })
+            (singleton <| MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just C_sharp, isPlaying = False, mbId = Uuid.fromString "c778e0da-65a5-4460-ac78-869f76b3c964" })
 
 
 treeMusicPlayer : Test

@@ -1,8 +1,9 @@
 module NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 
+import BigInt exposing (BigInt)
+
 import MaybeSafe exposing (MaybeSafe)
 import MusicNotePlayer exposing (MusicNotePlayer)
-import BigInt exposing (BigInt)
 
 
 type IntNode = IntNodeVal (MaybeSafe Int)

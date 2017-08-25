@@ -1,7 +1,7 @@
 module BTree_Tests exposing (..)
 
 import BTree exposing (BTree(..), TraversalOrder(..), Direction(..), singleton, depth, map, flatten, flattenBy, flattenUsingFold, flattenUsingFoldBy, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, isElementUsingFold, toTreeDiagramTree, sort, sortTo, sortByTo, sortWithTo, fromList, fromIntList, fromListBy, fromListWith, fromListAsIsBy, fromListAsIs_left, fromListAsIs_right, fromListAsIs_directed, insert, insertBy, insertWith, insertWith_directed, insertAsIs_left, insertAsIs_right, insertAsIsBy, insertAsIs_directed, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes)
-import NodeTag exposing (NodeTag(..))
+import NodeTag exposing (NothingNode(..))
 import MusicNote exposing (MusicNote(..), sorter)
 import MaybeSafe exposing (MaybeSafe(..), maxSafeInt)
 
@@ -10,10 +10,8 @@ import BigInt exposing (fromInt)
 
 import Test exposing (..)
 import Expect
-import Fuzz exposing (list, int, tuple, string)
-import String
-
-
+  
+ 
 bTree : Test
 bTree =
     describe "BTree module"
@@ -1542,9 +1540,9 @@ bTree =
                     Expect.equal Empty (BTree.toNothingNodes Empty)
             , test "of toNothingNodes.1" <|
                 \() ->
-                    Expect.equal (singleton NothingNode) (BTree.toNothingNodes (singleton 3))
+                    Expect.equal (singleton NothingNodeVal) (BTree.toNothingNodes (singleton 3))
             , test "of toNothingNodes.2" <|
                 \() ->
-                    Expect.equal (Node NothingNode (singleton NothingNode) (singleton NothingNode)) (BTree.toNothingNodes (Node 1 (singleton 2) (singleton 3)))
+                    Expect.equal (Node NothingNodeVal (singleton NothingNodeVal) (singleton NothingNodeVal)) (BTree.toNothingNodes (Node 1 (singleton 2) (singleton 3)))
             ]
         ]

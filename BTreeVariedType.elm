@@ -1,4 +1,4 @@
-module BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, nodeValueOperate, deDuplicate, hasAnyIntNodes)
+module BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, nodeValOperate, deDuplicate, hasAnyIntNodes)
 
 import Arithmetic exposing (isPrime)
 -- import Basics.Extra exposing (isSafeInteger) todo
@@ -71,8 +71,8 @@ toIsIntPrime (BTreeVaried bTree) =
         BTreeVaried (map fn bTree)
 
 
-nodeValueOperate : Operation -> BTreeVariedType -> BTreeVariedType
-nodeValueOperate operation (BTreeVaried bTree) =
+nodeValOperate : Operation -> BTreeVariedType -> BTreeVariedType
+nodeValOperate operation (BTreeVaried bTree) =
     let
         fn = \nodeVariety ->
             case nodeVariety of
