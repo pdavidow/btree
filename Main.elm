@@ -16,6 +16,7 @@ import BigInt exposing (fromInt)
 import Debouncer exposing (DebouncerState, SelfMsg, bounce, create, process)
 import Time exposing (Time, millisecond)
 import EveryDict exposing (EveryDict, fromList, get, update)
+import Basics.Extra exposing (maxSafeInteger)
 
 import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, nodeValOperate)
 import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, nodeValOperate, hasAnyIntNodes)
@@ -28,7 +29,7 @@ import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter)
 import TreeMusicPlayer exposing (treeMusicPlayBy, startPlayNote, donePlayNote)
 import Ports exposing (port_startPlayNote, port_donePlayNote, port_donePlayNotes)
 import Lib exposing (IntFlex(..), lazyUnwrap)
-import MaybeSafe exposing (MaybeSafe(..), maxSafeInt, toMaybeSafeInt)
+import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 import NodeValueOperation exposing (Operation(..))
 ------------------------------------------------
 
@@ -108,21 +109,21 @@ type alias Model =
 initialModel: Model
 initialModel =
     { intTree = BTreeInt <|
-        Node (IntNodeVal <| toMaybeSafeInt <| maxSafeInt)
+        Node (IntNodeVal <| toMaybeSafeInt <| maxSafeInteger)
             (singleton <| IntNodeVal <| toMaybeSafeInt 4)
             (Node (IntNodeVal <| toMaybeSafeInt -9)
                 Empty
                 (singleton <| IntNodeVal <| toMaybeSafeInt 4)
             )
     , bigIntTree = BTreeBigInt <|
-        Node (BigIntNodeVal <| BigInt.fromInt <| maxSafeInt)
+        Node (BigIntNodeVal <| BigInt.fromInt <| maxSafeInteger)
             (singleton <| BigIntNodeVal <| BigInt.fromInt 4)
             (Node (BigIntNodeVal <| BigInt.fromInt -9)
                 Empty
                 (singleton <| BigIntNodeVal <| BigInt.fromInt 4)
             )
     , stringTree = BTreeString <|
-        Node (StringNodeVal <| "maxSafeInt")
+        Node (StringNodeVal <| "maxSafeInteger")
             (singleton <| StringNodeVal <| "four")
             (Node (StringNodeVal <| "-nine")
                 Empty
@@ -141,7 +142,7 @@ initialModel =
     , initialMusicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
     , musicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
     , variedTree = BTreeVaried <|
-        Node (BigIntVariety <| BigIntNodeVal <| BigInt.fromInt maxSafeInt)
+        Node (BigIntVariety <| BigIntNodeVal <| BigInt.fromInt maxSafeInteger)
             (Node (StringVariety <| StringNodeVal <| "A")
                 (singleton <| MusicNoteVariety <| MusicNoteNodeVal <| MusicNotePlayer.on A)
                 (singleton <| IntVariety <| IntNodeVal <| toMaybeSafeInt 123)

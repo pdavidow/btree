@@ -4,8 +4,6 @@ import MusicNote exposing (MusicNote(..), Freq(..), sorter, mbSorter, (:+:), (:-
 
 import Test exposing (..)
 import Expect
-import Fuzz exposing (list, int, tuple, string)
-import String
 
 
 musicNote : Test

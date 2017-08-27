@@ -2,15 +2,14 @@ module Lib_Tests exposing (..)
 
 import Lib exposing (lazyUnwrap, digitCount, digitCountBigInt, raiseBigInt, isEvenBigInt, isOddBigInt)
 
-import MaybeSafe exposing (MaybeSafe(..), maxSafeInt, toMaybeSafeInt)
-import BigInt exposing (fromInt)
+import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 
 import Lazy exposing (lazy)
+import Basics.Extra exposing (maxSafeInteger)
+import BigInt exposing (fromInt)
 
 import Test exposing (..)
 import Expect
-import Fuzz exposing (list, int, tuple, string)
-import String
 
 
 lib : Test
@@ -74,7 +73,7 @@ lib =
                     Expect.equal (BigInt.fromInt 9) (Lib.raiseBigInt -2 <| BigInt.fromInt -3)
             , test "raiseBigInt.10" <|
                 \() ->
-                    Expect.equal (BigInt.mul (BigInt.fromInt maxSafeInt) (BigInt.fromInt maxSafeInt)) (Lib.raiseBigInt 2 <| BigInt.fromInt maxSafeInt)
+                    Expect.equal (BigInt.mul (BigInt.fromInt maxSafeInteger) (BigInt.fromInt maxSafeInteger)) (Lib.raiseBigInt 2 <| BigInt.fromInt maxSafeInteger)
             ]
          , describe "Lib.digitCountBigInt"
             [ test "positive" <|
@@ -88,10 +87,10 @@ lib =
                     Expect.equal (Safe 1) (Lib.digitCountBigInt  <| BigInt.fromInt <| 0)
             , test "huge positive" <|
                 \() ->
-                    Expect.equal (Safe 16) (Lib.digitCountBigInt  <| BigInt.fromInt <| maxSafeInt + 1)
+                    Expect.equal (Safe 16) (Lib.digitCountBigInt  <| BigInt.fromInt <| maxSafeInteger + 1)
             , test "huge negative" <|
                 \() ->
-                    Expect.equal (Safe 16) (Lib.digitCountBigInt  <| BigInt.fromInt <| negate <| maxSafeInt + 1)
+                    Expect.equal (Safe 16) (Lib.digitCountBigInt  <| BigInt.fromInt <| negate <| maxSafeInteger + 1)
             ]
          , describe "Lib.isEvenBigInt"
             [ test "isEvenBigInt.1" <|
@@ -102,13 +101,13 @@ lib =
                     Expect.equal False (Lib.isEvenBigInt <| BigInt.fromInt <| 3)
             , test "isEvenBigInt.3" <|
                 \() ->
-                    Expect.equal True (Lib.isEvenBigInt <| BigInt.add (BigInt.fromInt <| maxSafeInt) (BigInt.fromInt 1))
+                    Expect.equal True (Lib.isEvenBigInt <| BigInt.add (BigInt.fromInt <| maxSafeInteger) (BigInt.fromInt 1))
             , test "isEvenBigInt.4" <|
                 \() ->
-                    Expect.equal False (Lib.isEvenBigInt <| BigInt.add (BigInt.fromInt <| maxSafeInt) (BigInt.fromInt 2))
+                    Expect.equal False (Lib.isEvenBigInt <| BigInt.add (BigInt.fromInt <| maxSafeInteger) (BigInt.fromInt 2))
             , test "isEvenBigInt.5" <|
                 \() ->
-                    Expect.equal False (Lib.isEvenBigInt <| BigInt.add (BigInt.fromInt <| negate <| maxSafeInt) (BigInt.fromInt -2))
+                    Expect.equal False (Lib.isEvenBigInt <| BigInt.add (BigInt.fromInt <| negate <| maxSafeInteger) (BigInt.fromInt -2))
             ]
          , describe "Lib.isOddBigInt"
             [ test "isOddBigInt.1" <|
@@ -119,13 +118,13 @@ lib =
                     Expect.equal True (Lib.isOddBigInt <| BigInt.fromInt <| 3)
             , test "isOddBigInt.3" <|
                 \() ->
-                    Expect.equal False (Lib.isOddBigInt <| BigInt.add (BigInt.fromInt <| maxSafeInt) (BigInt.fromInt 1))
+                    Expect.equal False (Lib.isOddBigInt <| BigInt.add (BigInt.fromInt <| maxSafeInteger) (BigInt.fromInt 1))
             , test "isOddBigInt.4" <|
                 \() ->
-                    Expect.equal True (Lib.isOddBigInt <| BigInt.add (BigInt.fromInt <| maxSafeInt) (BigInt.fromInt 2))
+                    Expect.equal True (Lib.isOddBigInt <| BigInt.add (BigInt.fromInt <| maxSafeInteger) (BigInt.fromInt 2))
             , test "isOddBigInt.5" <|
                 \() ->
-                    Expect.equal True (Lib.isOddBigInt <| BigInt.add (BigInt.fromInt <| negate <| maxSafeInt) (BigInt.fromInt 2))
+                    Expect.equal True (Lib.isOddBigInt <| BigInt.add (BigInt.fromInt <| negate <| maxSafeInteger) (BigInt.fromInt 2))
             ]
         ]
 

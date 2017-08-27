@@ -1,4 +1,4 @@
-module MaybeSafe exposing (MaybeSafe(..), isSafe, isSafeInt, toMaybeSafe, toMaybeSafeInt, maxSafeInt, sumMaybeSafeInt, compare, withDefault, map, unwrap, toOnlySafe, toOnlySafeInt)
+module MaybeSafe exposing (MaybeSafe(..), isSafe, isSafeInt, toMaybeSafe, toMaybeSafeInt, sumMaybeSafeInt, compare, withDefault, map, unwrap, toOnlySafe, toOnlySafeInt)
 
 import List.Extra exposing (last)
 import Basics.Extra exposing (isSafeInteger, maxSafeInteger)
@@ -13,12 +13,6 @@ toMaybeSafe isSafe a =
     if isSafe a
         then Safe a
         else Unsafe
-
-
--- todo https://github.com/elm-community/basics-extra/issues/7
-maxSafeInt : Int
-maxSafeInt =
-    Basics.Extra.maxSafeInteger
 
 
 -- todo https://github.com/elm-community/basics-extra/issues/7

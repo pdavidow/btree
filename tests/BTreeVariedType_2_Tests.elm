@@ -8,9 +8,11 @@ import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNod
 
 import MusicNote exposing (MusicNote(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..), on)
-import MaybeSafe exposing (MaybeSafe(..), maxSafeInt, toMaybeSafeInt)
+import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 import NodeValueOperation exposing (Operation(..))
 import TestsHelper exposing (musicNotePlayerOnNothing, toIntVariety, toBigIntVariety, toStringVariety, toBoolVariety, toMusicNoteVariety)
+
+import Basics.Extra exposing (maxSafeInteger)
 
 import Test exposing (..)
 import Expect
@@ -57,7 +59,7 @@ bTreeVariedType_2 =
                             singleton <| toIntVariety <| Unsafe
                         )
                         ( BTreeVariedType.nodeValOperate (Increment 3) <| BTreeVaried <|
-                            singleton <| toIntVariety <| toMaybeSafeInt <| maxSafeInt - 2
+                            singleton <| toIntVariety <| toMaybeSafeInt <| maxSafeInteger - 2
                         )
             ,  test "of non-empty.IntVariety.5" <|
                 \() ->
@@ -66,16 +68,16 @@ bTreeVariedType_2 =
                             singleton <| toIntVariety <| Unsafe
                         )
                         ( BTreeVariedType.nodeValOperate (Increment 3) <| BTreeVaried <|
-                            singleton <| toIntVariety <| toMaybeSafeInt <| negate <| maxSafeInt + 2
+                            singleton <| toIntVariety <| toMaybeSafeInt <| negate <| maxSafeInteger + 2
                         )
             ,  test "of non-empty.IntVariety.6" <|
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toIntVariety <| Safe <| negate <| maxSafeInt - 3
+                            singleton <| toIntVariety <| Safe <| negate <| maxSafeInteger - 3
                         )
                         ( BTreeVariedType.nodeValOperate (Increment 3) <| BTreeVaried <|
-                            singleton <| toIntVariety <| toMaybeSafeInt <| negate <| maxSafeInt
+                            singleton <| toIntVariety <| toMaybeSafeInt <| negate <| maxSafeInteger
                         )
             ,  test "of non-empty.BigIntVariety.1" <|
                 \() ->
@@ -108,28 +110,28 @@ bTreeVariedType_2 =
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toBigIntVariety <| BigInt.add (BigInt.fromInt <| maxSafeInt - 2) (BigInt.fromInt 3)
+                            singleton <| toBigIntVariety <| BigInt.add (BigInt.fromInt <| maxSafeInteger - 2) (BigInt.fromInt 3)
                         )
                         ( BTreeVariedType.nodeValOperate (Increment 3) <| BTreeVaried <|
-                            singleton <| toBigIntVariety <| BigInt.fromInt <| maxSafeInt - 2
+                            singleton <| toBigIntVariety <| BigInt.fromInt <| maxSafeInteger - 2
                         )
             ,  test "of non-empty.BigIntVariety.5" <|
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toBigIntVariety <| BigInt.add (BigInt.fromInt <| negate <| maxSafeInt + 2) (BigInt.fromInt 3)
+                            singleton <| toBigIntVariety <| BigInt.add (BigInt.fromInt <| negate <| maxSafeInteger + 2) (BigInt.fromInt 3)
                         )
                         ( BTreeVariedType.nodeValOperate (Increment 3) <| BTreeVaried <|
-                            singleton <| toBigIntVariety <| BigInt.fromInt <| negate <| maxSafeInt + 2
+                            singleton <| toBigIntVariety <| BigInt.fromInt <| negate <| maxSafeInteger + 2
                         )
             ,  test "of non-empty.BigIntVariety.6" <|
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toBigIntVariety <| BigInt.add (BigInt.fromInt <| negate <| maxSafeInt) (BigInt.fromInt 3)
+                            singleton <| toBigIntVariety <| BigInt.add (BigInt.fromInt <| negate <| maxSafeInteger) (BigInt.fromInt 3)
                         )
                         ( BTreeVariedType.nodeValOperate (Increment 3) <| BTreeVaried <|
-                            singleton <| toBigIntVariety <| BigInt.fromInt <| negate <| maxSafeInt
+                            singleton <| toBigIntVariety <| BigInt.fromInt <| negate <| maxSafeInteger
                         )
             ,  test "of non-empty.StringVariety.1" <|
                 \() ->
@@ -323,7 +325,7 @@ bTreeVariedType_2 =
                             singleton <| toIntVariety <| Unsafe
                         )
                         ( BTreeVariedType.nodeValOperate (Decrement 3) <| BTreeVaried <|
-                            singleton <| toIntVariety <| toMaybeSafeInt <| negate <| maxSafeInt - 2
+                            singleton <| toIntVariety <| toMaybeSafeInt <| negate <| maxSafeInteger - 2
                         )
             ,  test "of non-empty.IntVariety.5" <|
                 \() ->
@@ -332,16 +334,16 @@ bTreeVariedType_2 =
                             singleton <| toIntVariety <| Unsafe
                         )
                         ( BTreeVariedType.nodeValOperate (Decrement 3) <| BTreeVaried <|
-                            singleton <| toIntVariety <| toMaybeSafeInt <| maxSafeInt + 2
+                            singleton <| toIntVariety <| toMaybeSafeInt <| maxSafeInteger + 2
                         )
             ,  test "of non-empty.IntVariety.6" <|
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toIntVariety <| Safe <| maxSafeInt - 3
+                            singleton <| toIntVariety <| Safe <| maxSafeInteger - 3
                         )
                         ( BTreeVariedType.nodeValOperate (Decrement 3) <| BTreeVaried <|
-                            singleton <| toIntVariety <| toMaybeSafeInt maxSafeInt
+                            singleton <| toIntVariety <| toMaybeSafeInt maxSafeInteger
                         )
             ,  test "of non-empty.BigIntVariety.1" <|
                 \() ->
@@ -374,28 +376,28 @@ bTreeVariedType_2 =
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toBigIntVariety <| BigInt.sub (BigInt.fromInt <| negate <| maxSafeInt - 2) (BigInt.fromInt <| 3)
+                            singleton <| toBigIntVariety <| BigInt.sub (BigInt.fromInt <| negate <| maxSafeInteger - 2) (BigInt.fromInt <| 3)
                         )
                         ( BTreeVariedType.nodeValOperate (Decrement 3) <| BTreeVaried <|
-                            singleton <| toBigIntVariety <| BigInt.fromInt <| negate <| maxSafeInt - 2
+                            singleton <| toBigIntVariety <| BigInt.fromInt <| negate <| maxSafeInteger - 2
                         )
             ,  test "of non-empty.BigIntVariety.5" <|
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toBigIntVariety <| BigInt.sub (BigInt.fromInt <| maxSafeInt + 2) (BigInt.fromInt <| 3)
+                            singleton <| toBigIntVariety <| BigInt.sub (BigInt.fromInt <| maxSafeInteger + 2) (BigInt.fromInt <| 3)
                         )
                         ( BTreeVariedType.nodeValOperate (Decrement 3) <| BTreeVaried <|
-                            singleton <| toBigIntVariety <| BigInt.fromInt <| maxSafeInt + 2
+                            singleton <| toBigIntVariety <| BigInt.fromInt <| maxSafeInteger + 2
                         )
             ,  test "of non-empty.BigIntVariety.6" <|
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toBigIntVariety <| BigInt.sub (BigInt.fromInt <| maxSafeInt) (BigInt.fromInt <| 3)
+                            singleton <| toBigIntVariety <| BigInt.sub (BigInt.fromInt <| maxSafeInteger) (BigInt.fromInt <| 3)
                         )
                         ( BTreeVariedType.nodeValOperate (Decrement 3) <| BTreeVaried <|
-                            singleton <| toBigIntVariety <| BigInt.fromInt <| maxSafeInt
+                            singleton <| toBigIntVariety <| BigInt.fromInt <| maxSafeInteger
                         )
             ,  test "of non-empty.StringVariety.1" <|
                 \() ->
@@ -604,19 +606,19 @@ bTreeVariedType_2 =
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toIntVariety <| Safe <| negate <| maxSafeInt - 2
+                            singleton <| toIntVariety <| Safe <| negate <| maxSafeInteger - 2
                         )
                         ( BTreeVariedType.nodeValOperate (Raise 1) <| BTreeVaried <|
-                            singleton <| toIntVariety <| toMaybeSafeInt <| negate <| maxSafeInt - 2
+                            singleton <| toIntVariety <| toMaybeSafeInt <| negate <| maxSafeInteger - 2
                         )
             ,  test "of non-empty.IntVariety.5" <|
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toIntVariety <| Safe <| maxSafeInt
+                            singleton <| toIntVariety <| Safe <| maxSafeInteger
                         )
                         ( BTreeVariedType.nodeValOperate (Raise 1) <| BTreeVaried <|
-                            singleton <| toIntVariety <| toMaybeSafeInt <| maxSafeInt
+                            singleton <| toIntVariety <| toMaybeSafeInt <| maxSafeInteger
                         )
             ,  test "of non-empty.IntVariety.6" <|
                 \() ->
@@ -625,7 +627,7 @@ bTreeVariedType_2 =
                             singleton <| toIntVariety <| Unsafe
                         )
                         ( BTreeVariedType.nodeValOperate (Raise 2) <| BTreeVaried <|
-                            singleton <| toIntVariety <| toMaybeSafeInt maxSafeInt
+                            singleton <| toIntVariety <| toMaybeSafeInt maxSafeInteger
                         )
             ,  test "of non-empty.BigIntVariety.1" <|
                 \() ->
@@ -658,28 +660,28 @@ bTreeVariedType_2 =
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toBigIntVariety <| BigInt.fromInt <| negate <| maxSafeInt - 2
+                            singleton <| toBigIntVariety <| BigInt.fromInt <| negate <| maxSafeInteger - 2
                         )
                         ( BTreeVariedType.nodeValOperate (Raise 1) <| BTreeVaried <|
-                            singleton <| toBigIntVariety <| BigInt.fromInt <| negate <| maxSafeInt - 2
+                            singleton <| toBigIntVariety <| BigInt.fromInt <| negate <| maxSafeInteger - 2
                         )
             ,  test "of non-empty.BigIntVariety.5" <|
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toBigIntVariety <| BigInt.fromInt <| maxSafeInt
+                            singleton <| toBigIntVariety <| BigInt.fromInt <| maxSafeInteger
                         )
                         ( BTreeVariedType.nodeValOperate (Raise 1) <| BTreeVaried <|
-                            singleton <| toBigIntVariety <| BigInt.fromInt <| maxSafeInt
+                            singleton <| toBigIntVariety <| BigInt.fromInt <| maxSafeInteger
                         )
             ,  test "of non-empty.BigIntVariety.6" <|
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toBigIntVariety <| BigInt.mul (BigInt.fromInt <| maxSafeInt) (BigInt.fromInt <| maxSafeInt)
+                            singleton <| toBigIntVariety <| BigInt.mul (BigInt.fromInt <| maxSafeInteger) (BigInt.fromInt <| maxSafeInteger)
                         )
                         ( BTreeVariedType.nodeValOperate (Raise 2) <| BTreeVaried <|
-                            singleton <| toBigIntVariety <| BigInt.fromInt <| maxSafeInt
+                            singleton <| toBigIntVariety <| BigInt.fromInt <| maxSafeInteger
                         )
             ,  test "of non-empty.StringVariety.1" <|
                 \() ->

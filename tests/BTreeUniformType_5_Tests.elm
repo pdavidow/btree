@@ -6,9 +6,11 @@ import BTree exposing (BTree(..), Direction(..), fromIntList, fromList, fromList
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import MusicNote exposing (MusicNote(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..), on)
-import MaybeSafe exposing (MaybeSafe(..), maxSafeInt, toMaybeSafeInt)
-import BigInt exposing (fromInt, toString)
+import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 import TestsHelper exposing (musicNotePlayerOnNothing, uniformNothingSingelton, uniformNothing3Nodes)
+
+import BigInt exposing (fromInt, toString)
+import Basics.Extra exposing (maxSafeInteger)
 
 import Test exposing (..)
 import Expect
@@ -62,13 +64,13 @@ bTreeUniformType_5 =
                     let
                         expected =
                             BTreeInt <| BTree.map IntNodeVal <|
-                                Node (Safe maxSafeInt)
+                                Node (Safe maxSafeInteger)
                                     (singleton <| Safe 4)
                                     (singleton <| Safe -9)
 
                         result = BTreeUniformType.deDuplicate <|
                             BTreeInt <| BTree.map IntNodeVal <|
-                                Node (Safe maxSafeInt)
+                                Node (Safe maxSafeInteger)
                                     (singleton <| Safe 4)
                                     (Node (Safe -9)
                                         Empty
@@ -101,13 +103,13 @@ bTreeUniformType_5 =
                     let
                         expected =
                             BTreeBigInt <| BTree.map BigIntNodeVal <|
-                                Node (BigInt.fromInt maxSafeInt)
+                                Node (BigInt.fromInt maxSafeInteger)
                                     (singleton <| BigInt.fromInt 4)
                                     (singleton <| BigInt.fromInt -9)
 
                         result = BTreeUniformType.deDuplicate <|
                             BTreeBigInt <| BTree.map BigIntNodeVal <|
-                                Node (BigInt.fromInt maxSafeInt)
+                                Node (BigInt.fromInt maxSafeInteger)
                                     (singleton <| BigInt.fromInt 4)
                                     (Node (BigInt.fromInt -9)
                                         Empty

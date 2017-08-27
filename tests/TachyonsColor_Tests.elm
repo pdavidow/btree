@@ -7,8 +7,6 @@ import Color.Convert exposing (colorToHex)
 
 import Test exposing (..)
 import Expect
-import Fuzz exposing (list, int, tuple, string)
-import String
 
 
 tachyonsColor : Test

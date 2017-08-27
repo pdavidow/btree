@@ -6,9 +6,11 @@ import BTree exposing (BTree(..), Direction(..), fromIntList, fromList, fromList
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import MusicNote exposing (MusicNote(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..), on)
-import MaybeSafe exposing (MaybeSafe(..), maxSafeInt, toMaybeSafeInt)
-import BigInt exposing (fromInt, toString)
+import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 import TestsHelper exposing (musicNotePlayerOnNothing, uniformNothingSingelton, uniformNothing3Nodes)
+
+import BigInt exposing (fromInt, toString)
+import Basics.Extra exposing (maxSafeInteger)
 
 import Test exposing (..)
 import Expect
@@ -105,12 +107,12 @@ bTreeUniformType_4 =
                                     (singleton <| toMaybeSafeInt 4)
                                     (Node (toMaybeSafeInt 4)
                                         Empty
-                                        (singleton <| toMaybeSafeInt maxSafeInt)
+                                        (singleton <| toMaybeSafeInt maxSafeInteger)
                                     )
 
                         result = BTreeUniformType.sort Right <|
                             BTreeInt <| BTree.map IntNodeVal <| 
-                                Node (toMaybeSafeInt <| maxSafeInt)
+                                Node (toMaybeSafeInt <| maxSafeInteger)
                                     (singleton <| toMaybeSafeInt 4)
                                     (Node (toMaybeSafeInt -9)
                                         Empty
@@ -127,7 +129,7 @@ bTreeUniformType_4 =
                             BTreeInt <| BTree.map IntNodeVal <| 
                                 Node (toMaybeSafeInt -9)
                                     (Node (toMaybeSafeInt 4)
-                                        (singleton <| toMaybeSafeInt <| maxSafeInt)
+                                        (singleton <| toMaybeSafeInt <| maxSafeInteger)
                                         Empty
                                     )
                                     (singleton <| toMaybeSafeInt 4)
@@ -135,7 +137,7 @@ bTreeUniformType_4 =
 
                         result = BTreeUniformType.sort Left <|
                             BTreeInt <| BTree.map IntNodeVal <| 
-                                Node (toMaybeSafeInt <| maxSafeInt)
+                                Node (toMaybeSafeInt <| maxSafeInteger)
                                     (singleton <| toMaybeSafeInt 4)
                                     (Node (toMaybeSafeInt -9)
                                         Empty
@@ -232,12 +234,12 @@ bTreeUniformType_4 =
                                     (singleton <| BigInt.fromInt 4)
                                     (Node (BigInt.fromInt 4)
                                         Empty
-                                        (singleton <| BigInt.fromInt maxSafeInt)
+                                        (singleton <| BigInt.fromInt maxSafeInteger)
                                     )
 
                         result = BTreeUniformType.sort Right <|
                             BTreeBigInt <| BTree.map BigIntNodeVal <|
-                                Node (BigInt.fromInt <| maxSafeInt)
+                                Node (BigInt.fromInt <| maxSafeInteger)
                                     (singleton <| BigInt.fromInt 4)
                                     (Node (BigInt.fromInt -9)
                                         Empty
@@ -254,7 +256,7 @@ bTreeUniformType_4 =
                             BTreeBigInt <| BTree.map BigIntNodeVal <|
                                 Node (BigInt.fromInt -9)
                                     (Node (BigInt.fromInt 4)
-                                        (singleton <| BigInt.fromInt <| maxSafeInt)
+                                        (singleton <| BigInt.fromInt <| maxSafeInteger)
                                         Empty
                                     )
                                     (singleton <| BigInt.fromInt 4)
@@ -262,7 +264,7 @@ bTreeUniformType_4 =
 
                         result = BTreeUniformType.sort Left <|
                             BTreeBigInt <| BTree.map BigIntNodeVal <|
-                                Node (BigInt.fromInt <| maxSafeInt)
+                                Node (BigInt.fromInt <| maxSafeInteger)
                                     (singleton <| BigInt.fromInt 4)
                                     (Node (BigInt.fromInt -9)
                                         Empty

@@ -6,11 +6,13 @@ import BTree exposing (BTree(..), Direction(..), fromIntList, fromList, fromList
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import MusicNote exposing (MusicNote(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..), on)
-import MaybeSafe exposing (MaybeSafe(..), maxSafeInt, toMaybeSafeInt)
+import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 import Lib exposing (IntFlex(..))
-import BigInt exposing (fromInt, toString)
 import TestsHelper exposing (musicNotePlayerOnNothing, uniformNothingSingelton, uniformNothing3Nodes)
- 
+
+import BigInt exposing (fromInt, toString)
+import Basics.Extra exposing (maxSafeInteger)
+
 import Test exposing (..)
 import Expect
  
@@ -115,93 +117,93 @@ bTreeUniformType_3 =
             , test "of non-empty.BTreeInt.2" <|
                 \() ->
                     Expect.equal
-                        ( Just <| IntVal <| Safe <| maxSafeInt - 10
+                        ( Just <| IntVal <| Safe <| maxSafeInteger - 10
                         )
-                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [maxSafeInt - 40, 30]
+                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [maxSafeInteger - 40, 30]
                         )
             , test "of non-empty.BTreeInt.3" <|
                 \() ->
                     Expect.equal
-                        ( Just <| IntVal <| Safe <| negate <| maxSafeInt - 10
+                        ( Just <| IntVal <| Safe <| negate <| maxSafeInteger - 10
                         )
-                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [negate <| maxSafeInt - 40, -30]
+                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [negate <| maxSafeInteger - 40, -30]
                         )
             , test "of non-empty.BTreeInt.4" <|
                 \() ->
                     Expect.equal
                         ( Just <| IntVal <| Unsafe
                         )
-                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [maxSafeInt - 40, 30, 20]
+                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [maxSafeInteger - 40, 30, 20]
                         )
             , test "of non-empty.BTreeInt.5" <|
                 \() ->
                     Expect.equal
                         ( Just <| IntVal <| Unsafe
                         )
-                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [-100, maxSafeInt + 1]
+                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [-100, maxSafeInteger + 1]
                         )
             , test "of non-empty.BTreeInt.6" <|
                 \() ->
                     Expect.equal
                         ( Just <| IntVal <| Unsafe
                         )
-                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [maxSafeInt - 40, 50, -20]
+                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [maxSafeInteger - 40, 50, -20]
                         )
             , test "of non-empty.BTreeInt.6.1" <|
                 \() ->
                     Expect.equal
                         ( Just <| IntVal <| Unsafe
                         )
-                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [maxSafeInt, 50, -40, -20]
+                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [maxSafeInteger, 50, -40, -20]
                         )
             , test "of non-empty.BTreeInt.6.1.1" <|
                 \() ->
                     Expect.equal
-                        ( Just <| IntVal <| Safe <| maxSafeInt - 1
+                        ( Just <| IntVal <| Safe <| maxSafeInteger - 1
                         )
-                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [-9, 4, 4, maxSafeInt]
+                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [-9, 4, 4, maxSafeInteger]
                         )
             , test "of non-empty.BTreeInt.6.1.2" <|
                 \() ->
                     Expect.equal
-                        ( Just <| IntVal <| Safe <| maxSafeInt - 1
+                        ( Just <| IntVal <| Safe <| maxSafeInteger - 1
                         )
-                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [maxSafeInt, -9, 4, 4]
+                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [maxSafeInteger, -9, 4, 4]
                         )
             , test "of non-empty.BTreeInt.6.1.3" <|
                 \() ->
                     Expect.equal
-                        ( Just <| IntVal <| Safe <| maxSafeInt - 1
+                        ( Just <| IntVal <| Safe <| maxSafeInteger - 1
                         )
-                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [-1, maxSafeInt]
+                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [-1, maxSafeInteger]
                         )
             , test "of non-empty.BTreeInt.6.1.4" <|
                 \() ->
                     Expect.equal
-                        ( Just <| IntVal <| Safe <| maxSafeInt - 1
+                        ( Just <| IntVal <| Safe <| maxSafeInteger - 1
                         )
-                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [maxSafeInt, -1]
+                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [maxSafeInteger, -1]
                         )
             , test "of non-empty.BTreeInt.6.2" <|
                 \() ->
                     Expect.equal
                         ( Just <| IntVal <| Unsafe
                         )
-                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| Node (toMaybeSafeInt maxSafeInt) (singleton <| toMaybeSafeInt 40) (Node (toMaybeSafeInt -90) Empty (singleton <| toMaybeSafeInt 40))
+                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| Node (toMaybeSafeInt maxSafeInteger) (singleton <| toMaybeSafeInt 40) (Node (toMaybeSafeInt -90) Empty (singleton <| toMaybeSafeInt 40))
                         )
             , test "of non-empty.BTreeInt.7" <|
                 \() ->
                     Expect.equal
                         ( Just <| IntVal <| Safe 0
                         )
-                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [maxSafeInt, negate maxSafeInt]
+                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [maxSafeInteger, negate maxSafeInteger]
                         )
             , test "of non-empty.BTreeInt.8" <|
                 \() ->
                     Expect.equal
-                        ( Just <| IntVal <| Safe maxSafeInt
+                        ( Just <| IntVal <| Safe maxSafeInteger
                         )
-                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [maxSafeInt]
+                        ( BTreeUniformType.sumInt <| BTreeInt <| BTree.map IntNodeVal <| BTree.fromIntList [maxSafeInteger]
                         )
             , test "of non-empty.BTreeBigInt.1" <|
                 \() ->
@@ -220,86 +222,86 @@ bTreeUniformType_3 =
             , test "of non-empty.BTreeBigInt.3" <|
                 \() ->
                     Expect.equal
-                        ( Just <| BigIntVal <| BigInt.add (BigInt.fromInt <| negate <| maxSafeInt - 40) (BigInt.fromInt -30)
+                        ( Just <| BigIntVal <| BigInt.add (BigInt.fromInt <| negate <| maxSafeInteger - 40) (BigInt.fromInt -30)
                         )
-                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt <| negate <| maxSafeInt - 40, BigInt.fromInt -30]
+                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt <| negate <| maxSafeInteger - 40, BigInt.fromInt -30]
                         )
             , test "of non-empty.BTreeBigInt.4" <|
                 \() ->
                     Expect.equal
-                        ( Just <| BigIntVal <| BigInt.add (BigInt.add (BigInt.fromInt <| maxSafeInt - 40) (BigInt.fromInt 30)) (BigInt.fromInt 20)
+                        ( Just <| BigIntVal <| BigInt.add (BigInt.add (BigInt.fromInt <| maxSafeInteger - 40) (BigInt.fromInt 30)) (BigInt.fromInt 20)
                         )
-                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt <| maxSafeInt - 40, BigInt.fromInt 30, BigInt.fromInt 20]
+                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt <| maxSafeInteger - 40, BigInt.fromInt 30, BigInt.fromInt 20]
                         )
             , test "of non-empty.BTreeBigInt.5" <|
                 \() ->
                     Expect.equal
-                        ( Just <| BigIntVal <| BigInt.add (BigInt.fromInt <| -100) (BigInt.fromInt <| maxSafeInt + 1)
+                        ( Just <| BigIntVal <| BigInt.add (BigInt.fromInt <| -100) (BigInt.fromInt <| maxSafeInteger + 1)
                         )
-                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt -100, BigInt.fromInt <| maxSafeInt + 1]
+                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt -100, BigInt.fromInt <| maxSafeInteger + 1]
                         )
             , test "of non-empty.BTreeBigInt.6" <|
                 \() ->
                     Expect.equal
-                        ( Just <| BigIntVal <| BigInt.add (BigInt.add (BigInt.fromInt <| maxSafeInt - 40) (BigInt.fromInt 50)) (BigInt.fromInt -20)
+                        ( Just <| BigIntVal <| BigInt.add (BigInt.add (BigInt.fromInt <| maxSafeInteger - 40) (BigInt.fromInt 50)) (BigInt.fromInt -20)
                         )
-                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt <| maxSafeInt - 40, BigInt.fromInt 50, BigInt.fromInt -20]
+                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt <| maxSafeInteger - 40, BigInt.fromInt 50, BigInt.fromInt -20]
                         )
             , test "of non-empty.BTreeBigInt.6.1" <|
                 \() ->
                     Expect.equal
-                        ( Just <| BigIntVal <| BigInt.add (BigInt.add (BigInt.add (BigInt.fromInt <| maxSafeInt) (BigInt.fromInt 50)) (BigInt.fromInt -40)) (BigInt.fromInt -20)
+                        ( Just <| BigIntVal <| BigInt.add (BigInt.add (BigInt.add (BigInt.fromInt <| maxSafeInteger) (BigInt.fromInt 50)) (BigInt.fromInt -40)) (BigInt.fromInt -20)
                         )
-                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt <| maxSafeInt, BigInt.fromInt 50, BigInt.fromInt -40, BigInt.fromInt -20]
+                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt <| maxSafeInteger, BigInt.fromInt 50, BigInt.fromInt -40, BigInt.fromInt -20]
                         )
             , test "of non-empty.BTreeBigInt.6.1.1" <|
                 \() ->
                     Expect.equal
-                        ( Just <| BigIntVal <| BigInt.add (BigInt.add (BigInt.add (BigInt.fromInt -9) (BigInt.fromInt 4)) (BigInt.fromInt 4)) (BigInt.fromInt maxSafeInt)
+                        ( Just <| BigIntVal <| BigInt.add (BigInt.add (BigInt.add (BigInt.fromInt -9) (BigInt.fromInt 4)) (BigInt.fromInt 4)) (BigInt.fromInt maxSafeInteger)
                         )
-                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy Basics.toString [BigInt.fromInt -9, BigInt.fromInt 4, BigInt.fromInt 4, BigInt.fromInt maxSafeInt]
+                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy Basics.toString [BigInt.fromInt -9, BigInt.fromInt 4, BigInt.fromInt 4, BigInt.fromInt maxSafeInteger]
                         )
             , test "of non-empty.BTreeBigInt.6.1.2" <|
                 \() ->
                     Expect.equal
-                        ( Just <| BigIntVal <| BigInt.add (BigInt.add (BigInt.add (BigInt.fromInt maxSafeInt) (BigInt.fromInt -9)) (BigInt.fromInt 4)) (BigInt.fromInt 4)
+                        ( Just <| BigIntVal <| BigInt.add (BigInt.add (BigInt.add (BigInt.fromInt maxSafeInteger) (BigInt.fromInt -9)) (BigInt.fromInt 4)) (BigInt.fromInt 4)
                         )
-                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt maxSafeInt, BigInt.fromInt -9, BigInt.fromInt 4, BigInt.fromInt 4]
+                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt maxSafeInteger, BigInt.fromInt -9, BigInt.fromInt 4, BigInt.fromInt 4]
                         )
             , test "of non-empty.BTreeBigInt.6.1.3" <|
                 \() ->
                     Expect.equal
-                        ( Just <| BigIntVal <| BigInt.add (BigInt.fromInt -1) (BigInt.fromInt maxSafeInt)
+                        ( Just <| BigIntVal <| BigInt.add (BigInt.fromInt -1) (BigInt.fromInt maxSafeInteger)
                         )
-                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt -1, BigInt.fromInt maxSafeInt]
+                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt -1, BigInt.fromInt maxSafeInteger]
                         )
             , test "of non-empty.BTreeBigInt.6.1.4" <|
                 \() ->
                     Expect.equal
-                        ( Just <| BigIntVal <| BigInt.add (BigInt.fromInt maxSafeInt) (BigInt.fromInt -1)
+                        ( Just <| BigIntVal <| BigInt.add (BigInt.fromInt maxSafeInteger) (BigInt.fromInt -1)
                         )
-                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt maxSafeInt, BigInt.fromInt -1]
+                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt maxSafeInteger, BigInt.fromInt -1]
                         )
             , test "of non-empty.BTreeBigInt.6.2" <|
                 \() ->
                     Expect.equal
-                        ( Just <| BigIntVal <| BigInt.add (BigInt.add (BigInt.add (BigInt.fromInt maxSafeInt) (BigInt.fromInt 40)) (BigInt.fromInt -90)) (BigInt.fromInt 40)
+                        ( Just <| BigIntVal <| BigInt.add (BigInt.add (BigInt.add (BigInt.fromInt maxSafeInteger) (BigInt.fromInt 40)) (BigInt.fromInt -90)) (BigInt.fromInt 40)
                         )
-                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| Node (BigInt.fromInt maxSafeInt) (singleton <| BigInt.fromInt 40) (Node (BigInt.fromInt -90) Empty (singleton <| BigInt.fromInt 40))
+                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| Node (BigInt.fromInt maxSafeInteger) (singleton <| BigInt.fromInt 40) (Node (BigInt.fromInt -90) Empty (singleton <| BigInt.fromInt 40))
                         )
             , test "of non-empty.BTreeBigInt.7" <|
                 \() ->
                     Expect.equal
-                        ( Just <| BigIntVal <| BigInt.add (BigInt.fromInt maxSafeInt) (BigInt.fromInt -maxSafeInt)
+                        ( Just <| BigIntVal <| BigInt.add (BigInt.fromInt maxSafeInteger) (BigInt.fromInt -maxSafeInteger)
                         )
-                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt maxSafeInt, BigInt.fromInt <| negate maxSafeInt]
+                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt maxSafeInteger, BigInt.fromInt <| negate maxSafeInteger]
                         )
             , test "of non-empty.BTreeBigInt.8" <|
                 \() ->
                     Expect.equal
-                        ( Just <| BigIntVal <| BigInt.add (BigInt.fromInt maxSafeInt) (BigInt.fromInt 0)
+                        ( Just <| BigIntVal <| BigInt.add (BigInt.fromInt maxSafeInteger) (BigInt.fromInt 0)
                         )
-                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt maxSafeInt]
+                        ( BTreeUniformType.sumInt <| BTreeBigInt <| BTree.map BigIntNodeVal <| BTree.fromListBy BigInt.toString [BigInt.fromInt maxSafeInteger]
                         )
             , test "of non-empty.BTreeString.1" <|
                 \() ->

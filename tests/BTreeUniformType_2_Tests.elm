@@ -6,10 +6,12 @@ import BTree exposing (BTree(..), Direction(..), fromIntList, fromList, fromList
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import MusicNote exposing (MusicNote(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..), on)
-import MaybeSafe exposing (MaybeSafe(..), maxSafeInt, toMaybeSafeInt)
-import BigInt exposing (fromInt, toString)
+import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 import NodeValueOperation exposing (Operation(..))
 import TestsHelper exposing (musicNotePlayerOnNothing, uniformNothingSingelton, uniformNothing3Nodes)
+
+import BigInt exposing (fromInt, toString)
+import Basics.Extra exposing (maxSafeInteger)
 
 import Test exposing (..)
 import Expect
@@ -66,21 +68,21 @@ bTreeUniformType_2 =
                     Expect.equal
                         ( BTreeInt <| singleton <| IntNodeVal <| Unsafe
                         )
-                        ( BTreeUniformType.nodeValOperate (Increment 3) <| BTreeInt <| singleton <| IntNodeVal <| toMaybeSafeInt <| maxSafeInt - 2
+                        ( BTreeUniformType.nodeValOperate (Increment 3) <| BTreeInt <| singleton <| IntNodeVal <| toMaybeSafeInt <| maxSafeInteger - 2
                         )
             , test "of non-empty.BTreeInt.5" <|
                 \() ->
                     Expect.equal
                         ( BTreeInt <| singleton <| IntNodeVal <| Unsafe
                         )
-                        ( BTreeUniformType.nodeValOperate (Increment 3) <| BTreeInt <| singleton <| IntNodeVal <| toMaybeSafeInt <| negate <| maxSafeInt + 2
+                        ( BTreeUniformType.nodeValOperate (Increment 3) <| BTreeInt <| singleton <| IntNodeVal <| toMaybeSafeInt <| negate <| maxSafeInteger + 2
                         )
             , test "of non-empty.BTreeInt.6" <|
                 \() ->
                     Expect.equal
-                        ( BTreeInt <| singleton <| IntNodeVal <| Safe <| negate <| maxSafeInt - 3
+                        ( BTreeInt <| singleton <| IntNodeVal <| Safe <| negate <| maxSafeInteger - 3
                         )
-                        ( BTreeUniformType.nodeValOperate (Increment 3) <| BTreeInt <| singleton <| IntNodeVal <| toMaybeSafeInt <| negate <| maxSafeInt
+                        ( BTreeUniformType.nodeValOperate (Increment 3) <| BTreeInt <| singleton <| IntNodeVal <| toMaybeSafeInt <| negate <| maxSafeInteger
                         )
             , test "of non-empty.BTreeBigInt.1" <|
                 \() ->
@@ -106,23 +108,23 @@ bTreeUniformType_2 =
             , test "of non-empty.BTreeBigInt.4" <|
                 \() ->
                     Expect.equal
-                        ( BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.add (BigInt.fromInt <| maxSafeInt - 2) (BigInt.fromInt 3)
+                        ( BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.add (BigInt.fromInt <| maxSafeInteger - 2) (BigInt.fromInt 3)
                         )
-                        ( BTreeUniformType.nodeValOperate (Increment 3) <| BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.fromInt <| maxSafeInt - 2
+                        ( BTreeUniformType.nodeValOperate (Increment 3) <| BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.fromInt <| maxSafeInteger - 2
                         )
             , test "of non-empty.BTreeBigInt.5" <|
                 \() ->
                     Expect.equal
-                        ( BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.add (BigInt.fromInt <| negate <| maxSafeInt + 2) (BigInt.fromInt 3)
+                        ( BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.add (BigInt.fromInt <| negate <| maxSafeInteger + 2) (BigInt.fromInt 3)
                         )
-                        ( BTreeUniformType.nodeValOperate (Increment 3) <| BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.fromInt <| negate <| maxSafeInt + 2
+                        ( BTreeUniformType.nodeValOperate (Increment 3) <| BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.fromInt <| negate <| maxSafeInteger + 2
                         )
             , test "of non-empty.BTreeBigInt.6" <|
                 \() ->
                     Expect.equal
-                        ( BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.add (BigInt.fromInt <| negate <| maxSafeInt) (BigInt.fromInt 3)
+                        ( BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.add (BigInt.fromInt <| negate <| maxSafeInteger) (BigInt.fromInt 3)
                         )
-                        ( BTreeUniformType.nodeValOperate (Increment 3) <| BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.fromInt <| negate <| maxSafeInt
+                        ( BTreeUniformType.nodeValOperate (Increment 3) <| BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.fromInt <| negate <| maxSafeInteger
                         )
             , test "of non-empty.BTreeString.1" <|
                 \() ->
@@ -292,21 +294,21 @@ bTreeUniformType_2 =
                     Expect.equal
                         ( BTreeInt <| singleton <| IntNodeVal <| Unsafe
                         )
-                        ( BTreeUniformType.nodeValOperate (Decrement 3) <| BTreeInt <| singleton <| IntNodeVal <| toMaybeSafeInt <| maxSafeInt + 2
+                        ( BTreeUniformType.nodeValOperate (Decrement 3) <| BTreeInt <| singleton <| IntNodeVal <| toMaybeSafeInt <| maxSafeInteger + 2
                         )
             , test "of non-empty.BTreeInt.5" <|
                 \() ->
                     Expect.equal
                         ( BTreeInt <| singleton <| IntNodeVal <| Unsafe
                         )
-                        ( BTreeUniformType.nodeValOperate (Decrement 3) <| BTreeInt <| singleton <| IntNodeVal <| toMaybeSafeInt <| negate <| maxSafeInt + 2
+                        ( BTreeUniformType.nodeValOperate (Decrement 3) <| BTreeInt <| singleton <| IntNodeVal <| toMaybeSafeInt <| negate <| maxSafeInteger + 2
                         )
             , test "of non-empty.BTreeInt.6" <|
                 \() ->
                     Expect.equal
-                        ( BTreeInt <| singleton <| IntNodeVal <| Safe <| negate <| maxSafeInt
+                        ( BTreeInt <| singleton <| IntNodeVal <| Safe <| negate <| maxSafeInteger
                         )
-                        ( BTreeUniformType.nodeValOperate (Decrement 3) <| BTreeInt <| singleton <| IntNodeVal <| toMaybeSafeInt <| negate <| maxSafeInt - 3
+                        ( BTreeUniformType.nodeValOperate (Decrement 3) <| BTreeInt <| singleton <| IntNodeVal <| toMaybeSafeInt <| negate <| maxSafeInteger - 3
                         )
             , test "of non-empty.BTreeBigInt.1" <|
                 \() ->
@@ -332,23 +334,23 @@ bTreeUniformType_2 =
             , test "of non-empty.BTreeBigInt.4" <|
                 \() ->
                     Expect.equal
-                        ( BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.sub (BigInt.fromInt <| maxSafeInt + 2) (BigInt.fromInt 3)
+                        ( BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.sub (BigInt.fromInt <| maxSafeInteger + 2) (BigInt.fromInt 3)
                         )
-                        ( BTreeUniformType.nodeValOperate (Decrement 3) <| BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.fromInt <| maxSafeInt + 2
+                        ( BTreeUniformType.nodeValOperate (Decrement 3) <| BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.fromInt <| maxSafeInteger + 2
                         )
             , test "of non-empty.BTreeBigInt.5" <|
                 \() ->
                     Expect.equal
-                        ( BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.sub (BigInt.fromInt <| negate <| maxSafeInt + 2) (BigInt.fromInt 3)
+                        ( BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.sub (BigInt.fromInt <| negate <| maxSafeInteger + 2) (BigInt.fromInt 3)
                         )
-                        ( BTreeUniformType.nodeValOperate (Decrement 3) <| BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.fromInt <| negate <| maxSafeInt + 2
+                        ( BTreeUniformType.nodeValOperate (Decrement 3) <| BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.fromInt <| negate <| maxSafeInteger + 2
                         )
             , test "of non-empty.BTreeBigInt.6" <|
                 \() ->
                     Expect.equal
-                        ( BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.sub (BigInt.fromInt <| negate <| maxSafeInt - 3) (BigInt.fromInt 3)
+                        ( BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.sub (BigInt.fromInt <| negate <| maxSafeInteger - 3) (BigInt.fromInt 3)
                         )
-                        ( BTreeUniformType.nodeValOperate (Decrement 3) <| BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.fromInt <| negate <| maxSafeInt - 3
+                        ( BTreeUniformType.nodeValOperate (Decrement 3) <| BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.fromInt <| negate <| maxSafeInteger - 3
                         )
             , test "of non-empty.BTreeString.1" <|
                 \() ->
@@ -539,21 +541,21 @@ bTreeUniformType_2 =
                     Expect.equal
                         ( BTreeInt <| singleton <| IntNodeVal <| Unsafe
                         )
-                        ( BTreeUniformType.nodeValOperate (Raise 3) <| BTreeInt <| singleton <| IntNodeVal <| toMaybeSafeInt <| maxSafeInt + 2
+                        ( BTreeUniformType.nodeValOperate (Raise 3) <| BTreeInt <| singleton <| IntNodeVal <| toMaybeSafeInt <| maxSafeInteger + 2
                         )
             , test "of non-empty.BTreeInt.5" <|
                 \() ->
                     Expect.equal
                         ( BTreeInt <| singleton <| IntNodeVal <| Unsafe
                         )
-                        ( BTreeUniformType.nodeValOperate (Raise 3) <| BTreeInt <| singleton <| IntNodeVal <| toMaybeSafeInt <| negate <| maxSafeInt + 2
+                        ( BTreeUniformType.nodeValOperate (Raise 3) <| BTreeInt <| singleton <| IntNodeVal <| toMaybeSafeInt <| negate <| maxSafeInteger + 2
                         )
             , test "of non-empty.BTreeInt.6" <|
                 \() ->
                     Expect.equal
                         ( BTreeInt <| singleton <| IntNodeVal <| Safe 1
                         )
-                        ( BTreeUniformType.nodeValOperate (Raise 0) <| BTreeInt <| singleton <| IntNodeVal <| toMaybeSafeInt <| negate <| maxSafeInt - 3
+                        ( BTreeUniformType.nodeValOperate (Raise 0) <| BTreeInt <| singleton <| IntNodeVal <| toMaybeSafeInt <| negate <| maxSafeInteger - 3
                         )
             , test "of non-empty.BTreeBigInt.1" <|
                 \() ->
@@ -579,23 +581,23 @@ bTreeUniformType_2 =
             , test "of non-empty.BTreeBigInt.4" <|
                 \() ->
                     Expect.equal
-                        ( BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.mul (BigInt.mul (BigInt.fromInt <| maxSafeInt + 2) (BigInt.fromInt <| maxSafeInt + 2)) (BigInt.fromInt <| maxSafeInt + 2)
+                        ( BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.mul (BigInt.mul (BigInt.fromInt <| maxSafeInteger + 2) (BigInt.fromInt <| maxSafeInteger + 2)) (BigInt.fromInt <| maxSafeInteger + 2)
                         )
-                        ( BTreeUniformType.nodeValOperate (Raise 3) <| BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.fromInt <| maxSafeInt + 2
+                        ( BTreeUniformType.nodeValOperate (Raise 3) <| BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.fromInt <| maxSafeInteger + 2
                         )
             , test "of non-empty.BTreeBigInt.5" <|
                 \() ->
                     Expect.equal
-                        ( BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.mul (BigInt.mul (BigInt.fromInt <| negate <| maxSafeInt + 2) (BigInt.fromInt <| negate <| maxSafeInt + 2)) (BigInt.fromInt <| negate <| maxSafeInt + 2)
+                        ( BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.mul (BigInt.mul (BigInt.fromInt <| negate <| maxSafeInteger + 2) (BigInt.fromInt <| negate <| maxSafeInteger + 2)) (BigInt.fromInt <| negate <| maxSafeInteger + 2)
                         )
-                        ( BTreeUniformType.nodeValOperate (Raise 3) <| BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.fromInt <| negate <| maxSafeInt + 2
+                        ( BTreeUniformType.nodeValOperate (Raise 3) <| BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.fromInt <| negate <| maxSafeInteger + 2
                         )
             , test "of non-empty.BTreeBigInt.6" <|
                 \() ->
                     Expect.equal
                         ( BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.fromInt 1
                         )
-                        ( BTreeUniformType.nodeValOperate (Raise 0) <| BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.fromInt <| negate <| maxSafeInt - 3
+                        ( BTreeUniformType.nodeValOperate (Raise 0) <| BTreeBigInt <| singleton <| BigIntNodeVal <| BigInt.fromInt <| negate <| maxSafeInteger - 3
                         )
             , test "of non-empty.BTreeString.1" <|
                 \() ->

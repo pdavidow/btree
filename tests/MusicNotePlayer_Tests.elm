@@ -9,8 +9,6 @@ import Uuid exposing (Uuid, uuidGenerator)
 
 import Test exposing (..)
 import Expect
-import Fuzz exposing (list, int, tuple, string)
-import String
 
 
 musicNotePlayer : Test
