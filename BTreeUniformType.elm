@@ -1,7 +1,7 @@
 module BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, depth, sumInt, sort, deDuplicate, isAllNothing, nodeValOperate)
 
 import Arithmetic exposing (isPrime)
--- import Basics.Extra exposing (isSafeInteger) -- todo https://github.com/elm-community/basics-extra/issues/7
+import BigInt exposing (BigInt, toString)
 
 import BTree exposing (BTree, Direction, depth, map, deDuplicateBy, singleton, sumMaybeSafeInt, sumBigInt, sumString, sortTo, sortByTo, sortWithTo, isEmpty, toNothingNodes)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
@@ -11,7 +11,6 @@ import NodeValueOperation exposing (Operation, operateOnInt, operateOnBigInt, op
 import BTreeVariedType exposing (BTreeVariedType(..))
 import Lib exposing (IntFlex(..), digitCount, digitCountBigInt)
 import MaybeSafe exposing (MaybeSafe(..), compare, toMaybeSafeInt)
-import BigInt exposing (BigInt, toString)
 
 
 type BTreeUniformType

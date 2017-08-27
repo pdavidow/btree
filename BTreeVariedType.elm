@@ -1,7 +1,6 @@
 module BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, nodeValOperate, deDuplicate, hasAnyIntNodes)
 
 import Arithmetic exposing (isPrime)
--- import Basics.Extra exposing (isSafeInteger) todo
 import BigInt exposing (toString)
 
 import BTree exposing (BTree, map)
