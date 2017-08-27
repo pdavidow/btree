@@ -5,7 +5,7 @@ import BigInt exposing (BigInt, add, sub)
 
 import MusicNote exposing ((:+:), (:-:))
 import MusicNotePlayer exposing (MusicNotePlayer(..))
-import MaybeSafe exposing (MaybeSafe(..), isSafeInt, toMaybeSafeInt, map)
+import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt, map)
 import Lib exposing (raiseBigInt)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 

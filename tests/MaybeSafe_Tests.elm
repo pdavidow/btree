@@ -1,6 +1,6 @@
 module MaybeSafe_Tests exposing (..)
 
-import MaybeSafe exposing (MaybeSafe(..), isSafe, isSafeInt, toMaybeSafe, toMaybeSafeInt, sumMaybeSafeInt, compare, withDefault, map, unwrap, toOnlySafe, toOnlySafeInt)
+import MaybeSafe exposing (MaybeSafe(..), isSafe, toMaybeSafe, toMaybeSafeInt, sumMaybeSafeInt, compare, withDefault, map, unwrap, toOnlySafe, toOnlySafeInt)
 
 import Arithmetic exposing (isOdd)
 import Basics.Extra exposing (maxSafeInteger)
@@ -19,17 +19,6 @@ maybeSafe =
             , test "isSafe.2" <|
                 \() ->
                     Expect.equal False (MaybeSafe.isSafe <| Unsafe)
-            ]
-         , describe "MaybeSafe.isSafeInt"
-            [ test "isSafeInt.1" <|
-                \() ->
-                    Expect.equal True (MaybeSafe.isSafeInt 3)
-            , test "isSafeInt.2" <|
-                \() ->
-                    Expect.equal True (MaybeSafe.isSafeInt maxSafeInteger)
-            , test "isSafeInt.3" <|
-                \() ->
-                    Expect.equal False (MaybeSafe.isSafeInt <| maxSafeInteger + 1)
             ]
          , describe "MaybeSafe.toMaybeSafe"
             [ test "toMaybeSafe.1" <|

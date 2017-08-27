@@ -1,7 +1,7 @@
-module MaybeSafe exposing (MaybeSafe(..), isSafe, isSafeInt, toMaybeSafe, toMaybeSafeInt, sumMaybeSafeInt, compare, withDefault, map, unwrap, toOnlySafe, toOnlySafeInt)
+module MaybeSafe exposing (MaybeSafe(..), isSafe, toMaybeSafe, toMaybeSafeInt, sumMaybeSafeInt, compare, withDefault, map, unwrap, toOnlySafe, toOnlySafeInt)
 
 import List.Extra exposing (last)
-import Basics.Extra exposing (isSafeInteger, maxSafeInteger)
+import Basics.Extra exposing (isSafeInteger)
 
 type MaybeSafe a
     = Unsafe
@@ -15,15 +15,9 @@ toMaybeSafe isSafe a =
         else Unsafe
 
 
--- todo https://github.com/elm-community/basics-extra/issues/7
-isSafeInt : Int -> Bool
-isSafeInt int =
-    Basics.Extra.isSafeInteger int
-
-
 toMaybeSafeInt : Int -> MaybeSafe Int
 toMaybeSafeInt int =
-    toMaybeSafe isSafeInt int
+    toMaybeSafe isSafeInteger int
 
 
 sumMaybeSafeInt : List (MaybeSafe Int) -> MaybeSafe Int
