@@ -1,4 +1,4 @@
-module TreeMusicPlayer exposing (treeMusicPlayBy, startPlayNote, donePlayNote, stopPlayNotes)
+module TreeMusicPlayer exposing (treeMusicPlayBy, startPlayNote, donePlayNote, donePlayNotes)
 
 import Time exposing (Time, millisecond, inMilliseconds)
 import Uuid exposing (Uuid)
@@ -49,14 +49,18 @@ toAudioNotes players =
         List.indexedMap fn players
 
 
-setPlayMode : Bool -> Uuid -> BTreeUniformType -> BTreeUniformType
-setPlayMode isPlaying uuid bTreeUniformType =
+setPlayMode : Bool -> Maybe Uuid -> BTreeUniformType -> BTreeUniformType
+setPlayMode isPlaying mbUuid bTreeUniformType =
     case bTreeUniformType of
         BTreeMusicNotePlayer bTree ->
             let
                 fn = \(MusicNoteNodeVal (MusicNotePlayer params)) ->
                     let
-                        updatedParams =  if params.mbId == Just uuid
+                        isUpdate = case mbUuid of
+                            Just uuid -> params.mbId == Just uuid
+                            Nothing -> True
+
+                        updatedParams = if isUpdate
                             then {params | isPlaying = isPlaying}
                             else params
                     in
@@ -69,22 +73,14 @@ setPlayMode isPlaying uuid bTreeUniformType =
 
 startPlayNote : Uuid -> BTreeUniformType -> BTreeUniformType
 startPlayNote uuid bTreeUniformType =
-    setPlayMode True uuid bTreeUniformType
+    setPlayMode True (Just uuid) bTreeUniformType
 
 
 donePlayNote : Uuid -> BTreeUniformType -> BTreeUniformType
 donePlayNote uuid bTreeUniformType =
-    setPlayMode False uuid bTreeUniformType
+    setPlayMode False (Just uuid) bTreeUniformType
 
 
-stopPlayNotes : BTreeUniformType -> BTreeUniformType -- todo refactor
-stopPlayNotes bTreeUniformType =
-    case bTreeUniformType of
-        BTreeMusicNotePlayer bTree ->
-            let
-                fn = \(MusicNoteNodeVal (MusicNotePlayer params)) ->
-                    MusicNoteNodeVal <| MusicNotePlayer {params | isPlaying = False}
-            in
-                BTreeMusicNotePlayer <| BTree.map fn bTree
-        _ ->
-            bTreeUniformType
+donePlayNotes : BTreeUniformType -> BTreeUniformType
+donePlayNotes bTreeUniformType =
+    setPlayMode False Nothing bTreeUniformType

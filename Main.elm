@@ -26,7 +26,7 @@ import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intN
 import UniversalConstants exposing (nothingString)
 import MusicNote exposing (MusicNote(..), mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter)
-import TreeMusicPlayer exposing (treeMusicPlayBy, startPlayNote, donePlayNote, stopPlayNotes)
+import TreeMusicPlayer exposing (treeMusicPlayBy, startPlayNote, donePlayNote, donePlayNotes)
 import Ports exposing (port_startPlayNote, port_donePlayNote, port_donePlayNotes, port_disconnectAll)
 import Lib exposing (IntFlex(..), lazyUnwrap)
 import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
@@ -1091,7 +1091,7 @@ update msg model =
 
         StopPlayNotes ->
             let
-                updatedTree = stopPlayNotes model.musicNoteTree
+                updatedTree = donePlayNotes model.musicNoteTree
             in
                 { model
                 | isPlayNotes = False
