@@ -9,11 +9,11 @@
         <script>
             const app = Elm.Main.fullscreen(Math.floor(Math.random()*0x0FFFFFFF));
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const nodeCache = [];
 
             announceStartPlayNote = (id) => app.ports.port_startPlayNote.send(id);
             announceDonePlayNote = (id) => app.ports.port_donePlayNote.send(id);
-            announceDonePlayNotes = () => app.ports.port_donePlayNotes.send(true);
-
+            announceDonePlayNotes = () => app.ports.port_donePlayNotes.send(null);
 
             app.ports.port_playNote.subscribe((note) => {
                 const {freq, id, startOffset, duration, isLast} = note;
@@ -40,6 +40,7 @@
                     soundOscillator.onended = () => {
                         announceDonePlayNote(id);
                         announceDonePlayNotes();
+                        nodeCache.length = 0;
                     };
                 } else {
                     soundOscillator.onended = () => announceDonePlayNote(id);
@@ -49,6 +50,16 @@
                 silentOscillator.stop (silentStopTime);
                 soundOscillator.start(soundStartTime);
                 soundOscillator.stop (soundStopTime);
+
+                nodeCache.push(silentOscillator);
+                nodeCache.push(soundOscillator);
+            });
+
+            app.ports.port_disconnectAll.subscribe((unused) => {
+                nodeCache.forEach((node, nodeIndex) => {
+                    node.disconnect();
+                });
+                nodeCache.length = 0;
             });
         </script>
     </body>

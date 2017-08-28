@@ -26,8 +26,8 @@ import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intN
 import UniversalConstants exposing (nothingString)
 import MusicNote exposing (MusicNote(..), mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter)
-import TreeMusicPlayer exposing (treeMusicPlayBy, startPlayNote, donePlayNote)
-import Ports exposing (port_startPlayNote, port_donePlayNote, port_donePlayNotes)
+import TreeMusicPlayer exposing (treeMusicPlayBy, startPlayNote, donePlayNote, stopPlayNotes)
+import Ports exposing (port_startPlayNote, port_donePlayNote, port_donePlayNotes, port_disconnectAll)
 import Lib exposing (IntFlex(..), lazyUnwrap)
 import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 import NodeValueOperation exposing (Operation(..))
@@ -65,7 +65,8 @@ type Msg
     | PlayNotes (TraversalOrder)
     | StartPlayNote (String)
     | DonePlayNote (String)
-    | DonePlayNotes (Bool)
+    | DonePlayNotes (())
+    | StopPlayNotes
     | SwitchToIntView (IntView)
 
     | MouseEnteredButton (DropdownAction)
@@ -205,7 +206,6 @@ generateIds count startSeed =
                 |> List.Extra.last
                 |> lazyUnwrap lazyDefault identity
                 |> Tuple.second
-
     in
         ( ids, currentSeed )
 
@@ -362,8 +362,8 @@ viewDashboardTop model =
                         ([ T.hover_bg_light_green
                         ] ++ (if Maybe.withDefault False (EveryDict.get Play model.isShowDropdown) then [T.bg_light_green] else []))
                     , disabled isPlayDisabled
-                    , onMouseEnter (MouseEnteredButton Play)
-                    , onMouseLeave (MouseLeftButton Play)
+                    , onMouseEnter <| MouseEnteredButton Play
+                    , onMouseLeave <| MouseLeftButton Play
                     ]
                     [ text "Play" ]
                 , div
@@ -373,8 +373,8 @@ viewDashboardTop model =
                          , T.ba
                          , T.w5
                          ]
-                    , onMouseEnter (MouseEnteredDropdown Play)
-                    , onMouseLeave (MouseLeftDropdown Play)
+                    , onMouseEnter <| MouseEnteredDropdown Play
+                    , onMouseLeave <| MouseLeftDropdown Play
                     ]
                     [ button
                         [ classes
@@ -413,6 +413,13 @@ viewDashboardTop model =
                         ]
                         [text "Post-Order"]
                     ]
+                , button
+                    [ classes
+                        [ T.hover_bg_light_green]
+                    , disabled <| not model.isPlayNotes
+                    , onClick StopPlayNotes
+                    ]
+                    [ text "Stop Play" ]
                 ]
             ]
     , span
@@ -568,7 +575,7 @@ viewDashboardTop model =
             [text "Random Delta"]
         ]
     , button
-        [classes [T.fr, T.hover_bg_light_yellow, T.mv1, T.mr2], onClick Reset, disabled model.isPlayNotes]
+        [classes [T.fr, T.hover_bg_light_yellow, T.mv1, T.mr2], onClick Reset]
         [text "Reset"]
     ]
 
@@ -1079,8 +1086,17 @@ update msg model =
             in
                 { model | musicNoteTree = updatedTree } ! []
 
-        DonePlayNotes isDone ->
-            { model | isPlayNotes = not isDone } ! []
+        DonePlayNotes () ->
+            { model | isPlayNotes = False } ! []
+
+        StopPlayNotes ->
+            let
+                updatedTree = stopPlayNotes model.musicNoteTree
+            in
+                { model
+                | isPlayNotes = False
+                , musicNoteTree = updatedTree
+                } ! [port_disconnectAll ()]
 
         SwitchToIntView intView ->
             { model | intView = intView } ! []
@@ -1134,7 +1150,7 @@ update msg model =
                 | initialMusicNoteTree = tree
                 , musicNoteTree = tree
                 , uuidSeed = seed
-                } ! []
+                } ! [port_disconnectAll ()]
 
 
 waitPriorToCheckingIfMouseEnteredDropdown : Msg -> Model -> (Model, Cmd Msg)
