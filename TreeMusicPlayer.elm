@@ -23,7 +23,6 @@ treeMusicPlayBy order bTreeUniformType =
                 |> toAudioNotes
                 |> List.map port_playNote
                 |> Cmd.batch
-
         _ ->
             Cmd.none
 

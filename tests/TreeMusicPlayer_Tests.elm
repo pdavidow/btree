@@ -1,6 +1,6 @@
 module TreeMusicPlayer_Tests exposing (..)
 
-import TreeMusicPlayer exposing (treeMusicPlayBy, startPlayNote, donePlayNote)
+import TreeMusicPlayer exposing (treeMusicPlayBy, startPlayNote, donePlayNote, donePlayNotes)
 
 import BTreeUniformType exposing (BTreeUniformType(..))
 import BTree exposing (BTree(..), TraversalOrder(..), singleton)
@@ -87,5 +87,26 @@ treeMusicPlayer =
             [ test "donePlayNote" <|
                 \() ->
                     Expect.equal False (setPlayMode False)
+            ]
+         , describe "TreeMusicPlayer.donePlayNotes"
+            [ test "donePlayNotes" <|
+                \() ->
+                    let
+                        nodeVal = MusicNoteNodeVal <| MusicNotePlayer {mbNote = Just C, isPlaying = True, mbId = Nothing}
+                        bTreeUniformType = BTreeMusicNotePlayer <| Node nodeVal (singleton nodeVal) (singleton nodeVal)
+
+                        mbUpdatedTree = case donePlayNotes bTreeUniformType of
+                            BTreeInt _ -> Nothing
+                            BTreeBigInt _ -> Nothing
+                            BTreeString _ -> Nothing
+                            BTreeBool _ -> Nothing
+                            BTreeMusicNotePlayer bTree -> Just bTree
+                            BTreeNothing _ -> Nothing
+
+                        result = (Maybe.withDefault Empty mbUpdatedTree)
+                            |> BTree.flatten
+                            |> List.map (\(MusicNoteNodeVal (MusicNotePlayer params)) -> params.isPlaying)
+                    in
+                        Expect.equal [False,False,False] result
             ]
         ]
