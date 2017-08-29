@@ -1,4 +1,4 @@
-module TreeMusicPlayer exposing (treeMusicPlayBy, startPlayNote, donePlayNote, donePlayNotes)
+module TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote, donePlayNotes)
 
 import Time exposing (Time, millisecond, inMilliseconds)
 import Uuid exposing (Uuid)
@@ -10,31 +10,29 @@ import MusicNotePlayer exposing (MusicNotePlayer(..), isPlayable)
 import AudioNote exposing (AudioNote, audioNote)
 import Ports exposing (port_playNote)
 import NodeTag exposing (NodeVariety(..), MusicNoteNode(..))
+import TreePlayerParams exposing (TreePlayerParams, defaultTreePlayerParams)
 
 
-treeMusicPlayBy : TraversalOrder -> BTreeUniformType -> Cmd msg
-treeMusicPlayBy order bTreeUniformType =
+treeMusicPlay : BTreeUniformType -> Cmd msg
+treeMusicPlay bTreeUniformType =
     case bTreeUniformType of
-        BTreeMusicNotePlayer bTree ->
+        BTreeMusicNotePlayer params bTree ->
             bTree
                 |> map (\(MusicNoteNodeVal player) -> player)
-                |> flattenBy order
+                |> flattenBy params.traversalOrder
                 |> List.filter isPlayable
-                |> toAudioNotes
+                |> toAudioNotes params.noteDuration params.gapDuration
                 |> List.map port_playNote
                 |> Cmd.batch
         _ ->
             Cmd.none
 
 
-toAudioNotes : List MusicNotePlayer -> List AudioNote
-toAudioNotes players =
+toAudioNotes : Time -> Time -> List MusicNotePlayer -> List AudioNote
+toAudioNotes noteDuration gapDuration notePlayers =
     let
-        noteDuration = 750 * millisecond
-        gapDuration = 250 * millisecond
-
         interval = noteDuration + gapDuration
-        lastIndex = (List.length players) - 1
+        lastIndex = (List.length notePlayers) - 1
 
         fn: Int -> MusicNotePlayer -> AudioNote
         fn index (MusicNotePlayer params) =
@@ -45,13 +43,13 @@ toAudioNotes players =
             in
                 audioNote params.mbNote params.mbId startOffset noteDuration isLast
     in
-        List.indexedMap fn players
+        List.indexedMap fn notePlayers
 
 
 setPlayMode : Bool -> Maybe Uuid -> BTreeUniformType -> BTreeUniformType
 setPlayMode isPlaying mbUuid bTreeUniformType =
     case bTreeUniformType of
-        BTreeMusicNotePlayer bTree ->
+        BTreeMusicNotePlayer treeParams bTree ->
             let
                 fn = \(MusicNoteNodeVal (MusicNotePlayer params)) ->
                     let
@@ -65,7 +63,7 @@ setPlayMode isPlaying mbUuid bTreeUniformType =
                     in
                         MusicNoteNodeVal <| MusicNotePlayer updatedParams
             in
-                BTreeMusicNotePlayer <| BTree.map fn bTree
+                BTreeMusicNotePlayer treeParams <| BTree.map fn bTree
         _ ->
             bTreeUniformType
 

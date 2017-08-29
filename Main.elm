@@ -26,7 +26,8 @@ import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intN
 import UniversalConstants exposing (nothingString)
 import MusicNote exposing (MusicNote(..), mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter)
-import TreeMusicPlayer exposing (treeMusicPlayBy, startPlayNote, donePlayNote, donePlayNotes)
+import TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote, donePlayNotes)
+import TreePlayerParams exposing (defaultTreePlayerParams)
 import Ports exposing (port_startPlayNote, port_donePlayNote, port_donePlayNotes, port_disconnectAll)
 import Lib exposing (IntFlex(..), lazyUnwrap)
 import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
@@ -140,8 +141,8 @@ initialModel =
                     (singleton <| BoolNodeVal <| Just False)
                 )
             )
-    , initialMusicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
-    , musicNoteTree = BTreeMusicNotePlayer Empty -- placeholder
+    , initialMusicNoteTree = BTreeMusicNotePlayer defaultTreePlayerParams Empty -- placeholder
+    , musicNoteTree = BTreeMusicNotePlayer defaultTreePlayerParams Empty -- placeholder
     , variedTree = BTreeVaried <|
         Node (BigIntVariety <| BigIntNodeVal <| BigInt.fromInt maxSafeInteger)
             (Node (StringVariety <| StringNodeVal <| "A")
@@ -156,7 +157,7 @@ initialModel =
     , bigIntTreeCache = BTreeBigInt Empty
     , stringTreeCache = BTreeString Empty
     , boolTreeCache = BTreeBool Empty
-    , musicNoteTreeCache = BTreeMusicNotePlayer Empty
+    , musicNoteTreeCache = BTreeMusicNotePlayer defaultTreePlayerParams Empty
     , variedTreeCache = BTreeVaried Empty
     , delta = 1
     , exponent = 2
@@ -219,7 +220,7 @@ idedMusicNoteTree startSeed =
         tree = List.map2 (\id note -> MusicNotePlayer.idedOn (Just id) note) ids notes
             |> BTree.fromListBy MusicNotePlayer.sorter
             |> BTree.map (\player -> MusicNoteNodeVal player)
-            |> BTreeMusicNotePlayer
+            |> BTreeMusicNotePlayer defaultTreePlayerParams
     in
         ( tree, endSeed )
 
@@ -798,22 +799,22 @@ bTreeVariedStatus (BTreeVaried bTree) =
 bTreeUniformLegend : BTreeUniformType -> Maybe (Html msg)
 bTreeUniformLegend bTreeUniformType =
     case bTreeUniformType of
-        BTreeInt bTree ->
+        BTreeInt _ ->
             Just bTreeIntCardLegend
 
-        BTreeBigInt bTree ->
+        BTreeBigInt _ ->
             Just bTreeBigIntCardLegend
 
-        BTreeString bTree ->
+        BTreeString _ ->
             Nothing
 
-        BTreeBool bTree ->
+        BTreeBool _ ->
             Nothing
 
-        BTreeMusicNotePlayer bTree ->
+        BTreeMusicNotePlayer _ _ ->
             Nothing
 
-        BTreeNothing bTree ->
+        BTreeNothing _ ->
             Nothing
 
 
@@ -1055,9 +1056,23 @@ update msg model =
                 newModel ! []
 
         PlayNotes order ->
-            { model
-            | isPlayNotes = True
-            } ! [treeMusicPlayBy order model.musicNoteTree]
+            let
+                mbTuple = case model.musicNoteTree of
+                    BTreeInt _ -> Nothing
+                    BTreeBigInt _ -> Nothing
+                    BTreeString _ -> Nothing
+                    BTreeBool _ -> Nothing
+                    BTreeMusicNotePlayer params bTree -> Just (params, bTree)
+                    BTreeNothing _ -> Nothing
+                (params, bTree) = Maybe.withDefault (defaultTreePlayerParams, Empty) mbTuple
+
+                updatedParams = {params | traversalOrder = order}
+                musicNoteTree = BTreeMusicNotePlayer updatedParams bTree
+            in
+                { model
+                | musicNoteTree = musicNoteTree
+                , isPlayNotes = True
+                } ! [treeMusicPlay musicNoteTree]
 
         StartPlayNote id ->
             let

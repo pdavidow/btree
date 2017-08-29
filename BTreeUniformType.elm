@@ -3,7 +3,7 @@ module BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes
 import Arithmetic exposing (isPrime)
 import BigInt exposing (BigInt, toString)
 
-import BTree exposing (BTree, Direction, depth, map, deDuplicateBy, singleton, sumMaybeSafeInt, sumBigInt, sumString, sortTo, sortByTo, sortWithTo, isEmpty, toNothingNodes)
+import BTree exposing (BTree, TraversalOrder, Direction, depth, map, deDuplicateBy, singleton, sumMaybeSafeInt, sumBigInt, sumString, sortTo, sortByTo, sortWithTo, isEmpty, toNothingNodes)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import MusicNote exposing (MusicNote, mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), sorter)
@@ -11,6 +11,7 @@ import NodeValueOperation exposing (Operation, operateOnInt, operateOnBigInt, op
 import BTreeVariedType exposing (BTreeVariedType(..))
 import Lib exposing (IntFlex(..), digitCount, digitCountBigInt)
 import MaybeSafe exposing (MaybeSafe(..), compare, toMaybeSafeInt)
+import TreePlayerParams exposing (TreePlayerParams)
 
 
 type BTreeUniformType
@@ -18,7 +19,7 @@ type BTreeUniformType
     | BTreeBigInt (BTree BigIntNode)
     | BTreeString (BTree StringNode)
     | BTreeBool (BTree BoolNode)
-    | BTreeMusicNotePlayer (BTree MusicNoteNode)
+    | BTreeMusicNotePlayer TreePlayerParams (BTree MusicNoteNode)
     | BTreeNothing (BTree NothingNode)
 
 
@@ -41,7 +42,7 @@ toNothing bTreeUniformType =
             BTreeBool bTree ->
                 toBTreeNothing bTree
 
-            BTreeMusicNotePlayer bTree ->
+            BTreeMusicNotePlayer treeParams bTree ->
                 toBTreeNothing bTree
 
             BTreeNothing bTree ->
@@ -63,7 +64,7 @@ toTaggedNodes bTreeUniformType =
         BTreeBool bTree ->
             map BoolVariety bTree
 
-        BTreeMusicNotePlayer bTree ->
+        BTreeMusicNotePlayer treeParams bTree ->
             map MusicNoteVariety bTree
 
         BTreeNothing bTree ->
@@ -91,13 +92,13 @@ toLength bTreeUniformType =
             in
                 Just <| BTreeInt <| map fn bTree
 
-        BTreeBool bTree ->
+        BTreeBool _ ->
             Nothing
 
-        BTreeMusicNotePlayer bTree ->
+        BTreeMusicNotePlayer _ _ ->
             Nothing
 
-        BTreeNothing bTree ->
+        BTreeNothing _ ->
             Nothing
 
 
@@ -120,7 +121,7 @@ toIsIntPrime bTreeUniformType =
         BTreeBool _ ->
             Nothing
 
-        BTreeMusicNotePlayer _ ->
+        BTreeMusicNotePlayer _ _ ->
             Nothing
 
         BTreeNothing _ ->
@@ -142,8 +143,8 @@ nodeValOperate operation bTreeUniformType =
             BTreeBool bTree ->
                 BTreeBool <| map (operateOnBool operation) bTree
 
-            BTreeMusicNotePlayer bTree ->
-                BTreeMusicNotePlayer <| map (operateOnMusicNote operation) bTree
+            BTreeMusicNotePlayer treeParams bTree ->
+                BTreeMusicNotePlayer treeParams <| map (operateOnMusicNote operation) bTree
 
             BTreeNothing bTree ->
                 BTreeNothing <| map (operateOnNothing operation) bTree
@@ -164,7 +165,7 @@ depth bTreeUniformType =
         BTreeBool bTree ->
             BTree.depth bTree
 
-        BTreeMusicNotePlayer bTree ->
+        BTreeMusicNotePlayer treeParams bTree ->
             BTree.depth bTree
 
         BTreeNothing bTree ->
@@ -194,7 +195,7 @@ sumInt bTreeUniformType =
         BTreeBool _ ->
             Nothing
 
-        BTreeMusicNotePlayer _ ->
+        BTreeMusicNotePlayer _ _ ->
             Nothing
 
         BTreeNothing _ ->
@@ -228,11 +229,11 @@ sort direction bTreeUniformType =
             in
                 BTreeBool <| BTree.sortByTo fn direction bTree
 
-        BTreeMusicNotePlayer bTree ->
+        BTreeMusicNotePlayer treeParams bTree ->
             let
                 fn = \(MusicNoteNodeVal player) -> MusicNotePlayer.sorter player
             in
-                BTreeMusicNotePlayer <| BTree.sortByTo fn direction bTree
+                BTreeMusicNotePlayer treeParams <| BTree.sortByTo fn direction bTree
 
         BTreeNothing bTree ->
             bTreeUniformType
@@ -265,11 +266,11 @@ deDuplicate bTreeUniformType =
             in
                 BTreeBool <| BTree.deDuplicateBy fn bTree
 
-        BTreeMusicNotePlayer bTree ->
+        BTreeMusicNotePlayer treeParams bTree ->
             let
                 fn = \(MusicNoteNodeVal player) -> MusicNotePlayer.sorter player
             in
-                BTreeMusicNotePlayer <| BTree.deDuplicateBy fn bTree
+                BTreeMusicNotePlayer treeParams <| BTree.deDuplicateBy fn bTree
 
         BTreeNothing bTree ->
             BTreeNothing <| BTree.deDuplicateBy Basics.toString bTree
@@ -290,7 +291,7 @@ isAllNothing bTreeUniformType =
         BTreeBool bTree ->
             isEmpty bTree
 
-        BTreeMusicNotePlayer bTree ->
+        BTreeMusicNotePlayer treeParams bTree ->
             let
                 fn = \(MusicNoteNodeVal (MusicNotePlayer params)) -> params.mbNote
             in
