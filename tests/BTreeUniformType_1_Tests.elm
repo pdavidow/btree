@@ -1,6 +1,6 @@
 module BTreeUniformType_1_Tests exposing (..)
 
-import BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, nodeValOperate, depth, sumInt, sort, deDuplicate, isAllNothing)
+import BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, nodeValOperate, depth, sumInt, sort, deDuplicate, isAllNothing, setTreePlayerParams)
 
 import BTree exposing (BTree(..), Direction(..), fromIntList, fromList, fromListBy, singleton, map)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
@@ -12,6 +12,7 @@ import TreePlayerParams exposing (defaultTreePlayerParams)
 
 import BigInt exposing (fromInt, toString)
 import Basics.Extra exposing (maxSafeInteger)
+import Time exposing (millisecond)
 
 import Test exposing (..)
 import Expect
@@ -282,5 +283,25 @@ bTreeUniformType_1 =
                         ( BTreeUniformType.toIsIntPrime <| uniformNothingSingelton
                         )
             ]
-        ]
+         , describe "BTreeUniformType.setTreePlayerParams"
+            [ test "setTreePlayerParams" <|
+                \() ->
+                    let
+                        time = 123456 * millisecond
+                        fn = \params -> {params | noteDuration = time}
+                        tree = setTreePlayerParams fn <| BTreeMusicNotePlayer defaultTreePlayerParams Empty
+
+                        mbParams = case tree of
+                            BTreeInt _ -> Nothing
+                            BTreeBigInt _ -> Nothing
+                            BTreeString _ -> Nothing
+                            BTreeBool _ -> Nothing
+                            BTreeMusicNotePlayer params _ -> Just params
+                            BTreeNothing _ -> Nothing
+
+                        resultParams = Maybe.withDefault defaultTreePlayerParams mbParams
+                    in
+                        Expect.equal time resultParams.noteDuration
+            ]
+         ]
 
