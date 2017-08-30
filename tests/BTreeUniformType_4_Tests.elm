@@ -8,6 +8,7 @@ import MusicNote exposing (MusicNote(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..), on)
 import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 import TestsHelper exposing (musicNotePlayerOnNothing, uniformNothingSingelton, uniformNothing3Nodes)
+import TreePlayerParams exposing (defaultTreePlayerParams)
 
 import BigInt exposing (fromInt, toString)
 import Basics.Extra exposing (maxSafeInteger)
@@ -28,7 +29,7 @@ bTreeUniformType_4 =
                             , BTreeBigInt Empty
                             , BTreeString Empty
                             , BTreeBool Empty
-                            , BTreeMusicNotePlayer Empty
+                            , BTreeMusicNotePlayer defaultTreePlayerParams Empty
                             , BTreeNothing Empty
                             ]
                         )
@@ -37,7 +38,7 @@ bTreeUniformType_4 =
                             , BTreeUniformType.sort Right <| BTreeBigInt <| Empty
                             , BTreeUniformType.sort Right <| BTreeString <| Empty
                             , BTreeUniformType.sort Right <| BTreeBool <| Empty
-                            , BTreeUniformType.sort Right <| BTreeMusicNotePlayer <| Empty
+                            , BTreeUniformType.sort Right <| BTreeMusicNotePlayer defaultTreePlayerParams <| Empty
                             , BTreeUniformType.sort Right <| BTreeNothing <| Empty
                             ]
                         )
@@ -49,7 +50,7 @@ bTreeUniformType_4 =
                             , BTreeBigInt Empty
                             , BTreeString Empty
                             , BTreeBool Empty
-                            , BTreeMusicNotePlayer Empty
+                            , BTreeMusicNotePlayer defaultTreePlayerParams Empty
                             , BTreeNothing Empty
                             ]
                         )
@@ -58,7 +59,7 @@ bTreeUniformType_4 =
                             , BTreeUniformType.sort Left <| BTreeBigInt <| Empty
                             , BTreeUniformType.sort Left<| BTreeString <| Empty
                             , BTreeUniformType.sort Left<| BTreeBool <| Empty
-                            , BTreeUniformType.sort Left <| BTreeMusicNotePlayer <| Empty
+                            , BTreeUniformType.sort Left <| BTreeMusicNotePlayer defaultTreePlayerParams <| Empty
                             , BTreeUniformType.sort Left <| BTreeNothing <| Empty
                             ]
                         )
@@ -510,13 +511,13 @@ bTreeUniformType_4 =
                 \() ->
                     let
                         expected =
-                            BTreeMusicNotePlayer <| BTree.map MusicNoteNodeVal <| 
+                            BTreeMusicNotePlayer defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <|
                                 Node (MusicNotePlayer.on A)
                                     Empty
                                     (singleton <| MusicNotePlayer.on E)
 
                         result = BTreeUniformType.sort Right <|
-                            BTreeMusicNotePlayer <| BTree.map MusicNoteNodeVal <| 
+                            BTreeMusicNotePlayer defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <|
                                 Node (MusicNotePlayer.on E)
                                     Empty
                                     (singleton <| MusicNotePlayer.on A)
@@ -528,13 +529,13 @@ bTreeUniformType_4 =
                 \() ->
                     let
                         expected =
-                            BTreeMusicNotePlayer <| BTree.map MusicNoteNodeVal <| 
+                            BTreeMusicNotePlayer defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <|
                                 Node (MusicNotePlayer.on A)
                                     (singleton <| MusicNotePlayer.on E)
                                     Empty
 
                         result = BTreeUniformType.sort Left <|
-                            BTreeMusicNotePlayer <| BTree.map MusicNoteNodeVal <| 
+                            BTreeMusicNotePlayer defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <|
                                 Node (MusicNotePlayer.on E)
                                     Empty
                                     (singleton <| MusicNotePlayer.on A)
@@ -546,7 +547,7 @@ bTreeUniformType_4 =
                 \() ->
                     let
                         expected =
-                            BTreeMusicNotePlayer <| BTree.map MusicNoteNodeVal <| 
+                            BTreeMusicNotePlayer defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <|
                                 Node (MusicNotePlayer.on C_sharp)
                                     (singleton <| MusicNotePlayer.on E)
                                     (Node (MusicNotePlayer.on E)
@@ -555,7 +556,7 @@ bTreeUniformType_4 =
                                     )
 
                         result = BTreeUniformType.sort Right <|
-                            BTreeMusicNotePlayer <| BTree.map MusicNoteNodeVal <| 
+                            BTreeMusicNotePlayer defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <|
                                 Node (MusicNotePlayer.on F)
                                     (Node (MusicNotePlayer.on E)
                                         (singleton <| MusicNotePlayer.on C_sharp)
@@ -571,7 +572,7 @@ bTreeUniformType_4 =
                 \() ->
                     let
                         expected =
-                            BTreeMusicNotePlayer <| BTree.map MusicNoteNodeVal <| 
+                            BTreeMusicNotePlayer defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <|
                                 Node (MusicNotePlayer.on C_sharp)
                                     (Node (MusicNotePlayer.on E)
                                         (singleton <| MusicNotePlayer.on F)
@@ -580,7 +581,7 @@ bTreeUniformType_4 =
                                     (singleton <| MusicNotePlayer.on E)
 
                         result = BTreeUniformType.sort Left <|
-                            BTreeMusicNotePlayer <| BTree.map MusicNoteNodeVal <| 
+                            BTreeMusicNotePlayer defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <|
                                 Node (MusicNotePlayer.on F)
                                     (Node (MusicNotePlayer.on E)
                                         (singleton <| MusicNotePlayer.on C_sharp)

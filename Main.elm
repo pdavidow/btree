@@ -18,7 +18,7 @@ import Time exposing (Time, millisecond)
 import EveryDict exposing (EveryDict, fromList, get, update)
 import Basics.Extra exposing (maxSafeInteger)
 
-import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, nodeValOperate)
+import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, nodeValOperate, setTreePlayerParams)
 import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, nodeValOperate, hasAnyIntNodes)
 import BTree exposing (BTree(..), Direction(..), TraversalOrder(..), fromListBy, insertAsIsBy, fromListAsIsBy, fromListAsIs_directed, singleton, toTreeDiagramTree)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
@@ -1057,17 +1057,8 @@ update msg model =
 
         PlayNotes order ->
             let
-                mbTuple = case model.musicNoteTree of
-                    BTreeInt _ -> Nothing
-                    BTreeBigInt _ -> Nothing
-                    BTreeString _ -> Nothing
-                    BTreeBool _ -> Nothing
-                    BTreeMusicNotePlayer params bTree -> Just (params, bTree)
-                    BTreeNothing _ -> Nothing
-                (params, bTree) = Maybe.withDefault (defaultTreePlayerParams, Empty) mbTuple
-
-                updatedParams = {params | traversalOrder = order}
-                musicNoteTree = BTreeMusicNotePlayer updatedParams bTree
+                fn = \params -> {params | traversalOrder = order}
+                musicNoteTree = setTreePlayerParams fn model.musicNoteTree
             in
                 { model
                 | musicNoteTree = musicNoteTree

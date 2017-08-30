@@ -9,6 +9,7 @@ import MusicNotePlayer exposing (MusicNotePlayer(..), on)
 import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 import Lib exposing (IntFlex(..))
 import TestsHelper exposing (musicNotePlayerOnNothing, uniformNothingSingelton, uniformNothing3Nodes)
+import TreePlayerParams exposing (defaultTreePlayerParams)
 
 import BigInt exposing (fromInt, toString)
 import Basics.Extra exposing (maxSafeInteger)
@@ -38,7 +39,7 @@ bTreeUniformType_3 =
                             , BTreeUniformType.depth <| BTreeBigInt <| Empty
                             , BTreeUniformType.depth <| BTreeString <| Empty
                             , BTreeUniformType.depth <| BTreeBool <| Empty
-                            , BTreeUniformType.depth <| BTreeMusicNotePlayer <| Empty
+                            , BTreeUniformType.depth <| BTreeMusicNotePlayer defaultTreePlayerParams <| Empty
                             , BTreeUniformType.depth <| BTreeNothing <| Empty
                             ]
                         )
@@ -75,7 +76,7 @@ bTreeUniformType_3 =
                     Expect.equal
                         ( 2
                         )
-                        ( BTreeUniformType.depth <| BTreeMusicNotePlayer <| BTree.map MusicNoteNodeVal <| BTree.fromListBy Basics.toString [MusicNotePlayer.on A, MusicNotePlayer.on A]
+                        ( BTreeUniformType.depth <| BTreeMusicNotePlayer defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <| BTree.fromListBy Basics.toString [MusicNotePlayer.on A, MusicNotePlayer.on A]
                         )
             , test "of non-empty.BTreeNothing.1" <|
                 \() ->
@@ -103,7 +104,7 @@ bTreeUniformType_3 =
                             , BTreeUniformType.sumInt <| BTreeBigInt <| Empty
                             , BTreeUniformType.sumInt <| BTreeString <| Empty
                             , BTreeUniformType.sumInt <| BTreeBool <| Empty
-                            , BTreeUniformType.sumInt <| BTreeMusicNotePlayer <| Empty
+                            , BTreeUniformType.sumInt <| BTreeMusicNotePlayer defaultTreePlayerParams <| Empty
                             , BTreeUniformType.sumInt <| BTreeNothing <| Empty
                             ]
                         )
@@ -322,7 +323,7 @@ bTreeUniformType_3 =
                     Expect.equal
                         ( Nothing
                         )
-                        ( BTreeUniformType.sumInt <| BTreeMusicNotePlayer <| BTree.map MusicNoteNodeVal <| singleton <| MusicNotePlayer.on A
+                        ( BTreeUniformType.sumInt <| BTreeMusicNotePlayer defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <| singleton <| MusicNotePlayer.on A
                         )
             , test "of non-empty.BTreeNothing.1" <|
                 \() ->

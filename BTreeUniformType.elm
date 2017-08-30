@@ -1,9 +1,9 @@
-module BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, depth, sumInt, sort, deDuplicate, isAllNothing, nodeValOperate)
+module BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, depth, sumInt, sort, deDuplicate, isAllNothing, nodeValOperate, setTreePlayerParams)
 
 import Arithmetic exposing (isPrime)
 import BigInt exposing (BigInt, toString)
 
-import BTree exposing (BTree, TraversalOrder, Direction, depth, map, deDuplicateBy, singleton, sumMaybeSafeInt, sumBigInt, sumString, sortTo, sortByTo, sortWithTo, isEmpty, toNothingNodes)
+import BTree exposing (BTree(..), TraversalOrder, Direction, depth, map, deDuplicateBy, singleton, sumMaybeSafeInt, sumBigInt, sumString, sortTo, sortByTo, sortWithTo, isEmpty, toNothingNodes)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import MusicNote exposing (MusicNote, mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), sorter)
@@ -11,7 +11,7 @@ import NodeValueOperation exposing (Operation, operateOnInt, operateOnBigInt, op
 import BTreeVariedType exposing (BTreeVariedType(..))
 import Lib exposing (IntFlex(..), digitCount, digitCountBigInt)
 import MaybeSafe exposing (MaybeSafe(..), compare, toMaybeSafeInt)
-import TreePlayerParams exposing (TreePlayerParams)
+import TreePlayerParams exposing (TreePlayerParams, defaultTreePlayerParams)
 
 
 type BTreeUniformType
@@ -21,6 +21,22 @@ type BTreeUniformType
     | BTreeBool (BTree BoolNode)
     | BTreeMusicNotePlayer TreePlayerParams (BTree MusicNoteNode)
     | BTreeNothing (BTree NothingNode)
+
+
+setTreePlayerParams : (TreePlayerParams -> TreePlayerParams) -> BTreeUniformType -> BTreeUniformType
+setTreePlayerParams fn bTreeMusicNotePlayer =
+    let
+        mbTuple = case bTreeMusicNotePlayer of
+            BTreeInt _ -> Nothing
+            BTreeBigInt _ -> Nothing
+            BTreeString _ -> Nothing
+            BTreeBool _ -> Nothing
+            BTreeMusicNotePlayer params bTree -> Just (params, bTree)
+            BTreeNothing _ -> Nothing
+
+        (params, bTree) = Maybe.withDefault (defaultTreePlayerParams, Empty) mbTuple
+    in
+        BTreeMusicNotePlayer (fn params) bTree
 
 
 toNothing : BTreeUniformType -> BTreeUniformType

@@ -21,3 +21,4 @@ defaultTreePlayerParams =
     , noteDuration = 750 * millisecond
     , gapDuration = 250 * millisecond
     }
+

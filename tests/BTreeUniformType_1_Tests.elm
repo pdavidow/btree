@@ -8,6 +8,7 @@ import MusicNote exposing (MusicNote(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..), on)
 import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 import TestsHelper exposing (musicNotePlayerOnNothing, uniformNothingSingelton, uniformNothing3Nodes)
+import TreePlayerParams exposing (defaultTreePlayerParams)
 
 import BigInt exposing (fromInt, toString)
 import Basics.Extra exposing (maxSafeInteger)
@@ -55,7 +56,7 @@ bTreeUniformType_1 =
                             , BTreeUniformType.toTaggedNodes <| BTreeBigInt <| Empty
                             , BTreeUniformType.toTaggedNodes <| BTreeString <| Empty
                             , BTreeUniformType.toTaggedNodes <| BTreeBool <| Empty
-                            , BTreeUniformType.toTaggedNodes <| BTreeMusicNotePlayer <| Empty
+                            , BTreeUniformType.toTaggedNodes <| BTreeMusicNotePlayer defaultTreePlayerParams <| Empty
                             , BTreeUniformType.toTaggedNodes <| BTreeNothing <| Empty
                             ]
                         )
@@ -92,7 +93,7 @@ bTreeUniformType_1 =
                     Expect.equal
                         ( singleton <| MusicNoteVariety <| MusicNoteNodeVal <| MusicNotePlayer.on A
                         )
-                        ( BTreeUniformType.toTaggedNodes <| BTreeMusicNotePlayer <| singleton <| MusicNoteNodeVal <| MusicNotePlayer.on A
+                        ( BTreeUniformType.toTaggedNodes <| BTreeMusicNotePlayer defaultTreePlayerParams <| singleton <| MusicNoteNodeVal <| MusicNotePlayer.on A
                         )
             , test "of non-empty.BTreeNothing.1" <|
                 \() ->
@@ -120,7 +121,7 @@ bTreeUniformType_1 =
                             , BTreeUniformType.toLength <| BTreeBigInt <| Empty
                             , BTreeUniformType.toLength <| BTreeString <| Empty
                             , BTreeUniformType.toLength <| BTreeBool <| Empty
-                            , BTreeUniformType.toLength <| BTreeMusicNotePlayer <| Empty
+                            , BTreeUniformType.toLength <| BTreeMusicNotePlayer defaultTreePlayerParams <| Empty
                             , BTreeUniformType.toLength <| BTreeNothing <| Empty
                             ]
                         )
@@ -192,7 +193,7 @@ bTreeUniformType_1 =
                     Expect.equal
                         ( Nothing
                         )
-                        ( BTreeUniformType.toLength <| BTreeMusicNotePlayer <| singleton <| MusicNoteNodeVal <| MusicNotePlayer.on A
+                        ( BTreeUniformType.toLength <| BTreeMusicNotePlayer defaultTreePlayerParams <| singleton <| MusicNoteNodeVal <| MusicNotePlayer.on A
                         )
             ,  test "of non-empty.BTreeNothing.1" <|
                 \() ->
@@ -220,7 +221,7 @@ bTreeUniformType_1 =
                             , BTreeUniformType.toIsIntPrime <| BTreeBigInt <| Empty
                             , BTreeUniformType.toIsIntPrime <| BTreeString <| Empty
                             , BTreeUniformType.toIsIntPrime <| BTreeBool <| Empty
-                            , BTreeUniformType.toIsIntPrime <| BTreeMusicNotePlayer <| Empty
+                            , BTreeUniformType.toIsIntPrime <| BTreeMusicNotePlayer defaultTreePlayerParams <| Empty
                             , BTreeUniformType.toIsIntPrime <| BTreeNothing <| Empty
                             ]
                         )
@@ -271,7 +272,7 @@ bTreeUniformType_1 =
                     Expect.equal
                         ( Nothing
                         )
-                        ( BTreeUniformType.toIsIntPrime <| BTreeMusicNotePlayer <| singleton <| MusicNoteNodeVal <| MusicNotePlayer.on A
+                        ( BTreeUniformType.toIsIntPrime <| BTreeMusicNotePlayer defaultTreePlayerParams <| singleton <| MusicNoteNodeVal <| MusicNotePlayer.on A
                         )
             , test "of non-empty.BTreeNothing.1" <|
                 \() ->
