@@ -1,4 +1,4 @@
-module BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
+module BTreeView exposing (bTreeUniform_Diagram, bTreeVaried_Diagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
 
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
@@ -25,13 +25,13 @@ import MaybeSafe exposing (MaybeSafe(..), withDefault, unwrap)
 import Lib exposing (isEvenBigInt, digitCount, digitCountBigInt)
 
 
-bTreeUniformTypeDiagram : BTreeUniformType -> Html msg
-bTreeUniformTypeDiagram bTreeUniformType =
+bTreeUniform_Diagram : BTreeUniformType -> Html msg
+bTreeUniform_Diagram bTreeUniformType =
     bTreeDiagram (toTaggedNodes bTreeUniformType)
 
 
-bTreeVariedTypeDiagram : BTreeVariedType -> Html msg
-bTreeVariedTypeDiagram (BTreeVaried taggedBTree) =
+bTreeVaried_Diagram : BTreeVariedType -> Html msg
+bTreeVaried_Diagram (BTreeVaried taggedBTree) =
     bTreeDiagram taggedBTree
 
 

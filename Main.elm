@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (Html, div, span, header, main_, section, article, a, button, text, input, h1, h2, label, programWithFlags)
+import Html exposing (Html, div, span, header, main_, section, article, a, button, text, input, h1, h2, label, legend, programWithFlags)
 import Html.Events exposing (onClick, onMouseUp, onMouseDown, onMouseEnter, onMouseLeave, onMouseOver, onMouseOut, onInput)
 import Html.Attributes as A exposing (attribute, property, class, checked, style, type_, value, href, target, disabled)
 import Tachyons exposing (classes, tachyons)
@@ -17,12 +17,15 @@ import Debouncer exposing (DebouncerState, SelfMsg, bounce, create, process)
 import Time exposing (Time, millisecond)
 import EveryDict exposing (EveryDict, fromList, get, update)
 import Basics.Extra exposing (maxSafeInteger)
+import Form exposing (Form)
+import Form.Validate exposing (..)
+import Form.Input
 
 import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, nodeValOperate, setTreePlayerParams)
 import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, nodeValOperate, hasAnyIntNodes)
 import BTree exposing (BTree(..), Direction(..), TraversalOrder(..), fromListBy, insertAsIsBy, fromListAsIsBy, fromListAsIs_directed, singleton, toTreeDiagramTree)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
-import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
+import BTreeView exposing (bTreeUniform_Diagram, bTreeVaried_Diagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
 import UniversalConstants exposing (nothingString)
 import MusicNote exposing (MusicNote(..), mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter)
@@ -32,6 +35,8 @@ import Ports exposing (port_startPlayNote, port_donePlayNote, port_donePlayNotes
 import Lib exposing (IntFlex(..), lazyUnwrap)
 import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 import NodeValueOperation exposing (Operation(..))
+import TreePlayerParams exposing (TreePlayerParams)
+
 ------------------------------------------------
 
 
@@ -76,7 +81,13 @@ type Msg
     | CheckIfMouseEnteredDropdown (DropdownAction)
     | MouseLeftDropdown (DropdownAction)
 
+    -- gaborv/debouncer
     | DebouncerSelfMsg (Debouncer.SelfMsg Msg)
+
+    -- etaque/elm-form
+    | NoOp
+    | FormMsg Form.Msg
+
     | Reset
 
 
@@ -105,6 +116,7 @@ type alias Model =
     , isShowDropdown : EveryDict DropdownAction Bool
     , isMouseEnteredDropdown : EveryDict DropdownAction Bool
     , menuDropdownDebouncer : Debouncer.DebouncerState
+    , musicTreeParamsForm : Form () TreePlayerParams
     }
 
 
@@ -178,6 +190,7 @@ initialModel =
         , (Random, False)
         ]
     , menuDropdownDebouncer = Debouncer.create (5 * Time.millisecond)
+    , musicTreeParamsForm = Form.initial [] musicTreeParamsFormValidation
     }
 
 
@@ -665,15 +678,15 @@ viewTrees model =
             BigIntView -> [model.bigIntTree]
             BothView -> [model.intTree, model.bigIntTree]
 
-        intTreeCards = List.map viewUniformTreeCard intTreesOfInterest
+        intTreeCards = List.map (\tree -> viewUniformTreeCard tree model) intTreesOfInterest
 
         cards = List.concat
-            [   [ viewUniformTreeCard model.musicNoteTree
+            [   [ viewUniformTreeCard model.musicNoteTree model
                 ]
             ,   intTreeCards
-            ,   [ viewUniformTreeCard model.stringTree
-                , viewUniformTreeCard model.boolTree
-                , viewVariedTreeCard model.variedTree
+            ,   [ viewUniformTreeCard model.stringTree model
+                , viewUniformTreeCard model.boolTree model
+                , viewVariedTreeCard model.variedTree model
                 ]
             ]
     in
@@ -688,28 +701,29 @@ viewTrees model =
             cards
 
 
-viewUniformTreeCard : BTreeUniformType -> Html msg
-viewUniformTreeCard bTreeUniformType =
+viewUniformTreeCard : BTreeUniformType -> Model -> Html Msg
+viewUniformTreeCard bTreeUniformType model =
     let
-        title = bTreeUniformTitle bTreeUniformType
-        status = bTreeUniformStatus bTreeUniformType
-        mbLegend = bTreeUniformLegend bTreeUniformType
+        title = bTreeUniform_Title bTreeUniformType
+        status = bTreeUniform_Status bTreeUniformType
+        mbControls = bTreeUniform_Controls bTreeUniformType model
+        mbLegend = bTreeUniform_Legend bTreeUniformType
         mbBgColor = Nothing
-        diagram = bTreeUniformTypeDiagram bTreeUniformType
+        diagram = bTreeUniform_Diagram bTreeUniformType
     in
-        viewTreeCard title status mbLegend mbBgColor diagram
+        viewTreeCard title status mbControls mbLegend mbBgColor diagram
 
 
-viewVariedTreeCard : BTreeVariedType -> Html msg
-viewVariedTreeCard bTreeVariedType =
+viewVariedTreeCard : BTreeVariedType -> Model -> Html Msg
+viewVariedTreeCard bTreeVariedType model =
     let
         title = "BTreeVaried"
-        status = bTreeVariedStatus bTreeVariedType
-        mbLegend = bTreeVariedLegend bTreeVariedType
+        status = bTreeVaried_Status bTreeVariedType
+        mbLegend = bTreeVaried_Legend bTreeVariedType
         mbBgColor = Just T.bg_black_05
-        diagram = bTreeVariedTypeDiagram bTreeVariedType
+        diagram = bTreeVaried_Diagram bTreeVariedType
     in
-        viewTreeCard title status mbLegend mbBgColor diagram
+        viewTreeCard title status Nothing mbLegend mbBgColor diagram
 
 
 depthStatus : Int -> String
@@ -717,8 +731,8 @@ depthStatus depth =
     "depth " ++ toString depth
 
 
-bTreeUniformTitle : BTreeUniformType -> String
-bTreeUniformTitle bTreeUniformType =
+bTreeUniform_Title : BTreeUniformType -> String
+bTreeUniform_Title bTreeUniformType =
     bTreeUniformType
         |> toString
         |> String.split " "
@@ -777,9 +791,8 @@ treeStatus depth mbIxSum =
             )
 
 
-
-bTreeUniformStatus : BTreeUniformType -> Html msg
-bTreeUniformStatus bTreeUniformType =
+bTreeUniform_Status : BTreeUniformType -> Html msg
+bTreeUniform_Status bTreeUniformType =
     let
         depth = BTreeUniformType.depth bTreeUniformType
         mbIntFlex = BTreeUniformType.sumInt bTreeUniformType
@@ -787,8 +800,8 @@ bTreeUniformStatus bTreeUniformType =
         treeStatus depth mbIntFlex
 
 
-bTreeVariedStatus : BTreeVariedType -> Html msg
-bTreeVariedStatus (BTreeVaried bTree) =
+bTreeVaried_Status : BTreeVariedType -> Html msg
+bTreeVaried_Status (BTreeVaried bTree) =
     let
         depth = BTree.depth bTree
         mbMbsSum = Nothing
@@ -796,8 +809,110 @@ bTreeVariedStatus (BTreeVaried bTree) =
         treeStatus depth mbMbsSum
 
 
-bTreeUniformLegend : BTreeUniformType -> Maybe (Html msg)
-bTreeUniformLegend bTreeUniformType =
+bTreeUniform_Controls : BTreeUniformType -> Model -> Maybe (Html Msg)
+bTreeUniform_Controls bTreeUniformType model =
+    case bTreeUniformType of
+        BTreeInt _ ->
+            Nothing
+
+        BTreeBigInt _ ->
+            Nothing
+
+        BTreeString _ ->
+            Nothing
+
+        BTreeBool _ ->
+            Nothing
+
+        BTreeMusicNotePlayer treeParams _ ->
+            Just <| bTreeUniform_Controls_MusicNotePlayer treeParams model
+
+        BTreeNothing _ ->
+            Nothing
+
+
+bTreeUniform_Controls_MusicNotePlayer : TreePlayerParams -> Model -> Html Msg
+bTreeUniform_Controls_MusicNotePlayer treeParams model =
+    let
+        isPlayDisabled = not <| isEnablePlayNotesWidgetry model
+    in
+        span
+            [classes [T.mh2]]
+            [ div
+                [ classes
+                    [ T.relative
+                    , T.dib
+                    ]
+                ]
+                [ button
+                    [ classes
+                        ([ T.hover_bg_light_green
+                        ] ++ (if Maybe.withDefault False (EveryDict.get Play model.isShowDropdown) then [T.bg_light_green] else []))
+                    , disabled isPlayDisabled
+                    , onMouseEnter <| MouseEnteredButton Play
+                    , onMouseLeave <| MouseLeftButton Play
+                    ]
+                    [ text <| toString treeParams.traversalOrder ]
+                , div
+                    [ classes
+                         [ T.absolute
+                         , (if Maybe.withDefault False (EveryDict.get Play model.isShowDropdown) then T.db else T.dn)
+                         , T.ba
+                         , T.w5
+                         ]
+                    , onMouseEnter <| MouseEnteredDropdown Play
+                    , onMouseLeave <| MouseLeftDropdown Play
+                    ]
+                    [ button
+                        [ classes
+                            [ T.db
+                            , T.hover_bg_light_green
+                            , T.pa2
+                            , T.tl
+                            , w_100
+                            ]
+                        , disabled isPlayDisabled
+                        , onClick <| PlayNotes PreOrder
+                        ]
+                        [text "Pre-Order"]
+                    , button
+                        [ classes
+                            [ T.db
+                            , T.hover_bg_light_green
+                            , T.pa2
+                            , w_100
+                            , T.tl
+                            ]
+                        , disabled isPlayDisabled
+                        , onClick <| PlayNotes InOrder
+                        ]
+                        [text "In-Order"]
+                    , button
+                        [ classes
+                            [ T.db
+                            , T.hover_bg_light_green
+                            , T.pa2
+                            , T.tl
+                            , w_100
+                            ]
+                        , disabled isPlayDisabled
+                        , onClick <| PlayNotes PostOrder
+                        ]
+                        [text "Post-Order"]
+                    ]
+                , button
+                    [ classes
+                        [ T.hover_bg_light_green]
+                    , disabled <| not model.isPlayNotes
+                    , onClick StopPlayNotes
+                    ]
+                    [ text "Stop Play" ]
+                ]
+            ]
+
+
+bTreeUniform_Legend : BTreeUniformType -> Maybe (Html msg)
+bTreeUniform_Legend bTreeUniformType =
     case bTreeUniformType of
         BTreeInt _ ->
             Just bTreeIntCardLegend
@@ -818,7 +933,7 @@ bTreeUniformLegend bTreeUniformType =
             Nothing
 
 
-bTreeBigIntCardLegend : Html msg
+bTreeBigIntCardLegend : Html gsg
 bTreeBigIntCardLegend =
     bTreeIntCardLegend
 
@@ -856,15 +971,15 @@ bTreeIntCardLegend =
         ]
 
 
-bTreeVariedLegend : BTreeVariedType -> Maybe (Html msg)
-bTreeVariedLegend bTreeVariedType =
+bTreeVaried_Legend : BTreeVariedType -> Maybe (Html msg)
+bTreeVaried_Legend bTreeVariedType =
     if BTreeVariedType.hasAnyIntNodes bTreeVariedType
         then Just bTreeIntCardLegend
         else Nothing
 
 
-viewTreeCard : String -> Html msg -> Maybe (Html msg) -> Maybe String -> Html msg -> Html msg
-viewTreeCard title status mbLegend mbBgColor diagram =
+viewTreeCard : String -> Html Msg -> Maybe (Html Msg) -> Maybe (Html Msg) -> Maybe String -> Html Msg -> Html Msg
+viewTreeCard title status mbControls mbLegend mbBgColor diagram =
     let
         articleTachyons =
             [ T.fl
@@ -895,6 +1010,12 @@ viewTreeCard title status mbLegend mbBgColor diagram =
                     ]
                     [ text title ]
                 , status
+                , article
+                    [ classes
+                        [ T.center
+                        ]
+                    ]
+                    [ Maybe.withDefault (span[][]) mbControls ]
                 , article
                     [ classes
                         [ T.mt0
@@ -1147,6 +1268,12 @@ update msg model =
             in
                 { model | menuDropdownDebouncer = debouncer } ! [cmd]
 
+        NoOp ->
+            model ! []
+
+        FormMsg formMsg ->
+            { model | form = Form.update musicTreeParamsFormValidation formMsg form } ! []
+
         Reset ->
             let
                 tree = model.initialMusicNoteTree
@@ -1292,3 +1419,4 @@ main =
     , update = update
     , subscriptions = subscriptions
     }
+
