@@ -1,7 +1,9 @@
 **Playing with binary trees.**
-_Work in progress..._
 
+_Tachyons_archivalBranch_
 
+```
 elm-make Main.elm --output elm.js
 
 open index.html
+```
