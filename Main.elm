@@ -146,11 +146,11 @@ initialModel =
     , variedTree = BTreeVaried <|
         Node (BigIntVariety <| BigIntNodeVal <| BigInt.fromInt maxSafeInteger)
             (Node (StringVariety <| StringNodeVal <| "A")
-                (singleton <| MusicNoteVariety <| MusicNoteNodeVal <| MusicNotePlayer.on A)
+                (singleton <| MusicNoteVariety <| MusicNoteNodeVal <| MusicNotePlayer.on <| MusicNote 57)
                 (singleton <| IntVariety <| IntNodeVal <| toMaybeSafeInt 123)
             )
             ((Node (BoolVariety <| BoolNodeVal <| Just True))
-                (singleton <| MusicNoteVariety <| MusicNoteNodeVal <| MusicNotePlayer.on A)
+                (singleton <| MusicNoteVariety <| MusicNoteNodeVal <| MusicNotePlayer.on <| MusicNote 57)
                 (singleton <| BoolVariety <| BoolNodeVal <| Just True)
             )
     , intTreeCache = BTreeInt Empty
@@ -214,7 +214,7 @@ generateIds count startSeed =
 idedMusicNoteTree : Seed -> (BTreeUniformType, Seed)
 idedMusicNoteTree startSeed =
     let
-        notes = [F, E, C_sharp, E, G, A, A_sharp]
+        notes = [MusicNote 65, MusicNote 64, MusicNote 61, MusicNote 64, MusicNote 67, MusicNote 57, MusicNote 58]
         ( ids, endSeed ) = generateIds (List.length notes) startSeed
 
         tree = List.map2 (\id note -> MusicNotePlayer.idedOn (Just id) note) ids notes

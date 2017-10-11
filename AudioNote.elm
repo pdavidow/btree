@@ -16,12 +16,25 @@ type alias AudioNote =
     }
 
 
-audioNote : Maybe MusicNote -> Maybe Uuid -> Time -> Time -> Bool -> AudioNote
+audioNote : Maybe MusicNote -> Maybe Uuid -> Time -> Time -> Bool -> Maybe AudioNote
 audioNote mbNote mbId startOffsetMsec durationMsec isLast =
     let
-        (Freq freq) = unwrap (Freq 0.0) toFreq mbNote
-        id = unwrap "" Uuid.toString mbId
-        startOffset = inSeconds startOffsetMsec
-        duration = inSeconds durationMsec
+        mbFreq = mbNote
+            |> Maybe.andThen toFreq
+
+        fn = \(Freq freq) ->
+            let
+                id = unwrap "" Uuid.toString mbId
+                startOffset = inSeconds startOffsetMsec
+                duration = inSeconds durationMsec
+            in
+                 AudioNote
+                     freq
+                     id
+                     startOffset
+                     duration
+                     isLast
     in
-        AudioNote freq id startOffset duration isLast
+        Maybe.map fn mbFreq
+
+

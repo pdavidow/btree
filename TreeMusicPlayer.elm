@@ -2,6 +2,7 @@ module TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote, don
 
 import Time exposing (Time, millisecond, inMilliseconds)
 import Uuid exposing (Uuid)
+import Maybe.Extra exposing (values)
 
 import BTreeUniformType exposing (BTreeUniformType(..))
 import BTree exposing (TraversalOrder(..), flattenBy, flattenUsingFoldBy, map)
@@ -34,7 +35,7 @@ toAudioNotes noteDuration gapDuration notePlayers =
         interval = noteDuration + gapDuration
         lastIndex = (List.length notePlayers) - 1
 
-        fn: Int -> MusicNotePlayer -> AudioNote
+        fn: Int -> MusicNotePlayer -> Maybe AudioNote
         fn index (MusicNotePlayer params) =
             let
                 startOffset = (toFloat index) * interval
@@ -44,6 +45,7 @@ toAudioNotes noteDuration gapDuration notePlayers =
                 audioNote params.mbNote params.mbId startOffset noteDuration isLast
     in
         List.indexedMap fn notePlayers
+            |> Maybe.Extra.values
 
 
 setPlayMode : Bool -> Maybe Uuid -> BTreeUniformType -> BTreeUniformType

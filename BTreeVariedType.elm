@@ -115,7 +115,7 @@ deDuplicate (BTreeVaried bTree) =
                     Basics.toString nodeVariety
 
                 MusicNoteVariety (MusicNoteNodeVal (MusicNotePlayer params)) ->
-                    "MusicNoteVariety " ++ (MusicNote.mbSorter params.mbNote)
+                    "MusicNoteVariety " ++ (Basics.toString <| MusicNote.mbSorter params.mbNote)
 
                 NothingVariety _ ->
                     Basics.toString nodeVariety

@@ -3,7 +3,7 @@ module MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter, isPlay
 import Uuid exposing (Uuid)
 import Maybe.Extra exposing (isJust)
 
-import MusicNote exposing (MusicNote)
+import MusicNote exposing (MusicNote, MidiNumber)
 
 
 type MusicNotePlayer = MusicNotePlayer
@@ -27,7 +27,7 @@ idedOn mbId note =
        }
 
 
-sorter : MusicNotePlayer -> String
+sorter : MusicNotePlayer -> MidiNumber
 sorter (MusicNotePlayer params) =
     MusicNote.mbSorter params.mbNote
 

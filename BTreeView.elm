@@ -92,6 +92,7 @@ nodeDisplayLength nodeVariety =
         MusicNoteVariety (MusicNoteNodeVal (MusicNotePlayer params)) ->
             let
                 fn = \note -> MusicNote.displayString note
+                    |> Maybe.withDefault ""
                     |> String.length
             in
                 Maybe.Extra.unwrap 0 fn <| params.mbNote
@@ -216,7 +217,7 @@ drawNode mbNodeVariety =
                                 group
                                     [ ngon 5 25 |> filled (tachyonsColorToColor T.purple)
                                     , ngon 5 25 |> outlined outlineStyle
-                                    , displayString note |> fromString |> style treeNodeStyle |> text |> moveY 4
+                                    , Maybe.withDefault "" (displayString note) |> fromString |> style treeNodeStyle |> text |> moveY 4
                                     ]
 
                         Nothing ->
