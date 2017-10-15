@@ -12,43 +12,43 @@ musicNote =
          [ describe "MusicNote.sortOrder"
             [ test "sortOrder" <|
                 \() ->
-                    Expect.equal ("E") (sorter E)
+                    Expect.equal (64) (sorter <| MusicNote 64)
             ]
          , describe "MusicNote.mbSortOrder"
             [ test "Just" <|
                 \() ->
-                    Expect.equal ("Just E") (mbSorter (Just E))
+                    Expect.equal (57) (mbSorter (Just <| MusicNote 57))
             , test "Nothing" <|
                 \() ->
-                    Expect.equal ("Nothing") (mbSorter Nothing)
+                    Expect.equal (0) (mbSorter Nothing)
             ]
          , describe "MusicNote.(:+:)"
             [ test "within range" <|
                 \() ->
-                    Expect.equal (Just G_sharp) ((Just F) :+: 3)
+                    Expect.equal (Just <| MusicNote 68) ((Just <| MusicNote 65) :+: 3)
             , test "outside range" <|
                 \() ->
-                    Expect.equal (Nothing) ((Just F) :+: 4)
+                    Expect.equal (Nothing) ((Just <| MusicNote 105) :+: 4)
             ]
          , describe "MusicNote.(:-:)"
             [ test "within range" <|
                 \() ->
-                    Expect.equal (Just A) ((Just B) :-: 2)
+                    Expect.equal (Just <| MusicNote 57) ((Just <| MusicNote 59) :-: 2)
             , test "outside range" <|
                 \() ->
-                    Expect.equal (Nothing) ((Just B) :-: 3)
+                    Expect.equal (Nothing) ((Just <| MusicNote 23) :-: 3)
             ]
          , describe "MusicNote.displayString"
             [ test "plain" <|
                 \() ->
-                    Expect.equal ("D") (MusicNote.displayString D)
+                    Expect.equal (Just "D4") (MusicNote.displayString <| MusicNote 62)
             , test "sharp" <|
                 \() ->
-                    Expect.equal ("D#") (MusicNote.displayString D_sharp)
+                    Expect.equal (Just "D4#") (MusicNote.displayString <| MusicNote 63)
             ]
          , describe "MusicNote.toFrequency"
             [ test "toFrequency" <|
                 \() ->
-                    Expect.equal (Freq 293.67) (MusicNote.toFreq D)
+                    Expect.equal (Just <| Freq 293.67) (MusicNote.toFreq <| MusicNote 62)
             ]
         ]

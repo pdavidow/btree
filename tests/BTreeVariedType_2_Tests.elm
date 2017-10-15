@@ -218,28 +218,28 @@ bTreeVariedType_2 =
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on G_sharp
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 68
                         )
                         ( BTreeVariedType.nodeValOperate (Increment -1) <| BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on G
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 67
                         )
             ,  test "of non-empty.MusicNoteVariety.2" <|
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on G
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 67
                         )
                         ( BTreeVariedType.nodeValOperate (Increment 0) <| BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on G
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 67
                         )
             ,  test "of non-empty.MusicNoteVariety.3" <|
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on G_sharp
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 68
                         )
                         ( BTreeVariedType.nodeValOperate (Increment 1) <| BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on G
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 67
                         )
             ,  test "of non-empty.MusicNoteVariety.4" <|
                 \() ->
@@ -248,7 +248,7 @@ bTreeVariedType_2 =
                             singleton <| toMusicNoteVariety <| musicNotePlayerOnNothing
                         )
                         ( BTreeVariedType.nodeValOperate (Increment 1) <| BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on G_sharp
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 108
                         )
             ,  test "of non-empty.MusicNoteVariety.5" <|
                 \() ->
@@ -502,28 +502,28 @@ bTreeVariedType_2 =
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on A
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 57
                         )
                         ( BTreeVariedType.nodeValOperate (Decrement -1) <| BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on A_sharp
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 58
                         )
             ,  test "of non-empty.MusicNoteVariety.2" <|
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on A_sharp
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 58
                         )
                         ( BTreeVariedType.nodeValOperate (Decrement 0) <| BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on A_sharp
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 58
                         )
             ,  test "of non-empty.MusicNoteVariety.3" <|
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on A
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 57
                         )
                         ( BTreeVariedType.nodeValOperate (Decrement 1) <| BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on A_sharp
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 58
                         )
             ,  test "of non-empty.MusicNoteVariety.4" <|
                 \() ->
@@ -532,7 +532,7 @@ bTreeVariedType_2 =
                             singleton <| toMusicNoteVariety <| musicNotePlayerOnNothing
                         )
                         ( BTreeVariedType.nodeValOperate (Decrement 1) <| BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on A
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 21
                         )
             ,  test "of non-empty.MusicNoteVariety.5" <|
                 \() ->
@@ -777,28 +777,28 @@ bTreeVariedType_2 =
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on A
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 57
                         )
                         ( BTreeVariedType.nodeValOperate (Raise -1) <| BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on A
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 57
                         )
             ,  test "of non-empty.MusicNoteVariety.2" <|
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on A
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 57
                         )
                         ( BTreeVariedType.nodeValOperate (Raise 0) <| BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on A
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 57
                         )
             ,  test "of non-empty.MusicNoteVariety.3" <|
                 \() ->
                     Expect.equal
                         ( BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on A
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 57
                         )
                         ( BTreeVariedType.nodeValOperate (Raise 1) <| BTreeVaried <|
-                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on A
+                            singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote 57
                         )
             ,  test "of non-empty.MusicNoteVariety.4" <|
                 \() ->

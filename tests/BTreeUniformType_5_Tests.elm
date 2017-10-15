@@ -161,15 +161,15 @@ bTreeUniformType_5 =
                     let
                         expected =
                             BTreeMusicNotePlayer defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <|
-                                Node (MusicNotePlayer.on E)
-                                    (singleton <| MusicNotePlayer.on F)
+                                Node (MusicNotePlayer.on <| MusicNote 64)
+                                    (singleton <| MusicNotePlayer.on <| MusicNote 65)
                                     Empty
 
                         result = BTreeUniformType.deDuplicate <|
                             BTreeMusicNotePlayer defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <|
-                                Node (MusicNotePlayer.on E)
-                                    (singleton <| MusicNotePlayer.on F)
-                                    (singleton <| MusicNotePlayer.on E)
+                                Node (MusicNotePlayer.on <| MusicNote 64)
+                                    (singleton <| MusicNotePlayer.on <| MusicNote 65)
+                                    (singleton <| MusicNotePlayer.on <| MusicNote 64)
                     in
                         Expect.equal
                             expected
@@ -211,7 +211,7 @@ bTreeUniformType_5 =
                     Expect.equal False (BTreeUniformType.isAllNothing <| BTreeBool <| BTree.map BoolNodeVal <| singleton <| Just True)
             , test "of non-empty.BTreeMusicNotePlayer" <|
                 \() ->
-                    Expect.equal False (BTreeUniformType.isAllNothing <| BTreeMusicNotePlayer defaultTreePlayerParams <|  BTree.map MusicNoteNodeVal <| singleton (MusicNotePlayer.on A))
+                    Expect.equal False (BTreeUniformType.isAllNothing <| BTreeMusicNotePlayer defaultTreePlayerParams <|  BTree.map MusicNoteNodeVal <| singleton (MusicNotePlayer.on <| MusicNote 57))
             , test "of non-empty.BTreeNothing" <|
                 \() ->
                     Expect.equal True (BTreeUniformType.isAllNothing uniformNothing3Nodes)

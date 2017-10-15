@@ -76,7 +76,7 @@ bTreeUniformType_3 =
                     Expect.equal
                         ( 2
                         )
-                        ( BTreeUniformType.depth <| BTreeMusicNotePlayer defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <| BTree.fromListBy Basics.toString [MusicNotePlayer.on A, MusicNotePlayer.on A]
+                        ( BTreeUniformType.depth <| BTreeMusicNotePlayer defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <| BTree.fromListBy Basics.toString [MusicNotePlayer.on <| MusicNote 57, MusicNotePlayer.on <| MusicNote 57]
                         )
             , test "of non-empty.BTreeNothing.1" <|
                 \() ->
@@ -323,7 +323,7 @@ bTreeUniformType_3 =
                     Expect.equal
                         ( Nothing
                         )
-                        ( BTreeUniformType.sumInt <| BTreeMusicNotePlayer defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <| singleton <| MusicNotePlayer.on A
+                        ( BTreeUniformType.sumInt <| BTreeMusicNotePlayer defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <| singleton <| MusicNotePlayer.on <| MusicNote 57
                         )
             , test "of non-empty.BTreeNothing.1" <|
                 \() ->
