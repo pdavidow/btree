@@ -25,6 +25,13 @@ import MaybeSafe exposing (MaybeSafe(..), withDefault, unwrap)
 import Lib exposing (isEvenBigInt, digitCount, digitCountBigInt)
 
 
+{--
+todo ... put elsewhere...
+type TreeHomogeneity
+    = Uniform (BTreeUniformType)
+    | Varied (BTreeVariedType)
+--}
+
 bTreeUniformTypeDiagram : BTreeUniformType -> Html msg
 bTreeUniformTypeDiagram bTreeUniformType =
     bTreeDiagram (toTaggedNodes bTreeUniformType)
@@ -36,7 +43,7 @@ bTreeVariedTypeDiagram (BTreeVaried taggedBTree) =
 
 
 bTreeDiagram : BTree NodeVariety -> Html msg
-bTreeDiagram bTree =
+bTreeDiagram bTree = -- todo refactor see above...
     bTree
         |> toTreeDiagramTree
         |> treeElement (maxNodeDisplayLength bTree)

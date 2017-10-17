@@ -6,7 +6,7 @@ import List.Extra exposing (last)
 import Maybe.Extra exposing (unwrap)
 import Dict exposing (Dict, fromList)
 
-type alias MidiNumber = Int
+type alias MidiNumber = Int -- todo should be a real type
 type MusicNote = MusicNote MidiNumber
 type Freq = Freq Float
 

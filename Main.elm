@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (Html, div, span, header, main_, section, article, a, button, text, input, h1, h2, label, programWithFlags)
+import Html exposing (Html, Attribute, div, span, header, main_, section, article, figure, a, button, text, input, h1, h2, label, programWithFlags)
 import Html.Events exposing (onClick, onMouseUp, onMouseDown, onMouseEnter, onMouseLeave, onMouseOver, onMouseOut, onInput)
 import Html.Attributes as A exposing (attribute, property, class, checked, style, type_, value, href, target, disabled)
 import Tachyons exposing (classes, tachyons)
@@ -33,6 +33,14 @@ import Lib exposing (IntFlex(..), lazyUnwrap)
 import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 import NodeValueOperation exposing (Operation(..))
 ------------------------------------------------
+
+type Tree
+    = MusicNotePlayer
+    | Int
+    | BigInt
+    | String
+    | Bool
+    | Varied
 
 
 type IntView
@@ -69,6 +77,7 @@ type Msg
     | DonePlayNotes (())
     | StopPlayNotes
     | SwitchToIntView (IntView)
+    | ClickTreeThumbnail (Tree)
 
     | MouseEnteredButton (DropdownAction)
     | MouseLeftButton (DropdownAction)
@@ -659,6 +668,11 @@ viewIntTreeChoice model =
 
 viewTrees : Model -> Html Msg
 viewTrees model =
+    viewTreeThumbnails model
+
+
+viewTreesOLD : Model -> Html Msg -- todo del
+viewTreesOLD model =
     let
         intTreesOfInterest = case model.intView of
             IntView -> [model.intTree]
@@ -686,6 +700,95 @@ viewTrees model =
                ]
             ]
             cards
+
+
+viewTreeThumbnails : Model -> Html Msg
+viewTreeThumbnails model =
+    let
+        thumbnailClasses : Attribute msg
+        thumbnailClasses =
+            classes
+                [ --T.w4
+                --, T.mw5
+                --, T.flex_auto
+                  T.fl
+                , T.w_10
+                , T.pa0
+                ]
+
+        intyFigures : List (Html Msg)
+        intyFigures =
+            let
+                intViewFigure : () -> Html Msg
+                intViewFigure () =
+                    figure
+                        [ thumbnailClasses
+                        ,
+                          onClick <| ClickTreeThumbnail Int
+                        ]
+                        [ bTreeUniformTypeDiagram model.intTree ]
+
+                bigIntViewFigure : () -> Html Msg
+                bigIntViewFigure () =
+                    figure
+                        [ thumbnailClasses
+                        ,
+                          onClick <| ClickTreeThumbnail BigInt
+                        ]
+                        [bTreeUniformTypeDiagram model.bigIntTree]
+            in
+                case model.intView of
+                    IntView ->
+                        [ intViewFigure () ]
+
+                    BigIntView ->
+                        [ bigIntViewFigure () ]
+
+                    BothView ->
+                        [ intViewFigure ()
+                        , bigIntViewFigure ()
+                        ]
+    in
+        section
+            [ classes
+                [ T.cf
+                , T.pv3
+                , T.bg_washed_green
+                --, T.flex
+                --, T.justify_start
+                --, T.justify_between
+               ]
+            ]
+            ( List.concat
+                [   [ figure
+                        [ thumbnailClasses
+                        ,
+                          onClick <| ClickTreeThumbnail MusicNotePlayer
+                        ]
+                        [ bTreeUniformTypeDiagram model.musicNoteTree ]
+                    ]
+                ,   intyFigures
+                ,   [ figure
+                        [ thumbnailClasses
+                        ,
+                          onClick <| ClickTreeThumbnail String
+                        ]
+                        [ bTreeUniformTypeDiagram model.stringTree ]
+                    , figure
+                        [ thumbnailClasses
+                        ,
+                          onClick <| ClickTreeThumbnail Bool
+                        ]
+                        [ bTreeUniformTypeDiagram model.boolTree ]
+                    , figure
+                        [ thumbnailClasses
+                        ,
+                          onClick <| ClickTreeThumbnail Varied
+                        ]
+                        [ bTreeVariedTypeDiagram model.variedTree ]
+                    ]
+                ]
+            )
 
 
 viewUniformTreeCard : BTreeUniformType -> Html msg
@@ -1146,6 +1249,9 @@ update msg model =
                     model.menuDropdownDebouncer |> Debouncer.process debouncerMsg
             in
                 { model | menuDropdownDebouncer = debouncer } ! [cmd]
+
+        ClickTreeThumbnail treeType -> -- todo
+            model ! []
 
         Reset ->
             let
