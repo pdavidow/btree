@@ -24,7 +24,7 @@ import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, no
 import BTree exposing (BTree(..), Direction(..), TraversalOrder(..), fromListBy, insertAsIsBy, fromListAsIsBy, fromListAsIs_directed, singleton, toTreeDiagramTree)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import BTreeView exposing (bTreeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
-import MusicNote exposing (MusicNote(..), mbSorter)
+import MusicNote exposing (MusicNote(..), MidiNumber(..), mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter)
 import TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote, donePlayNotes)
 import TreePlayerParams exposing (defaultTreePlayerParams)
@@ -146,11 +146,11 @@ initialModel =
     , variedTree = BTreeVaried <|
         Node (BigIntVariety <| BigIntNodeVal <| BigInt.fromInt maxSafeInteger)
             (Node (StringVariety <| StringNodeVal <| "A")
-                (singleton <| MusicNoteVariety <| MusicNoteNodeVal <| MusicNotePlayer.on <| MusicNote 57)
+                (singleton <| MusicNoteVariety <| MusicNoteNodeVal <| MusicNotePlayer.on <| MusicNote <| MidiNumber 57)
                 (singleton <| IntVariety <| IntNodeVal <| toMaybeSafeInt 123)
             )
             ((Node (BoolVariety <| BoolNodeVal <| Just True))
-                (singleton <| MusicNoteVariety <| MusicNoteNodeVal <| MusicNotePlayer.on <| MusicNote 57)
+                (singleton <| MusicNoteVariety <| MusicNoteNodeVal <| MusicNotePlayer.on <| MusicNote <| MidiNumber 57)
                 (singleton <| BoolVariety <| BoolNodeVal <| Just True)
             )
     , intTreeCache = BTreeInt Empty
@@ -214,7 +214,7 @@ generateIds count startSeed =
 idedMusicNoteTree : Seed -> (BTreeUniformType, Seed)
 idedMusicNoteTree startSeed =
     let
-        notes = [MusicNote 65, MusicNote 64, MusicNote 61, MusicNote 64, MusicNote 67, MusicNote 57, MusicNote 58]
+        notes = List.map (\i -> MusicNote <| MidiNumber i) [65, 64, 61, 64, 67, 57, 58]
         ( ids, endSeed ) = generateIds (List.length notes) startSeed
 
         tree = List.map2 (\id note -> MusicNotePlayer.idedOn (Just id) note) ids notes

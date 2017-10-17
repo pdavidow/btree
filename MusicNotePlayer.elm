@@ -27,7 +27,7 @@ idedOn mbId note =
        }
 
 
-sorter : MusicNotePlayer -> MidiNumber
+sorter : MusicNotePlayer -> Int
 sorter (MusicNotePlayer params) =
     MusicNote.mbSorter params.mbNote
 
