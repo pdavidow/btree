@@ -18,12 +18,12 @@ import Time exposing (Time, millisecond)
 import EveryDict exposing (EveryDict, fromList, get, update)
 import Basics.Extra exposing (maxSafeInteger)
 
+import TreeType exposing (TreeType(..))
 import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, nodeValOperate, setTreePlayerParams)
 import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, nodeValOperate, hasAnyIntNodes)
 import BTree exposing (BTree(..), Direction(..), TraversalOrder(..), fromListBy, insertAsIsBy, fromListAsIsBy, fromListAsIs_directed, singleton, toTreeDiagramTree)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
-import BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
-import UniversalConstants exposing (nothingString)
+import BTreeView exposing (bTreeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
 import MusicNote exposing (MusicNote(..), mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter)
 import TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote, donePlayNotes)
@@ -695,7 +695,7 @@ viewUniformTreeCard bTreeUniformType =
         status = bTreeUniformStatus bTreeUniformType
         mbLegend = bTreeUniformLegend bTreeUniformType
         mbBgColor = Nothing
-        diagram = bTreeUniformTypeDiagram bTreeUniformType
+        diagram = bTreeDiagram <| Uniform bTreeUniformType
     in
         viewTreeCard title status mbLegend mbBgColor diagram
 
@@ -707,7 +707,7 @@ viewVariedTreeCard bTreeVariedType =
         status = bTreeVariedStatus bTreeVariedType
         mbLegend = bTreeVariedLegend bTreeVariedType
         mbBgColor = Just T.bg_black_05
-        diagram = bTreeVariedTypeDiagram bTreeVariedType
+        diagram = bTreeDiagram <| Varied bTreeVariedType
     in
         viewTreeCard title status mbLegend mbBgColor diagram
 

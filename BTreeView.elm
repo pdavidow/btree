@@ -1,4 +1,4 @@
-module BTreeView exposing (bTreeUniformTypeDiagram, bTreeVariedTypeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
+module BTreeView exposing (bTreeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
 
 import TreeDiagram as TD exposing (node, Tree, defaultTreeLayout)
 import TreeDiagram.Canvas exposing (draw)
@@ -16,7 +16,8 @@ import Maybe.Extra exposing (unwrap)
 
 import BTree exposing (BTree, flatten, toTreeDiagramTree)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
-import BTreeUniformType exposing (BTreeUniformType(..), toTaggedNodes)
+import TreeType exposing (TreeType(..))
+import BTreeUniformType exposing (BTreeUniformType, toTaggedNodes)
 import BTreeVariedType exposing (BTreeVariedType(..))
 import MusicNote exposing (displayString)
 import MusicNotePlayer exposing (MusicNotePlayer(..))
@@ -25,22 +26,20 @@ import MaybeSafe exposing (MaybeSafe(..), withDefault, unwrap)
 import Lib exposing (isEvenBigInt, digitCount, digitCountBigInt)
 
 
-bTreeUniformTypeDiagram : BTreeUniformType -> Html msg
-bTreeUniformTypeDiagram bTreeUniformType =
-    bTreeDiagram (toTaggedNodes bTreeUniformType)
+bTreeDiagram : TreeType -> Html msg
+bTreeDiagram treeType =
+    let
+        tree = case treeType of
+            Uniform bTreeUniformType ->
+                toTaggedNodes bTreeUniformType
 
-
-bTreeVariedTypeDiagram : BTreeVariedType -> Html msg
-bTreeVariedTypeDiagram (BTreeVaried taggedBTree) =
-    bTreeDiagram taggedBTree
-
-
-bTreeDiagram : BTree NodeVariety -> Html msg
-bTreeDiagram bTree =
-    bTree
-        |> toTreeDiagramTree
-        |> treeElement (maxNodeDisplayLength bTree)
-        |> Element.toHtml
+            Varied (BTreeVaried taggedBTree) ->
+                taggedBTree
+    in
+        tree
+            |> toTreeDiagramTree
+            |> treeElement (maxNodeDisplayLength tree)
+            |> Element.toHtml
 
 
 treeElement : Int -> Maybe (TD.Tree (Maybe NodeVariety)) -> Element
