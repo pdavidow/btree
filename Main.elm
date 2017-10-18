@@ -57,8 +57,9 @@ type Msg
     | RequestRandomPairsIntDirection
     | ReceiveRandomInts (List Int)
     | ReceiveRandomPairsIntDirection (List (Int, Direction))
-    | RequestRandomDelta
+    | RequestRandomScalars
     | ReceiveRandomDelta (Int)
+    | ReceiveRandomExponent (Int)
     | StartShowLength
     | StopShowLength
     | StartShowIsIntPrime
@@ -572,8 +573,8 @@ viewDashboardTop model =
                 ]
             ]
         , button
-            [classes [T.hover_bg_light_green, T.mv1], onClick RequestRandomDelta]
-            [text "Random Delta"]
+            [classes [T.hover_bg_light_green, T.mv1], onClick RequestRandomScalars]
+            [text "Random Scalars"]
         ]
     , button
         [classes [T.fr, T.hover_bg_light_yellow, T.mv1, T.mr2], onClick Reset]
@@ -965,8 +966,13 @@ update msg model =
             in
                 model ! [Random.generate ReceiveRandomPairsIntDirection generatorPairsIntDirection]
 
-        RequestRandomDelta ->
-            model ! [Random.generate ReceiveRandomDelta (Random.int 1 100)]
+        RequestRandomScalars ->
+            model !
+                [ Cmd.batch
+                    [ Random.generate ReceiveRandomDelta (Random.int 1 100)
+                    , Random.generate ReceiveRandomExponent (Random.int 1 10)
+                    ]
+                ]
 
         ReceiveRandomInts list ->
             let
@@ -1010,6 +1016,9 @@ update msg model =
 
         ReceiveRandomDelta i ->
             { model | delta = i } ! []
+
+        ReceiveRandomExponent i ->
+             { model | exponent = i } ! []
 
         StartShowIsIntPrime ->
             (   { model
