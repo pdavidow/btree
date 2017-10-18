@@ -4,7 +4,7 @@ import TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote, don
 
 import BTreeUniformType exposing (BTreeUniformType(..), setTreePlayerParams)
 import BTree exposing (BTree(..), TraversalOrder(..), singleton)
-import MusicNote exposing (MusicNote(..))
+import MusicNote exposing (MusicNote(..), MidiNumber(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..), on)
 import NodeTag exposing (MusicNoteNode(..))
 import TreePlayerParams exposing (defaultTreePlayerParams)
@@ -20,7 +20,7 @@ setPlayMode : Bool -> Bool
 setPlayMode isPlaying =
     let
         ( uuid, seed ) = step uuidGenerator (initialSeed 1)
-        player = MusicNotePlayer {mbNote = Just <| MusicNote 60, isPlaying = not isPlaying, mbId = Just uuid}
+        player = MusicNotePlayer {mbNote = Just <| MusicNote <| MidiNumber 60, isPlaying = not isPlaying, mbId = Just uuid}
         tree = BTreeMusicNotePlayer defaultTreePlayerParams <| singleton <| MusicNoteNodeVal <| player
 
         bTreeUniformType = if isPlaying
@@ -43,15 +43,15 @@ setPlayMode isPlaying =
 testTree : BTreeUniformType
 testTree =
     BTreeMusicNotePlayer defaultTreePlayerParams <|
-        Node (MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just <| MusicNote 57, isPlaying = False, mbId = Uuid.fromString "435d0606-136a-4a3e-b093-e96e0a310d35" })
-            (Node (MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just <| MusicNote 58, isPlaying = False, mbId = Uuid.fromString "22de94eb-cdfc-42ee-a397-1ef94d79e7cb" })
-                (Node (MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just <| MusicNote 64, isPlaying = False, mbId = Uuid.fromString "03d1f029-e0fa-433e-aa2b-25ceb1c19216" })
-                    (singleton <| MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just <| MusicNote 66, isPlaying = False, mbId = Uuid.fromString "0b9d1ebb-db5e-483a-b9aa-39b5f390ecd3" })
-                    (singleton <| MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just <| MusicNote 67, isPlaying = False, mbId = Uuid.fromString "96f92b9f-9cb8-4815-9f7f-12c497551382" })
+        Node (MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just <| MusicNote <| MidiNumber 57, isPlaying = False, mbId = Uuid.fromString "435d0606-136a-4a3e-b093-e96e0a310d35" })
+            (Node (MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just <| MusicNote <| MidiNumber 58, isPlaying = False, mbId = Uuid.fromString "22de94eb-cdfc-42ee-a397-1ef94d79e7cb" })
+                (Node (MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just <| MusicNote <| MidiNumber 64, isPlaying = False, mbId = Uuid.fromString "03d1f029-e0fa-433e-aa2b-25ceb1c19216" })
+                    (singleton <| MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just <| MusicNote <| MidiNumber 66, isPlaying = False, mbId = Uuid.fromString "0b9d1ebb-db5e-483a-b9aa-39b5f390ecd3" })
+                    (singleton <| MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just <| MusicNote <| MidiNumber 67, isPlaying = False, mbId = Uuid.fromString "96f92b9f-9cb8-4815-9f7f-12c497551382" })
                 )
-                (singleton <| MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just <| MusicNote 64, isPlaying = False, mbId = Uuid.fromString "217e28d2-205f-4952-bf5b-4128e85a5901" })
+                (singleton <| MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just <| MusicNote <| MidiNumber 64, isPlaying = False, mbId = Uuid.fromString "217e28d2-205f-4952-bf5b-4128e85a5901" })
             )
-            (singleton <| MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just <| MusicNote 61, isPlaying = False, mbId = Uuid.fromString "c778e0da-65a5-4460-ac78-869f76b3c964" })
+            (singleton <| MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just <| MusicNote <| MidiNumber 61, isPlaying = False, mbId = Uuid.fromString "c778e0da-65a5-4460-ac78-869f76b3c964" })
 
 
 treeMusicPlayer : Test
@@ -105,7 +105,7 @@ treeMusicPlayer =
             [ test "donePlayNotes" <|
                 \() ->
                     let
-                        nodeVal = MusicNoteNodeVal <| MusicNotePlayer {mbNote = Just <| MusicNote 60, isPlaying = True, mbId = Nothing}
+                        nodeVal = MusicNoteNodeVal <| MusicNotePlayer {mbNote = Just <| MusicNote <| MidiNumber 60, isPlaying = True, mbId = Nothing}
                         bTreeUniformType = BTreeMusicNotePlayer defaultTreePlayerParams <| Node nodeVal (singleton nodeVal) (singleton nodeVal)
 
                         mbUpdatedTree = case donePlayNotes bTreeUniformType of

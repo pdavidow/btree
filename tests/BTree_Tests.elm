@@ -2,7 +2,7 @@ module BTree_Tests exposing (..)
 
 import BTree exposing (BTree(..), TraversalOrder(..), Direction(..), singleton, depth, map, flatten, flattenBy, flattenUsingFold, flattenUsingFoldBy, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, isElementUsingFold, toTreeDiagramTree, sort, sortTo, sortByTo, sortWithTo, fromList, fromIntList, fromListBy, fromListWith, fromListAsIsBy, fromListAsIs_left, fromListAsIs_right, fromListAsIs_directed, insert, insertBy, insertWith, insertWith_directed, insertAsIs_left, insertAsIs_right, insertAsIsBy, insertAsIs_directed, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes)
 import NodeTag exposing (NothingNode(..))
-import MusicNote exposing (MusicNote(..), sorter)
+import MusicNote exposing (MusicNote(..), MidiNumber(..), sorter)
 import MaybeSafe exposing (MaybeSafe(..))
 
 import TreeDiagram as TD exposing (node)
@@ -611,40 +611,40 @@ bTree =
             , test "of sortByTo.1a" <|
                 \() ->
                     Expect.equal
-                        (singleton <| MusicNote 57)
-                        (BTree.sortByTo MusicNote.sorter Right (singleton <| MusicNote 57))
+                        (singleton <| MusicNote <| MidiNumber 57)
+                        (BTree.sortByTo MusicNote.sorter Right (singleton <| MusicNote <| MidiNumber 57))
             , test "of sortByTo.1b" <|
                 \() ->
                     Expect.equal
-                        (singleton <| MusicNote 57)
-                        (BTree.sortByTo MusicNote.sorter Left (singleton <| MusicNote 57))
+                        (singleton <| MusicNote <| MidiNumber 57)
+                        (BTree.sortByTo MusicNote.sorter Left (singleton <| MusicNote <| MidiNumber 57))
             , test "of sortByTo.2a" <|
                 \() ->
                     let
                         expected =
-                            (Node <| MusicNote 57)
-                                (singleton <| MusicNote 61)
-                                ((Node <| MusicNote 58)
-                                    (singleton <| MusicNote 64)
-                                    ((Node <| MusicNote 64)
-                                        (singleton <| MusicNote 67)
-                                        (singleton <| MusicNote 65)
+                            (Node <| MusicNote <| MidiNumber 57)
+                                (singleton <| MusicNote <| MidiNumber 61)
+                                ((Node <| MusicNote <| MidiNumber 58)
+                                    (singleton <| MusicNote <| MidiNumber 64)
+                                    ((Node <| MusicNote <| MidiNumber 64)
+                                        (singleton <| MusicNote <| MidiNumber 67)
+                                        (singleton <| MusicNote <| MidiNumber 65)
                                     )
                                 )
 
                         result = BTree.sortByTo MusicNote.sorter Right <|
-                            (Node <| MusicNote 65)
-                                ((Node <| MusicNote 64)
-                                    ((Node <| MusicNote 61)
-                                        ((Node <| MusicNote 57)
+                            (Node <| MusicNote <| MidiNumber 65)
+                                ((Node <| MusicNote <| MidiNumber 64)
+                                    ((Node <| MusicNote <| MidiNumber 61)
+                                        ((Node <| MusicNote <| MidiNumber 57)
                                             Empty
-                                            (singleton <| MusicNote 58)
+                                            (singleton <| MusicNote <| MidiNumber 58)
                                         )
                                         Empty
                                     )
-                                    (singleton <| MusicNote 64)
+                                    (singleton <| MusicNote <| MidiNumber 64)
                                 )
-                                (singleton <| MusicNote 67)
+                                (singleton <| MusicNote <| MidiNumber 67)
                     in
                         Expect.equal
                             expected
@@ -653,29 +653,29 @@ bTree =
                 \() ->
                     let
                         expected =
-                            (Node <| MusicNote 57)
-                                ((Node <| MusicNote 58)
-                                    ((Node <| MusicNote 64)
-                                        (singleton <| MusicNote 65)
-                                        (singleton <| MusicNote 67)
+                            (Node <| MusicNote <| MidiNumber 57)
+                                ((Node <| MusicNote <| MidiNumber 58)
+                                    ((Node <| MusicNote <| MidiNumber 64)
+                                        (singleton <| MusicNote <| MidiNumber 65)
+                                        (singleton <| MusicNote <| MidiNumber 67)
                                     )
-                                    (singleton <| MusicNote 64)
+                                    (singleton <| MusicNote <| MidiNumber 64)
                                 )
-                                (singleton <| MusicNote 61)
+                                (singleton <| MusicNote <| MidiNumber 61)
 
                         result = BTree.sortByTo MusicNote.sorter Left <|
-                            (Node <| MusicNote 65)
-                                ((Node <| MusicNote 64)
-                                    ((Node <| MusicNote 61)
-                                        ((Node <| MusicNote 57)
+                            (Node <| MusicNote <| MidiNumber 65)
+                                ((Node <| MusicNote <| MidiNumber 64)
+                                    ((Node <| MusicNote <| MidiNumber 61)
+                                        ((Node <| MusicNote <| MidiNumber 57)
                                             Empty
-                                            (singleton <| MusicNote 58)
+                                            (singleton <| MusicNote <| MidiNumber 58)
                                         )
                                         Empty
                                     )
-                                    (singleton <| MusicNote 64)
+                                    (singleton <| MusicNote <| MidiNumber 64)
                                 )
-                                (singleton <| MusicNote 67)
+                                (singleton <| MusicNote <| MidiNumber 67)
                     in
                         Expect.equal
                             expected
@@ -827,29 +827,33 @@ bTree =
                         |> Expect.equal Empty
             , test "of fromListBy.1" <|
                 \() ->
-                    [MusicNote 57]
+                    [MusicNote <| MidiNumber 57]
                         |> BTree.fromListBy (MusicNote.sorter)
-                        |> Expect.equal (singleton <| MusicNote 57)
+                        |> Expect.equal (singleton <| MusicNote <| MidiNumber 57)
             , test "of fromListBy.2" <|
                 \() ->
-                    [MusicNote 57, MusicNote 59, MusicNote 60]
+                    [57, 59, 60]
+                        |> List.map (\i -> MusicNote <| MidiNumber i)
                         |> BTree.fromListBy (MusicNote.sorter)
-                        |> Expect.equal (Node (MusicNote 57) Empty (Node (MusicNote 59) Empty (singleton (MusicNote 60))))
+                        |> Expect.equal (Node (MusicNote <| MidiNumber 57) Empty (Node (MusicNote <| MidiNumber 59) Empty (singleton (MusicNote <| MidiNumber 60))))
             , test "of fromListBy.3" <|
                 \() ->
-                    [MusicNote 60, MusicNote 59, MusicNote 57]
+                    [60, 59, 57]
+                        |> List.map (\i -> MusicNote <| MidiNumber i)
                         |> BTree.fromListBy (MusicNote.sorter)
-                        |> Expect.equal (Node (MusicNote 60) (Node (MusicNote 59) (singleton (MusicNote 57)) Empty) Empty)
+                        |> Expect.equal (Node (MusicNote <| MidiNumber 60) (Node (MusicNote <| MidiNumber 59) (singleton (MusicNote <| MidiNumber 57)) Empty) Empty)
             , test "of fromListBy.4" <|
                 \() ->
-                    [MusicNote 60, MusicNote 57, MusicNote 59]
+                    [60, 57, 59]
+                        |> List.map (\i -> MusicNote <| MidiNumber i)
                         |> BTree.fromListBy (MusicNote.sorter)
-                        |> Expect.equal (Node (MusicNote 60) (Node (MusicNote 57) Empty (singleton (MusicNote 59))) Empty)
+                        |> Expect.equal (Node (MusicNote <| MidiNumber 60) (Node (MusicNote <| MidiNumber 57) Empty (singleton (MusicNote <| MidiNumber 59))) Empty)
             , test "of fromListBy.5" <|
                 \() ->
-                    [MusicNote 57, MusicNote 59, MusicNote 59]
+                    [57, 59, 59]
+                        |> List.map (\i -> MusicNote <| MidiNumber i)
                         |> BTree.fromListBy (MusicNote.sorter)
-                        |> Expect.equal (Node (MusicNote 57) Empty (Node (MusicNote 59) Empty (singleton (MusicNote 59))))
+                        |> Expect.equal (Node (MusicNote <| MidiNumber 57) Empty (Node (MusicNote <| MidiNumber 59) Empty (singleton (MusicNote <| MidiNumber 59))))
             ]
         , describe "BTree.fromListWith"
             [ test "of fromListWith.0" <|
@@ -1012,14 +1016,14 @@ bTree =
                 \() ->
                     let
                         target = Empty
-                        newValue = MusicNote 57
+                        newValue = MusicNote <| MidiNumber 57
                     in
                         Expect.equal (singleton newValue) (BTree.insertBy MusicNote.sorter newValue target)
             , test "of insertBy.1" <|
                  \() ->
                     let
-                        currentValue = MusicNote 59
-                        newValue = MusicNote 60
+                        currentValue = MusicNote <| MidiNumber 59
+                        newValue = MusicNote <| MidiNumber 60
                         target = singleton currentValue
                         newChild = singleton newValue
                     in
@@ -1027,8 +1031,8 @@ bTree =
             , test "of insertBy.2" <|
                  \() ->
                     let
-                        currentValue = MusicNote 59
-                        newValue = MusicNote 57
+                        currentValue = MusicNote <| MidiNumber 59
+                        newValue = MusicNote <| MidiNumber 57
                         target = singleton currentValue
                         newChild = singleton newValue
                     in
@@ -1036,8 +1040,8 @@ bTree =
             , test "of insertBy.3" <|
                  \() ->
                     let
-                        currentValue = MusicNote 59
-                        newValue = MusicNote 59
+                        currentValue = MusicNote <| MidiNumber 59
+                        newValue = MusicNote <| MidiNumber 59
                         target = singleton currentValue
                         newChild = singleton newValue
                     in
@@ -1495,19 +1499,19 @@ bTree =
                     Expect.equal (Empty) (BTree.deDuplicateBy (MusicNote.sorter) Empty)
             , test "of deDuplicateBy.1" <|
                 \() ->
-                    Expect.equal (singleton (MusicNote 57)) (BTree.deDuplicateBy (MusicNote.sorter) (singleton <| MusicNote 57))
+                    Expect.equal (singleton (MusicNote <| MidiNumber 57)) (BTree.deDuplicateBy (MusicNote.sorter) (singleton <| MusicNote <| MidiNumber 57))
             , test "of deDuplicateBy.2" <|
                 \() ->
                     let
                         expected =
-                            (Node <| MusicNote 64)
-                                (singleton <| MusicNote 65)
+                            (Node <| MusicNote <| MidiNumber 64)
+                                (singleton <| MusicNote <| MidiNumber 65)
                                 Empty
 
                         result = BTree.deDuplicateBy (MusicNote.sorter) <|
-                            (Node <| MusicNote 64)
-                                (singleton <| MusicNote 65)
-                                (singleton <| MusicNote 64)
+                            (Node <| MusicNote <| MidiNumber 64)
+                                (singleton <| MusicNote <| MidiNumber 65)
+                                (singleton <| MusicNote <| MidiNumber 64)
                     in
                         Expect.equal
                             expected
