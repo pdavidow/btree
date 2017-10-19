@@ -59,8 +59,10 @@ type Msg
     | RequestRandomTreesWithRandomInsertDirection
     | ReceiveRandomTreeInts (List Int)
     | ReceiveRandomTreeStrings (List String)
+    | ReceiveRandomTreeBools (List Bool)
     | ReceiveRandomPairsOfIntDirection (List (Int, Direction))
     | ReceiveRandomPairsOfStringDirection (List (String, Direction))
+    | ReceiveRandomPairsOfBoolDirection (List (Bool, Direction))
     | RequestRandomScalars
     | ReceiveRandomDelta (Int)
     | ReceiveRandomExponent (Int)
@@ -948,6 +950,7 @@ update msg model =
             } ! [ Cmd.batch
                     [ Random.generate ReceiveRandomTreeInts generatorTreeInts
                     , Random.generate ReceiveRandomTreeStrings generatorTreeStrings
+                    , Random.generate ReceiveRandomTreeBools generatorTreeBools
                     ]
                 ]
 
@@ -956,6 +959,7 @@ update msg model =
                 [ Cmd.batch
                     [ Random.generate ReceiveRandomPairsOfIntDirection generatorPairsOfIntDirection
                     , Random.generate ReceiveRandomPairsOfStringDirection generatorPairsOfStringDirection
+                    , Random.generate ReceiveRandomPairsOfBoolDirection generatorPairsOfBoolDirection
                     ]
                 ]
 
@@ -971,7 +975,7 @@ update msg model =
             let
                 intTree = list
                     |> List.map toMaybeSafeInt
-                    |> BTree.fromListAsIsBy  model.directionForRandom
+                    |> BTree.fromListAsIsBy model.directionForRandom
                     |> BTree.map IntNodeVal
                     |> BTreeInt
 
@@ -988,13 +992,24 @@ update msg model =
 
         ReceiveRandomTreeStrings list ->
             let
-                stringTree = list
-                    |> BTree.fromListAsIsBy  model.directionForRandom
+                tree = list
+                    |> BTree.fromListAsIsBy model.directionForRandom
                     |> BTree.map StringNodeVal
                     |> BTreeString
             in
                 { model
-                | stringTree = stringTree
+                | stringTree = tree
+                } ! []
+
+        ReceiveRandomTreeBools list ->
+            let
+                tree = list
+                    |> BTree.fromListAsIsBy model.directionForRandom
+                    |> BTree.map (\b -> BoolNodeVal <| Just b)
+                    |> BTreeBool
+            in
+                { model
+                | boolTree = tree
                 } ! []
 
         ReceiveRandomPairsOfIntDirection list ->
@@ -1020,13 +1035,24 @@ update msg model =
 
         ReceiveRandomPairsOfStringDirection list ->
             let
-                stringTree = list
+                tree = list
                     |> BTree.fromListAsIs_directed
                     |> BTree.map StringNodeVal
                     |> BTreeString
             in
                 { model
-                | stringTree = stringTree
+                | stringTree = tree
+                } ! []
+
+        ReceiveRandomPairsOfBoolDirection list ->
+            let
+                tree = list
+                    |> BTree.fromListAsIs_directed
+                    |> BTree.map (\b -> BoolNodeVal <| Just b)
+                    |> BTreeBool
+            in
+                { model
+                | boolTree = tree
                 } ! []
 
         ReceiveRandomDelta i ->
@@ -1253,6 +1279,31 @@ generatorPairsOfStringDirection =
                 Random.list length <| Random.pair (generatorTreeString) (Random.map fn Random.bool)
     in
         Random.andThen randomPairsOfStringDirection generatorRandomListLength
+
+
+generatorTreeBool : Random.Generator Bool
+generatorTreeBool =
+    Random.bool
+
+
+generatorTreeBools : Random.Generator (List Bool)
+generatorTreeBools =
+    let
+        randomBools : Int -> Random.Generator (List Bool)
+        randomBools length =
+            Random.list length generatorTreeBool
+    in
+        Random.andThen randomBools generatorRandomListLength
+
+
+generatorPairsOfBoolDirection : Random.Generator (List (Bool, Direction))
+generatorPairsOfBoolDirection =
+    let
+        randomPairsOfBoolDirection : Int -> Random.Generator (List (Bool, Direction))
+        randomPairsOfBoolDirection length =
+            Random.list length <| Random.pair (generatorTreeBool) (Random.map boolToDirection Random.bool)
+    in
+        Random.andThen randomPairsOfBoolDirection generatorRandomListLength
 
 
 waitPriorToCheckingIfMouseEnteredDropdown : Msg -> Model -> (Model, Cmd Msg)
