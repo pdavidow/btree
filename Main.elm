@@ -10,6 +10,8 @@ import Maybe.Extra exposing (unwrap)
 import List.Extra exposing (last)
 import Random exposing (int, bool, pair, list, andThen, generate)
 import Random.Pcg exposing (Seed, initialSeed, step)
+import Random.String exposing (rangeLengthString)
+import Random.Char exposing (english)
 import Uuid exposing (Uuid, uuidGenerator)
 import Lazy exposing (lazy)
 import BigInt exposing (fromInt)
@@ -53,10 +55,12 @@ type Msg
     | RemoveDuplicates
     | Delta String
     | Exponent String
-    | RequestRandomInts (Direction)
-    | RequestRandomPairsIntDirection
-    | ReceiveRandomInts (List Int)
-    | ReceiveRandomPairsIntDirection (List (Int, Direction))
+    | RequestRandomTrees (Direction)
+    | RequestRandomTreesWithRandomInsertDirection
+    | ReceiveRandomTreeInts (List Int)
+    | ReceiveRandomTreeStrings (List String)
+    | ReceiveRandomPairsOfIntDirection (List (Int, Direction))
+    | ReceiveRandomPairsOfStringDirection (List (String, Direction))
     | RequestRandomScalars
     | ReceiveRandomDelta (Int)
     | ReceiveRandomExponent (Int)
@@ -182,7 +186,10 @@ initialModel =
     }
 
 
+minRandomInt = 1
 maxRandomInt = 999
+minRandomTreeStringLength = 3
+maxRandomTreeStringLength = 10
 minRandomListLength = 3
 maxRandomListLength = 12
 
@@ -517,7 +524,7 @@ viewDashboardTop model =
                     , onMouseEnter <| MouseEnteredButton Random
                     , onMouseLeave <| MouseLeftButton Random
                 ]
-                [ text "Random Ints" ]
+                [ text "Random Trees" ]
             , div
                 [ classes
                      [ T.absolute
@@ -536,7 +543,7 @@ viewDashboardTop model =
                         , w_100
                         , T.tl
                         ]
-                    , onClick RequestRandomPairsIntDirection
+                    , onClick RequestRandomTreesWithRandomInsertDirection
                     ]
                     [text "Insert Random L/R"]
                 , div -- divider line
@@ -556,7 +563,7 @@ viewDashboardTop model =
                         , w_100
                         , T.tl
                         ]
-                    , onClick <| RequestRandomInts Left
+                    , onClick <| RequestRandomTrees Left
                     ]
                     [text "Insert Left"]
                 , button
@@ -567,7 +574,7 @@ viewDashboardTop model =
                         , w_100
                         , T.tl
                         ]
-                    , onClick <| RequestRandomInts Right
+                    , onClick <| RequestRandomTrees Right
                     ]
                     [text "Insert Right"]
                 ]
@@ -935,36 +942,22 @@ update msg model =
         Exponent s ->
             { model | exponent = intFromInput s } ! []
 
-        RequestRandomInts direction ->
-            let
-                randomInts : Int -> Random.Generator (List Int)
-                randomInts length =
-                    Random.list length (Random.int 1 maxRandomInt)
+        RequestRandomTrees direction ->
+            { model
+            | directionForRandom = direction
+            } ! [ Cmd.batch
+                    [ Random.generate ReceiveRandomTreeInts generatorTreeInts
+                    , Random.generate ReceiveRandomTreeStrings generatorTreeStrings
+                    ]
+                ]
 
-                generatorInts : Random.Generator (List Int)
-                generatorInts =
-                    Random.andThen randomInts generatorRandomListLength
-            in
-                { model
-                | directionForRandom = direction
-                } ! [Random.generate ReceiveRandomInts generatorInts]
-
-        RequestRandomPairsIntDirection ->
-            let
-                randomPairsIntDirection : Int -> Random.Generator (List (Int, Direction))
-                randomPairsIntDirection length =
-                    let
-                        fn = \bool -> case bool of
-                            True -> Right
-                            False -> Left
-                    in
-                        Random.list length <| Random.pair (Random.int 1 maxRandomInt) (Random.map fn Random.bool)
-
-                generatorPairsIntDirection : Random.Generator (List (Int, Direction))
-                generatorPairsIntDirection =
-                    Random.andThen randomPairsIntDirection generatorRandomListLength
-            in
-                model ! [Random.generate ReceiveRandomPairsIntDirection generatorPairsIntDirection]
+        RequestRandomTreesWithRandomInsertDirection ->
+            model !
+                [ Cmd.batch
+                    [ Random.generate ReceiveRandomPairsOfIntDirection generatorPairsOfIntDirection
+                    , Random.generate ReceiveRandomPairsOfStringDirection generatorPairsOfStringDirection
+                    ]
+                ]
 
         RequestRandomScalars ->
             model !
@@ -974,7 +967,7 @@ update msg model =
                     ]
                 ]
 
-        ReceiveRandomInts list ->
+        ReceiveRandomTreeInts list ->
             let
                 intTree = list
                     |> List.map toMaybeSafeInt
@@ -993,7 +986,18 @@ update msg model =
                 , bigIntTree = bigIntTree
                 } ! []
 
-        ReceiveRandomPairsIntDirection list ->
+        ReceiveRandomTreeStrings list ->
+            let
+                stringTree = list
+                    |> BTree.fromListAsIsBy  model.directionForRandom
+                    |> BTree.map StringNodeVal
+                    |> BTreeString
+            in
+                { model
+                | stringTree = stringTree
+                } ! []
+
+        ReceiveRandomPairsOfIntDirection list ->
             let
                 fn = \transformFn (int, direction) -> (transformFn int, direction)
 
@@ -1012,6 +1016,17 @@ update msg model =
                 { model
                 | intTree = intTree
                 , bigIntTree = bigIntTree
+                } ! []
+
+        ReceiveRandomPairsOfStringDirection list ->
+            let
+                stringTree = list
+                    |> BTree.fromListAsIs_directed
+                    |> BTree.map StringNodeVal
+                    |> BTreeString
+            in
+                { model
+                | stringTree = stringTree
                 } ! []
 
         ReceiveRandomDelta i ->
@@ -1168,6 +1183,78 @@ update msg model =
                 } ! [port_disconnectAll ()]
 
 
+boolToDirection : Bool -> Direction
+boolToDirection bool =
+    case bool of
+        True -> Right
+        False -> Left
+
+
+generatorRandomListLength : Random.Generator Int
+generatorRandomListLength =
+    Random.int minRandomListLength maxRandomListLength
+
+
+generatorTreeInt : Random.Generator Int
+generatorTreeInt =
+    Random.int
+        minRandomInt
+        maxRandomInt
+
+
+generatorTreeInts : Random.Generator (List Int)
+generatorTreeInts =
+    let
+        randomInts : Int -> Random.Generator (List Int)
+        randomInts length =
+            Random.list length generatorTreeInt
+    in
+        Random.andThen randomInts generatorRandomListLength
+
+
+generatorPairsOfIntDirection : Random.Generator (List (Int, Direction))
+generatorPairsOfIntDirection =
+    let
+        randomPairsOfIntDirection : Int -> Random.Generator (List (Int, Direction))
+        randomPairsOfIntDirection length =
+            Random.list length <| Random.pair (generatorTreeInt) (Random.map boolToDirection Random.bool)
+    in
+        Random.andThen randomPairsOfIntDirection generatorRandomListLength
+
+
+generatorTreeString : Random.Generator String
+generatorTreeString =
+    Random.String.rangeLengthString
+        minRandomTreeStringLength
+        maxRandomTreeStringLength
+        Random.Char.english
+
+
+generatorTreeStrings : Random.Generator (List String)
+generatorTreeStrings =
+    let
+        randomStrings : Int -> Random.Generator (List String)
+        randomStrings length =
+            Random.list length generatorTreeString
+    in
+        Random.andThen randomStrings generatorRandomListLength
+
+
+generatorPairsOfStringDirection : Random.Generator (List (String, Direction))
+generatorPairsOfStringDirection =
+    let
+        randomPairsOfStringDirection : Int -> Random.Generator (List (String, Direction))
+        randomPairsOfStringDirection length =
+            let
+                fn = \bool -> case bool of
+                    True -> Right
+                    False -> Left
+            in
+                Random.list length <| Random.pair (generatorTreeString) (Random.map fn Random.bool)
+    in
+        Random.andThen randomPairsOfStringDirection generatorRandomListLength
+
+
 waitPriorToCheckingIfMouseEnteredDropdown : Msg -> Model -> (Model, Cmd Msg)
 waitPriorToCheckingIfMouseEnteredDropdown msg model =
     let
@@ -1175,11 +1262,6 @@ waitPriorToCheckingIfMouseEnteredDropdown msg model =
             model.menuDropdownDebouncer |> Debouncer.bounce { id = toString msg, msgToSend = msg }
     in
         { model | menuDropdownDebouncer = debouncer } ! [debouncerCmd |> Cmd.map DebouncerSelfMsg]
-
-
-generatorRandomListLength : Random.Generator Int
-generatorRandomListLength =
-    Random.int minRandomListLength maxRandomListLength
 
 
 cacheAllTrees : Model -> Model
