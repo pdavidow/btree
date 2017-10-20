@@ -26,7 +26,7 @@ import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, no
 import BTree exposing (BTree(..), Direction(..), TraversalOrder(..), fromListBy, insertAsIsBy, fromListAsIsBy, fromListAsIs_directed, singleton, toTreeDiagramTree)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import BTreeView exposing (bTreeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
-import MusicNote exposing (MusicNote(..), MidiNumber(..), mbSorter)
+import MusicNote exposing (MusicNote(..), MidiNumber(..), mbSorter, minMidiNumber, maxMidiNumber)
 import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter)
 import TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote, donePlayNotes)
 import TreePlayerParams exposing (defaultTreePlayerParams)
@@ -57,9 +57,11 @@ type Msg
     | Exponent String
     | RequestRandomTrees (Direction)
     | RequestRandomTreesWithRandomInsertDirection
+    | ReceiveRandomTreeMusicNotes (List MusicNote)
     | ReceiveRandomTreeInts (List Int)
     | ReceiveRandomTreeStrings (List String)
     | ReceiveRandomTreeBools (List Bool)
+    | ReceiveRandomPairsOfMusicNoteDirection (List (MusicNote, Direction))
     | ReceiveRandomPairsOfIntDirection (List (Int, Direction))
     | ReceiveRandomPairsOfStringDirection (List (String, Direction))
     | ReceiveRandomPairsOfBoolDirection (List (Bool, Direction))
@@ -221,14 +223,29 @@ generateIds count startSeed =
         ( ids, currentSeed )
 
 
-idedMusicNoteTree : Seed -> (BTreeUniformType, Seed)
-idedMusicNoteTree startSeed =
+idedMusicNoteTree : Seed -> (List MusicNotePlayer -> BTree MusicNotePlayer) -> List MusicNote -> (BTreeUniformType, Seed)
+idedMusicNoteTree startSeed listToTree notes =
     let
-        notes = List.map (\i -> MusicNote <| MidiNumber i) [65, 64, 61, 64, 67, 57, 58]
         ( ids, endSeed ) = generateIds (List.length notes) startSeed
+        fn = \id note -> MusicNotePlayer.idedOn (Just id) note
 
-        tree = List.map2 (\id note -> MusicNotePlayer.idedOn (Just id) note) ids notes
-            |> BTree.fromListBy MusicNotePlayer.sorter
+        tree = List.map2 fn ids notes
+            |> listToTree
+            |> BTree.map (\player -> MusicNoteNodeVal player)
+            |> BTreeMusicNotePlayer defaultTreePlayerParams
+    in
+        ( tree, endSeed )
+
+
+-- refactor
+idedMusicNoteTree2 : Seed -> (List (MusicNotePlayer, Direction) -> BTree MusicNotePlayer) -> List (MusicNote, Direction) -> (BTreeUniformType, Seed)
+idedMusicNoteTree2 startSeed directedListToTree directedNotes =
+    let
+        ( ids, endSeed ) = generateIds (List.length directedNotes) startSeed
+        fn = \id (note, direction) -> (MusicNotePlayer.idedOn (Just id) note, direction)
+
+        tree = List.map2 fn ids directedNotes
+            |> directedListToTree
             |> BTree.map (\player -> MusicNoteNodeVal player)
             |> BTreeMusicNotePlayer defaultTreePlayerParams
     in
@@ -238,9 +255,20 @@ idedMusicNoteTree startSeed =
 init : Int -> ( Model, Cmd Msg )
 init jsSeed =
     let
-        ( musicNoteTree, uuidSeed ) = idedMusicNoteTree (initialSeed jsSeed)
+        startSeed : Seed
+        startSeed = initialSeed jsSeed
+
+        listToTree : List MusicNotePlayer -> BTree MusicNotePlayer
+        listToTree = BTree.fromListBy MusicNotePlayer.sorter
+
+        initialMusicNotes : List MusicNote
+        initialMusicNotes =
+            [65, 64, 61, 64, 67, 57, 58]
+                |> List.map (\i -> MusicNote <| MidiNumber i)
+
+        ( musicNoteTree, uuidSeed ) = idedMusicNoteTree startSeed listToTree initialMusicNotes
     in
-        (   {initialModel
+        (   { initialModel
             | initialMusicNoteTree = musicNoteTree
             , musicNoteTree = musicNoteTree
             , uuidSeed = uuidSeed
@@ -948,7 +976,8 @@ update msg model =
             { model
             | directionForRandom = direction
             } ! [ Cmd.batch
-                    [ Random.generate ReceiveRandomTreeInts generatorTreeInts
+                    [ Random.generate ReceiveRandomTreeMusicNotes generatorTreeMusicNotes
+                    , Random.generate ReceiveRandomTreeInts generatorTreeInts
                     , Random.generate ReceiveRandomTreeStrings generatorTreeStrings
                     , Random.generate ReceiveRandomTreeBools generatorTreeBools
                     ]
@@ -957,7 +986,8 @@ update msg model =
         RequestRandomTreesWithRandomInsertDirection ->
             model !
                 [ Cmd.batch
-                    [ Random.generate ReceiveRandomPairsOfIntDirection generatorPairsOfIntDirection
+                    [ Random.generate ReceiveRandomPairsOfMusicNoteDirection generatorPairsOfMusicNoteDirection
+                    , Random.generate ReceiveRandomPairsOfIntDirection generatorPairsOfIntDirection
                     , Random.generate ReceiveRandomPairsOfStringDirection generatorPairsOfStringDirection
                     , Random.generate ReceiveRandomPairsOfBoolDirection generatorPairsOfBoolDirection
                     ]
@@ -970,6 +1000,18 @@ update msg model =
                     , Random.generate ReceiveRandomExponent (Random.int 1 10)
                     ]
                 ]
+
+        ReceiveRandomTreeMusicNotes list ->
+            let
+                listToTree : List a -> BTree a
+                listToTree = BTree.fromListAsIsBy model.directionForRandom
+
+                ( musicNoteTree, uuidSeed ) = idedMusicNoteTree model.uuidSeed listToTree list
+            in
+                { model
+                | musicNoteTree = musicNoteTree
+                , uuidSeed = uuidSeed
+                } ! []
 
         ReceiveRandomTreeInts list ->
             let
@@ -992,24 +1034,36 @@ update msg model =
 
         ReceiveRandomTreeStrings list ->
             let
-                tree = list
+                stringTree = list
                     |> BTree.fromListAsIsBy model.directionForRandom
                     |> BTree.map StringNodeVal
                     |> BTreeString
             in
                 { model
-                | stringTree = tree
+                | stringTree = stringTree
                 } ! []
 
         ReceiveRandomTreeBools list ->
             let
-                tree = list
+                boolTree = list
                     |> BTree.fromListAsIsBy model.directionForRandom
                     |> BTree.map (\b -> BoolNodeVal <| Just b)
                     |> BTreeBool
             in
                 { model
-                | boolTree = tree
+                | boolTree = boolTree
+                } ! []
+
+        ReceiveRandomPairsOfMusicNoteDirection list ->
+            let
+                listToTree : List (a, Direction) -> BTree a
+                listToTree = BTree.fromListAsIs_directed
+
+                ( musicNoteTree, uuidSeed ) = idedMusicNoteTree2 model.uuidSeed listToTree list
+            in
+                { model
+                | musicNoteTree = musicNoteTree
+                , uuidSeed = uuidSeed
                 } ! []
 
         ReceiveRandomPairsOfIntDirection list ->
@@ -1210,8 +1264,8 @@ update msg model =
 
 
 boolToDirection : Bool -> Direction
-boolToDirection bool =
-    case bool of
+boolToDirection b =
+    case b of
         True -> Right
         False -> Left
 
@@ -1219,6 +1273,35 @@ boolToDirection bool =
 generatorRandomListLength : Random.Generator Int
 generatorRandomListLength =
     Random.int minRandomListLength maxRandomListLength
+
+
+generatorTreeMusicNote : Random.Generator MusicNote
+generatorTreeMusicNote =
+    let
+        (MidiNumber min) = minMidiNumber
+        (MidiNumber max) = maxMidiNumber
+    in
+        (Random.map (\i -> MusicNote <| MidiNumber i) <| Random.int min max)
+
+
+generatorTreeMusicNotes : Random.Generator (List MusicNote)
+generatorTreeMusicNotes =
+    let
+        randomMusicNotes : Int -> Random.Generator (List MusicNote)
+        randomMusicNotes length =
+            Random.list length generatorTreeMusicNote
+    in
+        Random.andThen randomMusicNotes generatorRandomListLength
+
+
+generatorPairsOfMusicNoteDirection : Random.Generator (List (MusicNote, Direction))
+generatorPairsOfMusicNoteDirection =
+    let
+        randomPairsOfMusicNoteDirection : Int -> Random.Generator (List (MusicNote, Direction))
+        randomPairsOfMusicNoteDirection length =
+            Random.list length <| Random.pair (generatorTreeMusicNote) (Random.map boolToDirection Random.bool)
+    in
+        Random.andThen randomPairsOfMusicNoteDirection generatorRandomListLength
 
 
 generatorTreeInt : Random.Generator Int

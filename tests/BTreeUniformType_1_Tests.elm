@@ -1,6 +1,6 @@
 module BTreeUniformType_1_Tests exposing (..)
 
-import BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, nodeValOperate, depth, sumInt, sort, deDuplicate, isAllNothing, setTreePlayerParams)
+import BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, setTreePlayerParams)
 
 import BTree exposing (BTree(..), Direction(..), fromIntList, fromList, fromListBy, singleton, map)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))

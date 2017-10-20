@@ -1,4 +1,4 @@
-module MusicNote exposing (MusicNote(..), Freq(..), MidiNumber(..), sorter, mbSorter, (:+:), (:-:), displayString, toFreq)
+module MusicNote exposing (MusicNote(..), Freq(..), MidiNumber(..), sorter, mbSorter, (:+:), (:-:), displayString, toFreq, minMidiNumber, maxMidiNumber)
 
 -- http://newt.phys.unsw.edu.au/jw/notes.html
 
