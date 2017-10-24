@@ -30,7 +30,7 @@ import Ports exposing (port_startPlayNote, port_donePlayNote, port_donePlayNotes
 import Lib exposing (IntFlex(..))
 import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 import NodeValueOperation exposing (Operation(..))
-import Generator exposing (generatorDelta, generatorExponent, generateIds, generatorTreeMusicNotes, generatorIntNodes, generatorBigIntNodes, generatorStringNodes, generatorBoolNodes, generatorNodeVarieties, generatorPairsOfMusicNoteDirection, generatorPairsOfIntNode_Direction, generatorPairsOfBigIntNode_Direction, generatorPairsOfStringNode_Direction, generatorPairsOfBoolNode_Direction, generatorPairsOfNodeVariety_Direction)
+import Generator exposing (generatorDelta, generatorExponent, generateIds, generatorTreeMusicNotes, generatorIntNodes, generatorBigIntNodes, generatorStringNodes, generatorBoolNodes, generatorNodeVarieties, generatorTuplesOfMusicNoteDirection, generatorTuplesOfIntNode_Direction, generatorTuplesOfBigIntNode_Direction, generatorTuplesOfStringNode_Direction, generatorTuplesOfBoolNode_Direction, generatorTuplesOfNodeVariety_Direction)
 
 ------------------------------------------------
 
@@ -61,12 +61,12 @@ type Msg
     | ReceiveRandomStringNodes (List StringNode)
     | ReceiveRandomBoolNodes (List BoolNode)
     | ReceiveRandomNodeVarieties (List NodeVariety)
-    | ReceiveRandomPairsOfMusicNoteDirection (List (MusicNote, Direction))
-    | ReceiveRandomPairsOfIntNode_Direction (List (IntNode, Direction))
-    | ReceiveRandomPairsOfBigIntNode_Direction (List (BigIntNode, Direction))
-    | ReceiveRandomPairsOfStringNode_Direction (List (StringNode, Direction))
-    | ReceiveRandomPairsOfBoolNode_Direction (List (BoolNode, Direction))
-    | ReceiveRandomPairsOfNodeVariety_Direction (List (NodeVariety, Direction))
+    | ReceiveRandomTuplesOfMusicNoteDirection (List (MusicNote, Direction))
+    | ReceiveRandomTuplesOfIntNode_Direction (List (IntNode, Direction))
+    | ReceiveRandomTuplesOfBigIntNode_Direction (List (BigIntNode, Direction))
+    | ReceiveRandomTuplesOfStringNode_Direction (List (StringNode, Direction))
+    | ReceiveRandomTuplesOfBoolNode_Direction (List (BoolNode, Direction))
+    | ReceiveRandomTuplesOfNodeVariety_Direction (List (NodeVariety, Direction))
     | RequestRandomScalars
     | ReceiveRandomDelta (Int)
     | ReceiveRandomExponent (Int)
@@ -957,12 +957,12 @@ update msg model =
         RequestRandomTreesWithRandomInsertDirection ->
             model !
                 [ Cmd.batch
-                    [ Random.generate ReceiveRandomPairsOfMusicNoteDirection generatorPairsOfMusicNoteDirection
-                    , Random.generate ReceiveRandomPairsOfIntNode_Direction generatorPairsOfIntNode_Direction
-                    , Random.generate ReceiveRandomPairsOfBigIntNode_Direction generatorPairsOfBigIntNode_Direction
-                    , Random.generate ReceiveRandomPairsOfStringNode_Direction generatorPairsOfStringNode_Direction
-                    , Random.generate ReceiveRandomPairsOfBoolNode_Direction generatorPairsOfBoolNode_Direction
-                    , Random.generate ReceiveRandomPairsOfNodeVariety_Direction generatorPairsOfNodeVariety_Direction
+                    [ Random.generate ReceiveRandomTuplesOfMusicNoteDirection generatorTuplesOfMusicNoteDirection
+                    , Random.generate ReceiveRandomTuplesOfIntNode_Direction generatorTuplesOfIntNode_Direction
+                    , Random.generate ReceiveRandomTuplesOfBigIntNode_Direction generatorTuplesOfBigIntNode_Direction
+                    , Random.generate ReceiveRandomTuplesOfStringNode_Direction generatorTuplesOfStringNode_Direction
+                    , Random.generate ReceiveRandomTuplesOfBoolNode_Direction generatorTuplesOfBoolNode_Direction
+                    , Random.generate ReceiveRandomTuplesOfNodeVariety_Direction generatorTuplesOfNodeVariety_Direction
                     ]
                 ]
 
@@ -1036,7 +1036,7 @@ update msg model =
                 | variedTree = tree
                 } ! []
 
-        ReceiveRandomPairsOfMusicNoteDirection list ->
+        ReceiveRandomTuplesOfMusicNoteDirection list ->
             let
                 listToTree : List (a, Direction) -> BTree a
                 listToTree = BTree.fromListAsIs_directed
@@ -1048,7 +1048,7 @@ update msg model =
                 , uuidSeed = uuidSeed
                 } ! []
 
-        ReceiveRandomPairsOfIntNode_Direction list ->
+        ReceiveRandomTuplesOfIntNode_Direction list ->
             let
                 tree = list
                     |> BTree.fromListAsIs_directed
@@ -1058,7 +1058,7 @@ update msg model =
                 | intTree = tree
                 } ! []
 
-        ReceiveRandomPairsOfBigIntNode_Direction list ->
+        ReceiveRandomTuplesOfBigIntNode_Direction list ->
             let
                 tree = list
                     |> BTree.fromListAsIs_directed
@@ -1068,7 +1068,7 @@ update msg model =
                 | bigIntTree = tree
                 } ! []
 
-        ReceiveRandomPairsOfStringNode_Direction list ->
+        ReceiveRandomTuplesOfStringNode_Direction list ->
             let
                 tree = list
                     |> BTree.fromListAsIs_directed
@@ -1078,7 +1078,7 @@ update msg model =
                 | stringTree = tree
                 } ! []
 
-        ReceiveRandomPairsOfBoolNode_Direction list ->
+        ReceiveRandomTuplesOfBoolNode_Direction list ->
             let
                 tree = list
                     |> BTree.fromListAsIs_directed
@@ -1088,7 +1088,7 @@ update msg model =
                 | boolTree = tree
                 } ! []
 
-        ReceiveRandomPairsOfNodeVariety_Direction list ->
+        ReceiveRandomTuplesOfNodeVariety_Direction list ->
             let
                 tree = list
                     |> BTree.fromListAsIs_directed

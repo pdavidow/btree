@@ -1,4 +1,4 @@
-module Generator exposing (generatorDelta, generatorExponent, generateIds, generatorTreeMusicNotes, generatorIntNodes, generatorBigIntNodes, generatorStringNodes, generatorBoolNodes, generatorNodeVarieties, generatorPairsOfMusicNoteDirection, generatorPairsOfIntNode_Direction, generatorPairsOfBigIntNode_Direction, generatorPairsOfStringNode_Direction, generatorPairsOfBoolNode_Direction, generatorPairsOfNodeVariety_Direction)
+module Generator exposing (generatorDelta, generatorExponent, generateIds, generatorTreeMusicNotes, generatorIntNodes, generatorBigIntNodes, generatorStringNodes, generatorBoolNodes, generatorNodeVarieties, generatorTuplesOfMusicNoteDirection, generatorTuplesOfIntNode_Direction, generatorTuplesOfBigIntNode_Direction, generatorTuplesOfStringNode_Direction, generatorTuplesOfBoolNode_Direction, generatorTuplesOfNodeVariety_Direction)
 
 import Maybe.Extra exposing (unwrap)
 import List.Extra exposing (last)
@@ -233,18 +233,18 @@ generatorNodeVarieties =
         Random.andThen nodes generatorRandomListLength
 
 
-generatorPairsOfMusicNoteDirection : Random.Generator (List (MusicNote, Direction))
-generatorPairsOfMusicNoteDirection =
+generatorTuplesOfMusicNoteDirection : Random.Generator (List (MusicNote, Direction))
+generatorTuplesOfMusicNoteDirection =
     let
-        randomPairsOfMusicNoteDirection : Int -> Random.Generator (List (MusicNote, Direction))
-        randomPairsOfMusicNoteDirection length =
+        randomTuplesOfMusicNoteDirection : Int -> Random.Generator (List (MusicNote, Direction))
+        randomTuplesOfMusicNoteDirection length =
             Random.list length <| Random.pair (generatorTreeMusicNote) (Random.map boolToDirection Random.bool)
     in
-        Random.andThen randomPairsOfMusicNoteDirection generatorRandomListLength
+        Random.andThen randomTuplesOfMusicNoteDirection generatorRandomListLength
 
 
-generatorPairsOfIntNode_Direction : Random.Generator (List (IntNode, Direction))
-generatorPairsOfIntNode_Direction =
+generatorTuplesOfIntNode_Direction : Random.Generator (List (IntNode, Direction))
+generatorTuplesOfIntNode_Direction =
     let
         pairs : Int -> Random.Generator (List (IntNode, Direction))
         pairs length =
@@ -253,8 +253,8 @@ generatorPairsOfIntNode_Direction =
         Random.andThen pairs generatorRandomListLength
 
 
-generatorPairsOfBigIntNode_Direction : Random.Generator (List (BigIntNode, Direction))
-generatorPairsOfBigIntNode_Direction =
+generatorTuplesOfBigIntNode_Direction : Random.Generator (List (BigIntNode, Direction))
+generatorTuplesOfBigIntNode_Direction =
     let
         pairs : Int -> Random.Generator (List (BigIntNode, Direction))
         pairs length =
@@ -263,9 +263,9 @@ generatorPairsOfBigIntNode_Direction =
         Random.andThen pairs generatorRandomListLength
 
 
-generatorPairsOfStringNode_Direction : Random.Generator (List (StringNode, Direction))
-generatorPairsOfStringNode_Direction =
-    let --todo global rename pair -> tuple...
+generatorTuplesOfStringNode_Direction : Random.Generator (List (StringNode, Direction))
+generatorTuplesOfStringNode_Direction =
+    let
         pairs : Int -> Random.Generator (List (StringNode, Direction))
         pairs length =
             Random.list length <| Random.pair (generatorStringNode) (Random.map boolToDirection Random.bool)
@@ -273,8 +273,8 @@ generatorPairsOfStringNode_Direction =
         Random.andThen pairs generatorRandomListLength
 
 
-generatorPairsOfBoolNode_Direction : Random.Generator (List (BoolNode, Direction))
-generatorPairsOfBoolNode_Direction =
+generatorTuplesOfBoolNode_Direction : Random.Generator (List (BoolNode, Direction))
+generatorTuplesOfBoolNode_Direction =
     let
         pairs : Int -> Random.Generator (List (BoolNode, Direction))
         pairs length =
@@ -283,8 +283,8 @@ generatorPairsOfBoolNode_Direction =
         Random.andThen pairs generatorRandomListLength
 
 
-generatorPairsOfNodeVariety_Direction : Random.Generator (List (NodeVariety, Direction))
-generatorPairsOfNodeVariety_Direction =
+generatorTuplesOfNodeVariety_Direction : Random.Generator (List (NodeVariety, Direction))
+generatorTuplesOfNodeVariety_Direction =
     let
         pairs : Int -> Random.Generator (List (NodeVariety, Direction))
         pairs length =
