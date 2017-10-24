@@ -7,7 +7,7 @@ import Tachyons exposing (classes, tachyons)
 import Tachyons.Classes as T exposing (..)
 
 import Maybe.Extra exposing (unwrap)
-import Random exposing (int, bool, pair, list, andThen, generate)
+import Random exposing (generate)
 import Random.Pcg exposing (Seed, initialSeed)
 import Uuid exposing (Uuid, uuidGenerator)
 import BigInt exposing (BigInt, fromInt)
@@ -22,15 +22,15 @@ import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, no
 import BTree exposing (BTree(..), Direction(..), TraversalOrder(..), fromListBy, insertAsIsBy, fromListAsIsBy, fromListAsIs_directed, singleton, toTreeDiagramTree)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import BTreeView exposing (bTreeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
-import MusicNote exposing (MusicNote(..), MidiNumber(..), mbSorter, minMidiNumber, maxMidiNumber)
-import MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter)
+import MusicNote exposing (MusicNote(..), MidiNumber(..), mbSorter)
+import MusicNotePlayer exposing (MusicNotePlayer(..), sorter)
 import TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote, donePlayNotes)
 import TreePlayerParams exposing (defaultTreePlayerParams)
 import Ports exposing (port_startPlayNote, port_donePlayNote, port_donePlayNotes, port_disconnectAll)
-import Lib exposing (IntFlex(..), lazyUnwrap)
+import Lib exposing (IntFlex(..))
 import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 import NodeValueOperation exposing (Operation(..))
-import Generator exposing (generateIds, generatorTreeMusicNotes, generatorIntNodes, generatorBigIntNodes, generatorStringNodes, generatorBoolNodes, generatorNodeVarieties, generatorPairsOfMusicNoteDirection, generatorPairsOfIntNode_Direction, generatorPairsOfBigIntNode_Direction, generatorPairsOfStringNode_Direction, generatorPairsOfBoolNode_Direction, generatorPairsOfNodeVariety_Direction)
+import Generator exposing (generatorDelta, generatorExponent, generateIds, generatorTreeMusicNotes, generatorIntNodes, generatorBigIntNodes, generatorStringNodes, generatorBoolNodes, generatorNodeVarieties, generatorPairsOfMusicNoteDirection, generatorPairsOfIntNode_Direction, generatorPairsOfBigIntNode_Direction, generatorPairsOfStringNode_Direction, generatorPairsOfBoolNode_Direction, generatorPairsOfNodeVariety_Direction)
 
 ------------------------------------------------
 
@@ -969,8 +969,8 @@ update msg model =
         RequestRandomScalars ->
             model !
                 [ Cmd.batch
-                    [ Random.generate ReceiveRandomDelta (Random.int 1 100)
-                    , Random.generate ReceiveRandomExponent (Random.int 1 10)
+                    [ Random.generate ReceiveRandomDelta generatorDelta
+                    , Random.generate ReceiveRandomExponent generatorExponent
                     ]
                 ]
 

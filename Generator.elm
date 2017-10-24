@@ -1,4 +1,4 @@
-module Generator exposing (generateIds, generatorTreeMusicNotes, generatorIntNodes, generatorBigIntNodes, generatorStringNodes, generatorBoolNodes, generatorNodeVarieties, generatorPairsOfMusicNoteDirection, generatorPairsOfIntNode_Direction, generatorPairsOfBigIntNode_Direction, generatorPairsOfStringNode_Direction, generatorPairsOfBoolNode_Direction, generatorPairsOfNodeVariety_Direction)
+module Generator exposing (generatorDelta, generatorExponent, generateIds, generatorTreeMusicNotes, generatorIntNodes, generatorBigIntNodes, generatorStringNodes, generatorBoolNodes, generatorNodeVarieties, generatorPairsOfMusicNoteDirection, generatorPairsOfIntNode_Direction, generatorPairsOfBigIntNode_Direction, generatorPairsOfStringNode_Direction, generatorPairsOfBoolNode_Direction, generatorPairsOfNodeVariety_Direction)
 
 import Maybe.Extra exposing (unwrap)
 import List.Extra exposing (last)
@@ -18,14 +18,30 @@ import MaybeSafe exposing (toMaybeSafeInt)
 import Lib exposing (lazyUnwrap)
 
 
-minRandomInt = 1
-maxRandomInt = 999
+minRandomDelta = 1
+maxRandomDelta = 100
+
+minRandomExponent = 1
+maxRandomExponent = 10
+
+minRandomTreeInt = 1
+maxRandomTreeInt = 999
 
 minRandomTreeStringLength = 3
 maxRandomTreeStringLength = 10
 
 minRandomListLength = 3
 maxRandomListLength = 12
+
+
+generatorDelta : Random.Generator Int
+generatorDelta =
+    Random.int minRandomDelta maxRandomDelta
+
+
+generatorExponent : Random.Generator Int
+generatorExponent =
+    Random.int minRandomExponent maxRandomExponent
 
 
 generateIds : Int -> Seed -> ( List Uuid, Seed )
@@ -97,9 +113,7 @@ generatorMusicNoteNode =
 
 generatorTreeInt : Random.Generator Int
 generatorTreeInt =
-    Random.int
-        minRandomInt
-        maxRandomInt
+    Random.int minRandomTreeInt maxRandomTreeInt
 
 
 generatorIntNode : Random.Generator IntNode
