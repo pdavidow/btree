@@ -14,7 +14,7 @@ import Random.String exposing (rangeLengthString)
 import Random.Char exposing (english)
 import Uuid exposing (Uuid, uuidGenerator)
 import Lazy exposing (lazy)
-import BigInt exposing (fromInt)
+import BigInt exposing (BigInt, fromInt)
 import Debouncer exposing (DebouncerState, SelfMsg, bounce, create, process)
 import Time exposing (Time, millisecond)
 import EveryDict exposing (EveryDict, fromList, get, update)
@@ -58,13 +58,17 @@ type Msg
     | RequestRandomTrees (Direction)
     | RequestRandomTreesWithRandomInsertDirection
     | ReceiveRandomTreeMusicNotes (List MusicNote)
-    | ReceiveRandomTreeInts (List Int)
-    | ReceiveRandomTreeStrings (List String)
-    | ReceiveRandomTreeBools (List Bool)
+    | ReceiveRandomIntNodes (List IntNode)
+    | ReceiveRandomBigIntNodes (List BigIntNode)
+    | ReceiveRandomStringNodes (List StringNode)
+    | ReceiveRandomBoolNodes (List BoolNode)
+    | ReceiveRandomNodeVarieties (List NodeVariety)
     | ReceiveRandomPairsOfMusicNoteDirection (List (MusicNote, Direction))
-    | ReceiveRandomPairsOfIntDirection (List (Int, Direction))
-    | ReceiveRandomPairsOfStringDirection (List (String, Direction))
-    | ReceiveRandomPairsOfBoolDirection (List (Bool, Direction))
+    | ReceiveRandomPairsOfIntNode_Direction (List (IntNode, Direction))
+    | ReceiveRandomPairsOfBigIntNode_Direction (List (BigIntNode, Direction))
+    | ReceiveRandomPairsOfStringNode_Direction (List (StringNode, Direction))
+    | ReceiveRandomPairsOfBoolNode_Direction (List (BoolNode, Direction))
+    | ReceiveRandomPairsOfNodeVariety_Direction (List (NodeVariety, Direction))
     | RequestRandomScalars
     | ReceiveRandomDelta (Int)
     | ReceiveRandomExponent (Int)
@@ -977,9 +981,11 @@ update msg model =
             | directionForRandom = direction
             } ! [ Cmd.batch
                     [ Random.generate ReceiveRandomTreeMusicNotes generatorTreeMusicNotes
-                    , Random.generate ReceiveRandomTreeInts generatorTreeInts
-                    , Random.generate ReceiveRandomTreeStrings generatorTreeStrings
-                    , Random.generate ReceiveRandomTreeBools generatorTreeBools
+                    , Random.generate ReceiveRandomIntNodes generatorIntNodes
+                    , Random.generate ReceiveRandomBigIntNodes generatorBigIntNodes
+                    , Random.generate ReceiveRandomStringNodes generatorStringNodes
+                    , Random.generate ReceiveRandomBoolNodes generatorBoolNodes
+                    , Random.generate ReceiveRandomNodeVarieties generatorNodeVarieties
                     ]
                 ]
 
@@ -987,9 +993,11 @@ update msg model =
             model !
                 [ Cmd.batch
                     [ Random.generate ReceiveRandomPairsOfMusicNoteDirection generatorPairsOfMusicNoteDirection
-                    , Random.generate ReceiveRandomPairsOfIntDirection generatorPairsOfIntDirection
-                    , Random.generate ReceiveRandomPairsOfStringDirection generatorPairsOfStringDirection
-                    , Random.generate ReceiveRandomPairsOfBoolDirection generatorPairsOfBoolDirection
+                    , Random.generate ReceiveRandomPairsOfIntNode_Direction generatorPairsOfIntNode_Direction
+                    , Random.generate ReceiveRandomPairsOfBigIntNode_Direction generatorPairsOfBigIntNode_Direction
+                    , Random.generate ReceiveRandomPairsOfStringNode_Direction generatorPairsOfStringNode_Direction
+                    , Random.generate ReceiveRandomPairsOfBoolNode_Direction generatorPairsOfBoolNode_Direction
+                    , Random.generate ReceiveRandomPairsOfNodeVariety_Direction generatorPairsOfNodeVariety_Direction
                     ]
                 ]
 
@@ -1013,45 +1021,54 @@ update msg model =
                 , uuidSeed = uuidSeed
                 } ! []
 
-        ReceiveRandomTreeInts list ->
+        ReceiveRandomIntNodes list ->
             let
-                intTree = list
-                    |> List.map toMaybeSafeInt
+                tree = list
                     |> BTree.fromListAsIsBy model.directionForRandom
-                    |> BTree.map IntNodeVal
                     |> BTreeInt
+            in
+                { model
+                | intTree = tree
+                } ! []
 
-                bigIntTree = list
-                    |> List.map BigInt.fromInt
+        ReceiveRandomBigIntNodes list ->
+            let
+                tree = list
                     |> BTree.fromListAsIsBy model.directionForRandom
-                    |> BTree.map BigIntNodeVal
                     |> BTreeBigInt
             in
                 { model
-                | intTree = intTree
-                , bigIntTree = bigIntTree
+                | bigIntTree = tree
                 } ! []
 
-        ReceiveRandomTreeStrings list ->
+        ReceiveRandomStringNodes list ->
             let
-                stringTree = list
+                tree = list
                     |> BTree.fromListAsIsBy model.directionForRandom
-                    |> BTree.map StringNodeVal
                     |> BTreeString
             in
                 { model
-                | stringTree = stringTree
+                | stringTree = tree
                 } ! []
 
-        ReceiveRandomTreeBools list ->
+        ReceiveRandomBoolNodes list ->
             let
-                boolTree = list
+                tree = list
                     |> BTree.fromListAsIsBy model.directionForRandom
-                    |> BTree.map (\b -> BoolNodeVal <| Just b)
                     |> BTreeBool
             in
                 { model
-                | boolTree = boolTree
+                | boolTree = tree
+                } ! []
+
+        ReceiveRandomNodeVarieties list ->
+            let
+                tree = list
+                    |> BTree.fromListAsIsBy model.directionForRandom
+                    |> BTreeVaried
+            in
+                { model
+                | variedTree = tree
                 } ! []
 
         ReceiveRandomPairsOfMusicNoteDirection list ->
@@ -1066,47 +1083,54 @@ update msg model =
                 , uuidSeed = uuidSeed
                 } ! []
 
-        ReceiveRandomPairsOfIntDirection list ->
-            let
-                fn = \transformFn (int, direction) -> (transformFn int, direction)
-
-                intTree = list
-                    |> List.map (fn toMaybeSafeInt)
-                    |> BTree.fromListAsIs_directed
-                    |> BTree.map IntNodeVal
-                    |> BTreeInt
-
-                bigIntTree = list
-                    |> List.map (fn BigInt.fromInt)
-                    |> BTree.fromListAsIs_directed
-                    |> BTree.map BigIntNodeVal
-                    |> BTreeBigInt
-            in
-                { model
-                | intTree = intTree
-                , bigIntTree = bigIntTree
-                } ! []
-
-        ReceiveRandomPairsOfStringDirection list ->
+        ReceiveRandomPairsOfIntNode_Direction list ->
             let
                 tree = list
                     |> BTree.fromListAsIs_directed
-                    |> BTree.map StringNodeVal
+                    |> BTreeInt
+            in
+                { model
+                | intTree = tree
+                } ! []
+
+        ReceiveRandomPairsOfBigIntNode_Direction list ->
+            let
+                tree = list
+                    |> BTree.fromListAsIs_directed
+                    |> BTreeBigInt
+            in
+                { model
+                | bigIntTree = tree
+                } ! []
+
+        ReceiveRandomPairsOfStringNode_Direction list ->
+            let
+                tree = list
+                    |> BTree.fromListAsIs_directed
                     |> BTreeString
             in
                 { model
                 | stringTree = tree
                 } ! []
 
-        ReceiveRandomPairsOfBoolDirection list ->
+        ReceiveRandomPairsOfBoolNode_Direction list ->
             let
                 tree = list
                     |> BTree.fromListAsIs_directed
-                    |> BTree.map (\b -> BoolNodeVal <| Just b)
                     |> BTreeBool
             in
                 { model
                 | boolTree = tree
+                } ! []
+
+        ReceiveRandomPairsOfNodeVariety_Direction list ->
+            let
+                tree = list
+                    |> BTree.fromListAsIs_directed
+                    |> BTreeVaried
+            in
+                { model
+                | variedTree = tree
                 } ! []
 
         ReceiveRandomDelta i ->
@@ -1270,6 +1294,11 @@ boolToDirection b =
         False -> Left
 
 
+generatorNothingNode : Random.Generator NothingNode
+generatorNothingNode =
+    Random.map (\b -> NothingNodeVal) Random.bool -- whatever
+
+
 generatorRandomListLength : Random.Generator Int
 generatorRandomListLength =
     Random.int minRandomListLength maxRandomListLength
@@ -1294,14 +1323,10 @@ generatorTreeMusicNotes =
         Random.andThen randomMusicNotes generatorRandomListLength
 
 
-generatorPairsOfMusicNoteDirection : Random.Generator (List (MusicNote, Direction))
-generatorPairsOfMusicNoteDirection =
-    let
-        randomPairsOfMusicNoteDirection : Int -> Random.Generator (List (MusicNote, Direction))
-        randomPairsOfMusicNoteDirection length =
-            Random.list length <| Random.pair (generatorTreeMusicNote) (Random.map boolToDirection Random.bool)
-    in
-        Random.andThen randomPairsOfMusicNoteDirection generatorRandomListLength
+generatorMusicNoteNode : Random.Generator MusicNoteNode
+generatorMusicNoteNode =
+    generatorTreeMusicNote
+        |> Random.map (\n -> MusicNoteNodeVal <| MusicNotePlayer.on n)
 
 
 generatorTreeInt : Random.Generator Int
@@ -1311,24 +1336,36 @@ generatorTreeInt =
         maxRandomInt
 
 
-generatorTreeInts : Random.Generator (List Int)
-generatorTreeInts =
-    let
-        randomInts : Int -> Random.Generator (List Int)
-        randomInts length =
-            Random.list length generatorTreeInt
-    in
-        Random.andThen randomInts generatorRandomListLength
+generatorIntNode : Random.Generator IntNode
+generatorIntNode =
+    generatorTreeInt
+        |> Random.map (\i -> IntNodeVal <| toMaybeSafeInt i)
 
 
-generatorPairsOfIntDirection : Random.Generator (List (Int, Direction))
-generatorPairsOfIntDirection =
+generatorIntNodes : Random.Generator (List IntNode)
+generatorIntNodes =
     let
-        randomPairsOfIntDirection : Int -> Random.Generator (List (Int, Direction))
-        randomPairsOfIntDirection length =
-            Random.list length <| Random.pair (generatorTreeInt) (Random.map boolToDirection Random.bool)
+        nodes : Int -> Random.Generator (List IntNode)
+        nodes length =
+            Random.list length generatorIntNode
     in
-        Random.andThen randomPairsOfIntDirection generatorRandomListLength
+        Random.andThen nodes generatorRandomListLength
+
+
+generatorBigIntNode : Random.Generator BigIntNode
+generatorBigIntNode =
+    generatorTreeInt
+        |> Random.map (\i -> BigIntNodeVal <| BigInt.fromInt i)
+
+
+generatorBigIntNodes : Random.Generator (List BigIntNode)
+generatorBigIntNodes =
+    let
+        nodes : Int -> Random.Generator (List BigIntNode)
+        nodes length =
+            Random.list length generatorBigIntNode
+    in
+        Random.andThen nodes generatorRandomListLength
 
 
 generatorTreeString : Random.Generator String
@@ -1339,29 +1376,20 @@ generatorTreeString =
         Random.Char.english
 
 
-generatorTreeStrings : Random.Generator (List String)
-generatorTreeStrings =
-    let
-        randomStrings : Int -> Random.Generator (List String)
-        randomStrings length =
-            Random.list length generatorTreeString
-    in
-        Random.andThen randomStrings generatorRandomListLength
+generatorStringNode : Random.Generator StringNode
+generatorStringNode =
+    generatorTreeString
+        |> Random.map StringNodeVal
 
 
-generatorPairsOfStringDirection : Random.Generator (List (String, Direction))
-generatorPairsOfStringDirection =
+generatorStringNodes : Random.Generator (List StringNode)
+generatorStringNodes =
     let
-        randomPairsOfStringDirection : Int -> Random.Generator (List (String, Direction))
-        randomPairsOfStringDirection length =
-            let
-                fn = \bool -> case bool of
-                    True -> Right
-                    False -> Left
-            in
-                Random.list length <| Random.pair (generatorTreeString) (Random.map fn Random.bool)
+        nodes : Int -> Random.Generator (List StringNode)
+        nodes length =
+            Random.list length generatorStringNode
     in
-        Random.andThen randomPairsOfStringDirection generatorRandomListLength
+        Random.andThen nodes generatorRandomListLength
 
 
 generatorTreeBool : Random.Generator Bool
@@ -1369,24 +1397,120 @@ generatorTreeBool =
     Random.bool
 
 
-generatorTreeBools : Random.Generator (List Bool)
-generatorTreeBools =
-    let
-        randomBools : Int -> Random.Generator (List Bool)
-        randomBools length =
-            Random.list length generatorTreeBool
-    in
-        Random.andThen randomBools generatorRandomListLength
+generatorBoolNode : Random.Generator BoolNode
+generatorBoolNode =
+    generatorTreeBool
+        |> Random.map (\b -> BoolNodeVal <| Just b)
 
 
-generatorPairsOfBoolDirection : Random.Generator (List (Bool, Direction))
-generatorPairsOfBoolDirection =
+generatorBoolNodes : Random.Generator (List BoolNode)
+generatorBoolNodes =
     let
-        randomPairsOfBoolDirection : Int -> Random.Generator (List (Bool, Direction))
-        randomPairsOfBoolDirection length =
-            Random.list length <| Random.pair (generatorTreeBool) (Random.map boolToDirection Random.bool)
+        nodes : Int -> Random.Generator (List BoolNode)
+        nodes length =
+            Random.list length generatorBoolNode
     in
-        Random.andThen randomPairsOfBoolDirection generatorRandomListLength
+        Random.andThen nodes generatorRandomListLength
+
+
+generatorNodeVariety : Random.Generator NodeVariety
+generatorNodeVariety =
+    let
+        nodeVarietyCountOfInterest = 5 -- exclude NothingVariety
+
+        generatorOn : Int -> Random.Generator NodeVariety
+        generatorOn selector =
+            case selector of
+                1 ->
+                    Random.map IntVariety generatorIntNode
+
+                2 ->
+                    Random.map BigIntVariety generatorBigIntNode
+
+                3 ->
+                    Random.map StringVariety generatorStringNode
+
+                4 ->
+                    Random.map BoolVariety generatorBoolNode
+
+                5 ->
+                    Random.map MusicNoteVariety generatorMusicNoteNode
+
+                _ -> -- should never get here
+                    Random.map NothingVariety generatorNothingNode
+    in
+        Random.int 1 nodeVarietyCountOfInterest
+            |> andThen generatorOn
+
+
+generatorNodeVarieties : Random.Generator (List NodeVariety)
+generatorNodeVarieties =
+    let
+        nodes : Int -> Random.Generator (List NodeVariety)
+        nodes length =
+            Random.list length generatorNodeVariety
+    in
+        Random.andThen nodes generatorRandomListLength
+
+
+generatorPairsOfMusicNoteDirection : Random.Generator (List (MusicNote, Direction))
+generatorPairsOfMusicNoteDirection =
+    let
+        randomPairsOfMusicNoteDirection : Int -> Random.Generator (List (MusicNote, Direction))
+        randomPairsOfMusicNoteDirection length =
+            Random.list length <| Random.pair (generatorTreeMusicNote) (Random.map boolToDirection Random.bool)
+    in
+        Random.andThen randomPairsOfMusicNoteDirection generatorRandomListLength
+
+
+generatorPairsOfIntNode_Direction : Random.Generator (List (IntNode, Direction))
+generatorPairsOfIntNode_Direction =
+    let
+        pairs : Int -> Random.Generator (List (IntNode, Direction))
+        pairs length =
+            Random.list length <| Random.pair (generatorIntNode) (Random.map boolToDirection Random.bool)
+    in
+        Random.andThen pairs generatorRandomListLength
+
+
+generatorPairsOfBigIntNode_Direction : Random.Generator (List (BigIntNode, Direction))
+generatorPairsOfBigIntNode_Direction =
+    let
+        pairs : Int -> Random.Generator (List (BigIntNode, Direction))
+        pairs length =
+            Random.list length <| Random.pair (generatorBigIntNode) (Random.map boolToDirection Random.bool)
+    in
+        Random.andThen pairs generatorRandomListLength
+
+
+generatorPairsOfStringNode_Direction : Random.Generator (List (StringNode, Direction))
+generatorPairsOfStringNode_Direction =
+    let --todo global rename pair -> tuple...
+        pairs : Int -> Random.Generator (List (StringNode, Direction))
+        pairs length =
+            Random.list length <| Random.pair (generatorStringNode) (Random.map boolToDirection Random.bool)
+    in
+        Random.andThen pairs generatorRandomListLength
+        
+
+generatorPairsOfBoolNode_Direction : Random.Generator (List (BoolNode, Direction))
+generatorPairsOfBoolNode_Direction =
+    let
+        pairs : Int -> Random.Generator (List (BoolNode, Direction))
+        pairs length =
+            Random.list length <| Random.pair (generatorBoolNode) (Random.map boolToDirection Random.bool)
+    in
+        Random.andThen pairs generatorRandomListLength
+
+
+generatorPairsOfNodeVariety_Direction : Random.Generator (List (NodeVariety, Direction))
+generatorPairsOfNodeVariety_Direction =
+    let
+        pairs : Int -> Random.Generator (List (NodeVariety, Direction))
+        pairs length =
+            Random.list length <| Random.pair (generatorNodeVariety) (Random.map boolToDirection Random.bool)
+    in
+        Random.andThen pairs generatorRandomListLength
 
 
 waitPriorToCheckingIfMouseEnteredDropdown : Msg -> Model -> (Model, Cmd Msg)
