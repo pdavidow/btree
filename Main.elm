@@ -61,7 +61,7 @@ type Msg
     | ReceiveRandomStringNodes (List StringNode)
     | ReceiveRandomBoolNodes (List BoolNode)
     | ReceiveRandomNodeVarieties (List NodeVariety)
-    | ReceiveRandomTuplesOfMusicNoteDirection (List (MusicNote, Direction))
+    | ReceiveRandomTuplesOfMusicNote_Direction (List (MusicNote, Direction))
     | ReceiveRandomTuplesOfIntNode_Direction (List (IntNode, Direction))
     | ReceiveRandomTuplesOfBigIntNode_Direction (List (BigIntNode, Direction))
     | ReceiveRandomTuplesOfStringNode_Direction (List (StringNode, Direction))
@@ -206,9 +206,8 @@ idedMusicNoteTree startSeed listToTree notes =
         ( tree, endSeed )
 
 
--- refactor
-idedMusicNoteTree2 : Seed -> (List (MusicNotePlayer, Direction) -> BTree MusicNotePlayer) -> List (MusicNote, Direction) -> (BTreeUniformType, Seed)
-idedMusicNoteTree2 startSeed directedListToTree directedNotes =
+idedMusicNoteDirectedTree : Seed -> (List (MusicNotePlayer, Direction) -> BTree MusicNotePlayer) -> List (MusicNote, Direction) -> (BTreeUniformType, Seed)
+idedMusicNoteDirectedTree startSeed directedListToTree directedNotes =
     let
         ( ids, endSeed ) = generateIds (List.length directedNotes) startSeed
         fn = \id (note, direction) -> (MusicNotePlayer.idedOn (Just id) note, direction)
@@ -957,7 +956,7 @@ update msg model =
         RequestRandomTreesWithRandomInsertDirection ->
             model !
                 [ Cmd.batch
-                    [ Random.generate ReceiveRandomTuplesOfMusicNoteDirection generatorTuplesOfMusicNoteDirection
+                    [ Random.generate ReceiveRandomTuplesOfMusicNote_Direction generatorTuplesOfMusicNoteDirection
                     , Random.generate ReceiveRandomTuplesOfIntNode_Direction generatorTuplesOfIntNode_Direction
                     , Random.generate ReceiveRandomTuplesOfBigIntNode_Direction generatorTuplesOfBigIntNode_Direction
                     , Random.generate ReceiveRandomTuplesOfStringNode_Direction generatorTuplesOfStringNode_Direction
@@ -1036,12 +1035,12 @@ update msg model =
                 | variedTree = tree
                 } ! []
 
-        ReceiveRandomTuplesOfMusicNoteDirection list ->
+        ReceiveRandomTuplesOfMusicNote_Direction list ->
             let
                 listToTree : List (a, Direction) -> BTree a
                 listToTree = BTree.fromListAsIs_directed
 
-                ( musicNoteTree, uuidSeed ) = idedMusicNoteTree2 model.uuidSeed listToTree list
+                ( musicNoteTree, uuidSeed ) = idedMusicNoteDirectedTree model.uuidSeed listToTree list
             in
                 { model
                 | musicNoteTree = musicNoteTree
@@ -1373,8 +1372,9 @@ subscriptions model =
         ]
 
 
+main : Program Int Model Msg
 main =
-  Html.programWithFlags -- using programWithFlags to get the seed values from JS
+  Html.programWithFlags -- using programWithFlags to get seed from JS
     { init = init
     , view = view
     , update = update
