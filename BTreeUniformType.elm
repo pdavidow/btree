@@ -1,4 +1,4 @@
-module BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, depth, sumInt, sort, deDuplicate, isAllNothing, nodeValOperate, setTreePlayerParams)
+module BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, depth, sumInt, sort, deDuplicate, isAllNothing, nodeValOperate, setTreePlayerParams, displayString)
 
 import Arithmetic exposing (isPrime)
 import BigInt exposing (BigInt, toString)
@@ -316,3 +316,24 @@ isAllNothing bTreeUniformType =
         BTreeNothing bTree ->
             True
 
+
+displayString : BTreeUniformType -> String
+displayString bTreeUniformType =
+    case bTreeUniformType of
+        BTreeInt _ ->
+            "Int"
+
+        BTreeBigInt _ ->
+            "Big-Int"
+
+        BTreeString _ ->
+            "String"
+
+        BTreeBool _ ->
+            "Bool"
+
+        BTreeMusicNotePlayer _ _ ->
+            "Music-Note"
+
+        BTreeNothing _ ->
+            "Not-Applicable"

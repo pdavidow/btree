@@ -1,4 +1,4 @@
-module BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, nodeValOperate, deDuplicate, hasAnyIntNodes)
+module BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, nodeValOperate, deDuplicate, hasAnyIntNodes, displayString)
 
 import Arithmetic exposing (isPrime)
 import BigInt exposing (toString)
@@ -139,3 +139,8 @@ hasAnyIntNodes (BTreeVaried bTree) =
         bTree
             |> BTree.flatten
             |> List.any isIntNode
+
+
+displayString : BTreeVariedType -> String
+displayString _ =
+    "Varied"

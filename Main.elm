@@ -17,8 +17,8 @@ import EveryDict exposing (EveryDict, fromList, get, update)
 import Basics.Extra exposing (maxSafeInteger)
 
 import TreeType exposing (TreeType(..))
-import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, nodeValOperate, setTreePlayerParams)
-import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, nodeValOperate, hasAnyIntNodes)
+import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, nodeValOperate, setTreePlayerParams, displayString)
+import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, nodeValOperate, hasAnyIntNodes, displayString)
 import BTree exposing (BTree(..), Direction(..), TraversalOrder(..), fromListBy, insertAsIsBy, fromListAsIsBy, fromListAsIs_directed, singleton, toTreeDiagramTree)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import BTreeView exposing (bTreeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
@@ -697,7 +697,7 @@ viewTrees model =
 viewUniformTreeCard : BTreeUniformType -> Html msg
 viewUniformTreeCard bTreeUniformType =
     let
-        title = bTreeUniformTitle bTreeUniformType
+        title = BTreeUniformType.displayString bTreeUniformType
         status = bTreeUniformStatus bTreeUniformType
         mbLegend = bTreeUniformLegend bTreeUniformType
         mbBgColor = Nothing
@@ -709,7 +709,7 @@ viewUniformTreeCard bTreeUniformType =
 viewVariedTreeCard : BTreeVariedType -> Html msg
 viewVariedTreeCard bTreeVariedType =
     let
-        title = "BTreeVaried"
+        title = BTreeVariedType.displayString bTreeVariedType
         status = bTreeVariedStatus bTreeVariedType
         mbLegend = bTreeVariedLegend bTreeVariedType
         mbBgColor = Just T.bg_black_05
@@ -721,15 +721,6 @@ viewVariedTreeCard bTreeVariedType =
 depthStatus : Int -> String
 depthStatus depth =
     "depth " ++ toString depth
-
-
-bTreeUniformTitle : BTreeUniformType -> String
-bTreeUniformTitle bTreeUniformType =
-    bTreeUniformType
-        |> toString
-        |> String.split " "
-        |> List.head
-        |> Maybe.withDefault ""
 
 
 treeStatus : Int -> Maybe IntFlex -> Html msg
