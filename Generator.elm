@@ -92,7 +92,7 @@ generatorTreeMusicNote =
         (MidiNumber min) = minMidiNumber
         (MidiNumber max) = maxMidiNumber
     in
-        (Random.map (\i -> MusicNote <| MidiNumber i) <| Random.int min max)
+        Random.map (\i -> MusicNote <| MidiNumber i) <| Random.int min max
 
 
 generatorTreeMusicNotes : Random.Generator (List MusicNote)
