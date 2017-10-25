@@ -246,49 +246,49 @@ generatorTuplesOfMusicNoteDirection =
 generatorTuplesOfIntNode_Direction : Random.Generator (List (IntNode, Direction))
 generatorTuplesOfIntNode_Direction =
     let
-        pairs : Int -> Random.Generator (List (IntNode, Direction))
-        pairs length =
+        tuples : Int -> Random.Generator (List (IntNode, Direction))
+        tuples length =
             Random.list length <| Random.pair (generatorIntNode) (Random.map boolToDirection Random.bool)
     in
-        Random.andThen pairs generatorRandomListLength
+        Random.andThen tuples generatorRandomListLength
 
 
 generatorTuplesOfBigIntNode_Direction : Random.Generator (List (BigIntNode, Direction))
 generatorTuplesOfBigIntNode_Direction =
     let
-        pairs : Int -> Random.Generator (List (BigIntNode, Direction))
-        pairs length =
+        tuples : Int -> Random.Generator (List (BigIntNode, Direction))
+        tuples length =
             Random.list length <| Random.pair (generatorBigIntNode) (Random.map boolToDirection Random.bool)
     in
-        Random.andThen pairs generatorRandomListLength
+        Random.andThen tuples generatorRandomListLength
 
 
 generatorTuplesOfStringNode_Direction : Random.Generator (List (StringNode, Direction))
 generatorTuplesOfStringNode_Direction =
     let
-        pairs : Int -> Random.Generator (List (StringNode, Direction))
-        pairs length =
+        tuples : Int -> Random.Generator (List (StringNode, Direction))
+        tuples length =
             Random.list length <| Random.pair (generatorStringNode) (Random.map boolToDirection Random.bool)
     in
-        Random.andThen pairs generatorRandomListLength
+        Random.andThen tuples generatorRandomListLength
 
 
 generatorTuplesOfBoolNode_Direction : Random.Generator (List (BoolNode, Direction))
 generatorTuplesOfBoolNode_Direction =
     let
-        pairs : Int -> Random.Generator (List (BoolNode, Direction))
-        pairs length =
+        tuples : Int -> Random.Generator (List (BoolNode, Direction))
+        tuples length =
             Random.list length <| Random.pair (generatorBoolNode) (Random.map boolToDirection Random.bool)
     in
-        Random.andThen pairs generatorRandomListLength
+        Random.andThen tuples generatorRandomListLength
 
 
 generatorTuplesOfNodeVariety_Direction : Random.Generator (List (NodeVariety, Direction))
 generatorTuplesOfNodeVariety_Direction =
     let
-        pairs : Int -> Random.Generator (List (NodeVariety, Direction))
-        pairs length =
+        tuples : Int -> Random.Generator (List (NodeVariety, Direction))
+        tuples length =
             Random.list length <| Random.pair (generatorNodeVariety) (Random.map boolToDirection Random.bool)
     in
-        Random.andThen pairs generatorRandomListLength
+        Random.andThen tuples generatorRandomListLength
 
