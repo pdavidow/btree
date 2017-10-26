@@ -35,6 +35,11 @@ import Generator exposing (generatorDelta, generatorExponent, generateIds, gener
 ------------------------------------------------
 
 
+type CardWidth
+    = Full
+    | Half
+
+
 type IntView
     = IntView
     | BigIntView
@@ -288,7 +293,7 @@ viewHeader model =
                 , T.hover_bg_black
                 ]
             ]
-            [ text "BinaryTree" ]
+            [ text "Binary Tree" ]
         , span
             [ classes
                 [ T.light_green
@@ -319,7 +324,8 @@ viewMain : Model -> Html Msg
 viewMain model =
     main_
         [ classes
-            [ T.pv5
+            [ T.pt5
+            , T.pb0
             , T.w_100
             ]
         ]
@@ -576,7 +582,7 @@ viewDashboard model =
                 [classes [T.pl4]]
                 (viewInputs model)
             , span
-                [classes [T.pl3]]
+                [classes [T.pl4]]
                 (viewIntTreeChoice model)
             , button
                 [classes [T.fr, T.hover_bg_light_yellow, T.mv1, T.mr2], onClick Reset]
@@ -642,7 +648,7 @@ radioIntView intView model =
 viewIntTreeChoice : Model -> List (Html Msg)
 viewIntTreeChoice model =
     [ span
-        [ classes [T.pt1, T.pb1, T.mt2, T.mb2, T.f6, T.ba, T.br2] ]
+        [ classes [T.ph2, T.pv2, T.mt2, T.mb2, T.f6, T.ba, T.br2] ]
         [ radioIntView IntView model
         , radioIntView BigIntView model
         , radioIntView BothView model
@@ -650,39 +656,49 @@ viewIntTreeChoice model =
     ]
 
 
-viewTrees : Model -> Html Msg
-viewTrees model =
+intTreeCards : Model -> List (Html msg)
+intTreeCards model =
     let
         intTreesOfInterest = case model.intView of
             IntView -> [model.intTree]
             BigIntView -> [model.bigIntTree]
             BothView -> [model.intTree, model.bigIntTree]
 
-        intTreeCards = List.map viewUniformTreeCard intTreesOfInterest
+        cardWidth = case model.intView of
+            BothView -> Half
+            _ -> Full
+    in
+        List.map (\tree -> viewUniformTreeCard cardWidth tree) intTreesOfInterest
+
+
+viewTrees : Model -> Html Msg
+viewTrees model =
+    let
+        cardWidth = Full
 
         cards = List.concat
-            [   [ viewUniformTreeCard model.musicNoteTree
+            [   [ viewUniformTreeCard cardWidth model.musicNoteTree
                 ]
-            ,   intTreeCards
-            ,   [ viewUniformTreeCard model.stringTree
-                , viewUniformTreeCard model.boolTree
-                , viewVariedTreeCard model.variedTree
+            ,   intTreeCards model
+            ,   [ viewUniformTreeCard cardWidth model.stringTree
+                , viewUniformTreeCard cardWidth model.boolTree
+                , viewVariedTreeCard cardWidth model.variedTree
                 ]
             ]
     in
         section
             [ classes
                 [ T.cf
-                , T.pv6
+                , T.pt5
                 , T.flex_auto
-                , T.bg_washed_green
+                --, T.bg_washed_green
                ]
             ]
             cards
 
 
-viewUniformTreeCard : BTreeUniformType -> Html msg
-viewUniformTreeCard bTreeUniformType =
+viewUniformTreeCard : CardWidth -> BTreeUniformType -> Html msg
+viewUniformTreeCard cardWidth bTreeUniformType =
     let
         title = BTreeUniformType.displayString bTreeUniformType
         status = bTreeUniformStatus bTreeUniformType
@@ -690,11 +706,11 @@ viewUniformTreeCard bTreeUniformType =
         mbBgColor = Nothing
         diagram = bTreeDiagram <| Uniform bTreeUniformType
     in
-        viewTreeCard title status mbLegend mbBgColor diagram
+        viewTreeCard cardWidth title status mbLegend mbBgColor diagram
 
 
-viewVariedTreeCard : BTreeVariedType -> Html msg
-viewVariedTreeCard bTreeVariedType =
+viewVariedTreeCard : CardWidth -> BTreeVariedType -> Html msg
+viewVariedTreeCard cardWidth bTreeVariedType =
     let
         title = BTreeVariedType.displayString bTreeVariedType
         status = bTreeVariedStatus bTreeVariedType
@@ -702,7 +718,7 @@ viewVariedTreeCard bTreeVariedType =
         mbBgColor = Just T.bg_black_05
         diagram = bTreeDiagram <| Varied bTreeVariedType
     in
-        viewTreeCard title status mbLegend mbBgColor diagram
+        viewTreeCard cardWidth title status mbLegend mbBgColor diagram
 
 
 depthStatus : Int -> String
@@ -847,13 +863,17 @@ bTreeVariedLegend bTreeVariedType =
         else Nothing
 
 
-viewTreeCard : String -> Html msg -> Maybe (Html msg) -> Maybe String -> Html msg -> Html msg
-viewTreeCard title status mbLegend mbBgColor diagram =
+viewTreeCard : CardWidth -> String -> Html msg -> Maybe (Html msg) -> Maybe String -> Html msg -> Html msg
+viewTreeCard cardWidth title status mbLegend mbBgColor diagram =
     let
+        tachyonsPartialWidth = case cardWidth of
+            Full -> T.w_20_ns
+            Half -> T.w_10_ns
+
         articleTachyons =
             [ T.fl
             , T.w_100
-            , T.w_20_ns
+            , tachyonsPartialWidth
             , T.br2
             , T.ba
             , T.b__black_10
