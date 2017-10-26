@@ -196,7 +196,7 @@ generatorBoolNodes =
 generatorNodeVariety : Random.Generator NodeVariety
 generatorNodeVariety =
     let
-        nodeVarietyCountOfInterest = 5 -- exclude NothingVariety
+        nodeVarietyOfInterestCount = 5
 
         generatorOn : Int -> Random.Generator NodeVariety
         generatorOn selector =
@@ -219,7 +219,7 @@ generatorNodeVariety =
                 _ -> -- should never get here
                     Random.map NothingVariety generatorNothingNode
     in
-        Random.int 1 nodeVarietyCountOfInterest
+        Random.int 1 nodeVarietyOfInterestCount
             |> andThen generatorOn
 
 

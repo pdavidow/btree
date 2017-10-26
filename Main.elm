@@ -200,8 +200,7 @@ idedMusicNoteTree startSeed listToTree notes =
 
         tree = List.map2 fn ids notes
             |> listToTree
-            |> BTree.map (\player -> MusicNoteNodeVal player)
-            |> BTreeMusicNotePlayer defaultTreePlayerParams
+            |> notePlayerOn
     in
         ( tree, endSeed )
 
@@ -214,10 +213,16 @@ idedMusicNoteDirectedTree startSeed directedListToTree directedNotes =
 
         tree = List.map2 fn ids directedNotes
             |> directedListToTree
-            |> BTree.map (\player -> MusicNoteNodeVal player)
-            |> BTreeMusicNotePlayer defaultTreePlayerParams
+            |> notePlayerOn
     in
         ( tree, endSeed )
+
+
+notePlayerOn : BTree MusicNotePlayer -> BTreeUniformType
+notePlayerOn bTree =
+    bTree
+        |> BTree.map (\player -> MusicNoteNodeVal player)
+        |> BTreeMusicNotePlayer defaultTreePlayerParams
 
 
 init : Int -> ( Model, Cmd Msg )
@@ -325,282 +330,264 @@ viewMain model =
 
 viewDashboard : Model -> Html Msg
 viewDashboard model =
-    section
-        [ classes
-            [ T.fixed
-            , T.w_100
-            , T.f3
-            , T.pa3
-            , T.z_max
-           ]
-        ]
-        [ section
-            [ classes
-                [ T.pa1
-                , T.bg_washed_yellow
-                ]
-            ]
-            ( viewDashboardTop model )
-        , section
-            [ classes
-                [ T.pa1
-                , T.bg_washed_red
-                ]
-            ]
-            ( viewDashboardBottom model )
-        ]
-
-
-viewDashboardTop : Model -> List (Html Msg)
-viewDashboardTop model =
     let
         isPlayDisabled = not <| isEnablePlayNotesWidgetry model
     in
-        [ span
-            [classes [T.mh2]]
-            [ div
+        section
+            [ classes
+                [ T.fixed
+                , T.w_100
+                , T.f3
+                , T.z_max
+               ]
+            ]
+            [ section
                 [ classes
-                    [ T.relative
-                    , T.dib
+                    [ T.pa1
+                    , T.bg_washed_yellow
                     ]
                 ]
-                [ button
-                    [ classes
-                        ([ T.hover_bg_light_green
-                        ] ++ (if Maybe.withDefault False (EveryDict.get Play model.isShowDropdown) then [T.bg_light_green] else []))
-                    , disabled isPlayDisabled
-                    , onMouseEnter <| MouseEnteredButton Play
-                    , onMouseLeave <| MouseLeftButton Play
+                [ span
+                    [classes [T.mh2]]
+                    [ div
+                        [ classes
+                            [ T.relative
+                            , T.dib
+                            ]
+                        ]
+                        [ button
+                            [ classes
+                                ([ T.hover_bg_light_green
+                                ] ++ (if Maybe.withDefault False (EveryDict.get Play model.isShowDropdown) then [T.bg_light_green] else []))
+                            , disabled isPlayDisabled
+                            , onMouseEnter <| MouseEnteredButton Play
+                            , onMouseLeave <| MouseLeftButton Play
+                            ]
+                            [ text "Play" ]
+                        , div
+                            [ classes
+                                 [ T.absolute
+                                 , (if Maybe.withDefault False (EveryDict.get Play model.isShowDropdown) then T.db else T.dn)
+                                 , T.ba
+                                 , T.w5
+                                 ]
+                            , onMouseEnter <| MouseEnteredDropdown Play
+                            , onMouseLeave <| MouseLeftDropdown Play
+                            ]
+                            [ button
+                                [ classes
+                                    [ T.db
+                                    , T.hover_bg_light_green
+                                    , T.pa2
+                                    , T.tl
+                                    , w_100
+                                    ]
+                                , disabled isPlayDisabled
+                                , onClick <| PlayNotes PreOrder
+                                ]
+                                [text "Pre-Order"]
+                            , button
+                                [ classes
+                                    [ T.db
+                                    , T.hover_bg_light_green
+                                    , T.pa2
+                                    , w_100
+                                    , T.tl
+                                    ]
+                                , disabled isPlayDisabled
+                                , onClick <| PlayNotes InOrder
+                                ]
+                                [text "In-Order"]
+                            , button
+                                [ classes
+                                    [ T.db
+                                    , T.hover_bg_light_green
+                                    , T.pa2
+                                    , T.tl
+                                    , w_100
+                                    ]
+                                , disabled isPlayDisabled
+                                , onClick <| PlayNotes PostOrder
+                                ]
+                                [text "Post-Order"]
+                            ]
+                        , button
+                            [ classes
+                                [ T.hover_bg_light_green]
+                            , disabled <| not model.isPlayNotes
+                            , onClick StopPlayNotes
+                            ]
+                            [ text "Stop Play" ]
+                        ]
                     ]
-                    [ text "Play" ]
-                , div
+            , span
+                [classes [T.mh2]]
+                [ button
+                    [classes [T.hover_bg_light_green, T.mv1], onClick <| NodeValueOperate <|Increment model.delta, disabled model.isPlayNotes]
+                    [text "+ Delta"]
+                , button
+                    [classes [T.hover_bg_light_green, T.mv1], onClick <| NodeValueOperate <| Decrement model.delta, disabled model.isPlayNotes]
+                    [text "- Delta"]
+                , button
+                    [classes [T.hover_bg_light_green, T.mv1], onClick <| NodeValueOperate <| Raise model.exponent, disabled model.isPlayNotes]
+                    [text "^ Exp"]
+                ]
+            , span
+                [classes [T.mh2]]
+                [ div
                     [ classes
-                         [ T.absolute
-                         , (if Maybe.withDefault False (EveryDict.get Play model.isShowDropdown) then T.db else T.dn)
-                         , T.ba
-                         , T.w5
-                         ]
-                    , onMouseEnter <| MouseEnteredDropdown Play
-                    , onMouseLeave <| MouseLeftDropdown Play
+                        [ T.relative
+                        , T.dib
+                        ]
                     ]
                     [ button
                         [ classes
-                            [ T.db
-                            , T.hover_bg_light_green
-                            , T.pa2
-                            , T.tl
-                            , w_100
-                            ]
-                        , disabled isPlayDisabled
-                        , onClick <| PlayNotes PreOrder
+                            ([ T.hover_bg_light_green
+                            ] ++ (if Maybe.withDefault False (EveryDict.get Sort model.isShowDropdown) then [T.bg_light_green] else []))
+                        , disabled model.isPlayNotes
+                            , onMouseEnter <| MouseEnteredButton Sort
+                            , onMouseLeave <| MouseLeftButton Sort
                         ]
-                        [text "Pre-Order"]
-                    , button
+                        [ text "Sort" ]
+                    , div
                         [ classes
-                            [ T.db
-                            , T.hover_bg_light_green
-                            , T.pa2
-                            , w_100
-                            , T.tl
-                            ]
-                        , disabled isPlayDisabled
-                        , onClick <| PlayNotes InOrder
+                             [ T.absolute
+                             , (if Maybe.withDefault False (EveryDict.get Sort model.isShowDropdown) then T.db else T.dn)
+                             , T.ba
+                             , T.w5
+                             ]
+                            , onMouseEnter <| MouseEnteredDropdown Sort
+                            , onMouseLeave <| MouseLeftDropdown Sort
                         ]
-                        [text "In-Order"]
-                    , button
+                        [ button
+                            [ classes
+                                [ T.db
+                                , T.hover_bg_light_green
+                                , T.pa2
+                                , w_100
+                                , T.tl
+                                ]
+                            , disabled model.isPlayNotes
+                            , onClick <| SortUniformTrees Left
+                            ]
+                            [text "Left"]
+                        , button
+                            [ classes
+                                [ T.db
+                                , T.hover_bg_light_green
+                                , T.pa2
+                                , w_100
+                                , T.tl
+                                ]
+                            , disabled model.isPlayNotes
+                            , onClick <| SortUniformTrees Right
+                            ]
+                            [text "Right"]
+                        ]
+                    ]
+                , button
+                    [classes [T.hover_bg_light_green, T.mv1], onClick RemoveDuplicates, disabled model.isPlayNotes]
+                    [text "Dedup"]
+                ]
+            , span
+                [classes [T.mh2]]
+                [ button
+                    [classes [T.hover_bg_light_green, T.mv1], onMouseDown StartShowIsIntPrime, onMouseUp StopShowIsIntPrime, onMouseLeave StopShowIsIntPrime]
+                    [text "Prime?"]
+                , button
+                    [classes [T.hover_bg_light_green, T.mv1], onMouseDown StartShowLength, onMouseUp StopShowLength, onMouseLeave StopShowLength]
+                    [text "Length"]
+                ]
+            , span
+                [ classes [T.mh2] ]
+                [ div
+                    [ classes
+                        [ T.relative
+                        , T.dib
+                        ]
+                    ]
+                    [ button
                         [ classes
-                            [ T.db
-                            , T.hover_bg_light_green
-                            , T.pa2
-                            , T.tl
-                            , w_100
+                            ([ T.hover_bg_light_green
+                            ] ++ (if Maybe.withDefault False (EveryDict.get Random model.isShowDropdown) then [T.bg_light_green] else []))
+                            , onMouseEnter <| MouseEnteredButton Random
+                            , onMouseLeave <| MouseLeftButton Random
+                        ]
+                        [ text "Random Trees" ]
+                    , div
+                        [ classes
+                             [ T.absolute
+                             , (if Maybe.withDefault False (EveryDict.get Random model.isShowDropdown) then T.db else T.dn)
+                             , T.ba
+                             , T.w5
+                             ]
+                            , onMouseEnter <| MouseEnteredDropdown Random
+                            , onMouseLeave <| MouseLeftDropdown Random
+                        ]
+                        [ button
+                            [ classes
+                                [ T.db
+                                , T.hover_bg_light_green
+                                , T.pa2
+                                , w_100
+                                , T.tl
+                                ]
+                            , onClick RequestRandomTreesWithRandomInsertDirection
                             ]
-                        , disabled isPlayDisabled
-                        , onClick <| PlayNotes PostOrder
+                            [text "Insert Random L/R"]
+                        , div -- divider line
+                            [ classes
+                                [ T.db
+                                , T.w_100
+                                , T.bt
+                                , T.bw1
+                                ]
+                            ]
+                            []
+                        , button
+                            [ classes
+                                [ T.db
+                                , T.hover_bg_light_green
+                                , T.pa2
+                                , w_100
+                                , T.tl
+                                ]
+                            , onClick <| RequestRandomTrees Left
+                            ]
+                            [text "Insert Left"]
+                        , button
+                            [ classes
+                                [ T.db
+                                , T.hover_bg_light_green
+                                , T.pa2
+                                , w_100
+                                , T.tl
+                                ]
+                            , onClick <| RequestRandomTrees Right
+                            ]
+                            [text "Insert Right"]
                         ]
-                        [text "Post-Order"]
                     ]
                 , button
-                    [ classes
-                        [ T.hover_bg_light_green]
-                    , disabled <| not model.isPlayNotes
-                    , onClick StopPlayNotes
-                    ]
-                    [ text "Stop Play" ]
+                    [classes [T.hover_bg_light_green, T.mv1], onClick RequestRandomScalars]
+                    [text "Random Scalars"]
                 ]
+            , span
+                [classes [T.pl4]]
+                (viewInputs model)
+            , span
+                [classes [T.pl3]]
+                (viewIntTreeChoice model)
+            , button
+                [classes [T.fr, T.hover_bg_light_yellow, T.mv1, T.mr2], onClick Reset]
+                [text "Reset"]
             ]
-    , span
-        [classes [T.mh2]]
-        [ button
-            [classes [T.hover_bg_light_green, T.mv1], onClick <| NodeValueOperate <|Increment model.delta, disabled model.isPlayNotes]
-            [text "+ Delta"]
-        , button
-            [classes [T.hover_bg_light_green, T.mv1], onClick <| NodeValueOperate <| Decrement model.delta, disabled model.isPlayNotes]
-            [text "- Delta"]
-        , button
-            [classes [T.hover_bg_light_green, T.mv1], onClick <| NodeValueOperate <| Raise model.exponent, disabled model.isPlayNotes]
-            [text "^ Exp"]
         ]
-    , span
-        [classes [T.mh2]]
-        [ div
-            [ classes
-                [ T.relative
-                , T.dib
-                ]
-            ]
-            [ button
-                [ classes
-                    ([ T.hover_bg_light_green
-                    ] ++ (if Maybe.withDefault False (EveryDict.get Sort model.isShowDropdown) then [T.bg_light_green] else []))
-                , disabled model.isPlayNotes
-                    , onMouseEnter <| MouseEnteredButton Sort
-                    , onMouseLeave <| MouseLeftButton Sort
-                ]
-                [ text "Sort" ]
-            , div
-                [ classes
-                     [ T.absolute
-                     , (if Maybe.withDefault False (EveryDict.get Sort model.isShowDropdown) then T.db else T.dn)
-                     , T.ba
-                     , T.w5
-                     ]
-                    , onMouseEnter <| MouseEnteredDropdown Sort
-                    , onMouseLeave <| MouseLeftDropdown Sort
-                ]
-                [ button
-                    [ classes
-                        [ T.db
-                        , T.hover_bg_light_green
-                        , T.pa2
-                        , w_100
-                        , T.tl
-                        ]
-                    , disabled model.isPlayNotes
-                    , onClick <| SortUniformTrees Left
-                    ]
-                    [text "Left"]
-                , button
-                    [ classes
-                        [ T.db
-                        , T.hover_bg_light_green
-                        , T.pa2
-                        , w_100
-                        , T.tl
-                        ]
-                    , disabled model.isPlayNotes
-                    , onClick <| SortUniformTrees Right
-                    ]
-                    [text "Right"]
-                ]
-            ]
-        , button
-            [classes [T.hover_bg_light_green, T.mv1], onClick RemoveDuplicates, disabled model.isPlayNotes]
-            [text "Dedup"]
-        ]
-    , span
-        [classes [T.mh2]]
-        [ button
-            [classes [T.hover_bg_light_green, T.mv1], onMouseDown StartShowIsIntPrime, onMouseUp StopShowIsIntPrime, onMouseLeave StopShowIsIntPrime]
-            [text "Prime?"]
-        , button
-            [classes [T.hover_bg_light_green, T.mv1], onMouseDown StartShowLength, onMouseUp StopShowLength, onMouseLeave StopShowLength]
-            [text "Length"]
-        ]
-    , span
-        [ classes [T.mh2] ]
-        [ div
-            [ classes
-                [ T.relative
-                , T.dib
-                ]
-            ]
-            [ button
-                [ classes
-                    ([ T.hover_bg_light_green
-                    ] ++ (if Maybe.withDefault False (EveryDict.get Random model.isShowDropdown) then [T.bg_light_green] else []))
-                    , onMouseEnter <| MouseEnteredButton Random
-                    , onMouseLeave <| MouseLeftButton Random
-                ]
-                [ text "Random Trees" ]
-            , div
-                [ classes
-                     [ T.absolute
-                     , (if Maybe.withDefault False (EveryDict.get Random model.isShowDropdown) then T.db else T.dn)
-                     , T.ba
-                     , T.w5
-                     ]
-                    , onMouseEnter <| MouseEnteredDropdown Random
-                    , onMouseLeave <| MouseLeftDropdown Random
-                ]
-                [ button
-                    [ classes
-                        [ T.db
-                        , T.hover_bg_light_green
-                        , T.pa2
-                        , w_100
-                        , T.tl
-                        ]
-                    , onClick RequestRandomTreesWithRandomInsertDirection
-                    ]
-                    [text "Insert Random L/R"]
-                , div -- divider line
-                    [ classes
-                        [ T.db
-                        , T.w_100
-                        , T.bt
-                        , T.bw1
-                        ]
-                    ]
-                    []
-                , button
-                    [ classes
-                        [ T.db
-                        , T.hover_bg_light_green
-                        , T.pa2
-                        , w_100
-                        , T.tl
-                        ]
-                    , onClick <| RequestRandomTrees Left
-                    ]
-                    [text "Insert Left"]
-                , button
-                    [ classes
-                        [ T.db
-                        , T.hover_bg_light_green
-                        , T.pa2
-                        , w_100
-                        , T.tl
-                        ]
-                    , onClick <| RequestRandomTrees Right
-                    ]
-                    [text "Insert Right"]
-                ]
-            ]
-        , button
-            [classes [T.hover_bg_light_green, T.mv1], onClick RequestRandomScalars]
-            [text "Random Scalars"]
-        ]
-    , button
-        [classes [T.fr, T.hover_bg_light_yellow, T.mv1, T.mr2], onClick Reset]
-        [text "Reset"]
-    ]
 
 
 isEnablePlayNotesWidgetry : Model -> Bool
 isEnablePlayNotesWidgetry model =
     not (model.isPlayNotes) && not (BTreeUniformType.isAllNothing model.musicNoteTree)
-
-
-viewDashboardBottom : Model -> List (Html Msg)
-viewDashboardBottom model =
-    [ span
-        []
-        (viewInputs model)
-    , span
-        [classes [T.pl3]]
-        (viewIntTreeChoice model)
-    ]
 
 
 viewInputs : Model -> List (Html Msg)
