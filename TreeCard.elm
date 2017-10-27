@@ -235,8 +235,8 @@ viewTreeCard : CardWidth -> String -> Html msg -> Maybe (Html msg) -> Maybe Stri
 viewTreeCard cardWidth title status mbLegend mbBgColor diagram =
     let
         tachyonsPartialWidth = case cardWidth of
-            Full -> T.w_20_ns
-            Half -> T.w_10_ns
+            Full -> T.w_20_l
+            Half -> T.w_10_l
 
         articleTachyons =
             [ T.fl
@@ -248,7 +248,7 @@ viewTreeCard cardWidth title status mbLegend mbBgColor diagram =
             , T.mw6
             , T.center
             , T.overflow_x_scroll
-            ]  ++ (Maybe.Extra.unwrap [] List.singleton mbBgColor)
+            ] ++ (Maybe.Extra.unwrap [] List.singleton mbBgColor)
     in
         article
             [ classes articleTachyons ]
