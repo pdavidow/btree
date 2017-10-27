@@ -1,11 +1,7 @@
 module Msg exposing (Msg(..))
 
-import Random.Pcg exposing (Seed)
-import EveryDict exposing (EveryDict)
 import Debouncer exposing (DebouncerState)
 
-import BTreeUniformType exposing (BTreeUniformType)
-import BTreeVariedType exposing (BTreeVariedType)
 import BTree exposing (Direction, TraversalOrder)
 import NodeTag exposing (NodeVariety, IntNode, BigIntNode, StringNode, BoolNode, MusicNoteNode)
 import NodeValueOperation exposing (Operation)

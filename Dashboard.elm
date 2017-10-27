@@ -13,7 +13,6 @@ import Msg exposing (Msg(..))
 import IntView exposing (IntView(..))
 import DropdownAction exposing (DropdownAction(..))
 import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, nodeValOperate, setTreePlayerParams, displayString)
-import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, nodeValOperate, hasAnyIntNodes, displayString)
 import NodeValueOperation exposing (Operation(..))
 import BTree exposing (Direction(..), TraversalOrder(..))
 ------------------------------------------------
