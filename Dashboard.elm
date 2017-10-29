@@ -1,4 +1,4 @@
-module Dashboard exposing (viewDashboard)
+module Dashboard exposing (viewDashboardWithTreesUnderneath)
 
 import Html exposing (Html, div, span, header, main_, section, article, a, button, text, input, h1, h2, label, programWithFlags)
 import Html.Events exposing (onClick, onMouseUp, onMouseDown, onMouseEnter, onMouseLeave, onMouseOver, onMouseOut, onInput)
@@ -19,8 +19,8 @@ import BTree exposing (Direction(..), TraversalOrder(..))
 import TreeCard exposing (viewTrees)
 ------------------------------------------------
 
-viewDashboard : Model -> Html Msg
-viewDashboard model =
+viewDashboardWithTreesUnderneath : Model -> Html Msg
+viewDashboardWithTreesUnderneath model =
     let
         isPlayDisabled = not <| isEnablePlayNotesWidgetry model
     in

@@ -57,8 +57,8 @@ viewTrees model =
         section
             [ classes
                 [ T.cf
-                , T.relative
-                , T.top_1
+                --, T.relative
+                --, T.top_2
                ]
             ]
             cards
