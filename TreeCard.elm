@@ -57,9 +57,8 @@ viewTrees model =
         section
             [ classes
                 [ T.cf
-                , T.pt5
-                , T.flex_auto
-                --, T.bg_washed_green
+                , T.relative
+                , T.top_1
                ]
             ]
             cards
@@ -245,7 +244,6 @@ viewTreeCard cardWidth title status mbLegend mbBgColor diagram =
             , T.br2
             , T.ba
             , T.b__black_10
-            , T.mw6
             , T.center
             , T.overflow_x_scroll
             ] ++ (Maybe.Extra.unwrap [] List.singleton mbBgColor)

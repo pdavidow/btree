@@ -31,7 +31,6 @@ import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 import NodeValueOperation exposing (Operation(..))
 import Generator exposing (generatorDelta, generatorExponent, generateIds, generatorTreeMusicNotes, generatorIntNodes, generatorBigIntNodes, generatorStringNodes, generatorBoolNodes, generatorNodeVarieties, generatorTuplesOfMusicNoteDirection, generatorTuplesOfIntNode_Direction, generatorTuplesOfBigIntNode_Direction, generatorTuplesOfStringNode_Direction, generatorTuplesOfBoolNode_Direction, generatorTuplesOfNodeVariety_Direction)
 import Dashboard exposing (viewDashboard)
-import TreeCard exposing (viewTrees)
 ------------------------------------------------
 
 initialModel: Model
@@ -240,7 +239,6 @@ viewMain model =
             ]
         ]
         [ viewDashboard model
-        , viewTrees model
         ]
 
 

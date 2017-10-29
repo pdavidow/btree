@@ -15,6 +15,8 @@ import DropdownAction exposing (DropdownAction(..))
 import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, nodeValOperate, setTreePlayerParams, displayString)
 import NodeValueOperation exposing (Operation(..))
 import BTree exposing (Direction(..), TraversalOrder(..))
+
+import TreeCard exposing (viewTrees)
 ------------------------------------------------
 
 viewDashboard : Model -> Html Msg
@@ -271,6 +273,7 @@ viewDashboard model =
                 [classes [T.fr, T.hover_bg_light_yellow, T.mv1, T.mr2], onClick Reset]
                 [text "Reset"]
             ]
+        , viewTrees model
         ]
 
 
