@@ -1,4 +1,4 @@
-module BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, depth, sumInt, sort, deDuplicate, isAllNothing, nodeValOperate, setTreePlayerParams, displayString)
+module BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, depth, sumInt, sort, deDuplicate, isAllNothing, nodeValOperate, setTreePlayerParams, displayString, musicNotePlayerParams)
 
 import Arithmetic exposing (isPrime)
 import BigInt exposing (BigInt, toString)
@@ -22,6 +22,26 @@ type BTreeUniformType
     | BTreeMusicNotePlayer TreePlayerParams (BTree MusicNoteNode)
     | BTreeNothing (BTree NothingNode)
 
+-- todo refactor
+musicNotePlayerParams : BTreeUniformType -> TreePlayerParams
+musicNotePlayerParams bTreeMusicNotePlayer =
+    let
+        mbTuple = case bTreeMusicNotePlayer of
+            BTreeInt _ -> Nothing
+            BTreeBigInt _ -> Nothing
+            BTreeString _ -> Nothing
+            BTreeBool _ -> Nothing
+            BTreeMusicNotePlayer params bTree -> Just (params, bTree)
+            BTreeNothing _ -> Nothing
+
+        (params, bTree) = Maybe.withDefault (defaultTreePlayerParams, Empty) mbTuple
+    in
+        params
+
+
+--setTreePlayerParams : (TreePlayerParams -> TreePlayerParams) -> BTreeUniformType -> BTreeUniformType
+--setTreePlayerParams fn bTreeMusicNotePlayer =
+  --  fn <| musicNotePlayerParams bTreeMusicNotePlayer
 
 setTreePlayerParams : (TreePlayerParams -> TreePlayerParams) -> BTreeUniformType -> BTreeUniformType
 setTreePlayerParams fn bTreeMusicNotePlayer =

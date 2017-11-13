@@ -11,7 +11,7 @@ import MusicNotePlayer exposing (MusicNotePlayer(..), isPlayable)
 import AudioNote exposing (AudioNote, audioNote)
 import Ports exposing (port_playNote)
 import NodeTag exposing (NodeVariety(..), MusicNoteNode(..))
-import TreePlayerParams exposing (TreePlayerParams, defaultTreePlayerParams)
+import TreePlayerParams exposing (TreePlayerParams, PlaySpeed, defaultTreePlayerParams, noteDurationFor)
 
 
 treeMusicPlay : BTreeUniformType -> Cmd msg
@@ -22,16 +22,17 @@ treeMusicPlay bTreeUniformType =
                 |> map (\(MusicNoteNodeVal player) -> player)
                 |> flattenBy params.traversalOrder
                 |> List.filter isPlayable
-                |> toAudioNotes params.noteDuration params.gapDuration
+                |> toAudioNotes params.playSpeed params.gapDuration
                 |> List.map port_playNote
                 |> Cmd.batch
         _ ->
             Cmd.none
 
 
-toAudioNotes : Time -> Time -> List MusicNotePlayer -> List AudioNote
-toAudioNotes noteDuration gapDuration notePlayers =
+toAudioNotes : PlaySpeed -> Time -> List MusicNotePlayer -> List AudioNote
+toAudioNotes playSpeed gapDuration notePlayers =
     let
+        noteDuration = noteDurationFor playSpeed
         interval = noteDuration + gapDuration
         lastIndex = (List.length notePlayers) - 1
 

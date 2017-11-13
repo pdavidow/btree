@@ -8,6 +8,7 @@ import NodeValueOperation exposing (Operation)
 import MusicNote exposing (MusicNote)
 import IntView exposing (IntView)
 import DropdownAction exposing (DropdownAction)
+import TreePlayerParams exposing (PlaySpeed)
 ------------------------------------------------
 
 type Msg
@@ -38,6 +39,7 @@ type Msg
     | StartShowIsIntPrime
     | StopShowIsIntPrime
     | PlayNotes (TraversalOrder)
+    | ChangePlaySpeed (PlaySpeed)
     | StartPlayNote (String)
     | DonePlayNote (String)
     | DonePlayNotes (())

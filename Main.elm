@@ -25,7 +25,7 @@ import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNod
 import MusicNote exposing (MusicNote(..), MidiNumber(..), mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), sorter)
 import TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote, donePlayNotes)
-import TreePlayerParams exposing (defaultTreePlayerParams)
+import TreePlayerParams exposing (PlaySpeed(..), defaultTreePlayerParams)
 import Ports exposing (port_startPlayNote, port_donePlayNote, port_donePlayNotes, port_disconnectAll)
 import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 import NodeValueOperation exposing (Operation(..))
@@ -480,6 +480,15 @@ update msg model =
                 | musicNoteTree = musicNoteTree
                 , isPlayNotes = True
                 } ! [treeMusicPlay musicNoteTree]
+
+        ChangePlaySpeed speed ->
+            let
+                fn = \params -> {params | playSpeed = speed}
+                musicNoteTree = setTreePlayerParams fn model.musicNoteTree
+            in
+                { model
+                | musicNoteTree = Debug.log "musicNoteTree" musicNoteTree
+                } ! []
 
         StartPlayNote id ->
             let

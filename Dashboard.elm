@@ -1,28 +1,44 @@
 module Dashboard exposing (viewDashboardWithTreesUnderneath)
 
-import Html exposing (Html, div, span, header, main_, section, article, a, button, text, input, h1, h2, label, programWithFlags)
+import Html exposing (Html, Attribute , div, span, header, main_, section, article, a, button, option, select, text, input, h1, h2, label, programWithFlags)
 import Html.Events exposing (onClick, onMouseUp, onMouseDown, onMouseEnter, onMouseLeave, onMouseOver, onMouseOut, onInput)
-import Html.Attributes as A exposing (attribute, property, class, checked, style, type_, value, href, target, disabled)
+import Html.Attributes as A exposing (attribute, property, class, checked, selected, style, type_, value, href, target, disabled)
 import Tachyons exposing (classes, tachyons)
 import Tachyons.Classes as T exposing (..)
 
 import EveryDict exposing (EveryDict, fromList, get, update)
+import Json.Decode as Decode exposing (Decoder)
 
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import IntView exposing (IntView(..))
 import DropdownAction exposing (DropdownAction(..))
-import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, nodeValOperate, setTreePlayerParams, displayString)
+import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, nodeValOperate, setTreePlayerParams, displayString, musicNotePlayerParams)
 import NodeValueOperation exposing (Operation(..))
 import BTree exposing (Direction(..), TraversalOrder(..))
-
 import TreeCard exposing (viewTrees)
+import TreePlayerParams exposing (PlaySpeed(..), playSpeedOptions)
 ------------------------------------------------
 
 viewDashboardWithTreesUnderneath : Model -> Html Msg
 viewDashboardWithTreesUnderneath model =
     let
         isPlayDisabled = not <| isEnablePlayNotesWidgetry model
+
+        onPlaySpeedChange : Attribute Msg
+        onPlaySpeedChange =
+            Html.Events.targetValue
+                |> Decode.andThen playSpeedDecoder
+                |> Decode.map ChangePlaySpeed
+                |> Html.Events.on "change"
+
+        playSpeedDecoder : String -> Decoder PlaySpeed
+        playSpeedDecoder value =
+            case String.toLower value of
+                "fast" -> Decode.succeed Fast
+                "medium" -> Decode.succeed Medium
+                "slow" -> Decode.succeed Slow
+                _ -> Decode.fail "Invalid speed"
     in
         section
             [ classes
@@ -71,7 +87,7 @@ viewDashboardWithTreesUnderneath model =
                                     , T.hover_bg_light_green
                                     , T.pa2
                                     , T.tl
-                                    , w_100
+                                    , T.w_100
                                     ]
                                 , disabled isPlayDisabled
                                 , onClick <| PlayNotes PreOrder
@@ -82,7 +98,7 @@ viewDashboardWithTreesUnderneath model =
                                     [ T.db
                                     , T.hover_bg_light_green
                                     , T.pa2
-                                    , w_100
+                                    , T.w_100
                                     , T.tl
                                     ]
                                 , disabled isPlayDisabled
@@ -95,7 +111,7 @@ viewDashboardWithTreesUnderneath model =
                                     , T.hover_bg_light_green
                                     , T.pa2
                                     , T.tl
-                                    , w_100
+                                    , T.w_100
                                     ]
                                 , disabled isPlayDisabled
                                 , onClick <| PlayNotes PostOrder
@@ -109,6 +125,17 @@ viewDashboardWithTreesUnderneath model =
                             , onClick StopPlayNotes
                             ]
                             [ text "Stop Play" ]
+                        , select -- you can set `selected True` on another one when the `select` first renders to preselect one
+                            [ onPlaySpeedChange ]
+                            (List.map (\playSpeed ->
+                                let
+                                    params = musicNotePlayerParams model.musicNoteTree
+                                    isSelected = (params.playSpeed == playSpeed)
+                                in
+                                    option
+                                        [selected isSelected]
+                                        [text <| toString playSpeed])
+                            playSpeedOptions)
                         ]
                     ]
             , span
@@ -155,7 +182,7 @@ viewDashboardWithTreesUnderneath model =
                                 [ T.db
                                 , T.hover_bg_light_green
                                 , T.pa2
-                                , w_100
+                                , T.w_100
                                 , T.tl
                                 ]
                             , disabled model.isPlayNotes
@@ -167,7 +194,7 @@ viewDashboardWithTreesUnderneath model =
                                 [ T.db
                                 , T.hover_bg_light_green
                                 , T.pa2
-                                , w_100
+                                , T.w_100
                                 , T.tl
                                 ]
                             , disabled model.isPlayNotes
@@ -220,7 +247,7 @@ viewDashboardWithTreesUnderneath model =
                                 [ T.db
                                 , T.hover_bg_light_green
                                 , T.pa2
-                                , w_100
+                                , T.w_100
                                 , T.tl
                                 ]
                             , onClick RequestRandomTreesWithRandomInsertDirection
@@ -240,7 +267,7 @@ viewDashboardWithTreesUnderneath model =
                                 [ T.db
                                 , T.hover_bg_light_green
                                 , T.pa2
-                                , w_100
+                                , T.w_100
                                 , T.tl
                                 ]
                             , onClick <| RequestRandomTrees Left
@@ -251,7 +278,7 @@ viewDashboardWithTreesUnderneath model =
                                 [ T.db
                                 , T.hover_bg_light_green
                                 , T.pa2
-                                , w_100
+                                , T.w_100
                                 , T.tl
                                 ]
                             , onClick <| RequestRandomTrees Right
