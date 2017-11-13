@@ -125,17 +125,20 @@ viewDashboardWithTreesUnderneath model =
                             , onClick StopPlayNotes
                             ]
                             [ text "Stop Play" ]
-                        , select -- you can set `selected True` on another one when the `select` first renders to preselect one
-                            [ onPlaySpeedChange ]
-                            (List.map (\playSpeed ->
-                                let
-                                    params = musicNotePlayerParams model.musicNoteTree
-                                    isSelected = (params.playSpeed == playSpeed)
-                                in
-                                    option
-                                        [selected isSelected]
-                                        [text <| toString playSpeed])
-                            playSpeedOptions)
+                        , select
+                            [ onPlaySpeedChange, disabled model.isPlayNotes ]
+                            ( List.map
+                                ( \playSpeed ->
+                                    let
+                                        params = musicNotePlayerParams model.musicNoteTree
+                                        isSelected = (params.playSpeed == playSpeed)
+                                    in
+                                        option
+                                            [selected isSelected]
+                                            [text <| toString playSpeed]
+                                )
+                                playSpeedOptions
+                            )
                         ]
                     ]
             , span
