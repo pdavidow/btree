@@ -30,7 +30,7 @@ type alias TreePlayerParams =
 defaultTreePlayerParams : TreePlayerParams
 defaultTreePlayerParams =
     { traversalOrder = InOrder
-    , playSpeed = Medium
+    , playSpeed = Slow
     , gapDuration = 250 * millisecond
     }
 

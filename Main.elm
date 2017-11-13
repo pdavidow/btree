@@ -487,7 +487,7 @@ update msg model =
                 musicNoteTree = setTreePlayerParams fn model.musicNoteTree
             in
                 { model
-                | musicNoteTree = Debug.log "musicNoteTree" musicNoteTree
+                | musicNoteTree = musicNoteTree
                 } ! []
 
         StartPlayNote id ->

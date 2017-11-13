@@ -2,13 +2,13 @@ module BTreeUniformType_1_Tests exposing (..)
 
 import BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, setTreePlayerParams)
 
-import BTree exposing (BTree(..), Direction(..), fromIntList, fromList, fromListBy, singleton, map)
+import BTree exposing (BTree(..), Direction(..), TraversalOrder(..), fromIntList, fromList, fromListBy, singleton, map)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import MusicNote exposing (MusicNote(..), MidiNumber(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..), on)
 import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 import TestsHelper exposing (musicNotePlayerOnNothing, uniformNothingSingelton, uniformNothing3Nodes)
-import TreePlayerParams exposing (defaultTreePlayerParams)
+import TreePlayerParams exposing (PlaySpeed(..), defaultTreePlayerParams)
 
 import BigInt exposing (fromInt, toString)
 import Basics.Extra exposing (maxSafeInteger)
@@ -287,8 +287,16 @@ bTreeUniformType_1 =
             [ test "setTreePlayerParams" <|
                 \() ->
                     let
-                        time = 123456 * millisecond
-                        fn = \params -> {params | noteDuration = time}
+                        traversalOrder = PreOrder
+                        playSpeed = Fast
+                        gapDuration = 123456 * millisecond
+
+                        fn = \params ->
+                            { params
+                            | traversalOrder = traversalOrder
+                            , playSpeed = playSpeed
+                            , gapDuration = gapDuration
+                            }
                         tree = setTreePlayerParams fn <| BTreeMusicNotePlayer defaultTreePlayerParams Empty
 
                         mbParams = case tree of
@@ -301,7 +309,9 @@ bTreeUniformType_1 =
 
                         resultParams = Maybe.withDefault defaultTreePlayerParams mbParams
                     in
-                        Expect.equal time resultParams.noteDuration
+                        Expect.equal
+                            (traversalOrder, playSpeed, gapDuration)
+                            (resultParams.traversalOrder, resultParams.playSpeed, resultParams.gapDuration)
             ]
          ]
 
