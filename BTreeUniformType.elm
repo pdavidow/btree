@@ -22,9 +22,9 @@ type BTreeUniformType
     | BTreeMusicNotePlayer TreePlayerParams (BTree MusicNoteNode)
     | BTreeNothing (BTree NothingNode)
 
--- todo refactor
-musicNotePlayerParams : BTreeUniformType -> TreePlayerParams
-musicNotePlayerParams bTreeMusicNotePlayer =
+
+musicNotePlayerParamsWithTree : BTreeUniformType -> (TreePlayerParams, BTree MusicNoteNode)
+musicNotePlayerParamsWithTree bTreeMusicNotePlayer =
     let
         mbTuple = case bTreeMusicNotePlayer of
             BTreeInt _ -> Nothing
@@ -36,25 +36,21 @@ musicNotePlayerParams bTreeMusicNotePlayer =
 
         (params, bTree) = Maybe.withDefault (defaultTreePlayerParams, Empty) mbTuple
     in
+        (params, bTree)
+
+
+musicNotePlayerParams : BTreeUniformType -> TreePlayerParams
+musicNotePlayerParams bTreeMusicNotePlayer =
+    let
+        (params, bTree) = musicNotePlayerParamsWithTree bTreeMusicNotePlayer
+    in
         params
 
-
---setTreePlayerParams : (TreePlayerParams -> TreePlayerParams) -> BTreeUniformType -> BTreeUniformType
---setTreePlayerParams fn bTreeMusicNotePlayer =
-  --  fn <| musicNotePlayerParams bTreeMusicNotePlayer
 
 setTreePlayerParams : (TreePlayerParams -> TreePlayerParams) -> BTreeUniformType -> BTreeUniformType
 setTreePlayerParams fn bTreeMusicNotePlayer =
     let
-        mbTuple = case bTreeMusicNotePlayer of
-            BTreeInt _ -> Nothing
-            BTreeBigInt _ -> Nothing
-            BTreeString _ -> Nothing
-            BTreeBool _ -> Nothing
-            BTreeMusicNotePlayer params bTree -> Just (params, bTree)
-            BTreeNothing _ -> Nothing
-
-        (params, bTree) = Maybe.withDefault (defaultTreePlayerParams, Empty) mbTuple
+        (params, bTree) = musicNotePlayerParamsWithTree bTreeMusicNotePlayer
     in
         BTreeMusicNotePlayer (fn params) bTree
 
