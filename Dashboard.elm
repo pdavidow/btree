@@ -130,8 +130,7 @@ viewDashboardWithTreesUnderneath model =
                             ( List.map
                                 ( \playSpeed ->
                                     let
-                                        params = musicNotePlayerParams model.musicNoteTree
-                                        isSelected = (params.playSpeed == playSpeed)
+                                        isSelected = (model.masterPlaySpeed == playSpeed)
                                     in
                                         option
                                             [selected isSelected]

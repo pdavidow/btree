@@ -84,6 +84,7 @@ initialModel =
     , boolTreeCache = BTreeBool Empty
     , musicNoteTreeCache = BTreeMusicNotePlayer defaultTreePlayerParams Empty
     , variedTreeCache = BTreeVaried Empty
+    , masterPlaySpeed = Slow
     , delta = 1
     , exponent = 2
     , isPlayNotes = False
@@ -473,7 +474,11 @@ update msg model =
 
         PlayNotes order ->
             let
-                fn = \params -> {params | traversalOrder = order}
+                fn = \params ->
+                    { params
+                    | traversalOrder = order
+                    , playSpeed = model.masterPlaySpeed
+                    }
                 musicNoteTree = setTreePlayerParams fn model.musicNoteTree
             in
                 { model
@@ -482,13 +487,7 @@ update msg model =
                 } ! [treeMusicPlay musicNoteTree]
 
         ChangePlaySpeed speed ->
-            let
-                fn = \params -> {params | playSpeed = speed}
-                musicNoteTree = setTreePlayerParams fn model.musicNoteTree
-            in
-                { model
-                | musicNoteTree = musicNoteTree
-                } ! []
+            { model | masterPlaySpeed = speed } ! []
 
         StartPlayNote id ->
             let

@@ -9,6 +9,7 @@ import BTreeVariedType exposing (BTreeVariedType)
 import BTree exposing (Direction, TraversalOrder)
 import IntView exposing (IntView)
 import DropdownAction exposing (DropdownAction)
+import TreePlayerParams exposing (PlaySpeed)
 ------------------------------------------------
 
 type alias Model =
@@ -25,6 +26,7 @@ type alias Model =
     , boolTreeCache : BTreeUniformType
     , musicNoteTreeCache : BTreeUniformType
     , variedTreeCache : BTreeVariedType
+    , masterPlaySpeed : PlaySpeed
     , delta : Int
     , exponent : Int
     , isPlayNotes : Bool
