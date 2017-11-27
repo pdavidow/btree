@@ -2,14 +2,13 @@ module Model exposing (Model)
 
 import Random.Pcg exposing (Seed)
 import EveryDict exposing (EveryDict)
-import Debouncer exposing (DebouncerState)
 
 import BTreeUniformType exposing (BTreeUniformType)
 import BTreeVariedType exposing (BTreeVariedType)
 import BTree exposing (Direction, TraversalOrder)
 import IntView exposing (IntView)
-import DropdownAction exposing (DropdownAction)
 import TreePlayerParams exposing (PlaySpeed)
+import TreeRandomInsertStyle exposing (TreeRandomInsertStyle)
 ------------------------------------------------
 
 type alias Model =
@@ -27,15 +26,13 @@ type alias Model =
     , musicNoteTreeCache : BTreeUniformType
     , variedTreeCache : BTreeVariedType
     , masterPlaySpeed : PlaySpeed
+    , masterTraversalOrder : TraversalOrder
     , delta : Int
     , exponent : Int
     , isPlayNotes : Bool
     , isTreeCaching : Bool
     , directionForSort : Direction
-    , directionForRandom : Direction
+    , treeRandomInsertStyle : TreeRandomInsertStyle
     , intView : IntView
     , uuidSeed : Seed
-    , isShowDropdown : EveryDict DropdownAction Bool
-    , isMouseEnteredDropdown : EveryDict DropdownAction Bool
-    , menuDropdownDebouncer : Debouncer.DebouncerState
     }

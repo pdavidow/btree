@@ -9,8 +9,6 @@ type PlaySpeed
     = Fast
     | Medium
     | Slow
-
-
 playSpeedOptions : List PlaySpeed
 playSpeedOptions =
     [ Fast

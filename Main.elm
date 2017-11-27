@@ -9,7 +9,6 @@ import Random exposing (generate)
 import Random.Pcg exposing (Seed, initialSeed)
 import Uuid exposing (Uuid, uuidGenerator)
 import BigInt exposing (BigInt, fromInt)
-import Debouncer exposing (DebouncerState, SelfMsg, bounce, create, process)
 import Time exposing (Time, millisecond)
 import EveryDict exposing (EveryDict, fromList, get, update)
 import Basics.Extra exposing (maxSafeInteger)
@@ -17,7 +16,6 @@ import Basics.Extra exposing (maxSafeInteger)
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import IntView exposing (IntView(..))
-import DropdownAction exposing (DropdownAction(..))
 import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, nodeValOperate, setTreePlayerParams, displayString)
 import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, nodeValOperate, hasAnyIntNodes, displayString)
 import BTree exposing (BTree(..), Direction(..), TraversalOrder(..), fromListBy, insertAsIsBy, fromListAsIsBy, fromListAsIs_directed, singleton, toTreeDiagramTree)
@@ -31,6 +29,7 @@ import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 import NodeValueOperation exposing (Operation(..))
 import Generator exposing (generatorDelta, generatorExponent, generateIds, generatorTreeMusicNotes, generatorIntNodes, generatorBigIntNodes, generatorStringNodes, generatorBoolNodes, generatorNodeVarieties, generatorTuplesOfMusicNoteDirection, generatorTuplesOfIntNode_Direction, generatorTuplesOfBigIntNode_Direction, generatorTuplesOfStringNode_Direction, generatorTuplesOfBoolNode_Direction, generatorTuplesOfNodeVariety_Direction)
 import Dashboard exposing (viewDashboardWithTreesUnderneath)
+import TreeRandomInsertStyle exposing (TreeRandomInsertStyle)
 ------------------------------------------------
 
 initialModel: Model
@@ -85,25 +84,15 @@ initialModel =
     , musicNoteTreeCache = BTreeMusicNotePlayer defaultTreePlayerParams Empty
     , variedTreeCache = BTreeVaried Empty
     , masterPlaySpeed = Slow
+    , masterTraversalOrder = InOrder
     , delta = 1
     , exponent = 2
     , isPlayNotes = False
     , isTreeCaching = False
-    , directionForSort = Left
-    , directionForRandom = Left
+    , directionForSort = BTree.Left
+    , treeRandomInsertStyle = TreeRandomInsertStyle.Left
     , intView = IntView
     , uuidSeed = initialSeed 0 -- placeholder
-    , isShowDropdown = EveryDict.fromList
-        [ (Play, False)
-        , (Sort, False)
-        , (Random, False)
-        ]
-    , isMouseEnteredDropdown = EveryDict.fromList
-        [ (Play, False)
-        , (Sort, False)
-        , (Random, False)
-        ]
-    , menuDropdownDebouncer = Debouncer.create (5 * Time.millisecond)
     }
 
 
@@ -253,8 +242,8 @@ update msg model =
             ) ! []
 
 
-        SortUniformTrees direction ->
-            (sortUniformTrees direction model) ! []
+        SortUniformTrees ->
+            (sortUniformTrees model) ! []
 
         RemoveDuplicates ->
             (deDuplicate model) ! []
@@ -265,30 +254,36 @@ update msg model =
         Exponent s ->
             { model | exponent = intFromInput s } ! []
 
-        RequestRandomTrees direction ->
-            { model
-            | directionForRandom = direction
-            } ! [ Cmd.batch
-                    [ Random.generate ReceiveRandomTreeMusicNotes generatorTreeMusicNotes
-                    , Random.generate ReceiveRandomIntNodes generatorIntNodes
-                    , Random.generate ReceiveRandomBigIntNodes generatorBigIntNodes
-                    , Random.generate ReceiveRandomStringNodes generatorStringNodes
-                    , Random.generate ReceiveRandomBoolNodes generatorBoolNodes
-                    , Random.generate ReceiveRandomNodeVarieties generatorNodeVarieties
-                    ]
-                ]
+        RequestRandomTrees ->
+            let
+                randomInsert =
+                    model !
+                        [ Cmd.batch
+                            [ Random.generate ReceiveRandomTuplesOfMusicNote_Direction generatorTuplesOfMusicNoteDirection
+                            , Random.generate ReceiveRandomTuplesOfIntNode_Direction generatorTuplesOfIntNode_Direction
+                            , Random.generate ReceiveRandomTuplesOfBigIntNode_Direction generatorTuplesOfBigIntNode_Direction
+                            , Random.generate ReceiveRandomTuplesOfStringNode_Direction generatorTuplesOfStringNode_Direction
+                            , Random.generate ReceiveRandomTuplesOfBoolNode_Direction generatorTuplesOfBoolNode_Direction
+                            , Random.generate ReceiveRandomTuplesOfNodeVariety_Direction generatorTuplesOfNodeVariety_Direction
+                            ]
+                        ]
 
-        RequestRandomTreesWithRandomInsertDirection ->
-            model !
-                [ Cmd.batch
-                    [ Random.generate ReceiveRandomTuplesOfMusicNote_Direction generatorTuplesOfMusicNoteDirection
-                    , Random.generate ReceiveRandomTuplesOfIntNode_Direction generatorTuplesOfIntNode_Direction
-                    , Random.generate ReceiveRandomTuplesOfBigIntNode_Direction generatorTuplesOfBigIntNode_Direction
-                    , Random.generate ReceiveRandomTuplesOfStringNode_Direction generatorTuplesOfStringNode_Direction
-                    , Random.generate ReceiveRandomTuplesOfBoolNode_Direction generatorTuplesOfBoolNode_Direction
-                    , Random.generate ReceiveRandomTuplesOfNodeVariety_Direction generatorTuplesOfNodeVariety_Direction
-                    ]
-                ]
+                directedInsert =
+                    model !
+                        [ Cmd.batch
+                            [ Random.generate ReceiveRandomTreeMusicNotes generatorTreeMusicNotes
+                            , Random.generate ReceiveRandomIntNodes generatorIntNodes
+                            , Random.generate ReceiveRandomBigIntNodes generatorBigIntNodes
+                            , Random.generate ReceiveRandomStringNodes generatorStringNodes
+                            , Random.generate ReceiveRandomBoolNodes generatorBoolNodes
+                            , Random.generate ReceiveRandomNodeVarieties generatorNodeVarieties
+                            ]
+                        ]
+            in
+                case model.treeRandomInsertStyle of
+                    TreeRandomInsertStyle.Random -> randomInsert
+                    TreeRandomInsertStyle.Right -> directedInsert
+                    TreeRandomInsertStyle.Left -> directedInsert
 
         RequestRandomScalars ->
             model !
@@ -300,8 +295,10 @@ update msg model =
 
         ReceiveRandomTreeMusicNotes list ->
             let
+                direction = directionForTreeRandomInsertStyle model.treeRandomInsertStyle
+
                 listToTree : List a -> BTree a
-                listToTree = BTree.fromListAsIsBy model.directionForRandom
+                listToTree = BTree.fromListAsIsBy direction
 
                 ( musicNoteTree, uuidSeed ) = idedMusicNoteTree model.uuidSeed listToTree list
             in
@@ -312,8 +309,10 @@ update msg model =
 
         ReceiveRandomIntNodes list ->
             let
+                direction = directionForTreeRandomInsertStyle model.treeRandomInsertStyle
+
                 tree = list
-                    |> BTree.fromListAsIsBy model.directionForRandom
+                    |> BTree.fromListAsIsBy direction
                     |> BTreeInt
             in
                 { model
@@ -322,8 +321,10 @@ update msg model =
 
         ReceiveRandomBigIntNodes list ->
             let
+                direction = directionForTreeRandomInsertStyle model.treeRandomInsertStyle
+
                 tree = list
-                    |> BTree.fromListAsIsBy model.directionForRandom
+                    |> BTree.fromListAsIsBy direction
                     |> BTreeBigInt
             in
                 { model
@@ -332,8 +333,10 @@ update msg model =
 
         ReceiveRandomStringNodes list ->
             let
+                direction = directionForTreeRandomInsertStyle model.treeRandomInsertStyle
+
                 tree = list
-                    |> BTree.fromListAsIsBy model.directionForRandom
+                    |> BTree.fromListAsIsBy direction
                     |> BTreeString
             in
                 { model
@@ -342,8 +345,10 @@ update msg model =
 
         ReceiveRandomBoolNodes list ->
             let
+                direction = directionForTreeRandomInsertStyle model.treeRandomInsertStyle
+
                 tree = list
-                    |> BTree.fromListAsIsBy model.directionForRandom
+                    |> BTree.fromListAsIsBy direction
                     |> BTreeBool
             in
                 { model
@@ -352,8 +357,10 @@ update msg model =
 
         ReceiveRandomNodeVarieties list ->
             let
+                direction = directionForTreeRandomInsertStyle model.treeRandomInsertStyle
+
                 tree = list
-                    |> BTree.fromListAsIsBy model.directionForRandom
+                    |> BTree.fromListAsIsBy direction
                     |> BTreeVaried
             in
                 { model
@@ -472,11 +479,11 @@ update msg model =
             in
                 newModel ! []
 
-        PlayNotes order ->
+        PlayNotes ->
             let
                 fn = \params ->
                     { params
-                    | traversalOrder = order
+                    | traversalOrder = model.masterTraversalOrder
                     , playSpeed = model.masterPlaySpeed
                     }
                 musicNoteTree = setTreePlayerParams fn model.musicNoteTree
@@ -486,8 +493,17 @@ update msg model =
                 , isPlayNotes = True
                 } ! [treeMusicPlay musicNoteTree]
 
+        ChangeTraversalOrder order ->
+            { model | masterTraversalOrder = order } ! []
+
         ChangePlaySpeed speed ->
             { model | masterPlaySpeed = speed } ! []
+
+        ChangeSortDirection direction ->
+            { model | directionForSort = direction } ! []
+
+        ChangeTreeRandomInsertStyle style ->
+            { model | treeRandomInsertStyle = style } ! []
 
         StartPlayNote id ->
             let
@@ -531,46 +547,6 @@ update msg model =
         SwitchToIntView intView ->
             { model | intView = intView } ! []
 
-        MouseEnteredButton action ->
-            let
-                isShowDropdown = EveryDict.update action (\mbVal -> Just True) model.isShowDropdown
-            in
-                { model| isShowDropdown = isShowDropdown } ! []
-
-        MouseLeftButton action ->
-            waitPriorToCheckingIfMouseEnteredDropdown (CheckIfMouseEnteredDropdown action) model
-
-        MouseEnteredDropdown action ->
-            let
-                isMouseEnteredDropdown = EveryDict.update action (\mbVal -> Just True) model.isMouseEnteredDropdown
-            in
-                { model| isMouseEnteredDropdown = isMouseEnteredDropdown } ! []
-
-        MouseLeftDropdown action ->
-            let
-                isShowDropdown = EveryDict.update action (\mbVal -> Just False) model.isShowDropdown
-                isMouseEnteredDropdown = EveryDict.update action (\mbVal -> Just False) model.isMouseEnteredDropdown
-            in
-                { model
-                | isShowDropdown = isShowDropdown
-                , isMouseEnteredDropdown = isMouseEnteredDropdown
-                } ! []
-
-
-        CheckIfMouseEnteredDropdown action ->
-            let
-                theMbBool = EveryDict.get action model.isMouseEnteredDropdown
-                isShowDropdown = EveryDict.update action (\mbBool -> theMbBool) model.isShowDropdown
-            in
-                { model| isShowDropdown = isShowDropdown } ! []
-
-        DebouncerSelfMsg debouncerMsg ->
-            let
-                ( debouncer, cmd ) =
-                    model.menuDropdownDebouncer |> Debouncer.process debouncerMsg
-            in
-                { model | menuDropdownDebouncer = debouncer } ! [cmd]
-
         Reset ->
             let
                 tree = model.initialMusicNoteTree
@@ -583,13 +559,12 @@ update msg model =
                 } ! [port_disconnectAll ()]
 
 
-waitPriorToCheckingIfMouseEnteredDropdown : Msg -> Model -> (Model, Cmd Msg)
-waitPriorToCheckingIfMouseEnteredDropdown msg model =
-    let
-        (debouncer, debouncerCmd) =
-            model.menuDropdownDebouncer |> Debouncer.bounce { id = toString msg, msgToSend = msg }
-    in
-        { model | menuDropdownDebouncer = debouncer } ! [debouncerCmd |> Cmd.map DebouncerSelfMsg]
+directionForTreeRandomInsertStyle : TreeRandomInsertStyle -> Direction
+directionForTreeRandomInsertStyle style =
+    case style of
+        TreeRandomInsertStyle.Random -> BTree.Left -- should never get here
+        TreeRandomInsertStyle.Right -> BTree.Right
+        TreeRandomInsertStyle.Left -> BTree.Left
 
 
 cacheAllTrees : Model -> Model
@@ -644,9 +619,9 @@ nodeValOperateOnVariedTrees operation model =
     changeVariedTrees (BTreeVariedType.nodeValOperate operation) model
 
 
-sortUniformTrees : Direction -> Model -> Model
-sortUniformTrees direction model =
-    changeUniformTrees (BTreeUniformType.sort direction) model
+sortUniformTrees : Model -> Model
+sortUniformTrees model =
+    changeUniformTrees (BTreeUniformType.sort model.directionForSort) model
 
 
 deDuplicate : Model -> Model

@@ -1,4 +1,4 @@
-module BTree exposing (BTree(..), TraversalOrder(..), Direction(..), singleton, depth, map, flatten, flattenBy, flattenUsingFold, flattenUsingFoldBy, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, isElementUsingFold, toTreeDiagramTree, sort, sortTo, sortByTo, sortWithTo, fromList, fromIntList, fromListBy, fromListWith, fromListAsIsBy, fromListAsIs_left, fromListAsIs_right, fromListAsIs_directed, insert, insertBy, insertWith, insertWith_directed, insertAsIs_left, insertAsIs_right, insertAsIsBy, insertAsIs_directed, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes)
+module BTree exposing (BTree(..), TraversalOrder(..), Direction(..), singleton, depth, map, flatten, flattenBy, flattenUsingFold, flattenUsingFoldBy, isElement, fold, sumInt, sumMaybeSafeInt, sumBigInt, sumFloat, sumIntUsingFold, sumFloatUsingFold, sumString, isElementUsingFold, toTreeDiagramTree, sort, sortTo, sortByTo, sortWithTo, fromList, fromIntList, fromListBy, fromListWith, fromListAsIsBy, fromListAsIs_left, fromListAsIs_right, fromListAsIs_directed, insert, insertBy, insertWith, insertWith_directed, insertAsIs_left, insertAsIs_right, insertAsIsBy, insertAsIs_directed, deDuplicate, deDuplicateBy, isAllNothing, isEmpty, toNothingNodes, traversalOrderOptions, directionOptions)
 
 import TreeDiagram as TD exposing (node, Tree)
 import List.Extra exposing (uniqueBy)
@@ -16,15 +16,30 @@ type BTree a
     | Node a (BTree a) (BTree a)
 
 
+-- ### must keep in sync ################
 type TraversalOrder
     = InOrder
     | PreOrder
     | PostOrder
+traversalOrderOptions : List TraversalOrder
+traversalOrderOptions =
+    [ InOrder
+    , PreOrder
+    , PostOrder
+    ]
+-- #####################################
 
 
+-- ### must keep in sync ################
 type Direction
     = Right
     | Left
+directionOptions : List Direction
+directionOptions =
+    [ Right
+    , Left
+    ]
+-- #####################################
 
 
 singleton : a -> BTree a

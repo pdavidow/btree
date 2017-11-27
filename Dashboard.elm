@@ -12,33 +12,101 @@ import Json.Decode as Decode exposing (Decoder)
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import IntView exposing (IntView(..))
-import DropdownAction exposing (DropdownAction(..))
 import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, nodeValOperate, setTreePlayerParams, displayString, musicNotePlayerParams)
 import NodeValueOperation exposing (Operation(..))
-import BTree exposing (Direction(..), TraversalOrder(..))
+import BTree exposing (Direction(..), TraversalOrder(..), traversalOrderOptions, directionOptions)
 import TreeCard exposing (viewTrees)
 import TreePlayerParams exposing (PlaySpeed(..), playSpeedOptions)
+import TreeRandomInsertStyle exposing (TreeRandomInsertStyle(..), treeRandomInsertStyleOptions)
 ------------------------------------------------
+
+onTraversalOrderChange : Attribute Msg
+onTraversalOrderChange =
+    Html.Events.targetValue
+        |> Decode.andThen traversalOrderDecoder
+        |> Decode.map ChangeTraversalOrder
+        |> Html.Events.on "change"
+
+
+traversalOrderDecoder : String -> Decoder TraversalOrder
+traversalOrderDecoder value =
+    case String.toLower value of
+        "inorder" -> Decode.succeed InOrder
+        "preorder" -> Decode.succeed PreOrder
+        "postorder" -> Decode.succeed PostOrder
+        _ -> Decode.fail "Invalid TraversalOrder"
+
+
+onPlaySpeedChange : Attribute Msg
+onPlaySpeedChange =
+    Html.Events.targetValue
+        |> Decode.andThen playSpeedDecoder
+        |> Decode.map ChangePlaySpeed
+        |> Html.Events.on "change"
+
+
+playSpeedDecoder : String -> Decoder PlaySpeed
+playSpeedDecoder value =
+    case String.toLower value of
+        "fast" -> Decode.succeed Fast
+        "medium" -> Decode.succeed Medium
+        "slow" -> Decode.succeed Slow
+        _ -> Decode.fail "Invalid PlaySpeed"
+
+
+onSortDirectionChange : Attribute Msg
+onSortDirectionChange =
+    Html.Events.targetValue
+        |> Decode.andThen directionDecoder
+        |> Decode.map ChangeSortDirection
+        |> Html.Events.on "change"
+
+
+directionDecoder : String -> Decoder Direction
+directionDecoder value =
+    case String.toLower value of
+        "right" -> Decode.succeed BTree.Right
+        "left" -> Decode.succeed BTree.Left
+        _ -> Decode.fail "Invalid Direction"
+
+
+onTreeRandomInsertStyleChange : Attribute Msg
+onTreeRandomInsertStyleChange =
+    Html.Events.targetValue
+        |> Decode.andThen treeRandomInsertStyleDecoder
+        |> Decode.map ChangeTreeRandomInsertStyle
+        |> Html.Events.on "change"
+
+
+string_Random_TreeRandomInsertStyle = "Insert Random L/R"
+string_Right_TreeRandomInsertStyle = "Insert Right"
+string_Left_TreeRandomInsertStyle = "Insert Left"
+
+
+treeRandomInsertStyleDecoder : String -> Decoder TreeRandomInsertStyle
+treeRandomInsertStyleDecoder value =
+    -- https://elmlang.slack.com/archives/C0CJ3SBBM/p1511740614000020
+    if value == string_Random_TreeRandomInsertStyle then
+        Decode.succeed TreeRandomInsertStyle.Random
+    else if value == string_Right_TreeRandomInsertStyle then
+        Decode.succeed TreeRandomInsertStyle.Right
+    else if value == string_Left_TreeRandomInsertStyle then
+        Decode.succeed TreeRandomInsertStyle.Left
+    else
+        Decode.fail "Invalid TreeRandomInsertStyle"
+{-
+    case value of
+        "Insert Random L/R" -> Decode.succeed TreeRandomInsertStyle.Random
+        "Insert Right" -> Decode.succeed TreeRandomInsertStyle.Right
+        "Insert Left" -> Decode.succeed TreeRandomInsertStyle.Left
+        _ -> Decode.fail "Invalid TreeRandomInsertStyle"
+-}
+
 
 viewDashboardWithTreesUnderneath : Model -> Html Msg
 viewDashboardWithTreesUnderneath model =
     let
         isPlayDisabled = not <| isEnablePlayNotesWidgetry model
-
-        onPlaySpeedChange : Attribute Msg
-        onPlaySpeedChange =
-            Html.Events.targetValue
-                |> Decode.andThen playSpeedDecoder
-                |> Decode.map ChangePlaySpeed
-                |> Html.Events.on "change"
-
-        playSpeedDecoder : String -> Decoder PlaySpeed
-        playSpeedDecoder value =
-            case String.toLower value of
-                "fast" -> Decode.succeed Fast
-                "medium" -> Decode.succeed Medium
-                "slow" -> Decode.succeed Slow
-                _ -> Decode.fail "Invalid speed"
     in
         section
             [ classes
@@ -63,78 +131,44 @@ viewDashboardWithTreesUnderneath model =
                             ]
                         ]
                         [ button
-                            [ classes
-                                ([ T.hover_bg_light_green
-                                ] ++ (if Maybe.withDefault False (EveryDict.get Play model.isShowDropdown) then [T.bg_light_green] else []))
+                            [ classes [ T.hover_bg_light_green ]
                             , disabled isPlayDisabled
-                            , onMouseEnter <| MouseEnteredButton Play
-                            , onMouseLeave <| MouseLeftButton Play
+                            , onClick PlayNotes
                             ]
                             [ text "Play" ]
-                        , div
-                            [ classes
-                                 [ T.absolute
-                                 , (if Maybe.withDefault False (EveryDict.get Play model.isShowDropdown) then T.db else T.dn)
-                                 , T.ba
-                                 , T.w5
-                                 ]
-                            , onMouseEnter <| MouseEnteredDropdown Play
-                            , onMouseLeave <| MouseLeftDropdown Play
-                            ]
-                            [ button
-                                [ classes
-                                    [ T.db
-                                    , T.hover_bg_light_green
-                                    , T.pa2
-                                    , T.tl
-                                    , T.w_100
-                                    ]
-                                , disabled isPlayDisabled
-                                , onClick <| PlayNotes PreOrder
-                                ]
-                                [text "Pre-Order"]
-                            , button
-                                [ classes
-                                    [ T.db
-                                    , T.hover_bg_light_green
-                                    , T.pa2
-                                    , T.w_100
-                                    , T.tl
-                                    ]
-                                , disabled isPlayDisabled
-                                , onClick <| PlayNotes InOrder
-                                ]
-                                [text "In-Order"]
-                            , button
-                                [ classes
-                                    [ T.db
-                                    , T.hover_bg_light_green
-                                    , T.pa2
-                                    , T.tl
-                                    , T.w_100
-                                    ]
-                                , disabled isPlayDisabled
-                                , onClick <| PlayNotes PostOrder
-                                ]
-                                [text "Post-Order"]
-                            ]
-                        , button
-                            [ classes
-                                [ T.hover_bg_light_green]
+                        , button -- todo one button toggle: Play/Stop
+                            [ classes [ T.hover_bg_light_green ]
                             , disabled <| not model.isPlayNotes
                             , onClick StopPlayNotes
                             ]
                             [ text "Stop Play" ]
                         , select
-                            [ onPlaySpeedChange, disabled model.isPlayNotes ]
+                            [ onTraversalOrderChange
+                            , disabled model.isPlayNotes
+                            ]
                             ( List.map
-                                ( \playSpeed ->
+                                ( \order ->
                                     let
-                                        isSelected = (model.masterPlaySpeed == playSpeed)
+                                        isSelected = (model.masterTraversalOrder == order)
                                     in
                                         option
                                             [selected isSelected]
-                                            [text <| toString playSpeed]
+                                            [text <| toString order]
+                                )
+                                traversalOrderOptions
+                            )
+                        , select
+                            [ onPlaySpeedChange
+                            , disabled model.isPlayNotes
+                            ]
+                            ( List.map
+                                ( \speed ->
+                                    let
+                                        isSelected = (model.masterPlaySpeed == speed)
+                                    in
+                                        option
+                                            [selected isSelected]
+                                            [text <| toString speed]
                                 )
                                 playSpeedOptions
                             )
@@ -162,50 +196,31 @@ viewDashboardWithTreesUnderneath model =
                     ]
                     [ button
                         [ classes
-                            ([ T.hover_bg_light_green
-                            ] ++ (if Maybe.withDefault False (EveryDict.get Sort model.isShowDropdown) then [T.bg_light_green] else []))
+                            [ T.hover_bg_light_green ]
                         , disabled model.isPlayNotes
-                            , onMouseEnter <| MouseEnteredButton Sort
-                            , onMouseLeave <| MouseLeftButton Sort
+                        , onClick SortUniformTrees
                         ]
                         [ text "Sort" ]
-                    , div
-                        [ classes
-                             [ T.absolute
-                             , (if Maybe.withDefault False (EveryDict.get Sort model.isShowDropdown) then T.db else T.dn)
-                             , T.ba
-                             , T.w5
-                             ]
-                            , onMouseEnter <| MouseEnteredDropdown Sort
-                            , onMouseLeave <| MouseLeftDropdown Sort
+                    , select
+                        [ onSortDirectionChange
+                        , disabled model.isPlayNotes
                         ]
-                        [ button
-                            [ classes
-                                [ T.db
-                                , T.hover_bg_light_green
-                                , T.pa2
-                                , T.w_100
-                                , T.tl
-                                ]
-                            , disabled model.isPlayNotes
-                            , onClick <| SortUniformTrees Left
-                            ]
-                            [text "Left"]
-                        , button
-                            [ classes
-                                [ T.db
-                                , T.hover_bg_light_green
-                                , T.pa2
-                                , T.w_100
-                                , T.tl
-                                ]
-                            , disabled model.isPlayNotes
-                            , onClick <| SortUniformTrees Right
-                            ]
-                            [text "Right"]
-                        ]
+                        ( List.map
+                            ( \direction ->
+                                let
+                                    isSelected = (model.directionForSort == direction)
+                                in
+                                    option
+                                        [selected isSelected]
+                                        [text <| toString direction]
+                            )
+                            directionOptions
+                        )
                     ]
-                , button
+                ]
+            , span
+                [classes [T.mh2]]
+                [ button
                     [classes [T.hover_bg_light_green, T.mv1], onClick RemoveDuplicates, disabled model.isPlayNotes]
                     [text "Dedup"]
                 ]
@@ -227,66 +242,30 @@ viewDashboardWithTreesUnderneath model =
                         ]
                     ]
                     [ button
-                        [ classes
-                            ([ T.hover_bg_light_green
-                            ] ++ (if Maybe.withDefault False (EveryDict.get Random model.isShowDropdown) then [T.bg_light_green] else []))
-                            , onMouseEnter <| MouseEnteredButton Random
-                            , onMouseLeave <| MouseLeftButton Random
+                        [ classes [ T.hover_bg_light_green ]
+                        , onClick RequestRandomTrees
                         ]
                         [ text "Random Trees" ]
-                    , div
-                        [ classes
-                             [ T.absolute
-                             , (if Maybe.withDefault False (EveryDict.get Random model.isShowDropdown) then T.db else T.dn)
-                             , T.ba
-                             , T.w5
-                             ]
-                            , onMouseEnter <| MouseEnteredDropdown Random
-                            , onMouseLeave <| MouseLeftDropdown Random
+                    , select
+                        [ onTreeRandomInsertStyleChange
+                        , disabled model.isPlayNotes
                         ]
-                        [ button
-                            [ classes
-                                [ T.db
-                                , T.hover_bg_light_green
-                                , T.pa2
-                                , T.w_100
-                                , T.tl
-                                ]
-                            , onClick RequestRandomTreesWithRandomInsertDirection
-                            ]
-                            [text "Insert Random L/R"]
-                        , div -- divider line
-                            [ classes
-                                [ T.db
-                                , T.w_100
-                                , T.bt
-                                , T.bw1
-                                ]
-                            ]
-                            []
-                        , button
-                            [ classes
-                                [ T.db
-                                , T.hover_bg_light_green
-                                , T.pa2
-                                , T.w_100
-                                , T.tl
-                                ]
-                            , onClick <| RequestRandomTrees Left
-                            ]
-                            [text "Insert Left"]
-                        , button
-                            [ classes
-                                [ T.db
-                                , T.hover_bg_light_green
-                                , T.pa2
-                                , T.w_100
-                                , T.tl
-                                ]
-                            , onClick <| RequestRandomTrees Right
-                            ]
-                            [text "Insert Right"]
-                        ]
+                        ( List.map
+                            ( \style ->
+                                let
+                                    isSelected = (model.treeRandomInsertStyle == style)
+
+                                    displayString = case style of
+                                        TreeRandomInsertStyle.Random -> string_Random_TreeRandomInsertStyle
+                                        TreeRandomInsertStyle.Right -> string_Right_TreeRandomInsertStyle
+                                        TreeRandomInsertStyle.Left -> string_Left_TreeRandomInsertStyle
+                                in
+                                    option
+                                        [selected isSelected]
+                                        [text displayString]
+                            )
+                            treeRandomInsertStyleOptions
+                        )
                     ]
                 , button
                     [classes [T.hover_bg_light_green, T.mv1], onClick RequestRandomScalars]

@@ -1,24 +1,21 @@
 module Msg exposing (Msg(..))
 
-import Debouncer exposing (DebouncerState)
-
 import BTree exposing (Direction, TraversalOrder)
 import NodeTag exposing (NodeVariety, IntNode, BigIntNode, StringNode, BoolNode, MusicNoteNode)
 import NodeValueOperation exposing (Operation)
 import MusicNote exposing (MusicNote)
 import IntView exposing (IntView)
-import DropdownAction exposing (DropdownAction)
 import TreePlayerParams exposing (PlaySpeed)
+import TreeRandomInsertStyle exposing (TreeRandomInsertStyle)
 ------------------------------------------------
 
 type Msg
     = NodeValueOperate (Operation)
-    | SortUniformTrees (Direction)
+    | SortUniformTrees
     | RemoveDuplicates
     | Delta String
     | Exponent String
-    | RequestRandomTrees (Direction)
-    | RequestRandomTreesWithRandomInsertDirection
+    | RequestRandomTrees
     | ReceiveRandomTreeMusicNotes (List MusicNote)
     | ReceiveRandomIntNodes (List IntNode)
     | ReceiveRandomBigIntNodes (List BigIntNode)
@@ -38,19 +35,14 @@ type Msg
     | StopShowLength
     | StartShowIsIntPrime
     | StopShowIsIntPrime
-    | PlayNotes (TraversalOrder)
+    | PlayNotes
     | ChangePlaySpeed (PlaySpeed)
+    | ChangeTraversalOrder (TraversalOrder)
+    | ChangeSortDirection (Direction)
+    | ChangeTreeRandomInsertStyle (TreeRandomInsertStyle)
     | StartPlayNote (String)
     | DonePlayNote (String)
     | DonePlayNotes (())
     | StopPlayNotes
     | SwitchToIntView (IntView)
-
-    | MouseEnteredButton (DropdownAction)
-    | MouseLeftButton (DropdownAction)
-    | MouseEnteredDropdown (DropdownAction)
-    | CheckIfMouseEnteredDropdown (DropdownAction)
-    | MouseLeftDropdown (DropdownAction)
-
-    | DebouncerSelfMsg (Debouncer.SelfMsg Msg)
     | Reset
