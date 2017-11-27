@@ -85,7 +85,6 @@ string_Left_TreeRandomInsertStyle = "Insert Left"
 
 treeRandomInsertStyleDecoder : String -> Decoder TreeRandomInsertStyle
 treeRandomInsertStyleDecoder value =
-    -- https://elmlang.slack.com/archives/C0CJ3SBBM/p1511740614000020
     if value == string_Random_TreeRandomInsertStyle then
         Decode.succeed TreeRandomInsertStyle.Random
     else if value == string_Right_TreeRandomInsertStyle then
@@ -94,13 +93,6 @@ treeRandomInsertStyleDecoder value =
         Decode.succeed TreeRandomInsertStyle.Left
     else
         Decode.fail "Invalid TreeRandomInsertStyle"
-{-
-    case value of
-        "Insert Random L/R" -> Decode.succeed TreeRandomInsertStyle.Random
-        "Insert Right" -> Decode.succeed TreeRandomInsertStyle.Right
-        "Insert Left" -> Decode.succeed TreeRandomInsertStyle.Left
-        _ -> Decode.fail "Invalid TreeRandomInsertStyle"
--}
 
 
 viewDashboardWithTreesUnderneath : Model -> Html Msg
