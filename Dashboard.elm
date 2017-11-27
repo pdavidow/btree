@@ -85,33 +85,33 @@ type alias InsertStyle_MenuOption =
     }
 
 
-arrayStyles : List InsertStyle_MenuOption
-arrayStyles =
+insertStyle_MenuOptions : List InsertStyle_MenuOption
+insertStyle_MenuOptions =
     [ InsertStyle_MenuOption "Insert Random L/R" TreeRandomInsertStyle.Random
     , InsertStyle_MenuOption "Insert Right" TreeRandomInsertStyle.Right
     , InsertStyle_MenuOption "Insert Left" TreeRandomInsertStyle.Left
     ]
 
 
-displayFor : TreeRandomInsertStyle -> String
-displayFor style =
-    arrayStyles
+insertStyleDisplayFor : TreeRandomInsertStyle -> String
+insertStyleDisplayFor style =
+    insertStyle_MenuOptions
         |> List.filter (\menuOption -> menuOption.style == style)
         |> List.head -- only one element anyway
         |> Maybe.withDefault (InsertStyle_MenuOption "should never get here" TreeRandomInsertStyle.Random)
         |> .display
 
 
-arrayStylesDict =
+insertStylesDict =
     let
         fn = \obj -> (obj.display, obj.style)
     in
-        Dict.fromList <| List.map fn arrayStyles
+        Dict.fromList <| List.map fn insertStyle_MenuOptions
 
 
 treeRandomInsertStyleDecoder : String -> Decoder TreeRandomInsertStyle
 treeRandomInsertStyleDecoder value =
-    Dict.get value arrayStylesDict
+    Dict.get value insertStylesDict
         |> Maybe.map Decode.succeed
         |> Maybe.withDefault (Decode.fail "Invalid TreeRandomInsertStyle")
 
@@ -260,7 +260,7 @@ viewDashboardWithTreesUnderneath model =
                             ( \style ->
                                 option
                                     [selected <| model.treeRandomInsertStyle == style]
-                                    [text <| displayFor style]
+                                    [text <| insertStyleDisplayFor style]
                             )
                             treeRandomInsertStyleOptions
                         )
