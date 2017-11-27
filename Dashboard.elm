@@ -6,6 +6,7 @@ import Html.Attributes as A exposing (attribute, property, class, checked, selec
 import Tachyons exposing (classes, tachyons)
 import Tachyons.Classes as T exposing (..)
 
+import Dict exposing (Dict, fromList)
 import EveryDict exposing (EveryDict, fromList, get, update)
 import Json.Decode as Decode exposing (Decoder)
 
@@ -78,21 +79,41 @@ onTreeRandomInsertStyleChange =
         |> Html.Events.on "change"
 
 
-string_Random_TreeRandomInsertStyle = "Insert Random L/R"
-string_Right_TreeRandomInsertStyle = "Insert Right"
-string_Left_TreeRandomInsertStyle = "Insert Left"
+type alias InsertStyle_MenuOption =
+    { display : String
+    , style : TreeRandomInsertStyle
+    }
+
+
+arrayStyles : List InsertStyle_MenuOption
+arrayStyles =
+    [ InsertStyle_MenuOption "Insert Random L/R" TreeRandomInsertStyle.Random
+    , InsertStyle_MenuOption "Insert Right" TreeRandomInsertStyle.Right
+    , InsertStyle_MenuOption "Insert Left" TreeRandomInsertStyle.Left
+    ]
+
+
+displayFor : TreeRandomInsertStyle -> String
+displayFor style =
+    arrayStyles
+        |> List.filter (\menuOption -> menuOption.style == style)
+        |> List.head -- only one element anyway
+        |> Maybe.withDefault (InsertStyle_MenuOption "should never get here" TreeRandomInsertStyle.Random)
+        |> .display
+
+
+arrayStylesDict =
+    let
+        fn = \obj -> (obj.display, obj.style)
+    in
+        Dict.fromList <| List.map fn arrayStyles
 
 
 treeRandomInsertStyleDecoder : String -> Decoder TreeRandomInsertStyle
 treeRandomInsertStyleDecoder value =
-    if value == string_Random_TreeRandomInsertStyle then
-        Decode.succeed TreeRandomInsertStyle.Random
-    else if value == string_Right_TreeRandomInsertStyle then
-        Decode.succeed TreeRandomInsertStyle.Right
-    else if value == string_Left_TreeRandomInsertStyle then
-        Decode.succeed TreeRandomInsertStyle.Left
-    else
-        Decode.fail "Invalid TreeRandomInsertStyle"
+    Dict.get value arrayStylesDict
+        |> Maybe.map Decode.succeed
+        |> Maybe.withDefault (Decode.fail "Invalid TreeRandomInsertStyle")
 
 
 viewDashboardWithTreesUnderneath : Model -> Html Msg
@@ -237,17 +258,9 @@ viewDashboardWithTreesUnderneath model =
                         ]
                         ( List.map
                             ( \style ->
-                                let
-                                    isSelected = (model.treeRandomInsertStyle == style)
-
-                                    displayString = case style of
-                                        TreeRandomInsertStyle.Random -> string_Random_TreeRandomInsertStyle
-                                        TreeRandomInsertStyle.Right -> string_Right_TreeRandomInsertStyle
-                                        TreeRandomInsertStyle.Left -> string_Left_TreeRandomInsertStyle
-                                in
-                                    option
-                                        [selected isSelected]
-                                        [text displayString]
+                                option
+                                    [selected <| model.treeRandomInsertStyle == style]
+                                    [text <| displayFor style]
                             )
                             treeRandomInsertStyleOptions
                         )
