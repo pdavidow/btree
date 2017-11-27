@@ -479,19 +479,10 @@ update msg model =
             in
                 newModel ! []
 
-        PlayNotes ->
-            let
-                fn = \params ->
-                    { params
-                    | traversalOrder = model.masterTraversalOrder
-                    , playSpeed = model.masterPlaySpeed
-                    }
-                musicNoteTree = setTreePlayerParams fn model.musicNoteTree
-            in
-                { model
-                | musicNoteTree = musicNoteTree
-                , isPlayNotes = True
-                } ! [treeMusicPlay musicNoteTree]
+        TogglePlayNotes ->
+            case model.isPlayNotes of
+                True -> stopPlayNotes model
+                False -> playNotes model
 
         ChangeTraversalOrder order ->
             { model | masterTraversalOrder = order } ! []
@@ -534,15 +525,6 @@ update msg model =
 
         DonePlayNotes () ->
             { model | isPlayNotes = False } ! []
-
-        StopPlayNotes ->
-            let
-                updatedTree = donePlayNotes model.musicNoteTree
-            in
-                { model
-                | isPlayNotes = False
-                , musicNoteTree = updatedTree
-                } ! [port_disconnectAll ()]
 
         SwitchToIntView intView ->
             { model | intView = intView } ! []
@@ -668,6 +650,33 @@ defaultMorphUniformTree fn tree =
 intFromInput : String -> Int
 intFromInput string =
     Result.withDefault 0 (String.toInt string)
+
+
+playNotes : Model -> (Model, Cmd Msg)
+playNotes model =
+    let
+        fn = \params ->
+            { params
+            | traversalOrder = model.masterTraversalOrder
+            , playSpeed = model.masterPlaySpeed
+            }
+        musicNoteTree = setTreePlayerParams fn model.musicNoteTree
+    in
+        { model
+        | musicNoteTree = musicNoteTree
+        , isPlayNotes = True
+        } ! [treeMusicPlay musicNoteTree]
+
+
+stopPlayNotes : Model -> (Model, Cmd Msg)
+stopPlayNotes model =
+    let
+        updatedTree = donePlayNotes model.musicNoteTree
+    in
+        { model
+        | isPlayNotes = False
+        , musicNoteTree = updatedTree
+        } ! [port_disconnectAll ()]
 
 
 subscriptions : Model -> Sub Msg

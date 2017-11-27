@@ -35,7 +35,7 @@ type Msg
     | StopShowLength
     | StartShowIsIntPrime
     | StopShowIsIntPrime
-    | PlayNotes
+    | TogglePlayNotes
     | ChangePlaySpeed (PlaySpeed)
     | ChangeTraversalOrder (TraversalOrder)
     | ChangeSortDirection (Direction)
@@ -43,6 +43,5 @@ type Msg
     | StartPlayNote (String)
     | DonePlayNote (String)
     | DonePlayNotes (())
-    | StopPlayNotes
     | SwitchToIntView (IntView)
     | Reset

@@ -98,7 +98,7 @@ treeRandomInsertStyleDecoder value =
 viewDashboardWithTreesUnderneath : Model -> Html Msg
 viewDashboardWithTreesUnderneath model =
     let
-        isPlayDisabled = not <| isEnablePlayNotesWidgetry model
+        playButtonDisplay = if model.isPlayNotes then "Stop" else "Play"
     in
         section
             [ classes
@@ -124,16 +124,9 @@ viewDashboardWithTreesUnderneath model =
                         ]
                         [ button
                             [ classes [ T.hover_bg_light_green ]
-                            , disabled isPlayDisabled
-                            , onClick PlayNotes
+                            , onClick TogglePlayNotes
                             ]
-                            [ text "Play" ]
-                        , button -- todo one button toggle: Play/Stop
-                            [ classes [ T.hover_bg_light_green ]
-                            , disabled <| not model.isPlayNotes
-                            , onClick StopPlayNotes
-                            ]
-                            [ text "Stop Play" ]
+                            [ text playButtonDisplay ]
                         , select
                             [ onTraversalOrderChange
                             , disabled model.isPlayNotes
