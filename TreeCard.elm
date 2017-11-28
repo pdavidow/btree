@@ -27,10 +27,14 @@ type CardWidth
 intTreeCards : Model -> List (Html msg)
 intTreeCards model =
     let
+        -- todo refactor
+        intTree = if model.isTreeMorphing then model.intTreeMorph else UniformInt <| model.intTree
+        bigIntTree = if model.isTreeMorphing then model.bigIntTreeMorph else UniformBigInt <| model.bigIntTree
+
         intTreesOfInterest = case model.intView of
-            IntView -> [UniformInt <| model.intTree]
-            BigIntView -> [UniformBigInt <| model.bigIntTree]
-            BothView -> [UniformInt <| model.intTree, UniformBigInt <| model.bigIntTree]
+            IntView -> [intTree]
+            BigIntView -> [bigIntTree]
+            BothView -> [intTree, bigIntTree]
 
         cardWidth = case model.intView of
             BothView -> Half
@@ -44,12 +48,17 @@ viewTrees model =
     let
         cardWidth = Full
 
+        -- todo refactor
+        musicNoteTree = if model.isTreeMorphing then model.musicNoteTreeMorph else UniformMusicNotePlayer <| model.musicNoteTree
+        stringTree  = if model.isTreeMorphing then model.stringTreeMorph else UniformString <| model.stringTree
+        boolTree = if model.isTreeMorphing then model.boolTreeMorph else UniformBool <| model.boolTree
+
         cards = List.concat
-            [   [ viewUniformTreeCard cardWidth <| UniformMusicNotePlayer <| model.musicNoteTree
+            [   [ viewUniformTreeCard cardWidth musicNoteTree
                 ]
             ,   intTreeCards model
-            ,   [ viewUniformTreeCard cardWidth <| UniformString <| model.stringTree
-                , viewUniformTreeCard cardWidth <| UniformBool <| model.boolTree
+            ,   [ viewUniformTreeCard cardWidth stringTree
+                , viewUniformTreeCard cardWidth boolTree
                 , viewVariedTreeCard cardWidth model.variedTree
                 ]
             ]

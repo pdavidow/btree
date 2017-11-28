@@ -19,18 +19,20 @@ type alias Model =
     , initialMusicNoteTree : MusicNotePlayerTree
     , musicNoteTree : MusicNotePlayerTree
     , variedTree : BTreeVaried
-    , intTreeCache : IntTree
-    , bigIntTreeCache : BigIntTree
-    , stringTreeCache : StringTree
-    , boolTreeCache : BoolTree
-    , musicNoteTreeCache : MusicNotePlayerTree
+
+    , intTreeMorph : BTreeUniform
+    , bigIntTreeMorph : BTreeUniform
+    , stringTreeMorph : BTreeUniform
+    , boolTreeMorph : BTreeUniform
+    , musicNoteTreeMorph : BTreeUniform
     , variedTreeCache : BTreeVaried
+
     , masterPlaySpeed : PlaySpeed
     , masterTraversalOrder : TraversalOrder
     , delta : Int
     , exponent : Int
     , isPlayNotes : Bool
-    , isTreeCaching : Bool
+    , isTreeMorphing : Bool
     , directionForSort : Direction
     , treeRandomInsertStyle : TreeRandomInsertStyle
     , intView : IntView

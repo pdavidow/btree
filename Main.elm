@@ -77,18 +77,20 @@ initialModel =
                 (singleton <| MusicNoteVariety <| MusicNoteNodeVal <| MusicNotePlayer.on <| MusicNote <| MidiNumber 57)
                 (singleton <| BoolVariety <| BoolNodeVal <| Just True)
             )
-    , intTreeCache = IntTree Empty
-    , bigIntTreeCache = BigIntTree Empty
-    , stringTreeCache = StringTree Empty
-    , boolTreeCache = BoolTree Empty
-    , musicNoteTreeCache = MusicNotePlayerTree defaultTreePlayerParams Empty
+
+    , intTreeMorph = UniformNothing <| NothingTree Empty
+    , bigIntTreeMorph = UniformNothing <| NothingTree Empty
+    , stringTreeMorph = UniformNothing <| NothingTree Empty
+    , boolTreeMorph = UniformNothing <| NothingTree Empty
+    , musicNoteTreeMorph = UniformNothing <| NothingTree Empty
     , variedTreeCache = BTreeVaried Empty
+
     , masterPlaySpeed = Slow
     , masterTraversalOrder = InOrder
     , delta = 1
     , exponent = 2
     , isPlayNotes = False
-    , isTreeCaching = False
+    , isTreeMorphing = False
     , directionForSort = BTree.Left
     , treeRandomInsertStyle = TreeRandomInsertStyle.Left
     , intView = IntView
@@ -437,21 +439,21 @@ update msg model =
 
         StartShowIsIntPrime ->
             (   { model
-                | isTreeCaching = True
+                | isTreeMorphing = True
                 }
-                    |> cacheAllTrees
+                    |> cacheTreesFor_ShowIsIntPrime
                     |> morphToMbUniformTrees BTreeUniformType.toIsIntPrime
                     |> morphToVariedTrees BTreeVariedType.toIsIntPrime
             ) ! []
 
         StopShowIsIntPrime ->
             let
-                newModel = if model.isTreeCaching
+                newModel = if model.isTreeMorphing
                     then
                         { model
-                        | isTreeCaching = False
+                        | isTreeMorphing = False
                         }
-                            |> unCacheAllTrees
+                            |> unCacheTreesFor_ShowIsIntPrime
                     else
                         model
             in
@@ -459,21 +461,21 @@ update msg model =
 
         StartShowLength ->
             (   { model
-                | isTreeCaching = True
+                | isTreeMorphing = True
                 }
-                    |> cacheAllTrees
+                    |> cacheTreesFor_ShowLength
                     |> morphToMbUniformTrees BTreeUniformType.toLength
                     |> morphToVariedTrees BTreeVariedType.toLength
             ) ! []
 
         StopShowLength ->
             let
-                newModel = if model.isTreeCaching
+                newModel = if model.isTreeMorphing
                     then
                         { model
-                        | isTreeCaching = False
+                        | isTreeMorphing = False
                         }
-                            |> unCacheAllTrees
+                            |> unCacheTreesFor_ShowLength
                     else
                         model
             in
@@ -549,27 +551,44 @@ directionForTreeRandomInsertStyle style =
         TreeRandomInsertStyle.Left -> BTree.Left
 
 
-cacheAllTrees : Model -> Model
-cacheAllTrees model =
-    {model
-        | intTreeCache = model.intTree
-        , bigIntTreeCache = model.bigIntTree
-        , stringTreeCache = model.stringTree
-        , boolTreeCache = model.boolTree
-        , musicNoteTreeCache = model.musicNoteTree
-        , variedTreeCache = model.variedTree
-    }
+cacheTreesFor_ShowIsIntPrime : Model -> Model
+cacheTreesFor_ShowIsIntPrime model =
+    cacheVariedTree model
 
 
-unCacheAllTrees : Model -> Model
-unCacheAllTrees model =
+cacheTreesFor_ShowLength : Model -> Model
+cacheTreesFor_ShowLength model =
+    cacheVariedTree model
+
+
+unCacheTreesFor_ShowIsIntPrime : Model -> Model
+unCacheTreesFor_ShowIsIntPrime model =
+    unCacheVariedTree model
+
+
+unCacheTreesFor_ShowLength : Model -> Model
+unCacheTreesFor_ShowLength model =
+    unCacheVariedTree model
+
+
+cacheVariedTree : Model -> Model
+cacheVariedTree model =
+    {model | variedTreeCache = model.variedTree}
+
+
+unCacheVariedTree : Model -> Model
+unCacheVariedTree model =
+    {model | variedTree = model.variedTreeCache}
+
+
+morphUniformTrees : (BTreeUniform -> BTreeUniform) -> Model -> Model
+morphUniformTrees fn model =
     {model
-        | intTree = model.intTreeCache
-        , bigIntTree = model.bigIntTreeCache
-        , stringTree = model.stringTreeCache
-        , boolTree= model.boolTreeCache
-        , musicNoteTree = model.musicNoteTreeCache
-        , variedTree = model.variedTreeCache
+        | intTreeMorph = fn <| UniformInt model.intTree
+        , bigIntTreeMorph = fn <| UniformBigInt model.bigIntTree
+        , stringTreeMorph = fn <| UniformString model.stringTree
+        , boolTreeMorph = fn <| UniformBool model.boolTree
+        , musicNoteTreeMorph = fn <| UniformMusicNotePlayer model.musicNoteTree
     }
 
 
@@ -634,7 +653,7 @@ morphToMbUniformTrees fn model =
     let
         defaultMorph = \tree -> defaultMorphUniformTree fn tree
     in
-        changeUniformTrees defaultMorph model
+        morphUniformTrees defaultMorph model
 
 
 morphToVariedTrees : (BTreeVaried -> BTreeVaried) -> Model -> Model
