@@ -1,6 +1,6 @@
 module BTreeVariedType_1_Tests exposing (..)
 
-import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime)
+import BTreeVariedType exposing (BTreeVaried(..), toLength, toIsIntPrime)
 import BigInt exposing (fromInt)
 
 import BTree exposing (BTree(..), singleton, map)

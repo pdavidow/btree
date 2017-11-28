@@ -4,7 +4,7 @@ import Time exposing (Time, millisecond, inMilliseconds)
 import Uuid exposing (Uuid)
 import Maybe.Extra exposing (values)
 
-import BTreeUniformType exposing (BTreeUniformType(..))
+import BTreeUniformType exposing (BTreeUniform(..), MusicNotePlayerTree(..))
 import BTree exposing (TraversalOrder(..), flattenBy, flattenUsingFoldBy, map)
 import MusicNote exposing (Freq(..), toFreq)
 import MusicNotePlayer exposing (MusicNotePlayer(..), isPlayable)
@@ -14,19 +14,15 @@ import NodeTag exposing (NodeVariety(..), MusicNoteNode(..))
 import TreePlayerParams exposing (TreePlayerParams, PlaySpeed, defaultTreePlayerParams, noteDurationFor)
 
 
-treeMusicPlay : BTreeUniformType -> Cmd msg
-treeMusicPlay bTreeUniformType =
-    case bTreeUniformType of
-        BTreeMusicNotePlayer params bTree ->
-            bTree
-                |> map (\(MusicNoteNodeVal player) -> player)
-                |> flattenBy params.traversalOrder
-                |> List.filter isPlayable
-                |> toAudioNotes params.playSpeed params.gapDuration
-                |> List.map port_playNote
-                |> Cmd.batch
-        _ ->
-            Cmd.none
+treeMusicPlay : MusicNotePlayerTree -> Cmd msg
+treeMusicPlay (MusicNotePlayerTree params bTree) =
+    bTree
+        |> map (\(MusicNoteNodeVal player) -> player)
+        |> flattenBy params.traversalOrder
+        |> List.filter isPlayable
+        |> toAudioNotes params.playSpeed params.gapDuration
+        |> List.map port_playNote
+        |> Cmd.batch
 
 
 toAudioNotes : PlaySpeed -> Time -> List MusicNotePlayer -> List AudioNote
@@ -49,38 +45,34 @@ toAudioNotes playSpeed gapDuration notePlayers =
             |> Maybe.Extra.values
 
 
-setPlayMode : Bool -> Maybe Uuid -> BTreeUniformType -> BTreeUniformType
-setPlayMode isPlaying mbUuid bTreeUniformType =
-    case bTreeUniformType of
-        BTreeMusicNotePlayer treeParams bTree ->
+setPlayMode : Bool -> Maybe Uuid -> MusicNotePlayerTree -> MusicNotePlayerTree
+setPlayMode isPlaying mbUuid (MusicNotePlayerTree treeParams bTree) =
+    let
+        fn = \(MusicNoteNodeVal (MusicNotePlayer params)) ->
             let
-                fn = \(MusicNoteNodeVal (MusicNotePlayer params)) ->
-                    let
-                        isUpdate = case mbUuid of
-                            Just uuid -> params.mbId == Just uuid
-                            Nothing -> True
+                isUpdate = case mbUuid of
+                    Just uuid -> params.mbId == Just uuid
+                    Nothing -> True
 
-                        updatedParams = if isUpdate
-                            then {params | isPlaying = isPlaying}
-                            else params
-                    in
-                        MusicNoteNodeVal <| MusicNotePlayer updatedParams
+                updatedParams = if isUpdate
+                    then {params | isPlaying = isPlaying}
+                    else params
             in
-                BTreeMusicNotePlayer treeParams <| BTree.map fn bTree
-        _ ->
-            bTreeUniformType
+                MusicNoteNodeVal <| MusicNotePlayer updatedParams
+    in
+        MusicNotePlayerTree treeParams <| BTree.map fn bTree
 
 
-startPlayNote : Uuid -> BTreeUniformType -> BTreeUniformType
-startPlayNote uuid bTreeUniformType =
-    setPlayMode True (Just uuid) bTreeUniformType
+startPlayNote : Uuid -> MusicNotePlayerTree -> MusicNotePlayerTree
+startPlayNote uuid musicNotePlayerTree =
+    setPlayMode True (Just uuid) musicNotePlayerTree
 
 
-donePlayNote : Uuid -> BTreeUniformType -> BTreeUniformType
-donePlayNote uuid bTreeUniformType =
-    setPlayMode False (Just uuid) bTreeUniformType
+donePlayNote : Uuid -> MusicNotePlayerTree -> MusicNotePlayerTree
+donePlayNote uuid musicNotePlayerTree =
+    setPlayMode False (Just uuid) musicNotePlayerTree
 
 
-donePlayNotes : BTreeUniformType -> BTreeUniformType
-donePlayNotes bTreeUniformType =
-    setPlayMode False Nothing bTreeUniformType
+donePlayNotes : MusicNotePlayerTree -> MusicNotePlayerTree
+donePlayNotes musicNotePlayerTree =
+    setPlayMode False Nothing musicNotePlayerTree

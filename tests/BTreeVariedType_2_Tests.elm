@@ -1,6 +1,6 @@
 module BTreeVariedType_2_Tests exposing (..)
 
-import BTreeVariedType exposing (BTreeVariedType(..), nodeValOperate, deDuplicate, hasAnyIntNodes)
+import BTreeVariedType exposing (BTreeVaried(..), nodeValOperate, deDuplicate, hasAnyIntNodes)
 import BigInt exposing (fromInt)
 
 import BTree exposing (BTree(..), singleton, map)

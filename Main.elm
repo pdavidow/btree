@@ -16,8 +16,8 @@ import Basics.Extra exposing (maxSafeInteger)
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import IntView exposing (IntView(..))
-import BTreeUniformType exposing (BTreeUniformType(..), toLength, toIsIntPrime, nodeValOperate, setTreePlayerParams, displayString)
-import BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, nodeValOperate, hasAnyIntNodes, displayString)
+import BTreeUniformType exposing (BTreeUniform(..), IntTree(..), BigIntTree(..), StringTree(..), BoolTree(..), MusicNotePlayerTree(..), NothingTree(..), toLength, toIsIntPrime, nodeValOperate, displayString, intTreeFrom, bigIntTreeFrom, stringTreeFrom, boolTreeFrom, musicNotePlayerTreeFrom)
+import BTreeVariedType exposing (BTreeVaried(..), toLength, toIsIntPrime, nodeValOperate, hasAnyIntNodes, displayString)
 import BTree exposing (BTree(..), Direction(..), TraversalOrder(..), fromListBy, insertAsIsBy, fromListAsIsBy, fromListAsIs_directed, singleton, toTreeDiagramTree)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import MusicNote exposing (MusicNote(..), MidiNumber(..), mbSorter)
@@ -34,28 +34,28 @@ import TreeRandomInsertStyle exposing (TreeRandomInsertStyle)
 
 initialModel: Model
 initialModel =
-    { intTree = BTreeInt <|
+    { intTree = IntTree <|
         Node (IntNodeVal <| toMaybeSafeInt <| maxSafeInteger)
             (singleton <| IntNodeVal <| toMaybeSafeInt 4)
             (Node (IntNodeVal <| toMaybeSafeInt -9)
                 Empty
                 (singleton <| IntNodeVal <| toMaybeSafeInt 4)
             )
-    , bigIntTree = BTreeBigInt <|
+    , bigIntTree = BigIntTree <|
         Node (BigIntNodeVal <| BigInt.fromInt <| maxSafeInteger)
             (singleton <| BigIntNodeVal <| BigInt.fromInt 4)
             (Node (BigIntNodeVal <| BigInt.fromInt -9)
                 Empty
                 (singleton <| BigIntNodeVal <| BigInt.fromInt 4)
             )
-    , stringTree = BTreeString <|
+    , stringTree = StringTree <|
         Node (StringNodeVal <| "maxSafeInteger")
             (singleton <| StringNodeVal <| "four")
             (Node (StringNodeVal <| "-nine")
                 Empty
                 (singleton <| StringNodeVal <| "four")
             )
-    , boolTree = BTreeBool <|
+    , boolTree = BoolTree <|
         Node (BoolNodeVal <| Just True)
             (singleton <| BoolNodeVal <| Just True)
             (Node (BoolNodeVal <| Just False)
@@ -65,8 +65,8 @@ initialModel =
                     (singleton <| BoolNodeVal <| Just False)
                 )
             )
-    , initialMusicNoteTree = BTreeMusicNotePlayer defaultTreePlayerParams Empty -- placeholder
-    , musicNoteTree = BTreeMusicNotePlayer defaultTreePlayerParams Empty -- placeholder
+    , initialMusicNoteTree = MusicNotePlayerTree defaultTreePlayerParams Empty -- placeholder
+    , musicNoteTree = MusicNotePlayerTree defaultTreePlayerParams Empty -- placeholder
     , variedTree = BTreeVaried <|
         Node (BigIntVariety <| BigIntNodeVal <| BigInt.fromInt maxSafeInteger)
             (Node (StringVariety <| StringNodeVal <| "A")
@@ -77,11 +77,11 @@ initialModel =
                 (singleton <| MusicNoteVariety <| MusicNoteNodeVal <| MusicNotePlayer.on <| MusicNote <| MidiNumber 57)
                 (singleton <| BoolVariety <| BoolNodeVal <| Just True)
             )
-    , intTreeCache = BTreeInt Empty
-    , bigIntTreeCache = BTreeBigInt Empty
-    , stringTreeCache = BTreeString Empty
-    , boolTreeCache = BTreeBool Empty
-    , musicNoteTreeCache = BTreeMusicNotePlayer defaultTreePlayerParams Empty
+    , intTreeCache = IntTree Empty
+    , bigIntTreeCache = BigIntTree Empty
+    , stringTreeCache = StringTree Empty
+    , boolTreeCache = BoolTree Empty
+    , musicNoteTreeCache = MusicNotePlayerTree defaultTreePlayerParams Empty
     , variedTreeCache = BTreeVaried Empty
     , masterPlaySpeed = Slow
     , masterTraversalOrder = InOrder
@@ -96,7 +96,7 @@ initialModel =
     }
 
 
-idedMusicNoteTree : Seed -> (List MusicNotePlayer -> BTree MusicNotePlayer) -> List MusicNote -> (BTreeUniformType, Seed)
+idedMusicNoteTree : Seed -> (List MusicNotePlayer -> BTree MusicNotePlayer) -> List MusicNote -> (MusicNotePlayerTree, Seed)
 idedMusicNoteTree startSeed listToTree notes =
     let
         ( ids, endSeed ) = generateIds (List.length notes) startSeed
@@ -109,7 +109,7 @@ idedMusicNoteTree startSeed listToTree notes =
         ( tree, endSeed )
 
 
-idedMusicNoteDirectedTree : Seed -> (List (MusicNotePlayer, Direction) -> BTree MusicNotePlayer) -> List (MusicNote, Direction) -> (BTreeUniformType, Seed)
+idedMusicNoteDirectedTree : Seed -> (List (MusicNotePlayer, Direction) -> BTree MusicNotePlayer) -> List (MusicNote, Direction) -> (MusicNotePlayerTree, Seed)
 idedMusicNoteDirectedTree startSeed directedListToTree directedNotes =
     let
         ( ids, endSeed ) = generateIds (List.length directedNotes) startSeed
@@ -122,11 +122,11 @@ idedMusicNoteDirectedTree startSeed directedListToTree directedNotes =
         ( tree, endSeed )
 
 
-notePlayerOn : BTree MusicNotePlayer -> BTreeUniformType
+notePlayerOn : BTree MusicNotePlayer -> MusicNotePlayerTree
 notePlayerOn bTree =
     bTree
         |> BTree.map (\player -> MusicNoteNodeVal player)
-        |> BTreeMusicNotePlayer defaultTreePlayerParams
+        |> MusicNotePlayerTree defaultTreePlayerParams
 
 
 init : Int -> ( Model, Cmd Msg )
@@ -313,7 +313,7 @@ update msg model =
 
                 tree = list
                     |> BTree.fromListAsIsBy direction
-                    |> BTreeInt
+                    |> IntTree
             in
                 { model
                 | intTree = tree
@@ -325,7 +325,7 @@ update msg model =
 
                 tree = list
                     |> BTree.fromListAsIsBy direction
-                    |> BTreeBigInt
+                    |> BigIntTree
             in
                 { model
                 | bigIntTree = tree
@@ -337,7 +337,7 @@ update msg model =
 
                 tree = list
                     |> BTree.fromListAsIsBy direction
-                    |> BTreeString
+                    |> StringTree
             in
                 { model
                 | stringTree = tree
@@ -349,7 +349,7 @@ update msg model =
 
                 tree = list
                     |> BTree.fromListAsIsBy direction
-                    |> BTreeBool
+                    |> BoolTree
             in
                 { model
                 | boolTree = tree
@@ -383,7 +383,7 @@ update msg model =
             let
                 tree = list
                     |> BTree.fromListAsIs_directed
-                    |> BTreeInt
+                    |> IntTree
             in
                 { model
                 | intTree = tree
@@ -393,7 +393,7 @@ update msg model =
             let
                 tree = list
                     |> BTree.fromListAsIs_directed
-                    |> BTreeBigInt
+                    |> BigIntTree
             in
                 { model
                 | bigIntTree = tree
@@ -403,7 +403,7 @@ update msg model =
             let
                 tree = list
                     |> BTree.fromListAsIs_directed
-                    |> BTreeString
+                    |> StringTree
             in
                 { model
                 | stringTree = tree
@@ -413,7 +413,7 @@ update msg model =
             let
                 tree = list
                     |> BTree.fromListAsIs_directed
-                    |> BTreeBool
+                    |> BoolTree
             in
                 { model
                 | boolTree = tree
@@ -573,18 +573,18 @@ unCacheAllTrees model =
     }
 
 
-changeUniformTrees : (BTreeUniformType -> BTreeUniformType) -> Model -> Model
+changeUniformTrees : (BTreeUniform -> BTreeUniform) -> Model -> Model
 changeUniformTrees fn model =
     {model
-        | intTree = fn model.intTree
-        , bigIntTree = fn model.bigIntTree
-        , stringTree = fn model.stringTree
-        , boolTree = fn model.boolTree
-        , musicNoteTree = fn model.musicNoteTree
+        | intTree = intTreeFrom <| fn <| UniformInt model.intTree
+        , bigIntTree = bigIntTreeFrom <| fn <| UniformBigInt model.bigIntTree
+        , stringTree = stringTreeFrom <| fn <| UniformString model.stringTree
+        , boolTree = boolTreeFrom <| fn <| UniformBool model.boolTree
+        , musicNoteTree = musicNotePlayerTreeFrom <| fn <| UniformMusicNotePlayer model.musicNoteTree
     }
 
 
-changeVariedTrees : (BTreeVariedType -> BTreeVariedType) -> Model -> Model
+changeVariedTrees : (BTreeVaried -> BTreeVaried) -> Model -> Model
 changeVariedTrees fn model =
     {model
         | variedTree = fn model.variedTree
@@ -629,7 +629,7 @@ deDuplicateVariedTrees model =
         changeVariedTrees fn model
 
 
-morphToMbUniformTrees : (BTreeUniformType -> Maybe BTreeUniformType) -> Model -> Model
+morphToMbUniformTrees : (BTreeUniform -> Maybe BTreeUniform) -> Model -> Model
 morphToMbUniformTrees fn model =
     let
         defaultMorph = \tree -> defaultMorphUniformTree fn tree
@@ -637,12 +637,12 @@ morphToMbUniformTrees fn model =
         changeUniformTrees defaultMorph model
 
 
-morphToVariedTrees : (BTreeVariedType -> BTreeVariedType) -> Model -> Model
+morphToVariedTrees : (BTreeVaried -> BTreeVaried) -> Model -> Model
 morphToVariedTrees fn model =
     changeVariedTrees fn model
 
 
-defaultMorphUniformTree : (BTreeUniformType -> Maybe BTreeUniformType) -> BTreeUniformType -> BTreeUniformType
+defaultMorphUniformTree : (BTreeUniform -> Maybe BTreeUniform) -> BTreeUniform -> BTreeUniform
 defaultMorphUniformTree fn tree =
     Maybe.withDefault (BTreeUniformType.toNothing tree) (fn tree)
 
@@ -660,7 +660,9 @@ playNotes model =
             | traversalOrder = model.masterTraversalOrder
             , playSpeed = model.masterPlaySpeed
             }
-        musicNoteTree = setTreePlayerParams fn model.musicNoteTree
+
+        (MusicNotePlayerTree params bTree) = model.musicNoteTree
+        musicNoteTree = MusicNotePlayerTree (fn params) bTree
     in
         { model
         | musicNoteTree = musicNoteTree

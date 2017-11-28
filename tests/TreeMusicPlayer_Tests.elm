@@ -2,7 +2,7 @@ module TreeMusicPlayer_Tests exposing (..)
 
 import TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote, donePlayNotes)
 
-import BTreeUniformType exposing (BTreeUniformType(..), setTreePlayerParams)
+import BTreeUniformType exposing (BTreeUniform(..), setTreePlayerParams)
 import BTree exposing (BTree(..), TraversalOrder(..), singleton)
 import MusicNote exposing (MusicNote(..), MidiNumber(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..), on)
@@ -21,14 +21,14 @@ setPlayMode isPlaying =
     let
         ( uuid, seed ) = step uuidGenerator (initialSeed 1)
         player = MusicNotePlayer {mbNote = Just <| MusicNote <| MidiNumber 60, isPlaying = not isPlaying, mbId = Just uuid}
-        tree = BTreeMusicNotePlayer defaultTreePlayerParams <| singleton <| MusicNoteNodeVal <| player
+        tree = UniformMusicNotePlayer defaultTreePlayerParams <| singleton <| MusicNoteNodeVal <| player
 
-        bTreeUniformType = if isPlaying
+        bTreeUniform = if isPlaying
             then startPlayNote uuid tree
             else donePlayNote uuid tree
 
-        bTree = case bTreeUniformType of
-            BTreeMusicNotePlayer _ bTree -> bTree
+        bTree = case bTreeUniform of
+            UniformMusicNotePlayer _ bTree -> bTree
             _ -> Empty
 
         mbPlayer = BTree.flatten bTree
@@ -40,9 +40,9 @@ setPlayMode isPlaying =
             Nothing -> not isPlaying -- should never get here
 
 
-testTree : BTreeUniformType
+testTree : BTreeUniform
 testTree =
-    BTreeMusicNotePlayer defaultTreePlayerParams <|
+    UniformMusicNotePlayer defaultTreePlayerParams <|
         Node (MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just <| MusicNote <| MidiNumber 57, isPlaying = False, mbId = Uuid.fromString "435d0606-136a-4a3e-b093-e96e0a310d35" })
             (Node (MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just <| MusicNote <| MidiNumber 58, isPlaying = False, mbId = Uuid.fromString "22de94eb-cdfc-42ee-a397-1ef94d79e7cb" })
                 (Node (MusicNoteNodeVal <| MusicNotePlayer { mbNote = Just <| MusicNote <| MidiNumber 64, isPlaying = False, mbId = Uuid.fromString "03d1f029-e0fa-433e-aa2b-25ceb1c19216" })
@@ -62,7 +62,7 @@ treeMusicPlayer =
                 \() ->
                     Expect.equal
                         Cmd.none
-                        (treeMusicPlay <| BTreeInt Empty)
+                        (treeMusicPlay <| UniformInt Empty)
             , test "non-empty, PreOrder" <|
                 \() ->
                     let
@@ -106,15 +106,15 @@ treeMusicPlayer =
                 \() ->
                     let
                         nodeVal = MusicNoteNodeVal <| MusicNotePlayer {mbNote = Just <| MusicNote <| MidiNumber 60, isPlaying = True, mbId = Nothing}
-                        bTreeUniformType = BTreeMusicNotePlayer defaultTreePlayerParams <| Node nodeVal (singleton nodeVal) (singleton nodeVal)
+                        bTreeUniform = UniformMusicNotePlayer defaultTreePlayerParams <| Node nodeVal (singleton nodeVal) (singleton nodeVal)
 
-                        mbUpdatedTree = case donePlayNotes bTreeUniformType of
-                            BTreeInt _ -> Nothing
-                            BTreeBigInt _ -> Nothing
-                            BTreeString _ -> Nothing
-                            BTreeBool _ -> Nothing
-                            BTreeMusicNotePlayer _ bTree -> Just bTree
-                            BTreeNothing _ -> Nothing
+                        mbUpdatedTree = case donePlayNotes bTreeUniform of
+                            UniformInt _ -> Nothing
+                            UniformBigInt _ -> Nothing
+                            UniformString _ -> Nothing
+                            UniformBool _ -> Nothing
+                            UniformMusicNotePlayer _ bTree -> Just bTree
+                            UniformNothing _ -> Nothing
 
                         result = (Maybe.withDefault Empty mbUpdatedTree)
                             |> BTree.flatten

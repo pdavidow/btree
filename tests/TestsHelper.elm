@@ -2,7 +2,7 @@ module TestsHelper exposing (musicNotePlayerOnNothing, uniformNothingSingelton, 
 
 import BigInt exposing (BigInt)
 
-import BTreeUniformType exposing (BTreeUniformType(..))
+import BTreeUniformType exposing (BTreeUniform(..))
 import BTree exposing (BTree(..), fromListBy, singleton)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..))
@@ -18,14 +18,14 @@ musicNotePlayerOnNothing =
        }
 
 
-uniformNothingSingelton : BTreeUniformType
+uniformNothingSingelton : BTreeUniform
 uniformNothingSingelton =
-    BTreeNothing <| singleton <| NothingNodeVal
+    UniformNothing <| singleton <| NothingNodeVal
 
 
-uniformNothing3Nodes : BTreeUniformType
+uniformNothing3Nodes : BTreeUniform
 uniformNothing3Nodes =
-    BTreeNothing <| fromListBy Basics.toString  <| List.repeat 3 NothingNodeVal
+    UniformNothing <| fromListBy Basics.toString  <| List.repeat 3 NothingNodeVal
 
 
 toIntVariety : MaybeSafe Int -> NodeVariety

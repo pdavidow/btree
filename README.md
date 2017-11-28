@@ -1,4 +1,6 @@
-**Playing with binary trees.**
+**Playing with binary trees.
+Nodes of both uniform and variety trees share operator code**
+
 _Work in progress..._
 
 

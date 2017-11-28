@@ -17,8 +17,8 @@ import Maybe.Extra exposing (unwrap)
 import BTree exposing (BTree, flatten, toTreeDiagramTree)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import TreeType exposing (TreeType(..))
-import BTreeUniformType exposing (BTreeUniformType, toTaggedNodes)
-import BTreeVariedType exposing (BTreeVariedType(..))
+import BTreeUniformType exposing (BTreeUniform, toTaggedNodes)
+import BTreeVariedType exposing (BTreeVaried(..))
 import MusicNote exposing (displayString)
 import MusicNotePlayer exposing (MusicNotePlayer(..))
 import UniversalConstants exposing (nothingString, unsafeString)
@@ -30,8 +30,8 @@ bTreeDiagram : TreeType -> Html msg
 bTreeDiagram treeType =
     let
         tree = case treeType of
-            Uniform bTreeUniformType ->
-                toTaggedNodes bTreeUniformType
+            Uniform bTreeUniform ->
+                toTaggedNodes bTreeUniform
 
             Varied (BTreeVaried taggedBTree) ->
                 taggedBTree

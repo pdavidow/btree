@@ -1,9 +1,9 @@
 module TreeType exposing (TreeType(..))
 
-import BTreeUniformType exposing (BTreeUniformType)
-import BTreeVariedType exposing (BTreeVariedType)
+import BTreeUniformType exposing (BTreeUniform)
+import BTreeVariedType exposing (BTreeVaried)
 
 
 type TreeType
-    = Uniform (BTreeUniformType)
-    | Varied (BTreeVariedType)
+    = Uniform (BTreeUniform)
+    | Varied (BTreeVaried)

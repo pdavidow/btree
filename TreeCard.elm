@@ -12,8 +12,8 @@ import Msg exposing (Msg)
 import IntView exposing (IntView(..))
 import BTree exposing (BTree, depth)
 import TreeType exposing (TreeType(..))
-import BTreeUniformType exposing (BTreeUniformType(..), displayString)
-import BTreeVariedType exposing (BTreeVariedType(..), displayString)
+import BTreeUniformType exposing (BTreeUniform(..), displayString)
+import BTreeVariedType exposing (BTreeVaried(..), displayString)
 import BTreeView exposing (bTreeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
 import Lib exposing (IntFlex(..))
 import MaybeSafe exposing (MaybeSafe(..))
@@ -28,9 +28,9 @@ intTreeCards : Model -> List (Html msg)
 intTreeCards model =
     let
         intTreesOfInterest = case model.intView of
-            IntView -> [model.intTree]
-            BigIntView -> [model.bigIntTree]
-            BothView -> [model.intTree, model.bigIntTree]
+            IntView -> [UniformInt <| model.intTree]
+            BigIntView -> [UniformBigInt <| model.bigIntTree]
+            BothView -> [UniformInt <| model.intTree, UniformBigInt <| model.bigIntTree]
 
         cardWidth = case model.intView of
             BothView -> Half
@@ -45,11 +45,11 @@ viewTrees model =
         cardWidth = Full
 
         cards = List.concat
-            [   [ viewUniformTreeCard cardWidth model.musicNoteTree
+            [   [ viewUniformTreeCard cardWidth <| UniformMusicNotePlayer <| model.musicNoteTree
                 ]
             ,   intTreeCards model
-            ,   [ viewUniformTreeCard cardWidth model.stringTree
-                , viewUniformTreeCard cardWidth model.boolTree
+            ,   [ viewUniformTreeCard cardWidth <| UniformString <| model.stringTree
+                , viewUniformTreeCard cardWidth <| UniformBool <| model.boolTree
                 , viewVariedTreeCard cardWidth model.variedTree
                 ]
             ]
@@ -64,19 +64,19 @@ viewTrees model =
             cards
 
 
-viewUniformTreeCard : CardWidth -> BTreeUniformType -> Html msg
-viewUniformTreeCard cardWidth bTreeUniformType =
+viewUniformTreeCard : CardWidth -> BTreeUniform -> Html msg
+viewUniformTreeCard cardWidth bTreeUniform =
     let
-        title = BTreeUniformType.displayString bTreeUniformType
-        status = bTreeUniformStatus bTreeUniformType
-        mbLegend = bTreeUniformLegend bTreeUniformType
+        title = BTreeUniformType.displayString bTreeUniform
+        status = bTreeUniformStatus bTreeUniform
+        mbLegend = bTreeUniformLegend bTreeUniform
         mbBgColor = Nothing
-        diagram = bTreeDiagram <| Uniform bTreeUniformType
+        diagram = bTreeDiagram <| Uniform bTreeUniform
     in
         viewTreeCard cardWidth title status mbLegend mbBgColor diagram
 
 
-viewVariedTreeCard : CardWidth -> BTreeVariedType -> Html msg
+viewVariedTreeCard : CardWidth -> BTreeVaried -> Html msg
 viewVariedTreeCard cardWidth bTreeVariedType =
     let
         title = BTreeVariedType.displayString bTreeVariedType
@@ -145,16 +145,16 @@ treeStatus depth mbIxSum =
 
 
 
-bTreeUniformStatus : BTreeUniformType -> Html msg
-bTreeUniformStatus bTreeUniformType =
+bTreeUniformStatus : BTreeUniform -> Html msg
+bTreeUniformStatus bTreeUniform =
     let
-        depth = BTreeUniformType.depth bTreeUniformType
-        mbIntFlex = BTreeUniformType.sumInt bTreeUniformType
+        depth = BTreeUniformType.depth bTreeUniform
+        mbIntFlex = BTreeUniformType.sumInt bTreeUniform
     in
         treeStatus depth mbIntFlex
 
 
-bTreeVariedStatus : BTreeVariedType -> Html msg
+bTreeVariedStatus : BTreeVaried -> Html msg
 bTreeVariedStatus (BTreeVaried bTree) =
     let
         depth = BTree.depth bTree
@@ -163,25 +163,25 @@ bTreeVariedStatus (BTreeVaried bTree) =
         treeStatus depth mbMbsSum
 
 
-bTreeUniformLegend : BTreeUniformType -> Maybe (Html msg)
-bTreeUniformLegend bTreeUniformType =
-    case bTreeUniformType of
-        BTreeInt _ ->
+bTreeUniformLegend : BTreeUniform -> Maybe (Html msg)
+bTreeUniformLegend bTreeUniform =
+    case bTreeUniform of
+        UniformInt _ ->
             Just bTreeIntCardLegend
 
-        BTreeBigInt _ ->
+        UniformBigInt _ ->
             Just bTreeBigIntCardLegend
 
-        BTreeString _ ->
+        UniformString _ ->
             Nothing
 
-        BTreeBool _ ->
+        UniformBool _ ->
             Nothing
 
-        BTreeMusicNotePlayer _ _ ->
+        UniformMusicNotePlayer _ ->
             Nothing
 
-        BTreeNothing _ ->
+        UniformNothing _ ->
             Nothing
 
 
@@ -223,7 +223,7 @@ bTreeIntCardLegend =
         ]
 
 
-bTreeVariedLegend : BTreeVariedType -> Maybe (Html msg)
+bTreeVariedLegend : BTreeVaried -> Maybe (Html msg)
 bTreeVariedLegend bTreeVariedType =
     if BTreeVariedType.hasAnyIntNodes bTreeVariedType
         then Just bTreeIntCardLegend

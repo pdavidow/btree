@@ -1,4 +1,4 @@
-module BTreeUniformType exposing (BTreeUniformType(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, depth, sumInt, sort, deDuplicate, isAllNothing, nodeValOperate, setTreePlayerParams, displayString, musicNotePlayerParams)
+module BTreeUniformType exposing (BTreeUniform(..), IntTree(..), BigIntTree(..), StringTree(..), BoolTree(..), MusicNotePlayerTree(..), NothingTree(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, depth, sumInt, sort, deDuplicate, isAllNothing, nodeValOperate, displayString, intTreeFrom, bigIntTreeFrom, stringTreeFrom, boolTreeFrom, musicNotePlayerTreeFrom)
 
 import Arithmetic exposing (isPrime)
 import BigInt exposing (BigInt, toString)
@@ -8,348 +8,375 @@ import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNod
 import MusicNote exposing (MusicNote, mbSorter)
 import MusicNotePlayer exposing (MusicNotePlayer(..), sorter)
 import NodeValueOperation exposing (Operation, operateOnInt, operateOnBigInt, operateOnString, operateOnBool, operateOnMusicNote, operateOnNothing)
-import BTreeVariedType exposing (BTreeVariedType(..))
+import BTreeVariedType exposing (BTreeVaried(..))
 import Lib exposing (IntFlex(..), digitCount, digitCountBigInt)
 import MaybeSafe exposing (MaybeSafe(..), compare, toMaybeSafeInt)
 import TreePlayerParams exposing (TreePlayerParams, defaultTreePlayerParams)
 
 
-type BTreeUniformType
-    = BTreeInt (BTree IntNode)
-    | BTreeBigInt (BTree BigIntNode)
-    | BTreeString (BTree StringNode)
-    | BTreeBool (BTree BoolNode)
-    | BTreeMusicNotePlayer TreePlayerParams (BTree MusicNoteNode)
-    | BTreeNothing (BTree NothingNode)
+type IntTree = IntTree (BTree IntNode)
+type BigIntTree = BigIntTree (BTree BigIntNode)
+type StringTree = StringTree (BTree StringNode)
+type BoolTree = BoolTree (BTree BoolNode)
+type MusicNotePlayerTree = MusicNotePlayerTree TreePlayerParams (BTree MusicNoteNode)
+type NothingTree = NothingTree (BTree NothingNode)
 
 
-musicNotePlayerParamsWithTree : BTreeUniformType -> (TreePlayerParams, BTree MusicNoteNode)
-musicNotePlayerParamsWithTree bTreeMusicNotePlayer =
+type BTreeUniform
+    = UniformInt IntTree
+    | UniformBigInt BigIntTree
+    | UniformString StringTree
+    | UniformBool BoolTree
+    | UniformMusicNotePlayer MusicNotePlayerTree
+    | UniformNothing NothingTree
+
+
+intTreeFrom : BTreeUniform -> IntTree
+intTreeFrom bTreeUniform =
     let
-        mbTuple = case bTreeMusicNotePlayer of
-            BTreeInt _ -> Nothing
-            BTreeBigInt _ -> Nothing
-            BTreeString _ -> Nothing
-            BTreeBool _ -> Nothing
-            BTreeMusicNotePlayer params bTree -> Just (params, bTree)
-            BTreeNothing _ -> Nothing
+        mbRequested = case bTreeUniform of
+            UniformInt (IntTree btree) -> Just (IntTree btree)
 
-        (params, bTree) = Maybe.withDefault (defaultTreePlayerParams, Empty) mbTuple
+            _ -> Nothing
     in
-        (params, bTree)
+        Maybe.withDefault (IntTree Empty) mbRequested
 
 
-musicNotePlayerParams : BTreeUniformType -> TreePlayerParams
-musicNotePlayerParams bTreeMusicNotePlayer =
+bigIntTreeFrom : BTreeUniform -> BigIntTree
+bigIntTreeFrom bTreeUniform =
     let
-        (params, bTree) = musicNotePlayerParamsWithTree bTreeMusicNotePlayer
+        mbRequested = case bTreeUniform of
+            UniformBigInt (BigIntTree btree) -> Just (BigIntTree btree)
+            _ -> Nothing
     in
-        params
+        Maybe.withDefault (BigIntTree Empty) mbRequested
 
 
-setTreePlayerParams : (TreePlayerParams -> TreePlayerParams) -> BTreeUniformType -> BTreeUniformType
-setTreePlayerParams fn bTreeMusicNotePlayer =
+stringTreeFrom : BTreeUniform -> StringTree
+stringTreeFrom bTreeUniform =
     let
-        (params, bTree) = musicNotePlayerParamsWithTree bTreeMusicNotePlayer
+        mbRequested = case bTreeUniform of
+            UniformString (StringTree btree) -> Just (StringTree btree)
+            _ -> Nothing
     in
-        BTreeMusicNotePlayer (fn params) bTree
+        Maybe.withDefault (StringTree Empty) mbRequested
 
 
-toNothing : BTreeUniformType -> BTreeUniformType
-toNothing bTreeUniformType =
+boolTreeFrom : BTreeUniform -> BoolTree
+boolTreeFrom bTreeUniform =
     let
-        toBTreeNothing : BTree a -> BTreeUniformType
-        toBTreeNothing  = \bTree -> BTreeNothing <| toNothingNodes bTree
+        mbRequested = case bTreeUniform of
+            UniformBool (BoolTree btree) -> Just (BoolTree btree)
+            _ -> Nothing
     in
-        case bTreeUniformType of
-            BTreeInt bTree ->
+        Maybe.withDefault (BoolTree Empty) mbRequested
+
+
+musicNotePlayerTreeFrom : BTreeUniform -> MusicNotePlayerTree
+musicNotePlayerTreeFrom bTreeUniform =
+    let
+        mbRequested = case bTreeUniform of
+            UniformMusicNotePlayer (MusicNotePlayerTree params bTree) -> Just (MusicNotePlayerTree params bTree)
+            _ -> Nothing
+    in
+        Maybe.withDefault (MusicNotePlayerTree defaultTreePlayerParams Empty) mbRequested
+
+
+toNothing : BTreeUniform -> BTreeUniform
+toNothing bTreeUniform =
+    let
+        toBTreeNothing : BTree a -> BTreeUniform
+        toBTreeNothing  = \bTree -> UniformNothing <| NothingTree <| toNothingNodes bTree
+    in
+        case bTreeUniform of
+            UniformInt (IntTree bTree) ->
                 toBTreeNothing bTree
 
-            BTreeBigInt bTree ->
+            UniformBigInt (BigIntTree bTree) ->
                 toBTreeNothing bTree
 
-            BTreeString bTree ->
+            UniformString (StringTree bTree) ->
                 toBTreeNothing bTree
 
-            BTreeBool bTree ->
+            UniformBool (BoolTree bTree) ->
                 toBTreeNothing bTree
 
-            BTreeMusicNotePlayer treeParams bTree ->
+            UniformMusicNotePlayer (MusicNotePlayerTree treeParams bTree) ->
                 toBTreeNothing bTree
 
-            BTreeNothing bTree ->
-                bTreeUniformType
+            UniformNothing (NothingTree bTree) ->
+                bTreeUniform
 
 
-toTaggedNodes : BTreeUniformType -> BTree NodeVariety
-toTaggedNodes bTreeUniformType =
-    case bTreeUniformType of
-        BTreeInt bTree ->
+toTaggedNodes : BTreeUniform -> BTree NodeVariety
+toTaggedNodes bTreeUniform =
+    case bTreeUniform of
+        UniformInt (IntTree bTree) ->
             map IntVariety bTree
 
-        BTreeBigInt bTree ->
+        UniformBigInt (BigIntTree bTree) ->
             map BigIntVariety bTree
 
-        BTreeString bTree ->
+        UniformString (StringTree bTree) ->
             map StringVariety bTree
 
-        BTreeBool bTree ->
+        UniformBool (BoolTree bTree) ->
             map BoolVariety bTree
 
-        BTreeMusicNotePlayer treeParams bTree ->
+        UniformMusicNotePlayer (MusicNotePlayerTree treeParams bTree) ->
             map MusicNoteVariety bTree
 
-        BTreeNothing bTree ->
+        UniformNothing (NothingTree bTree) ->
             map NothingVariety bTree
 
 
-toLength : BTreeUniformType -> Maybe BTreeUniformType
-toLength bTreeUniformType =
-    case bTreeUniformType of
-        BTreeInt bTree ->
+toLength : BTreeUniform -> Maybe BTreeUniform
+toLength bTreeUniform =
+    case bTreeUniform of
+        UniformInt (IntTree bTree) ->
             let
                 fn = \(IntNodeVal mbsInt) -> IntNodeVal <| digitCount mbsInt
             in
-                Just <| BTreeInt <| map fn bTree
+                Just <| UniformInt <| IntTree <| map fn bTree
 
-        BTreeBigInt bTree ->
+        UniformBigInt (BigIntTree bTree) ->
             let
                 fn = \(BigIntNodeVal bigInt) -> IntNodeVal <| digitCountBigInt bigInt
             in
-                Just <| BTreeInt <| map fn bTree
+                Just <| UniformInt <| IntTree <| map fn bTree
 
-        BTreeString bTree ->
+        UniformString (StringTree bTree) ->
             let
                 fn = \(StringNodeVal string) -> IntNodeVal <| toMaybeSafeInt <| String.length string
             in
-                Just <| BTreeInt <| map fn bTree
+                Just <| UniformInt <| IntTree <| map fn bTree
 
-        BTreeBool _ ->
+        UniformBool _ ->
             Nothing
 
-        BTreeMusicNotePlayer _ _ ->
+        UniformMusicNotePlayer _ ->
             Nothing
 
-        BTreeNothing _ ->
+        UniformNothing _ ->
             Nothing
 
 
-toIsIntPrime : BTreeUniformType -> Maybe BTreeUniformType
-toIsIntPrime bTreeUniformType =
-    case bTreeUniformType of
-        BTreeInt bTree ->
+toIsIntPrime : BTreeUniform -> Maybe BTreeUniform
+toIsIntPrime bTreeUniform =
+    case bTreeUniform of
+        UniformInt (IntTree bTree) ->
             let
                 fn = \(IntNodeVal mbsInt) ->
                     BoolNodeVal <| MaybeSafe.unwrap Nothing (\int -> Just <| Arithmetic.isPrime int) mbsInt
             in
-                Just <| BTreeBool (map fn bTree)
+                Just <| UniformBool <| BoolTree (map fn bTree)
 
-        BTreeBigInt _ -> -- todo. not found in BigInt module
+        UniformBigInt _ -> -- todo. not found in BigInt module
             Nothing
 
-        BTreeString _ ->
+        UniformString _ ->
             Nothing
 
-        BTreeBool _ ->
+        UniformBool _ ->
             Nothing
 
-        BTreeMusicNotePlayer _ _ ->
+        UniformMusicNotePlayer _ ->
             Nothing
 
-        BTreeNothing _ ->
+        UniformNothing _ ->
             Nothing
 
 
-nodeValOperate : Operation -> BTreeUniformType -> BTreeUniformType
-nodeValOperate operation bTreeUniformType =
-        case bTreeUniformType of
-            BTreeInt bTree ->
-                BTreeInt <| map (operateOnInt operation) bTree
+nodeValOperate : Operation -> BTreeUniform -> BTreeUniform
+nodeValOperate operation bTreeUniform =
+        case bTreeUniform of
+            UniformInt (IntTree bTree) ->
+                UniformInt <| IntTree <| map (operateOnInt operation) bTree
 
-            BTreeBigInt bTree ->
-                BTreeBigInt <| map (operateOnBigInt operation) bTree
+            UniformBigInt (BigIntTree bTree) ->
+                UniformBigInt <| BigIntTree <| map (operateOnBigInt operation) bTree
 
-            BTreeString bTree ->
-                BTreeString <| map (operateOnString operation) bTree
+            UniformString (StringTree bTree) ->
+                UniformString <| StringTree <| map (operateOnString operation) bTree
 
-            BTreeBool bTree ->
-                BTreeBool <| map (operateOnBool operation) bTree
+            UniformBool (BoolTree bTree) ->
+                UniformBool <| BoolTree <| map (operateOnBool operation) bTree
 
-            BTreeMusicNotePlayer treeParams bTree ->
-                BTreeMusicNotePlayer treeParams <| map (operateOnMusicNote operation) bTree
+            UniformMusicNotePlayer (MusicNotePlayerTree treeParams bTree) ->
+                UniformMusicNotePlayer <| MusicNotePlayerTree treeParams <| map (operateOnMusicNote operation) bTree
 
-            BTreeNothing bTree ->
-                BTreeNothing <| map (operateOnNothing operation) bTree
+            UniformNothing (NothingTree bTree) ->
+                UniformNothing <| NothingTree <| map (operateOnNothing operation) bTree
 
 
-depth : BTreeUniformType -> Int
-depth bTreeUniformType =
-    case bTreeUniformType of
-        BTreeInt bTree ->
+depth : BTreeUniform -> Int
+depth bTreeUniform =
+    case bTreeUniform of
+        UniformInt (IntTree bTree) ->
             BTree.depth bTree
 
-        BTreeBigInt bTree ->
+        UniformBigInt (BigIntTree bTree) ->
             BTree.depth bTree
 
-        BTreeString bTree ->
+        UniformString (StringTree bTree) ->
             BTree.depth bTree
 
-        BTreeBool bTree ->
+        UniformBool (BoolTree bTree) ->
             BTree.depth bTree
 
-        BTreeMusicNotePlayer treeParams bTree ->
+        UniformMusicNotePlayer (MusicNotePlayerTree treeParams bTree) ->
             BTree.depth bTree
 
-        BTreeNothing bTree ->
+        UniformNothing (NothingTree bTree) ->
             BTree.depth bTree
 
 
-sumInt : BTreeUniformType -> Maybe IntFlex
-sumInt bTreeUniformType =
-    case bTreeUniformType of
-        BTreeInt bTree ->
+sumInt : BTreeUniform -> Maybe IntFlex
+sumInt bTreeUniform =
+    case bTreeUniform of
+        UniformInt (IntTree bTree) ->
             bTree
                 |> map (\(IntNodeVal mbsInt) -> mbsInt)
                 |> BTree.sumMaybeSafeInt
                 |> IntVal
                 |> Just
 
-        BTreeBigInt bTree ->
+        UniformBigInt (BigIntTree bTree) ->
             bTree
                 |> map (\(BigIntNodeVal bigInt) -> bigInt)
                 |> BTree.sumBigInt
                 |> BigIntVal
                 |> Just
 
-        BTreeString _ ->
+        UniformString _ ->
             Nothing
 
-        BTreeBool _ ->
+        UniformBool _ ->
             Nothing
 
-        BTreeMusicNotePlayer _ _ ->
+        UniformMusicNotePlayer _ ->
             Nothing
 
-        BTreeNothing _ ->
+        UniformNothing _ ->
             Nothing
 
 
-sort : Direction -> BTreeUniformType -> BTreeUniformType
-sort direction bTreeUniformType =
-    case bTreeUniformType of
-        BTreeInt bTree ->
+sort : Direction -> BTreeUniform -> BTreeUniform
+sort direction bTreeUniform =
+    case bTreeUniform of
+        UniformInt (IntTree bTree) ->
             let
                 fn = \(IntNodeVal int1) (IntNodeVal int2) -> MaybeSafe.compare int1 int2
             in
-                BTreeInt <| BTree.sortWithTo fn direction bTree
+                UniformInt <| IntTree <| BTree.sortWithTo fn direction bTree
 
-        BTreeBigInt bTree ->
+        UniformBigInt (BigIntTree bTree) ->
             let
                 fn = \(BigIntNodeVal bigInt1) (BigIntNodeVal bigInt2) -> BigInt.compare bigInt1 bigInt2
             in
-                BTreeBigInt <| BTree.sortWithTo fn direction bTree
+                UniformBigInt <| BigIntTree <| BTree.sortWithTo fn direction bTree
 
-        BTreeString bTree ->
+        UniformString (StringTree bTree) ->
             let
                 fn = \(StringNodeVal string) -> string
             in
-                BTreeString <| BTree.sortByTo fn direction bTree
+                UniformString <| StringTree <| BTree.sortByTo fn direction bTree
 
-        BTreeBool bTree ->
+        UniformBool (BoolTree bTree) ->
             let
                 fn = \(BoolNodeVal mbBool) -> Basics.toString mbBool
             in
-                BTreeBool <| BTree.sortByTo fn direction bTree
+                UniformBool <| BoolTree <| BTree.sortByTo fn direction bTree
 
-        BTreeMusicNotePlayer treeParams bTree ->
+        UniformMusicNotePlayer (MusicNotePlayerTree treeParams bTree) ->
             let
                 fn = \(MusicNoteNodeVal player) -> MusicNotePlayer.sorter player
             in
-                BTreeMusicNotePlayer treeParams <| BTree.sortByTo fn direction bTree
+                UniformMusicNotePlayer <| MusicNotePlayerTree treeParams <| BTree.sortByTo fn direction bTree
 
-        BTreeNothing bTree ->
-            bTreeUniformType
+        UniformNothing (NothingTree bTree) ->
+            bTreeUniform
 
 
-deDuplicate : BTreeUniformType -> BTreeUniformType
-deDuplicate bTreeUniformType =
-    case bTreeUniformType of
-        BTreeInt bTree ->
+deDuplicate : BTreeUniform -> BTreeUniform
+deDuplicate bTreeUniform =
+    case bTreeUniform of
+        UniformInt (IntTree bTree) ->
             let
                 fn = \(IntNodeVal int) -> Basics.toString int
             in
-                BTreeInt <| BTree.deDuplicateBy fn bTree
+                UniformInt <| IntTree <| BTree.deDuplicateBy fn bTree
 
-        BTreeBigInt bTree ->
+        UniformBigInt (BigIntTree bTree) ->
             let
                 fn = \(BigIntNodeVal bigInt) -> BigInt.toString bigInt
             in
-                BTreeBigInt <| BTree.deDuplicateBy fn bTree
+                UniformBigInt <| BigIntTree <| BTree.deDuplicateBy fn bTree
 
-        BTreeString bTree ->
+        UniformString (StringTree bTree) ->
             let
                 fn = \(StringNodeVal string) -> string
             in
-                BTreeString <| BTree.deDuplicateBy fn bTree
+                UniformString <| StringTree <| BTree.deDuplicateBy fn bTree
 
-        BTreeBool bTree ->
+        UniformBool (BoolTree bTree) ->
             let
                 fn = \(BoolNodeVal mbBool) -> Basics.toString mbBool
             in
-                BTreeBool <| BTree.deDuplicateBy fn bTree
+                UniformBool <| BoolTree <| BTree.deDuplicateBy fn bTree
 
-        BTreeMusicNotePlayer treeParams bTree ->
+        UniformMusicNotePlayer (MusicNotePlayerTree treeParams bTree) ->
             let
                 fn = \(MusicNoteNodeVal player) -> MusicNotePlayer.sorter player
             in
-                BTreeMusicNotePlayer treeParams <| BTree.deDuplicateBy fn bTree
+                UniformMusicNotePlayer <| MusicNotePlayerTree treeParams <| BTree.deDuplicateBy fn bTree
 
-        BTreeNothing bTree ->
-            BTreeNothing <| BTree.deDuplicateBy Basics.toString bTree
+        UniformNothing (NothingTree bTree) ->
+            UniformNothing <| NothingTree <| BTree.deDuplicateBy Basics.toString bTree
 
 
-isAllNothing : BTreeUniformType -> Bool
-isAllNothing bTreeUniformType =
-    case bTreeUniformType of
-        BTreeInt bTree ->
+isAllNothing : BTreeUniform -> Bool
+isAllNothing bTreeUniform =
+    case bTreeUniform of
+        UniformInt (IntTree bTree) ->
             isEmpty bTree
 
-        BTreeBigInt bTree ->
+        UniformBigInt (BigIntTree bTree) ->
             isEmpty bTree
 
-        BTreeString bTree ->
+        UniformString (StringTree bTree) ->
             isEmpty bTree
 
-        BTreeBool bTree ->
+        UniformBool (BoolTree bTree) ->
             isEmpty bTree
 
-        BTreeMusicNotePlayer treeParams bTree ->
+        UniformMusicNotePlayer (MusicNotePlayerTree treeParams bTree) ->
             let
                 fn = \(MusicNoteNodeVal (MusicNotePlayer params)) -> params.mbNote
             in
                 BTree.isAllNothing (map fn bTree)
 
-        BTreeNothing bTree ->
+        UniformNothing (NothingTree bTree) ->
             True
 
 
-displayString : BTreeUniformType -> String
-displayString bTreeUniformType =
-    case bTreeUniformType of
-        BTreeInt _ ->
+displayString : BTreeUniform -> String
+displayString bTreeUniform =
+    case bTreeUniform of
+        UniformInt _ ->
             "Int"
 
-        BTreeBigInt _ ->
+        UniformBigInt _ ->
             "Big-Int"
 
-        BTreeString _ ->
+        UniformString _ ->
             "String"
 
-        BTreeBool _ ->
+        UniformBool _ ->
             "Bool"
 
-        BTreeMusicNotePlayer _ _ ->
+        UniformMusicNotePlayer _ ->
             "Music-Note"
 
-        BTreeNothing _ ->
+        UniformNothing _ ->
             "Not-Applicable"

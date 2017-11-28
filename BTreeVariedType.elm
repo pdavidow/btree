@@ -1,4 +1,4 @@
-module BTreeVariedType exposing (BTreeVariedType(..), toLength, toIsIntPrime, nodeValOperate, deDuplicate, hasAnyIntNodes, displayString)
+module BTreeVariedType exposing (BTreeVaried(..), toLength, toIsIntPrime, nodeValOperate, deDuplicate, hasAnyIntNodes, displayString)
 
 import Arithmetic exposing (isPrime)
 import BigInt exposing (toString)
@@ -12,10 +12,10 @@ import Lib exposing (digitCount, digitCountBigInt)
 import MaybeSafe exposing (MaybeSafe(..), toMaybeSafeInt)
 
 
-type BTreeVariedType = BTreeVaried (BTree NodeVariety)
+type BTreeVaried = BTreeVaried (BTree NodeVariety)
 
 
-toLength : BTreeVariedType -> BTreeVariedType
+toLength : BTreeVaried -> BTreeVaried
 toLength (BTreeVaried bTree) =
     let
         fn : NodeVariety -> NodeVariety
@@ -41,7 +41,7 @@ toLength (BTreeVaried bTree) =
         BTreeVaried (map fn bTree)
 
 
-toIsIntPrime : BTreeVariedType -> BTreeVariedType
+toIsIntPrime : BTreeVaried -> BTreeVaried
 toIsIntPrime (BTreeVaried bTree) =
     let
         fn : NodeVariety -> NodeVariety
@@ -70,7 +70,7 @@ toIsIntPrime (BTreeVaried bTree) =
         BTreeVaried (map fn bTree)
 
 
-nodeValOperate : Operation -> BTreeVariedType -> BTreeVariedType
+nodeValOperate : Operation -> BTreeVaried -> BTreeVaried
 nodeValOperate operation (BTreeVaried bTree) =
     let
         fn = \nodeVariety ->
@@ -96,7 +96,7 @@ nodeValOperate operation (BTreeVaried bTree) =
         BTreeVaried <| map fn bTree
 
 
-deDuplicate : BTreeVariedType -> BTreeVariedType
+deDuplicate : BTreeVaried -> BTreeVaried
 deDuplicate (BTreeVaried bTree) =
     let
         fn : NodeVariety -> String
@@ -123,7 +123,7 @@ deDuplicate (BTreeVaried bTree) =
         BTreeVaried (BTree.deDuplicateBy fn bTree)
 
 
-hasAnyIntNodes : BTreeVariedType -> Bool
+hasAnyIntNodes : BTreeVaried -> Bool
 hasAnyIntNodes (BTreeVaried bTree) =
     let
         isIntNode : NodeVariety -> Bool
@@ -141,6 +141,6 @@ hasAnyIntNodes (BTreeVaried bTree) =
             |> List.any isIntNode
 
 
-displayString : BTreeVariedType -> String
+displayString : BTreeVaried -> String
 displayString _ =
     "Varied"
