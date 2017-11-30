@@ -1,4 +1,4 @@
-module BTreeUniformType exposing (BTreeUniform(..), IntTree(..), BigIntTree(..), StringTree(..), BoolTree(..), MusicNotePlayerTree(..), NothingTree(..), toNothing, toTaggedNodes, toLength, toIsIntPrime, depth, sumInt, sort, deDuplicate, isAllNothing, nodeValOperate, displayString, intTreeFrom, bigIntTreeFrom, stringTreeFrom, boolTreeFrom, musicNotePlayerTreeFrom)
+module BTreeUniformType exposing (BTreeUniform(..), IntTree(..), BigIntTree(..), StringTree(..), BoolTree(..), MusicNotePlayerTree(..), NothingTree(..), uniformIntTreeFrom, uniformBigIntTreeFrom, uniformStringTreeFrom, uniformBoolTreeFrom, uniformMusicNotePlayerTreeFrom, uniformNothingTreeFrom, toNothing, toTaggedNodes, toLength, toIsIntPrime, depth, sumInt, sort, deDuplicate, isAllNothing, nodeValOperate, displayString, intTreeFrom, bigIntTreeFrom, stringTreeFrom, boolTreeFrom, musicNotePlayerTreeFrom)
 
 import Arithmetic exposing (isPrime)
 import BigInt exposing (BigInt, toString)
@@ -12,7 +12,6 @@ import BTreeVariedType exposing (BTreeVaried(..))
 import Lib exposing (IntFlex(..), digitCount, digitCountBigInt)
 import MaybeSafe exposing (MaybeSafe(..), compare, toMaybeSafeInt)
 import TreePlayerParams exposing (TreePlayerParams, defaultTreePlayerParams)
-
 
 type IntTree = IntTree (BTree IntNode)
 type BigIntTree = BigIntTree (BTree BigIntNode)
@@ -29,6 +28,37 @@ type BTreeUniform
     | UniformBool BoolTree
     | UniformMusicNotePlayer MusicNotePlayerTree
     | UniformNothing NothingTree
+
+
+uniformIntTreeFrom : BTree IntNode -> BTreeUniform
+uniformIntTreeFrom bTree =
+    UniformInt <| IntTree bTree
+
+
+uniformBigIntTreeFrom : BTree BigIntNode -> BTreeUniform
+uniformBigIntTreeFrom bTree =
+    UniformBigInt <| BigIntTree bTree
+
+
+uniformStringTreeFrom : BTree StringNode -> BTreeUniform
+uniformStringTreeFrom bTree =
+    UniformString <| StringTree bTree
+
+
+uniformBoolTreeFrom : BTree BoolNode -> BTreeUniform
+uniformBoolTreeFrom bTree =
+    UniformBool <| BoolTree bTree
+
+
+uniformMusicNotePlayerTreeFrom : TreePlayerParams -> BTree MusicNoteNode -> BTreeUniform
+uniformMusicNotePlayerTreeFrom params bTree =
+    UniformMusicNotePlayer <| MusicNotePlayerTree params bTree
+
+
+uniformNothingTreeFrom : BTree NothingNode -> BTreeUniform
+uniformNothingTreeFrom bTree =
+    UniformNothing <| NothingTree bTree
+
 
 -- todo If these are unused then DEL
 intTreeFrom : BTreeUniform -> IntTree
@@ -86,7 +116,7 @@ toNothing : BTreeUniform -> BTreeUniform
 toNothing bTreeUniform =
     let
         toBTreeNothing : BTree a -> BTreeUniform
-        toBTreeNothing  = \bTree -> UniformNothing <| NothingTree <| toNothingNodes bTree
+        toBTreeNothing  = \bTree -> uniformNothingTreeFrom <| toNothingNodes bTree
     in
         case bTreeUniform of
             UniformInt (IntTree bTree) ->
@@ -137,19 +167,19 @@ toLength bTreeUniform =
             let
                 fn = \(IntNodeVal mbsInt) -> IntNodeVal <| digitCount mbsInt
             in
-                Just <| UniformInt <| IntTree <| map fn bTree
+                Just <| uniformIntTreeFrom <| map fn bTree
 
         UniformBigInt (BigIntTree bTree) ->
             let
                 fn = \(BigIntNodeVal bigInt) -> IntNodeVal <| digitCountBigInt bigInt
             in
-                Just <| UniformInt <| IntTree <| map fn bTree
+                Just <| uniformIntTreeFrom <| map fn bTree
 
         UniformString (StringTree bTree) ->
             let
                 fn = \(StringNodeVal string) -> IntNodeVal <| toMaybeSafeInt <| String.length string
             in
-                Just <| UniformInt <| IntTree <| map fn bTree
+                Just <| uniformIntTreeFrom <| map fn bTree
 
         UniformBool _ ->
             Nothing
@@ -169,7 +199,7 @@ toIsIntPrime bTreeUniform =
                 fn = \(IntNodeVal mbsInt) ->
                     BoolNodeVal <| MaybeSafe.unwrap Nothing (\int -> Just <| Arithmetic.isPrime int) mbsInt
             in
-                Just <| UniformBool <| BoolTree (map fn bTree)
+                Just <| uniformBoolTreeFrom (map fn bTree)
 
         UniformBigInt _ -> -- todo. not found in BigInt module
             Nothing
@@ -191,22 +221,22 @@ nodeValOperate : Operation -> BTreeUniform -> BTreeUniform
 nodeValOperate operation bTreeUniform =
         case bTreeUniform of
             UniformInt (IntTree bTree) ->
-                UniformInt <| IntTree <| map (operateOnInt operation) bTree
+                uniformIntTreeFrom <| map (operateOnInt operation) bTree
 
             UniformBigInt (BigIntTree bTree) ->
-                UniformBigInt <| BigIntTree <| map (operateOnBigInt operation) bTree
+                uniformBigIntTreeFrom <| map (operateOnBigInt operation) bTree
 
             UniformString (StringTree bTree) ->
-                UniformString <| StringTree <| map (operateOnString operation) bTree
+                uniformStringTreeFrom <| map (operateOnString operation) bTree
 
             UniformBool (BoolTree bTree) ->
-                UniformBool <| BoolTree <| map (operateOnBool operation) bTree
+                uniformBoolTreeFrom <| map (operateOnBool operation) bTree
 
             UniformMusicNotePlayer (MusicNotePlayerTree treeParams bTree) ->
-                UniformMusicNotePlayer <| MusicNotePlayerTree treeParams <| map (operateOnMusicNote operation) bTree
+                uniformMusicNotePlayerTreeFrom treeParams <| map (operateOnMusicNote operation) bTree
 
             UniformNothing (NothingTree bTree) ->
-                UniformNothing <| NothingTree <| map (operateOnNothing operation) bTree
+                uniformNothingTreeFrom <| map (operateOnNothing operation) bTree
 
 
 depth : BTreeUniform -> Int
@@ -268,33 +298,33 @@ sort direction bTreeUniform =
             let
                 fn = \(IntNodeVal int1) (IntNodeVal int2) -> MaybeSafe.compare int1 int2
             in
-                UniformInt <| IntTree <| BTree.sortWithTo fn direction bTree
+                uniformIntTreeFrom <| BTree.sortWithTo fn direction bTree
 
         UniformBigInt (BigIntTree bTree) ->
             let
                 fn = \(BigIntNodeVal bigInt1) (BigIntNodeVal bigInt2) -> BigInt.compare bigInt1 bigInt2
             in
-                UniformBigInt <| BigIntTree <| BTree.sortWithTo fn direction bTree
+                uniformBigIntTreeFrom <| BTree.sortWithTo fn direction bTree
 
         UniformString (StringTree bTree) ->
             let
                 fn = \(StringNodeVal string) -> string
             in
-                UniformString <| StringTree <| BTree.sortByTo fn direction bTree
+                uniformStringTreeFrom <| BTree.sortByTo fn direction bTree
 
         UniformBool (BoolTree bTree) ->
             let
                 fn = \(BoolNodeVal mbBool) -> Basics.toString mbBool
             in
-                UniformBool <| BoolTree <| BTree.sortByTo fn direction bTree
+                uniformBoolTreeFrom <| BTree.sortByTo fn direction bTree
 
         UniformMusicNotePlayer (MusicNotePlayerTree treeParams bTree) ->
             let
                 fn = \(MusicNoteNodeVal player) -> MusicNotePlayer.sorter player
             in
-                UniformMusicNotePlayer <| MusicNotePlayerTree treeParams <| BTree.sortByTo fn direction bTree
+                uniformMusicNotePlayerTreeFrom treeParams <| BTree.sortByTo fn direction bTree
 
-        UniformNothing (NothingTree bTree) ->
+        UniformNothing _ ->
             bTreeUniform
 
 
@@ -305,34 +335,34 @@ deDuplicate bTreeUniform =
             let
                 fn = \(IntNodeVal int) -> Basics.toString int
             in
-                UniformInt <| IntTree <| BTree.deDuplicateBy fn bTree
+                uniformIntTreeFrom <| BTree.deDuplicateBy fn bTree
 
         UniformBigInt (BigIntTree bTree) ->
             let
                 fn = \(BigIntNodeVal bigInt) -> BigInt.toString bigInt
             in
-                UniformBigInt <| BigIntTree <| BTree.deDuplicateBy fn bTree
+                uniformBigIntTreeFrom <| BTree.deDuplicateBy fn bTree
 
         UniformString (StringTree bTree) ->
             let
                 fn = \(StringNodeVal string) -> string
             in
-                UniformString <| StringTree <| BTree.deDuplicateBy fn bTree
+                uniformStringTreeFrom <| BTree.deDuplicateBy fn bTree
 
         UniformBool (BoolTree bTree) ->
             let
                 fn = \(BoolNodeVal mbBool) -> Basics.toString mbBool
             in
-                UniformBool <| BoolTree <| BTree.deDuplicateBy fn bTree
+                uniformBoolTreeFrom <| BTree.deDuplicateBy fn bTree
 
         UniformMusicNotePlayer (MusicNotePlayerTree treeParams bTree) ->
             let
                 fn = \(MusicNoteNodeVal player) -> MusicNotePlayer.sorter player
             in
-                UniformMusicNotePlayer <| MusicNotePlayerTree treeParams <| BTree.deDuplicateBy fn bTree
+                uniformMusicNotePlayerTreeFrom treeParams <| BTree.deDuplicateBy fn bTree
 
         UniformNothing (NothingTree bTree) ->
-            UniformNothing <| NothingTree <| BTree.deDuplicateBy Basics.toString bTree
+            uniformNothingTreeFrom <| BTree.deDuplicateBy Basics.toString bTree
 
 
 isAllNothing : BTreeUniform -> Bool

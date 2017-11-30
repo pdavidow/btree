@@ -16,7 +16,7 @@ import Basics.Extra exposing (maxSafeInteger)
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import IntView exposing (IntView(..))
-import BTreeUniformType exposing (BTreeUniform(..), IntTree(..), BigIntTree(..), StringTree(..), BoolTree(..), MusicNotePlayerTree(..), NothingTree(..), toLength, toIsIntPrime, nodeValOperate, displayString, intTreeFrom, bigIntTreeFrom, stringTreeFrom, boolTreeFrom, musicNotePlayerTreeFrom)
+import BTreeUniformType exposing (BTreeUniform(..), IntTree(..), BigIntTree(..), StringTree(..), BoolTree(..), MusicNotePlayerTree(..), NothingTree(..), toLength, toIsIntPrime, nodeValOperate, displayString, intTreeFrom, bigIntTreeFrom, stringTreeFrom, boolTreeFrom, musicNotePlayerTreeFrom, uniformNothingTreeFrom)
 import BTreeVariedType exposing (BTreeVaried(..), toLength, toIsIntPrime, nodeValOperate, hasAnyIntNodes, displayString)
 import BTree exposing (BTree(..), Direction(..), TraversalOrder(..), fromListBy, insertAsIsBy, fromListAsIsBy, fromListAsIs_directed, singleton, toTreeDiagramTree)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
@@ -78,11 +78,11 @@ initialModel =
                 (singleton <| BoolVariety <| BoolNodeVal <| Just True)
             )
 
-    , intTreeMorph = UniformNothing <| NothingTree Empty
-    , bigIntTreeMorph = UniformNothing <| NothingTree Empty
-    , stringTreeMorph = UniformNothing <| NothingTree Empty
-    , boolTreeMorph = UniformNothing <| NothingTree Empty
-    , musicNoteTreeMorph = UniformNothing <| NothingTree Empty
+    , intTreeMorph = uniformNothingTreeFrom Empty
+    , bigIntTreeMorph = uniformNothingTreeFrom Empty
+    , stringTreeMorph = uniformNothingTreeFrom Empty
+    , boolTreeMorph = uniformNothingTreeFrom Empty
+    , musicNoteTreeMorph = uniformNothingTreeFrom Empty
     , variedTreeCache = BTreeVaried Empty
 
     , masterPlaySpeed = Slow
@@ -680,7 +680,7 @@ playNotes model =
             , playSpeed = model.masterPlaySpeed
             }
 
-        (MusicNotePlayerTree params bTree) = model.musicNoteTree
+        (MusicNotePlayerTree params bTree) = model.musicNoteTree  -- todo (global find) create helper setTreePlayerParams
         musicNoteTree = MusicNotePlayerTree (fn params) bTree
     in
         { model

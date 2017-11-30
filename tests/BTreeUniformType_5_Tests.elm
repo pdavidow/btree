@@ -1,6 +1,6 @@
 module BTreeUniformType_5_Tests exposing (..)
 
-import BTreeUniformType exposing (BTreeUniform(..), deDuplicate, isAllNothing)
+import BTreeUniformType exposing (BTreeUniform(..), deDuplicate, isAllNothing, uniformIntTreeFrom, uniformBigIntTreeFrom, uniformStringTreeFrom, uniformBoolTreeFrom, uniformMusicNotePlayerTreeFrom, uniformNothingTreeFrom)
 
 import BTree exposing (BTree(..), Direction(..), fromIntList, fromList, fromListBy, singleton, map)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
@@ -25,34 +25,34 @@ bTreeUniformType_5 =
                 \() ->
                     Expect.equal
                         (
-                            [ UniformInt Empty
-                            , UniformBigInt Empty
-                            , UniformString Empty
-                            , UniformBool Empty
-                            , UniformMusicNotePlayer defaultTreePlayerParams Empty
-                            , UniformNothing Empty
+                            [ uniformIntTreeFrom Empty
+                            , uniformBigIntTreeFrom Empty
+                            , uniformStringTreeFrom Empty
+                            , uniformBoolTreeFrom Empty
+                            , uniformMusicNotePlayerTreeFrom defaultTreePlayerParams Empty
+                            , uniformNothingTreeFrom Empty
                             ]
                         )
                         (
-                            [ BTreeUniformType.deDuplicate <| UniformInt <| Empty
-                            , BTreeUniformType.deDuplicate <| UniformBigInt <| Empty
-                            , BTreeUniformType.deDuplicate <| UniformString <| Empty
-                            , BTreeUniformType.deDuplicate <| UniformBool <| Empty
-                            , BTreeUniformType.deDuplicate <| UniformMusicNotePlayer defaultTreePlayerParams <| Empty
-                            , BTreeUniformType.deDuplicate <| UniformNothing <| Empty
+                            [ BTreeUniformType.deDuplicate <| uniformIntTreeFrom Empty
+                            , BTreeUniformType.deDuplicate <| uniformBigIntTreeFrom Empty
+                            , BTreeUniformType.deDuplicate <| uniformStringTreeFrom Empty
+                            , BTreeUniformType.deDuplicate <| uniformBoolTreeFrom Empty
+                            , BTreeUniformType.deDuplicate <| uniformMusicNotePlayerTreeFrom defaultTreePlayerParams Empty
+                            , BTreeUniformType.deDuplicate <| uniformNothingTreeFrom Empty
                             ]
                         ) 
             , test "of non-empty.BTreeInt.1" <|
                 \() ->
                     let
                         expected =
-                            UniformInt <| BTree.map IntNodeVal <|
+                            uniformIntTreeFrom <| BTree.map IntNodeVal <|
                                 Node (Safe 1)
                                     (singleton <| Safe 2)
                                     Empty
 
                         result = BTreeUniformType.deDuplicate <|
-                            UniformInt <| BTree.map IntNodeVal <|
+                            uniformIntTreeFrom <| BTree.map IntNodeVal <|
                                 Node (Safe 1)
                                     (singleton <| Safe 2)
                                     (singleton <| Safe 1)
@@ -64,13 +64,13 @@ bTreeUniformType_5 =
                 \() ->
                     let
                         expected =
-                            UniformInt <| BTree.map IntNodeVal <|
+                            uniformIntTreeFrom <| BTree.map IntNodeVal <|
                                 Node (Safe maxSafeInteger)
                                     (singleton <| Safe 4)
                                     (singleton <| Safe -9)
 
                         result = BTreeUniformType.deDuplicate <|
-                            UniformInt <| BTree.map IntNodeVal <|
+                            uniformIntTreeFrom <| BTree.map IntNodeVal <|
                                 Node (Safe maxSafeInteger)
                                     (singleton <| Safe 4)
                                     (Node (Safe -9)
@@ -85,13 +85,13 @@ bTreeUniformType_5 =
                 \() ->
                     let
                         expected =
-                            UniformBigInt <| BTree.map BigIntNodeVal <|
+                            uniformBigIntTreeFrom <| BTree.map BigIntNodeVal <|
                                 Node (BigInt.fromInt 1)
                                     (singleton <| BigInt.fromInt 2)
                                     Empty
 
                         result = BTreeUniformType.deDuplicate <|
-                            UniformBigInt <| BTree.map BigIntNodeVal <|
+                            uniformBigIntTreeFrom <| BTree.map BigIntNodeVal <|
                                 Node (BigInt.fromInt 1)
                                     (singleton <| BigInt.fromInt 2)
                                     (singleton <| BigInt.fromInt 1)
@@ -103,13 +103,13 @@ bTreeUniformType_5 =
                 \() ->
                     let
                         expected =
-                            UniformBigInt <| BTree.map BigIntNodeVal <|
+                            uniformBigIntTreeFrom <| BTree.map BigIntNodeVal <|
                                 Node (BigInt.fromInt maxSafeInteger)
                                     (singleton <| BigInt.fromInt 4)
                                     (singleton <| BigInt.fromInt -9)
 
                         result = BTreeUniformType.deDuplicate <|
-                            UniformBigInt <| BTree.map BigIntNodeVal <|
+                            uniformBigIntTreeFrom <| BTree.map BigIntNodeVal <|
                                 Node (BigInt.fromInt maxSafeInteger)
                                     (singleton <| BigInt.fromInt 4)
                                     (Node (BigInt.fromInt -9)
@@ -124,13 +124,13 @@ bTreeUniformType_5 =
                 \() ->
                     let
                         expected =
-                            UniformString <| BTree.map StringNodeVal <|
+                            uniformStringTreeFrom <| BTree.map StringNodeVal <|
                                 Node "a"
                                     (singleton <| "b")
                                     Empty
 
                         result = BTreeUniformType.deDuplicate <|
-                            UniformString <| BTree.map StringNodeVal <|
+                            uniformStringTreeFrom <| BTree.map StringNodeVal <|
                                 Node "a"
                                     (singleton <| "b")
                                     (singleton <| "a")
@@ -142,13 +142,13 @@ bTreeUniformType_5 =
                 \() ->
                     let
                         expected =
-                            UniformBool <| BTree.map BoolNodeVal <|
+                            uniformBoolTreeFrom <| BTree.map BoolNodeVal <|
                                 Node (Just True)
                                     (singleton <| Just False)
                                     Empty
 
                         result = BTreeUniformType.deDuplicate <|
-                            UniformBool <| BTree.map BoolNodeVal <|
+                            uniformBoolTreeFrom <| BTree.map BoolNodeVal <|
                                 Node (Just True)
                                     (singleton <| Just False)
                                     (singleton <| Just True)
@@ -160,13 +160,13 @@ bTreeUniformType_5 =
                 \() ->
                     let
                         expected =
-                            UniformMusicNotePlayer defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <|
+                            uniformMusicNotePlayerTreeFrom defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <|
                                 Node (MusicNotePlayer.on <| MusicNote <| MidiNumber 64)
                                     (singleton <| MusicNotePlayer.on <| MusicNote <| MidiNumber 65)
                                     Empty
 
                         result = BTreeUniformType.deDuplicate <|
-                            UniformMusicNotePlayer defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <|
+                            uniformMusicNotePlayerTreeFrom defaultTreePlayerParams <| BTree.map MusicNoteNodeVal <|
                                 Node (MusicNotePlayer.on <| MusicNote <| MidiNumber 64)
                                     (singleton <| MusicNotePlayer.on <| MusicNote <| MidiNumber 65)
                                     (singleton <| MusicNotePlayer.on <| MusicNote <| MidiNumber 64)
@@ -189,29 +189,29 @@ bTreeUniformType_5 =
                             ]
                         )
                         (
-                            [ BTreeUniformType.isAllNothing <| UniformInt <| Empty
-                            , BTreeUniformType.isAllNothing <| UniformBigInt <| Empty
-                            , BTreeUniformType.isAllNothing <| UniformString <| Empty
-                            , BTreeUniformType.isAllNothing <| UniformBool <| Empty
-                            , BTreeUniformType.isAllNothing <| UniformMusicNotePlayer defaultTreePlayerParams <| Empty
-                            , BTreeUniformType.isAllNothing <| UniformNothing <| Empty
+                            [ BTreeUniformType.isAllNothing <| uniformIntTreeFrom Empty
+                            , BTreeUniformType.isAllNothing <| uniformBigIntTreeFrom Empty
+                            , BTreeUniformType.isAllNothing <| uniformStringTreeFrom Empty
+                            , BTreeUniformType.isAllNothing <| uniformBoolTreeFrom Empty
+                            , BTreeUniformType.isAllNothing <| uniformMusicNotePlayerTreeFrom defaultTreePlayerParams <| Empty
+                            , BTreeUniformType.isAllNothing <| uniformNothingTreeFrom Empty
                             ]
                         )
             , test "of non-empty.BTreeInt" <|
                 \() ->
-                    Expect.equal False (BTreeUniformType.isAllNothing <| UniformInt <| BTree.map IntNodeVal <| singleton <| Safe 1)
+                    Expect.equal False (BTreeUniformType.isAllNothing <| uniformIntTreeFrom <| BTree.map IntNodeVal <| singleton <| Safe 1)
             , test "of non-empty.BTreeBigInt" <|
                 \() ->
-                    Expect.equal False (BTreeUniformType.isAllNothing <| UniformBigInt <| BTree.map BigIntNodeVal <| singleton <| BigInt.fromInt 1)
+                    Expect.equal False (BTreeUniformType.isAllNothing <| uniformBigIntTreeFrom <| BTree.map BigIntNodeVal <| singleton <| BigInt.fromInt 1)
             , test "of non-empty.BTreeString" <|
                 \() ->
-                    Expect.equal False (BTreeUniformType.isAllNothing <| UniformString <| BTree.map StringNodeVal <| singleton "a")
+                    Expect.equal False (BTreeUniformType.isAllNothing <| uniformStringTreeFrom <| BTree.map StringNodeVal <| singleton "a")
             , test "of non-empty.BTreeBool" <|
                 \() ->
-                    Expect.equal False (BTreeUniformType.isAllNothing <| UniformBool <| BTree.map BoolNodeVal <| singleton <| Just True)
+                    Expect.equal False (BTreeUniformType.isAllNothing <| uniformBoolTreeFrom <| BTree.map BoolNodeVal <| singleton <| Just True)
             , test "of non-empty.BTreeMusicNotePlayer" <|
                 \() ->
-                    Expect.equal False (BTreeUniformType.isAllNothing <| UniformMusicNotePlayer defaultTreePlayerParams <|  BTree.map MusicNoteNodeVal <| singleton (MusicNotePlayer.on <| MusicNote <| MidiNumber 57))
+                    Expect.equal False (BTreeUniformType.isAllNothing <| uniformMusicNotePlayerTreeFrom defaultTreePlayerParams <|  BTree.map MusicNoteNodeVal <| singleton (MusicNotePlayer.on <| MusicNote <| MidiNumber 57))
             , test "of non-empty.BTreeNothing" <|
                 \() ->
                     Expect.equal True (BTreeUniformType.isAllNothing uniformNothing3Nodes)
