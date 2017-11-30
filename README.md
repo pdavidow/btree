@@ -2,6 +2,8 @@
 Nodes of both uniform and variety trees share operator code.**
 
 
-`elm-make Main.elm --output elm.js`
+```
+elm-make Main.elm --output elm.js
 
-`open index.html`
+open index.html
+```
