@@ -16,7 +16,7 @@ import Basics.Extra exposing (maxSafeInteger)
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import IntView exposing (IntView(..))
-import BTreeUniform exposing (BTreeUniform(..), IntTree(..), BigIntTree(..), StringTree(..), BoolTree(..), MusicNotePlayerTree(..), NothingTree(..), toLength, toIsIntPrime, nodeValOperate, displayString, intTreeFrom, bigIntTreeFrom, stringTreeFrom, boolTreeFrom, musicNotePlayerTreeFrom, uniformNothingTreeFrom)
+import BTreeUniform exposing (BTreeUniform(..), IntTree(..), BigIntTree(..), StringTree(..), BoolTree(..), MusicNotePlayerTree(..), NothingTree(..), toLength, toIsIntPrime, nodeValOperate, displayString, intTreeFrom, bigIntTreeFrom, stringTreeFrom, boolTreeFrom, musicNotePlayerTreeFrom, uniformNothingTreeFrom, transformTreePlayerParamsIn)
 import BTreeVariedType exposing (BTreeVaried(..), toLength, toIsIntPrime, nodeValOperate, hasAnyIntNodes, displayString)
 import BTree exposing (BTree(..), Direction(..), TraversalOrder(..), fromListBy, insertAsIsBy, fromListAsIsBy, fromListAsIs_directed, singleton, toTreeDiagramTree)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
@@ -680,8 +680,7 @@ playNotes model =
             , playSpeed = model.masterPlaySpeed
             }
 
-        (MusicNotePlayerTree params bTree) = model.musicNoteTree  -- todo (global find) create helper setTreePlayerParams
-        musicNoteTree = MusicNotePlayerTree (fn params) bTree
+        musicNoteTree = transformTreePlayerParamsIn model.musicNoteTree fn
     in
         { model
         | musicNoteTree = musicNoteTree

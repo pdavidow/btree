@@ -1,4 +1,4 @@
-module BTreeUniform exposing (BTreeUniform(..), IntTree(..), BigIntTree(..), StringTree(..), BoolTree(..), MusicNotePlayerTree(..), NothingTree(..), uniformIntTreeFrom, uniformBigIntTreeFrom, uniformStringTreeFrom, uniformBoolTreeFrom, uniformMusicNotePlayerTreeFrom, uniformNothingTreeFrom, toNothing, toTaggedNodes, toLength, toIsIntPrime, depth, sumInt, sort, deDuplicate, isAllNothing, nodeValOperate, displayString, intTreeFrom, bigIntTreeFrom, stringTreeFrom, boolTreeFrom, musicNotePlayerTreeFrom)
+module BTreeUniform exposing (BTreeUniform(..), IntTree(..), BigIntTree(..), StringTree(..), BoolTree(..), MusicNotePlayerTree(..), NothingTree(..), uniformIntTreeFrom, uniformBigIntTreeFrom, uniformStringTreeFrom, uniformBoolTreeFrom, uniformMusicNotePlayerTreeFrom, uniformNothingTreeFrom, toNothing, toTaggedNodes, toLength, toIsIntPrime, depth, sumInt, sort, deDuplicate, isAllNothing, nodeValOperate, displayString, intTreeFrom, bigIntTreeFrom, stringTreeFrom, boolTreeFrom, musicNotePlayerTreeFrom, transformTreePlayerParamsIn)
 
 import Arithmetic exposing (isPrime)
 import BigInt exposing (BigInt, toString)
@@ -12,6 +12,7 @@ import BTreeVariedType exposing (BTreeVaried(..))
 import Lib exposing (IntFlex(..), digitCount, digitCountBigInt)
 import MaybeSafe exposing (MaybeSafe(..), compare, toMaybeSafeInt)
 import TreePlayerParams exposing (TreePlayerParams, defaultTreePlayerParams)
+
 
 type IntTree = IntTree (BTree IntNode)
 type BigIntTree = BigIntTree (BTree BigIntNode)
@@ -109,6 +110,14 @@ musicNotePlayerTreeFrom bTreeUniform =
             _ -> Nothing
     in
         Maybe.withDefault (MusicNotePlayerTree defaultTreePlayerParams Empty) mbRequested
+
+
+transformTreePlayerParamsIn :  MusicNotePlayerTree -> (TreePlayerParams -> TreePlayerParams) -> MusicNotePlayerTree
+transformTreePlayerParamsIn musicNotePlayerTree fn =
+    let
+        (MusicNotePlayerTree params bTree) = musicNotePlayerTree
+    in
+        MusicNotePlayerTree (fn params) bTree
 
 
 toNothing : BTreeUniform -> BTreeUniform

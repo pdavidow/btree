@@ -2,7 +2,7 @@ module TreeMusicPlayer_Tests exposing (..)
 
 import TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote, donePlayNotes)
 
-import BTreeUniform exposing (BTreeUniform(..), MusicNotePlayerTree(..), uniformIntTreeFrom, uniformMusicNotePlayerTreeFrom)
+import BTreeUniform exposing (BTreeUniform(..), MusicNotePlayerTree(..), uniformIntTreeFrom, uniformMusicNotePlayerTreeFrom, transformTreePlayerParamsIn)
 import BTree exposing (BTree(..), TraversalOrder(..), singleton)
 import MusicNote exposing (MusicNote(..), MidiNumber(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..), on)
@@ -60,8 +60,7 @@ treeMusicPlayer =
                 \() ->
                     let
                         fn = \params -> {params | traversalOrder = PreOrder}
-                        (MusicNotePlayerTree params bTree) = testTree
-                        updatedTestTree = MusicNotePlayerTree (fn params) bTree
+                        updatedTestTree = transformTreePlayerParamsIn testTree fn
                     in
                         Expect.equal
                             "{ type = \"node\", branches = [{ type = \"leaf\", home = \"port_playNote\", value = { freq = 220, id = \"435d0606-136a-4a3e-b093-e96e0a310d35\", startOffset = 0, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 233.08, id = \"22de94eb-cdfc-42ee-a397-1ef94d79e7cb\", startOffset = 1, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 329.63, id = \"03d1f029-e0fa-433e-aa2b-25ceb1c19216\", startOffset = 2, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 369.99, id = \"0b9d1ebb-db5e-483a-b9aa-39b5f390ecd3\", startOffset = 3, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 392, id = \"96f92b9f-9cb8-4815-9f7f-12c497551382\", startOffset = 4, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 329.63, id = \"217e28d2-205f-4952-bf5b-4128e85a5901\", startOffset = 5, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 277.18, id = \"c778e0da-65a5-4460-ac78-869f76b3c964\", startOffset = 6, duration = 0.75, isLast = True } }] }"
@@ -70,8 +69,7 @@ treeMusicPlayer =
                 \() ->
                     let
                         fn = \params -> {params | traversalOrder = InOrder}
-                        (MusicNotePlayerTree params bTree) = testTree
-                        updatedTestTree = MusicNotePlayerTree (fn params) bTree
+                        updatedTestTree = transformTreePlayerParamsIn testTree fn
                     in
                         Expect.equal
                             "{ type = \"node\", branches = [{ type = \"leaf\", home = \"port_playNote\", value = { freq = 369.99, id = \"0b9d1ebb-db5e-483a-b9aa-39b5f390ecd3\", startOffset = 0, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 329.63, id = \"03d1f029-e0fa-433e-aa2b-25ceb1c19216\", startOffset = 1, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 392, id = \"96f92b9f-9cb8-4815-9f7f-12c497551382\", startOffset = 2, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 233.08, id = \"22de94eb-cdfc-42ee-a397-1ef94d79e7cb\", startOffset = 3, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 329.63, id = \"217e28d2-205f-4952-bf5b-4128e85a5901\", startOffset = 4, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 220, id = \"435d0606-136a-4a3e-b093-e96e0a310d35\", startOffset = 5, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 277.18, id = \"c778e0da-65a5-4460-ac78-869f76b3c964\", startOffset = 6, duration = 0.75, isLast = True } }] }"
@@ -80,8 +78,7 @@ treeMusicPlayer =
                 \() ->
                     let
                         fn = \params -> {params | traversalOrder = PostOrder}
-                        (MusicNotePlayerTree params bTree) = testTree
-                        updatedTestTree = MusicNotePlayerTree (fn params) bTree
+                        updatedTestTree = transformTreePlayerParamsIn testTree fn
                     in
                     Expect.equal
                         "{ type = \"node\", branches = [{ type = \"leaf\", home = \"port_playNote\", value = { freq = 369.99, id = \"0b9d1ebb-db5e-483a-b9aa-39b5f390ecd3\", startOffset = 0, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 392, id = \"96f92b9f-9cb8-4815-9f7f-12c497551382\", startOffset = 1, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 329.63, id = \"03d1f029-e0fa-433e-aa2b-25ceb1c19216\", startOffset = 2, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 329.63, id = \"217e28d2-205f-4952-bf5b-4128e85a5901\", startOffset = 3, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 233.08, id = \"22de94eb-cdfc-42ee-a397-1ef94d79e7cb\", startOffset = 4, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 277.18, id = \"c778e0da-65a5-4460-ac78-869f76b3c964\", startOffset = 5, duration = 0.75, isLast = False } },{ type = \"leaf\", home = \"port_playNote\", value = { freq = 220, id = \"435d0606-136a-4a3e-b093-e96e0a310d35\", startOffset = 6, duration = 0.75, isLast = True } }] }"
