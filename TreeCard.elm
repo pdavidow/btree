@@ -12,7 +12,7 @@ import Msg exposing (Msg)
 import IntView exposing (IntView(..))
 import BTree exposing (BTree, depth)
 import TreeType exposing (TreeType(..))
-import BTreeUniformType exposing (BTreeUniform(..), displayString)
+import BTreeUniform exposing (BTreeUniform(..), displayString)
 import BTreeVariedType exposing (BTreeVaried(..), displayString)
 import BTreeView exposing (bTreeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
 import Lib exposing (IntFlex(..))
@@ -76,7 +76,7 @@ viewTrees model =
 viewUniformTreeCard : CardWidth -> BTreeUniform -> Html msg
 viewUniformTreeCard cardWidth bTreeUniform =
     let
-        title = BTreeUniformType.displayString bTreeUniform
+        title = BTreeUniform.displayString bTreeUniform
         status = bTreeUniformStatus bTreeUniform
         mbLegend = bTreeUniformLegend bTreeUniform
         mbBgColor = Nothing
@@ -157,8 +157,8 @@ treeStatus depth mbIxSum =
 bTreeUniformStatus : BTreeUniform -> Html msg
 bTreeUniformStatus bTreeUniform =
     let
-        depth = BTreeUniformType.depth bTreeUniform
-        mbIntFlex = BTreeUniformType.sumInt bTreeUniform
+        depth = BTreeUniform.depth bTreeUniform
+        mbIntFlex = BTreeUniform.sumInt bTreeUniform
     in
         treeStatus depth mbIntFlex
 

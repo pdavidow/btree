@@ -16,7 +16,7 @@ import Basics.Extra exposing (maxSafeInteger)
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import IntView exposing (IntView(..))
-import BTreeUniformType exposing (BTreeUniform(..), IntTree(..), BigIntTree(..), StringTree(..), BoolTree(..), MusicNotePlayerTree(..), NothingTree(..), toLength, toIsIntPrime, nodeValOperate, displayString, intTreeFrom, bigIntTreeFrom, stringTreeFrom, boolTreeFrom, musicNotePlayerTreeFrom, uniformNothingTreeFrom)
+import BTreeUniform exposing (BTreeUniform(..), IntTree(..), BigIntTree(..), StringTree(..), BoolTree(..), MusicNotePlayerTree(..), NothingTree(..), toLength, toIsIntPrime, nodeValOperate, displayString, intTreeFrom, bigIntTreeFrom, stringTreeFrom, boolTreeFrom, musicNotePlayerTreeFrom, uniformNothingTreeFrom)
 import BTreeVariedType exposing (BTreeVaried(..), toLength, toIsIntPrime, nodeValOperate, hasAnyIntNodes, displayString)
 import BTree exposing (BTree(..), Direction(..), TraversalOrder(..), fromListBy, insertAsIsBy, fromListAsIsBy, fromListAsIs_directed, singleton, toTreeDiagramTree)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
@@ -442,7 +442,7 @@ update msg model =
                 | isTreeMorphing = True
                 }
                     |> cacheTreesFor_ShowIsIntPrime
-                    |> morphToMbUniformTrees BTreeUniformType.toIsIntPrime
+                    |> morphToMbUniformTrees BTreeUniform.toIsIntPrime
                     |> morphToVariedTrees BTreeVariedType.toIsIntPrime
             ) ! []
 
@@ -464,7 +464,7 @@ update msg model =
                 | isTreeMorphing = True
                 }
                     |> cacheTreesFor_ShowLength
-                    |> morphToMbUniformTrees BTreeUniformType.toLength
+                    |> morphToMbUniformTrees BTreeUniform.toLength
                     |> morphToVariedTrees BTreeVariedType.toLength
             ) ! []
 
@@ -612,7 +612,7 @@ changeVariedTrees fn model =
 
 nodeValOperateOnUniformTrees : Operation -> Model -> Model
 nodeValOperateOnUniformTrees operation model =
-    changeUniformTrees (BTreeUniformType.nodeValOperate operation) model
+    changeUniformTrees (BTreeUniform.nodeValOperate operation) model
 
 
 nodeValOperateOnVariedTrees : Operation -> Model -> Model
@@ -622,7 +622,7 @@ nodeValOperateOnVariedTrees operation model =
 
 sortUniformTrees : Model -> Model
 sortUniformTrees model =
-    changeUniformTrees (BTreeUniformType.sort model.directionForSort) model
+    changeUniformTrees (BTreeUniform.sort model.directionForSort) model
 
 
 deDuplicate : Model -> Model
@@ -635,7 +635,7 @@ deDuplicate model =
 deDuplicateUniformTrees : Model -> Model
 deDuplicateUniformTrees model =
     let
-        fn = BTreeUniformType.deDuplicate
+        fn = BTreeUniform.deDuplicate
     in
         changeUniformTrees fn model
 
@@ -663,7 +663,7 @@ morphToVariedTrees fn model =
 
 defaultMorphUniformTree : (BTreeUniform -> Maybe BTreeUniform) -> BTreeUniform -> BTreeUniform
 defaultMorphUniformTree fn tree =
-    Maybe.withDefault (BTreeUniformType.toNothing tree) (fn tree)
+    Maybe.withDefault (BTreeUniform.toNothing tree) (fn tree)
 
 
 intFromInput : String -> Int

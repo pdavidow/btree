@@ -13,7 +13,7 @@ import Json.Decode as Decode exposing (Decoder)
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import IntView exposing (IntView(..))
-import BTreeUniformType exposing (BTreeUniform(..), displayString)
+import BTreeUniform exposing (BTreeUniform(..), displayString)
 import NodeValueOperation exposing (Operation(..))
 import BTree exposing (Direction(..), TraversalOrder(..), traversalOrderOptions, directionOptions)
 import TreeCard exposing (viewTrees)
@@ -285,7 +285,7 @@ viewDashboardWithTreesUnderneath model =
 
 isEnablePlayNotesWidgetry : Model -> Bool
 isEnablePlayNotesWidgetry model =
-    not (model.isPlayNotes) && not (BTreeUniformType.isAllNothing <| UniformMusicNotePlayer <| model.musicNoteTree)
+    not (model.isPlayNotes) && not (BTreeUniform.isAllNothing <| UniformMusicNotePlayer <| model.musicNoteTree)
 
 
 viewInputs : Model -> List (Html Msg)

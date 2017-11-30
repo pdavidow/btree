@@ -1,6 +1,6 @@
 module TreeType exposing (TreeType(..))
 
-import BTreeUniformType exposing (BTreeUniform)
+import BTreeUniform exposing (BTreeUniform)
 import BTreeVariedType exposing (BTreeVaried)
 
 

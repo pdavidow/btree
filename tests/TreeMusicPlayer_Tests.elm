@@ -2,7 +2,7 @@ module TreeMusicPlayer_Tests exposing (..)
 
 import TreeMusicPlayer exposing (treeMusicPlay, startPlayNote, donePlayNote, donePlayNotes)
 
-import BTreeUniformType exposing (BTreeUniform(..), MusicNotePlayerTree(..), uniformIntTreeFrom, uniformMusicNotePlayerTreeFrom)
+import BTreeUniform exposing (BTreeUniform(..), MusicNotePlayerTree(..), uniformIntTreeFrom, uniformMusicNotePlayerTreeFrom)
 import BTree exposing (BTree(..), TraversalOrder(..), singleton)
 import MusicNote exposing (MusicNote(..), MidiNumber(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..), on)

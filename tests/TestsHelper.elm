@@ -2,7 +2,7 @@ module TestsHelper exposing (musicNotePlayerOnNothing, uniformNothingSingelton, 
 
 import BigInt exposing (BigInt)
 
-import BTreeUniformType exposing (BTreeUniform(..), IntTree(..), BigIntTree(..), StringTree(..), BoolTree(..), MusicNotePlayerTree(..), NothingTree(..), uniformNothingTreeFrom)
+import BTreeUniform exposing (BTreeUniform(..), IntTree(..), BigIntTree(..), StringTree(..), BoolTree(..), MusicNotePlayerTree(..), NothingTree(..), uniformNothingTreeFrom)
 import BTree exposing (BTree(..), fromListBy, singleton)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import MusicNotePlayer exposing (MusicNotePlayer(..))

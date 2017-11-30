@@ -4,7 +4,7 @@ import Time exposing (Time, millisecond, inMilliseconds)
 import Uuid exposing (Uuid)
 import Maybe.Extra exposing (values)
 
-import BTreeUniformType exposing (BTreeUniform(..), MusicNotePlayerTree(..))
+import BTreeUniform exposing (BTreeUniform(..), MusicNotePlayerTree(..))
 import BTree exposing (TraversalOrder(..), flattenBy, flattenUsingFoldBy, map)
 import MusicNote exposing (Freq(..), toFreq)
 import MusicNotePlayer exposing (MusicNotePlayer(..), isPlayable)
