@@ -1,6 +1,5 @@
 module Generator exposing (generatorDelta, generatorExponent, generateIds, generatorTreeMusicNotes, generatorIntNodes, generatorBigIntNodes, generatorStringNodes, generatorBoolNodes, generatorNodeVarieties, generatorTuplesOfMusicNoteDirection, generatorTuplesOfIntNode_Direction, generatorTuplesOfBigIntNode_Direction, generatorTuplesOfStringNode_Direction, generatorTuplesOfBoolNode_Direction, generatorTuplesOfNodeVariety_Direction)
 
-import Maybe.Extra exposing (unwrap)
 import List.Extra exposing (last)
 import Random exposing (int, bool, pair, list, andThen, generate)
 import Random.String exposing (rangeLengthString)
@@ -18,19 +17,43 @@ import MaybeSafe exposing (toMaybeSafeInt)
 import Lib exposing (lazyUnwrap)
 
 
+minRandomDelta : Int
 minRandomDelta = 1
+
+
+maxRandomDelta : Int
 maxRandomDelta = 100
 
+
+minRandomExponent : Int
 minRandomExponent = 1
+
+
+maxRandomExponent : Int
 maxRandomExponent = 10
 
+
+minRandomTreeInt : Int
 minRandomTreeInt = 1
+
+
+maxRandomTreeInt : Int
 maxRandomTreeInt = 999
 
+
+minRandomTreeStringLength : Int
 minRandomTreeStringLength = 3
+
+
+maxRandomTreeStringLength : Int
 maxRandomTreeStringLength = 10
 
+
+minRandomListLength : Int
 minRandomListLength = 3
+
+
+maxRandomListLength : Int
 maxRandomListLength = 12
 
 

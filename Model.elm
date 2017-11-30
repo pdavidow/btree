@@ -1,7 +1,6 @@
 module Model exposing (Model)
 
 import Random.Pcg exposing (Seed)
-import EveryDict exposing (EveryDict)
 
 import BTreeUniform exposing (BTreeUniform, IntTree, BigIntTree, StringTree, BoolTree, MusicNotePlayerTree, NothingTree)
 import BTreeVariedType exposing (BTreeVaried)

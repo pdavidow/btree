@@ -1,6 +1,5 @@
 port module Ports exposing (..)
 
-import Time exposing (Time)
 import AudioNote exposing (AudioNote)
 
 

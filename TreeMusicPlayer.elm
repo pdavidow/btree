@@ -6,7 +6,6 @@ import Maybe.Extra exposing (values)
 
 import BTreeUniform exposing (BTreeUniform(..), MusicNotePlayerTree(..))
 import BTree exposing (TraversalOrder(..), flattenBy, flattenUsingFoldBy, map)
-import MusicNote exposing (Freq(..), toFreq)
 import MusicNotePlayer exposing (MusicNotePlayer(..), isPlayable)
 import AudioNote exposing (AudioNote, audioNote)
 import Ports exposing (port_playNote)
