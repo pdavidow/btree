@@ -7,7 +7,6 @@ import Tachyons exposing (classes, tachyons)
 import Tachyons.Classes as T exposing (..)
 
 import Dict exposing (Dict, fromList)
-import EveryDict exposing (EveryDict, fromList, get, update)
 import Json.Decode as Decode exposing (Decoder)
 
 import Model exposing (Model)
@@ -102,6 +101,7 @@ insertStyleDisplayFor style =
         |> .display
 
 
+insertStylesDict : Dict String TreeRandomInsertStyle
 insertStylesDict =
     let
         fn = \obj -> (obj.display, obj.style)

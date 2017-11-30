@@ -24,23 +24,59 @@ type CardWidth
     | Half
 
 
+uniformIntTreeOfInterest : Model -> BTreeUniform
+uniformIntTreeOfInterest model =
+    if model.isTreeMorphing then
+        model.intTreeMorph
+    else
+        UniformInt model.intTree
+
+
+uniformBigIntTreeOfInterest : Model -> BTreeUniform
+uniformBigIntTreeOfInterest model =
+    if model.isTreeMorphing then
+        model.bigIntTreeMorph
+    else
+        UniformBigInt model.bigIntTree
+
+
+uniformStringTreeOfInterest : Model -> BTreeUniform
+uniformStringTreeOfInterest model =
+    if model.isTreeMorphing then
+        model.stringTreeMorph
+    else
+        UniformString model.stringTree
+
+
+uniformBoolTreeOfInterest : Model -> BTreeUniform
+uniformBoolTreeOfInterest model =
+    if model.isTreeMorphing then
+        model.boolTreeMorph
+    else
+        UniformBool model.boolTree
+
+
+uniformMusicNoteTreeOfInterest : Model -> BTreeUniform
+uniformMusicNoteTreeOfInterest model =
+    if model.isTreeMorphing then
+        model.musicNoteTreeMorph
+    else
+        UniformMusicNotePlayer model.musicNoteTree
+
+
 intTreeCards : Model -> List (Html msg)
 intTreeCards model =
     let
-        -- todo refactor
-        intTree = if model.isTreeMorphing then model.intTreeMorph else UniformInt <| model.intTree
-        bigIntTree = if model.isTreeMorphing then model.bigIntTreeMorph else UniformBigInt <| model.bigIntTree
-
-        intTreesOfInterest = case model.intView of
-            IntView -> [intTree]
-            BigIntView -> [bigIntTree]
-            BothView -> [intTree, bigIntTree]
+        uniformIntTreesOfInterest = case model.intView of
+            IntView -> [uniformIntTreeOfInterest model]
+            BigIntView -> [uniformBigIntTreeOfInterest model]
+            BothView -> [uniformIntTreeOfInterest model, uniformBigIntTreeOfInterest model]
 
         cardWidth = case model.intView of
             BothView -> Half
             _ -> Full
     in
-        List.map (\tree -> viewUniformTreeCard cardWidth tree) intTreesOfInterest
+        List.map (\tree -> viewUniformTreeCard cardWidth tree) uniformIntTreesOfInterest
 
 
 viewTrees : Model -> Html Msg
@@ -48,17 +84,12 @@ viewTrees model =
     let
         cardWidth = Full
 
-        -- todo refactor
-        musicNoteTree = if model.isTreeMorphing then model.musicNoteTreeMorph else UniformMusicNotePlayer <| model.musicNoteTree
-        stringTree  = if model.isTreeMorphing then model.stringTreeMorph else UniformString <| model.stringTree
-        boolTree = if model.isTreeMorphing then model.boolTreeMorph else UniformBool <| model.boolTree
-
         cards = List.concat
-            [   [ viewUniformTreeCard cardWidth musicNoteTree
+            [   [ viewUniformTreeCard cardWidth <| uniformMusicNoteTreeOfInterest model
                 ]
             ,   intTreeCards model
-            ,   [ viewUniformTreeCard cardWidth stringTree
-                , viewUniformTreeCard cardWidth boolTree
+            ,   [ viewUniformTreeCard cardWidth <| uniformStringTreeOfInterest model
+                , viewUniformTreeCard cardWidth <| uniformBoolTreeOfInterest model
                 , viewVariedTreeCard cardWidth model.variedTree
                 ]
             ]

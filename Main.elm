@@ -9,8 +9,6 @@ import Random exposing (generate)
 import Random.Pcg exposing (Seed, initialSeed)
 import Uuid exposing (Uuid, uuidGenerator)
 import BigInt exposing (BigInt, fromInt)
-import Time exposing (Time, millisecond)
-import EveryDict exposing (EveryDict, fromList, get, update)
 import Basics.Extra exposing (maxSafeInteger)
 
 import Model exposing (Model)
