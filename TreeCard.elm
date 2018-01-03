@@ -13,7 +13,7 @@ import IntView exposing (IntView(..))
 import BTree exposing (BTree, depth)
 import TreeType exposing (TreeType(..))
 import BTreeUniform exposing (BTreeUniform(..), displayString)
-import BTreeVariedType exposing (BTreeVaried(..), displayString)
+import BTreeVaried exposing (BTreeVaried(..), displayString)
 import BTreeView exposing (bTreeDiagram, intNodeEvenColor, intNodeOddColor, unsafeColor)
 import Lib exposing (IntFlex(..))
 import MaybeSafe exposing (MaybeSafe(..))
@@ -119,7 +119,7 @@ viewUniformTreeCard cardWidth bTreeUniform =
 viewVariedTreeCard : CardWidth -> BTreeVaried -> Html msg
 viewVariedTreeCard cardWidth bTreeVariedType =
     let
-        title = BTreeVariedType.displayString bTreeVariedType
+        title = BTreeVaried.displayString bTreeVariedType
         status = bTreeVariedStatus bTreeVariedType
         mbLegend = bTreeVariedLegend bTreeVariedType
         mbBgColor = Just T.bg_black_05
@@ -265,7 +265,7 @@ bTreeIntCardLegend =
 
 bTreeVariedLegend : BTreeVaried -> Maybe (Html msg)
 bTreeVariedLegend bTreeVariedType =
-    if BTreeVariedType.hasAnyIntNodes bTreeVariedType
+    if BTreeVaried.hasAnyIntNodes bTreeVariedType
         then Just bTreeIntCardLegend
         else Nothing
 

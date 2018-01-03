@@ -15,7 +15,7 @@ import Model exposing (Model)
 import Msg exposing (Msg(..))
 import IntView exposing (IntView(..))
 import BTreeUniform exposing (BTreeUniform(..), IntTree(..), BigIntTree(..), StringTree(..), BoolTree(..), MusicNotePlayerTree(..), NothingTree(..), toLength, toIsIntPrime, nodeValOperate, displayString, intTreeFrom, bigIntTreeFrom, stringTreeFrom, boolTreeFrom, musicNotePlayerTreeFrom, uniformNothingTreeFrom, transformTreePlayerParamsIn)
-import BTreeVariedType exposing (BTreeVaried(..), toLength, toIsIntPrime, nodeValOperate, hasAnyIntNodes, displayString)
+import BTreeVaried exposing (BTreeVaried(..), toLength, toIsIntPrime, nodeValOperate, hasAnyIntNodes, displayString)
 import BTree exposing (BTree(..), Direction(..), TraversalOrder(..), fromListBy, insertAsIsBy, fromListAsIsBy, fromListAsIs_directed, singleton, toTreeDiagramTree)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
 import MusicNote exposing (MusicNote(..), MidiNumber(..), mbSorter)
@@ -441,7 +441,7 @@ update msg model =
                 }
                     |> cacheTreesFor_ShowIsIntPrime
                     |> morphToMbUniformTrees BTreeUniform.toIsIntPrime
-                    |> morphToVariedTrees BTreeVariedType.toIsIntPrime
+                    |> morphToVariedTrees BTreeVaried.toIsIntPrime
             ) ! []
 
         StopShowIsIntPrime ->
@@ -463,7 +463,7 @@ update msg model =
                 }
                     |> cacheTreesFor_ShowLength
                     |> morphToMbUniformTrees BTreeUniform.toLength
-                    |> morphToVariedTrees BTreeVariedType.toLength
+                    |> morphToVariedTrees BTreeVaried.toLength
             ) ! []
 
         StopShowLength ->
@@ -615,7 +615,7 @@ nodeValOperateOnUniformTrees operation model =
 
 nodeValOperateOnVariedTrees : Operation -> Model -> Model
 nodeValOperateOnVariedTrees operation model =
-    changeVariedTrees (BTreeVariedType.nodeValOperate operation) model
+    changeVariedTrees (BTreeVaried.nodeValOperate operation) model
 
 
 sortUniformTrees : Model -> Model
@@ -641,7 +641,7 @@ deDuplicateUniformTrees model =
 deDuplicateVariedTrees : Model -> Model
 deDuplicateVariedTrees model =
     let
-        fn = BTreeVariedType.deDuplicate
+        fn = BTreeVaried.deDuplicate
     in
         changeVariedTrees fn model
 

@@ -1,4 +1,4 @@
-module BTreeVariedType exposing (BTreeVaried(..), toLength, toIsIntPrime, nodeValOperate, deDuplicate, hasAnyIntNodes, displayString)
+module BTreeVaried exposing (BTreeVaried(..), toLength, toIsIntPrime, nodeValOperate, deDuplicate, hasAnyIntNodes, displayString)
 
 import Arithmetic exposing (isPrime)
 import BigInt exposing (toString)

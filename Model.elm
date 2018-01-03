@@ -3,7 +3,7 @@ module Model exposing (Model)
 import Random.Pcg exposing (Seed)
 
 import BTreeUniform exposing (BTreeUniform, IntTree, BigIntTree, StringTree, BoolTree, MusicNotePlayerTree, NothingTree)
-import BTreeVariedType exposing (BTreeVaried)
+import BTreeVaried exposing (BTreeVaried)
 import BTree exposing (Direction, TraversalOrder)
 import IntView exposing (IntView)
 import TreePlayerParams exposing (PlaySpeed)

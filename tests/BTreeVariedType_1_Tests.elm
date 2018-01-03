@@ -1,6 +1,6 @@
 module BTreeVariedType_1_Tests exposing (..)
 
-import BTreeVariedType exposing (BTreeVaried(..), toLength, toIsIntPrime)
+import BTreeVaried exposing (BTreeVaried(..), toLength, toIsIntPrime)
 import BigInt exposing (fromInt)
 
 import BTree exposing (BTree(..), singleton, map)
@@ -19,14 +19,14 @@ import Expect
   
 bTreeVariedType_1 : Test
 bTreeVariedType_1 =
-    describe "BTreeVariedType module"
-         [ describe "BTreeVariedType.toLength"
+    describe "BTreeVaried module"
+         [ describe "BTreeVaried.toLength"
             [ test "of Empty" <|
                 \() ->
                     Expect.equal
                         ( BTreeVaried Empty
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried Empty
+                        ( BTreeVaried.toLength <| BTreeVaried Empty
                         )
             ,  test "of non-empty.IntVariety.1" <|
                 \() ->
@@ -34,7 +34,7 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| toIntVariety <| Safe 2
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <|
+                        ( BTreeVaried.toLength <| BTreeVaried <|
                             singleton <| toIntVariety <| toMaybeSafeInt -12
                         )
             ,  test "of non-empty.IntVariety.2" <|
@@ -43,7 +43,7 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| toIntVariety <| Safe 5
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| 
+                        ( BTreeVaried.toLength <| BTreeVaried <|
                             singleton <| toIntVariety <| toMaybeSafeInt 34567
                         )
             ,  test "of non-empty.IntVariety.3" <|
@@ -52,7 +52,7 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| toIntVariety <| Unsafe
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| 
+                        ( BTreeVaried.toLength <| BTreeVaried <|
                             singleton <| toIntVariety <| toMaybeSafeInt <| maxSafeInteger + 1
                         )
             ,  test "of non-empty.BigIntVariety.1" <|
@@ -61,7 +61,7 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| toIntVariety <| Safe 2
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| 
+                        ( BTreeVaried.toLength <| BTreeVaried <|
                             singleton <| toBigIntVariety <| BigInt.fromInt -12
                         )
             ,  test "of non-empty.BigIntVariety.2" <|
@@ -70,7 +70,7 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| toIntVariety <| Safe 5
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| 
+                        ( BTreeVaried.toLength <| BTreeVaried <|
                             singleton <| toBigIntVariety <| BigInt.fromInt 34567
                         )
             ,  test "of non-empty.BigIntVariety.3" <|
@@ -79,7 +79,7 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| toIntVariety <| Safe 16
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| 
+                        ( BTreeVaried.toLength <| BTreeVaried <|
                             singleton <| toBigIntVariety <| BigInt.fromInt <| maxSafeInteger + 1
                         )
             ,  test "of non-empty.StringNode.1" <|
@@ -88,7 +88,7 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| toIntVariety <| Safe 2
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| 
+                        ( BTreeVaried.toLength <| BTreeVaried <|
                             singleton <| toStringVariety <| "ab"
                         )
             ,  test "of non-empty.StringVariety.2" <|
@@ -97,7 +97,7 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| toIntVariety <| Safe 5
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| 
+                        ( BTreeVaried.toLength <| BTreeVaried <|
                             singleton <| toStringVariety <| "cdefg"
                         )
             ,  test "of non-empty.BoolVariety.1" <|
@@ -106,7 +106,7 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| NothingVariety <| NothingNodeVal
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| 
+                        ( BTreeVaried.toLength <| BTreeVaried <|
                             singleton <| toBoolVariety <| Just True
                         )
             ,  test "of non-empty.MusicNoteVariety.1" <|
@@ -115,7 +115,7 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| NothingVariety <| NothingNodeVal
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <| 
+                        ( BTreeVaried.toLength <| BTreeVaried <|
                             singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote <| MidiNumber 57
                         )
             ,  test "of non-empty.NothingVariety.1" <|
@@ -124,21 +124,21 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| NothingVariety <| NothingNodeVal
                         )
-                        ( BTreeVariedType.toLength <| BTreeVaried <|
+                        ( BTreeVaried.toLength <| BTreeVaried <|
                             singleton <| NothingVariety <| NothingNodeVal
                         )
             ]
-         , describe "BTreeVariedType.toIsIntPrime"
+         , describe "BTreeVaried.toIsIntPrime"
             [ test "of empty" <|
                 \() ->
-                    Expect.equal (BTreeVaried Empty) (BTreeVariedType.toIsIntPrime (BTreeVaried Empty))
+                    Expect.equal (BTreeVaried Empty) (BTreeVaried.toIsIntPrime (BTreeVaried Empty))
             ,  test "of non-empty.IntVariety.1" <|
                 \() ->
                     Expect.equal
                         ( BTreeVaried <| 
                             singleton <| toBoolVariety <| Nothing
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| 
+                        ( BTreeVaried.toIsIntPrime <| BTreeVaried <|
                             singleton <| toIntVariety <| toMaybeSafeInt <| maxSafeInteger + 1
                         )
             ,  test "of non-empty.IntVariety.2" <|
@@ -147,7 +147,7 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| toBoolVariety <| Just False
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| 
+                        ( BTreeVaried.toIsIntPrime <| BTreeVaried <|
                             singleton <| toIntVariety <| toMaybeSafeInt <| negate <| maxSafeInteger
                         )
             ,  test "of non-empty.IntVariety.3" <|
@@ -156,7 +156,7 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| toBoolVariety <| Just True
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| 
+                        ( BTreeVaried.toIsIntPrime <| BTreeVaried <|
                             singleton <| toIntVariety <| toMaybeSafeInt 13
                         )
             ,  test "of non-empty.BigIntVariety.1" <|
@@ -165,7 +165,7 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| NothingVariety <| NothingNodeVal
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| 
+                        ( BTreeVaried.toIsIntPrime <| BTreeVaried <|
                             singleton <| toBigIntVariety <| BigInt.fromInt <| maxSafeInteger + 1
                         )
             ,  test "of non-empty.BigIntVariety.2" <|
@@ -174,7 +174,7 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| NothingVariety <| NothingNodeVal
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| 
+                        ( BTreeVaried.toIsIntPrime <| BTreeVaried <|
                             singleton <| toBigIntVariety <| BigInt.fromInt <| negate <| maxSafeInteger
                         )
             ,  test "of non-empty.BigIntVariety.3" <|
@@ -183,7 +183,7 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| NothingVariety <| NothingNodeVal
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| 
+                        ( BTreeVaried.toIsIntPrime <| BTreeVaried <|
                             singleton <| toBigIntVariety <| BigInt.fromInt 13
                         )
             ,  test "of non-empty.StringNode.1" <|
@@ -192,7 +192,7 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| NothingVariety <| NothingNodeVal
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| 
+                        ( BTreeVaried.toIsIntPrime <| BTreeVaried <|
                             singleton <| toStringVariety <| "a"
                         )
             ,  test "of non-empty.BoolVariety.1" <|
@@ -201,7 +201,7 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| NothingVariety <| NothingNodeVal
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| 
+                        ( BTreeVaried.toIsIntPrime <| BTreeVaried <|
                             singleton <| toBoolVariety <| Just True
                         )
             ,  test "of non-empty.MusicNoteVariety.1" <|
@@ -210,7 +210,7 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| NothingVariety <| NothingNodeVal
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| 
+                        ( BTreeVaried.toIsIntPrime <| BTreeVaried <|
                             singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote <| MidiNumber 57
                         )
             ,  test "of non-empty.NothingVariety.1" <|
@@ -219,21 +219,21 @@ bTreeVariedType_1 =
                         ( BTreeVaried <| 
                             singleton <| NothingVariety <| NothingNodeVal
                         )
-                        ( BTreeVariedType.toIsIntPrime <| BTreeVaried <| 
+                        ( BTreeVaried.toIsIntPrime <| BTreeVaried <|
                             singleton <| NothingVariety <| NothingNodeVal
                         )
             ]
-         , describe "BTreeVariedType.deDuplicate"
+         , describe "BTreeVaried.deDuplicate"
             [ test "of empty" <|
                 \() ->
-                    Expect.equal (BTreeVaried Empty) (BTreeVariedType.deDuplicate (BTreeVaried Empty))
+                    Expect.equal (BTreeVaried Empty) (BTreeVaried.deDuplicate (BTreeVaried Empty))
             , test "of singleton" <|
                 \() ->
                     Expect.equal
                         ( BTreeVaried <| 
                             (singleton <| toIntVariety <| Safe 2)
                         )
-                        ( BTreeVariedType.deDuplicate <| BTreeVaried <| 
+                        ( BTreeVaried.deDuplicate <| BTreeVaried <|
                             (singleton <| toIntVariety <| Safe 2)
                         )
             , test "of StringNode A, MusicNoteNode... A" <|
@@ -244,7 +244,7 @@ bTreeVariedType_1 =
                                 (singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote <| MidiNumber 57)
                                 Empty
                         )
-                        ( BTreeVariedType.deDuplicate <| BTreeVaried <|
+                        ( BTreeVaried.deDuplicate <| BTreeVaried <|
                             Node (toStringVariety <|  "A")
                                 (singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote <| MidiNumber 57)
                                 Empty
@@ -257,7 +257,7 @@ bTreeVariedType_1 =
                                 (singleton <| toIntVariety <| Unsafe)
                                 Empty
                         )
-                        ( BTreeVariedType.deDuplicate <| BTreeVaried <|
+                        ( BTreeVaried.deDuplicate <| BTreeVaried <|
                             Node (toIntVariety <| Safe 2)
                                 (singleton <| toIntVariety <| Safe 2)
                                 (Node (toIntVariety <| Unsafe)
@@ -267,38 +267,38 @@ bTreeVariedType_1 =
                         )
             , test "of BigIntNode" <|
                 \() ->
-                     Expect.equal (BTreeVaried <| singleton <| toBigIntVariety <| BigInt.fromInt <| maxSafeInteger + 2) (BTreeVariedType.deDuplicate (BTreeVaried <| Node (toBigIntVariety <| BigInt.fromInt <| maxSafeInteger + 2) (singleton <| toBigIntVariety <| BigInt.fromInt <| maxSafeInteger + 2) Empty))
+                     Expect.equal (BTreeVaried <| singleton <| toBigIntVariety <| BigInt.fromInt <| maxSafeInteger + 2) (BTreeVaried.deDuplicate (BTreeVaried <| Node (toBigIntVariety <| BigInt.fromInt <| maxSafeInteger + 2) (singleton <| toBigIntVariety <| BigInt.fromInt <| maxSafeInteger + 2) Empty))
             , test "of StringNode" <|
                 \() ->
-                     Expect.equal (BTreeVaried <| Node (toStringVariety "B") (singleton <| toStringVariety "A") Empty) (BTreeVariedType.deDuplicate (BTreeVaried <| Node (toStringVariety "B") (singleton <| toStringVariety "B") (singleton <| toStringVariety "A")))
+                     Expect.equal (BTreeVaried <| Node (toStringVariety "B") (singleton <| toStringVariety "A") Empty) (BTreeVaried.deDuplicate (BTreeVaried <| Node (toStringVariety "B") (singleton <| toStringVariety "B") (singleton <| toStringVariety "A")))
             , test "of BoolNode" <|
                 \() ->
-                     Expect.equal (BTreeVaried <| Node (toBoolVariety <| Just True) (singleton <| toBoolVariety <| Just False) Empty) (BTreeVariedType.deDuplicate (BTreeVaried <| Node (toBoolVariety <| Just True) (singleton <| toBoolVariety <| Just True) (singleton <| toBoolVariety <| Just False)))
+                     Expect.equal (BTreeVaried <| Node (toBoolVariety <| Just True) (singleton <| toBoolVariety <| Just False) Empty) (BTreeVaried.deDuplicate (BTreeVaried <| Node (toBoolVariety <| Just True) (singleton <| toBoolVariety <| Just True) (singleton <| toBoolVariety <| Just False)))
             , test "of MusicNoteNode" <|
                 \() ->
-                     Expect.equal (BTreeVaried <| Node (toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote <| MidiNumber 59) (singleton <| toMusicNoteVariety (MusicNotePlayer.on <| MusicNote <| MidiNumber 57)) Empty) (BTreeVariedType.deDuplicate (BTreeVaried <| Node (toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote <| MidiNumber 59) (singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote <| MidiNumber 59) (singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote <| MidiNumber 57)))
+                     Expect.equal (BTreeVaried <| Node (toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote <| MidiNumber 59) (singleton <| toMusicNoteVariety (MusicNotePlayer.on <| MusicNote <| MidiNumber 57)) Empty) (BTreeVaried.deDuplicate (BTreeVaried <| Node (toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote <| MidiNumber 59) (singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote <| MidiNumber 59) (singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote <| MidiNumber 57)))
             , test "of NothingNode" <|
                 \() ->
-                     Expect.equal (BTreeVaried <| singleton <| NothingVariety <| NothingNodeVal) (BTreeVariedType.deDuplicate (BTreeVaried <| Node (NothingVariety <| NothingNodeVal) (singleton <| NothingVariety <| NothingNodeVal) (singleton <| NothingVariety <| NothingNodeVal)))
+                     Expect.equal (BTreeVaried <| singleton <| NothingVariety <| NothingNodeVal) (BTreeVaried.deDuplicate (BTreeVaried <| Node (NothingVariety <| NothingNodeVal) (singleton <| NothingVariety <| NothingNodeVal) (singleton <| NothingVariety <| NothingNodeVal)))
             ]
-         , describe "BTreeVariedType.hasAnyIntNodes"
+         , describe "BTreeVaried.hasAnyIntNodes"
             [ test "of empty" <|
                 \() ->
-                    Expect.equal False (BTreeVariedType.hasAnyIntNodes (BTreeVaried Empty))
+                    Expect.equal False (BTreeVaried.hasAnyIntNodes (BTreeVaried Empty))
             , test "of singleton IntNode" <|
                 \() ->
-                    Expect.equal True (BTreeVariedType.hasAnyIntNodes (BTreeVaried <| singleton <| toIntVariety <| Safe 2))
+                    Expect.equal True (BTreeVaried.hasAnyIntNodes (BTreeVaried <| singleton <| toIntVariety <| Safe 2))
             , test "of 4 values, including IntNode but not BigIntNode" <|
                 \() ->
-                    Expect.equal True (BTreeVariedType.hasAnyIntNodes (BTreeVaried <| Node (toStringVariety <| "abcde") (singleton <| toIntVariety <| Safe 2) (Node (toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote <| MidiNumber 64) (singleton <| toBoolVariety <| Just True) Empty)))
+                    Expect.equal True (BTreeVaried.hasAnyIntNodes (BTreeVaried <| Node (toStringVariety <| "abcde") (singleton <| toIntVariety <| Safe 2) (Node (toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote <| MidiNumber 64) (singleton <| toBoolVariety <| Just True) Empty)))
             , test "of 4 values, neither including IntNode, nor BigIntNode" <|
                 \() ->
-                    Expect.equal False (BTreeVariedType.hasAnyIntNodes (BTreeVaried <| Node (toStringVariety "abcde") (singleton <| toBoolVariety <| Just False) (Node (toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote <| MidiNumber 64) (singleton <| toBoolVariety <| Just True) Empty)))
+                    Expect.equal False (BTreeVaried.hasAnyIntNodes (BTreeVaried <| Node (toStringVariety "abcde") (singleton <| toBoolVariety <| Just False) (Node (toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote <| MidiNumber 64) (singleton <| toBoolVariety <| Just True) Empty)))
             , test "of singleton BigIntNode" <|
                 \() ->
-                    Expect.equal True (BTreeVariedType.hasAnyIntNodes (BTreeVaried <| singleton <| toBigIntVariety <| BigInt.fromInt 2))
+                    Expect.equal True (BTreeVaried.hasAnyIntNodes (BTreeVaried <| singleton <| toBigIntVariety <| BigInt.fromInt 2))
             , test "of 4 values, including BigIntNode but not IntNode" <|
                 \() ->
-                    Expect.equal True (BTreeVariedType.hasAnyIntNodes (BTreeVaried <| Node (toStringVariety "abcde") (singleton <| toBigIntVariety <| BigInt.fromInt 2) (Node (toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote <| MidiNumber 65) (singleton <| toBoolVariety <| Just True) Empty)))
+                    Expect.equal True (BTreeVaried.hasAnyIntNodes (BTreeVaried <| Node (toStringVariety "abcde") (singleton <| toBigIntVariety <| BigInt.fromInt 2) (Node (toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote <| MidiNumber 65) (singleton <| toBoolVariety <| Just True) Empty)))
             ]         
         ]
