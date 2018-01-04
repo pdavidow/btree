@@ -117,13 +117,13 @@ viewUniformTreeCard cardWidth bTreeUniform =
 
 
 viewVariedTreeCard : CardWidth -> BTreeVaried -> Html msg
-viewVariedTreeCard cardWidth bTreeVariedType =
+viewVariedTreeCard cardWidth bTreeVaried =
     let
-        title = BTreeVaried.displayString bTreeVariedType
-        status = bTreeVariedStatus bTreeVariedType
-        mbLegend = bTreeVariedLegend bTreeVariedType
+        title = BTreeVaried.displayString bTreeVaried
+        status = bTreeVariedStatus bTreeVaried
+        mbLegend = bTreeVariedLegend bTreeVaried
         mbBgColor = Just T.bg_black_05
-        diagram = bTreeDiagram <| Varied bTreeVariedType
+        diagram = bTreeDiagram <| Varied bTreeVaried
     in
         viewTreeCard cardWidth title status mbLegend mbBgColor diagram
 
@@ -264,8 +264,8 @@ bTreeIntCardLegend =
 
 
 bTreeVariedLegend : BTreeVaried -> Maybe (Html msg)
-bTreeVariedLegend bTreeVariedType =
-    if BTreeVaried.hasAnyIntNodes bTreeVariedType
+bTreeVariedLegend bTreeVaried =
+    if BTreeVaried.hasAnyIntNodes bTreeVaried
         then Just bTreeIntCardLegend
         else Nothing
 
