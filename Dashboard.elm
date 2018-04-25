@@ -12,7 +12,7 @@ import Json.Decode as Decode exposing (Decoder)
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import IntView exposing (IntView(..))
-import BTreeUniform exposing (BTreeUniform(..), displayString)
+import BTreeUniform exposing (BTreeUniform(..), isAllNothing, displayString)
 import NodeValueOperation exposing (Operation(..))
 import BTree exposing (Direction(..), TraversalOrder(..), traversalOrderOptions, directionOptions)
 import TreeCard exposing (viewTrees)
@@ -146,6 +146,7 @@ viewDashboardWithTreesUnderneath model =
                         [ button
                             [ classes [ T.hover_bg_light_green ]
                             , onClick TogglePlayNotes
+                            , disabled <| isAllNothing <| UniformMusicNotePlayer model.musicNoteTree
                             ]
                             [ text playButtonDisplay ]
                         , select
