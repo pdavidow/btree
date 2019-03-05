@@ -1,10 +1,10 @@
-module MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter, isPlayable)
+module MusicNotePlayer exposing (MusicNotePlayer(..), on, idedOn, sorter, isPlayable, toFreq, toFreqString)
 
 import Uuid exposing (Uuid)
-import Maybe.Extra exposing (isJust)
+import Maybe.Extra exposing (isJust, unwrap)
 
-import MusicNote exposing (MusicNote, MidiNumber)
-
+import MusicNote exposing (Freq(..), MusicNote, MidiNumber)
+import UniversalConstants exposing (nothingString)
 
 type MusicNotePlayer = MusicNotePlayer
     { mbNote : Maybe MusicNote
@@ -35,3 +35,14 @@ sorter (MusicNotePlayer params) =
 isPlayable : MusicNotePlayer -> Bool
 isPlayable (MusicNotePlayer params) =
     Maybe.Extra.isJust params.mbNote
+
+
+toFreq : MusicNotePlayer -> Maybe Freq    
+toFreq (MusicNotePlayer params) =
+    params.mbNote 
+        |> Maybe.andThen MusicNote.toFreq
+
+
+toFreqString : MusicNotePlayer -> String
+toFreqString x =
+    unwrap nothingString (\(Freq n) -> Basics.toString n ++ " hz") <| toFreq x 

@@ -21785,13 +21785,33 @@ var _user$project$MaybeSafe$map = F2(
 		return A3(_user$project$MaybeSafe$unwrap, _user$project$MaybeSafe$Unsafe, fn, mbsA);
 	});
 
-var _user$project$MusicNotePlayer$isPlayable = function (_p0) {
+var _user$project$UniversalConstants$unsafeString = 'unsafe';
+var _user$project$UniversalConstants$nothingString = 'N/A';
+
+var _user$project$MusicNotePlayer$toFreq = function (_p0) {
 	var _p1 = _p0;
-	return _elm_community$maybe_extra$Maybe_Extra$isJust(_p1._0.mbNote);
+	return A2(_elm_lang$core$Maybe$andThen, _user$project$MusicNote$toFreq, _p1._0.mbNote);
 };
-var _user$project$MusicNotePlayer$sorter = function (_p2) {
-	var _p3 = _p2;
-	return _user$project$MusicNote$mbSorter(_p3._0.mbNote);
+var _user$project$MusicNotePlayer$toFreqString = function (x) {
+	return A3(
+		_elm_community$maybe_extra$Maybe_Extra$unwrap,
+		_user$project$UniversalConstants$nothingString,
+		function (_p2) {
+			var _p3 = _p2;
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Basics$toString(_p3._0),
+				' hz');
+		},
+		_user$project$MusicNotePlayer$toFreq(x));
+};
+var _user$project$MusicNotePlayer$isPlayable = function (_p4) {
+	var _p5 = _p4;
+	return _elm_community$maybe_extra$Maybe_Extra$isJust(_p5._0.mbNote);
+};
+var _user$project$MusicNotePlayer$sorter = function (_p6) {
+	var _p7 = _p6;
+	return _user$project$MusicNote$mbSorter(_p7._0.mbNote);
 };
 var _user$project$MusicNotePlayer$MusicNotePlayer = function (a) {
 	return {ctor: 'MusicNotePlayer', _0: a};
@@ -22993,147 +23013,154 @@ var _user$project$BTreeUniform$toLength = function (bTreeUniform) {
 		case 'UniformBool':
 			return _elm_lang$core$Maybe$Nothing;
 		case 'UniformMusicNotePlayer':
-			return _elm_lang$core$Maybe$Nothing;
+			var fn = function (_p28) {
+				var _p29 = _p28;
+				return _user$project$NodeTag$StringNodeVal(
+					_user$project$MusicNotePlayer$toFreqString(_p29._0));
+			};
+			return _elm_lang$core$Maybe$Just(
+				_user$project$BTreeUniform$uniformStringTreeFrom(
+					A2(_user$project$BTree$map, fn, _p21._0._1)));
 		default:
 			return _elm_lang$core$Maybe$Nothing;
 	}
 };
 var _user$project$BTreeUniform$nodeValOperate = F2(
 	function (operation, bTreeUniform) {
-		var _p28 = bTreeUniform;
-		switch (_p28.ctor) {
+		var _p30 = bTreeUniform;
+		switch (_p30.ctor) {
 			case 'UniformInt':
 				return _user$project$BTreeUniform$uniformIntTreeFrom(
 					A2(
 						_user$project$BTree$map,
 						_user$project$NodeValueOperation$operateOnInt(operation),
-						_p28._0._0));
+						_p30._0._0));
 			case 'UniformBigInt':
 				return _user$project$BTreeUniform$uniformBigIntTreeFrom(
 					A2(
 						_user$project$BTree$map,
 						_user$project$NodeValueOperation$operateOnBigInt(operation),
-						_p28._0._0));
+						_p30._0._0));
 			case 'UniformString':
 				return _user$project$BTreeUniform$uniformStringTreeFrom(
 					A2(
 						_user$project$BTree$map,
 						_user$project$NodeValueOperation$operateOnString(operation),
-						_p28._0._0));
+						_p30._0._0));
 			case 'UniformBool':
 				return _user$project$BTreeUniform$uniformBoolTreeFrom(
 					A2(
 						_user$project$BTree$map,
 						_user$project$NodeValueOperation$operateOnBool(operation),
-						_p28._0._0));
+						_p30._0._0));
 			case 'UniformMusicNotePlayer':
 				return A2(
 					_user$project$BTreeUniform$uniformMusicNotePlayerTreeFrom,
-					_p28._0._0,
+					_p30._0._0,
 					A2(
 						_user$project$BTree$map,
 						_user$project$NodeValueOperation$operateOnMusicNote(operation),
-						_p28._0._1));
+						_p30._0._1));
 			default:
 				return _user$project$BTreeUniform$uniformNothingTreeFrom(
 					A2(
 						_user$project$BTree$map,
 						_user$project$NodeValueOperation$operateOnNothing(operation),
-						_p28._0._0));
+						_p30._0._0));
 		}
 	});
 var _user$project$BTreeUniform$sort = F2(
 	function (direction, bTreeUniform) {
-		var _p29 = bTreeUniform;
-		switch (_p29.ctor) {
+		var _p31 = bTreeUniform;
+		switch (_p31.ctor) {
 			case 'UniformInt':
 				var fn = F2(
-					function (_p31, _p30) {
-						var _p32 = _p31;
-						var _p33 = _p30;
-						return A2(_user$project$MaybeSafe$compare, _p32._0, _p33._0);
+					function (_p33, _p32) {
+						var _p34 = _p33;
+						var _p35 = _p32;
+						return A2(_user$project$MaybeSafe$compare, _p34._0, _p35._0);
 					});
 				return _user$project$BTreeUniform$uniformIntTreeFrom(
-					A3(_user$project$BTree$sortWithTo, fn, direction, _p29._0._0));
+					A3(_user$project$BTree$sortWithTo, fn, direction, _p31._0._0));
 			case 'UniformBigInt':
 				var fn = F2(
-					function (_p35, _p34) {
-						var _p36 = _p35;
-						var _p37 = _p34;
-						return A2(_gilbertkennen$bigint$BigInt$compare, _p36._0, _p37._0);
+					function (_p37, _p36) {
+						var _p38 = _p37;
+						var _p39 = _p36;
+						return A2(_gilbertkennen$bigint$BigInt$compare, _p38._0, _p39._0);
 					});
 				return _user$project$BTreeUniform$uniformBigIntTreeFrom(
-					A3(_user$project$BTree$sortWithTo, fn, direction, _p29._0._0));
+					A3(_user$project$BTree$sortWithTo, fn, direction, _p31._0._0));
 			case 'UniformString':
-				var fn = function (_p38) {
-					var _p39 = _p38;
-					return _p39._0;
-				};
-				return _user$project$BTreeUniform$uniformStringTreeFrom(
-					A3(_user$project$BTree$sortByTo, fn, direction, _p29._0._0));
-			case 'UniformBool':
 				var fn = function (_p40) {
 					var _p41 = _p40;
-					return _elm_lang$core$Basics$toString(_p41._0);
+					return _p41._0;
 				};
-				return _user$project$BTreeUniform$uniformBoolTreeFrom(
-					A3(_user$project$BTree$sortByTo, fn, direction, _p29._0._0));
-			case 'UniformMusicNotePlayer':
+				return _user$project$BTreeUniform$uniformStringTreeFrom(
+					A3(_user$project$BTree$sortByTo, fn, direction, _p31._0._0));
+			case 'UniformBool':
 				var fn = function (_p42) {
 					var _p43 = _p42;
-					return _user$project$MusicNotePlayer$sorter(_p43._0);
+					return _elm_lang$core$Basics$toString(_p43._0);
+				};
+				return _user$project$BTreeUniform$uniformBoolTreeFrom(
+					A3(_user$project$BTree$sortByTo, fn, direction, _p31._0._0));
+			case 'UniformMusicNotePlayer':
+				var fn = function (_p44) {
+					var _p45 = _p44;
+					return _user$project$MusicNotePlayer$sorter(_p45._0);
 				};
 				return A2(
 					_user$project$BTreeUniform$uniformMusicNotePlayerTreeFrom,
-					_p29._0._0,
-					A3(_user$project$BTree$sortByTo, fn, direction, _p29._0._1));
+					_p31._0._0,
+					A3(_user$project$BTree$sortByTo, fn, direction, _p31._0._1));
 			default:
 				return bTreeUniform;
 		}
 	});
 var _user$project$BTreeUniform$deDuplicate = function (bTreeUniform) {
-	var _p44 = bTreeUniform;
-	switch (_p44.ctor) {
+	var _p46 = bTreeUniform;
+	switch (_p46.ctor) {
 		case 'UniformInt':
-			var fn = function (_p45) {
-				var _p46 = _p45;
-				return _elm_lang$core$Basics$toString(_p46._0);
-			};
-			return _user$project$BTreeUniform$uniformIntTreeFrom(
-				A2(_user$project$BTree$deDuplicateBy, fn, _p44._0._0));
-		case 'UniformBigInt':
 			var fn = function (_p47) {
 				var _p48 = _p47;
-				return _gilbertkennen$bigint$BigInt$toString(_p48._0);
+				return _elm_lang$core$Basics$toString(_p48._0);
 			};
-			return _user$project$BTreeUniform$uniformBigIntTreeFrom(
-				A2(_user$project$BTree$deDuplicateBy, fn, _p44._0._0));
-		case 'UniformString':
+			return _user$project$BTreeUniform$uniformIntTreeFrom(
+				A2(_user$project$BTree$deDuplicateBy, fn, _p46._0._0));
+		case 'UniformBigInt':
 			var fn = function (_p49) {
 				var _p50 = _p49;
-				return _p50._0;
+				return _gilbertkennen$bigint$BigInt$toString(_p50._0);
 			};
-			return _user$project$BTreeUniform$uniformStringTreeFrom(
-				A2(_user$project$BTree$deDuplicateBy, fn, _p44._0._0));
-		case 'UniformBool':
+			return _user$project$BTreeUniform$uniformBigIntTreeFrom(
+				A2(_user$project$BTree$deDuplicateBy, fn, _p46._0._0));
+		case 'UniformString':
 			var fn = function (_p51) {
 				var _p52 = _p51;
-				return _elm_lang$core$Basics$toString(_p52._0);
+				return _p52._0;
 			};
-			return _user$project$BTreeUniform$uniformBoolTreeFrom(
-				A2(_user$project$BTree$deDuplicateBy, fn, _p44._0._0));
-		case 'UniformMusicNotePlayer':
+			return _user$project$BTreeUniform$uniformStringTreeFrom(
+				A2(_user$project$BTree$deDuplicateBy, fn, _p46._0._0));
+		case 'UniformBool':
 			var fn = function (_p53) {
 				var _p54 = _p53;
-				return _user$project$MusicNotePlayer$sorter(_p54._0);
+				return _elm_lang$core$Basics$toString(_p54._0);
+			};
+			return _user$project$BTreeUniform$uniformBoolTreeFrom(
+				A2(_user$project$BTree$deDuplicateBy, fn, _p46._0._0));
+		case 'UniformMusicNotePlayer':
+			var fn = function (_p55) {
+				var _p56 = _p55;
+				return _user$project$MusicNotePlayer$sorter(_p56._0);
 			};
 			return A2(
 				_user$project$BTreeUniform$uniformMusicNotePlayerTreeFrom,
-				_p44._0._0,
-				A2(_user$project$BTree$deDuplicateBy, fn, _p44._0._1));
+				_p46._0._0,
+				A2(_user$project$BTree$deDuplicateBy, fn, _p46._0._1));
 		default:
 			return _user$project$BTreeUniform$uniformNothingTreeFrom(
-				A2(_user$project$BTree$deDuplicateBy, _elm_lang$core$Basics$toString, _p44._0._0));
+				A2(_user$project$BTree$deDuplicateBy, _elm_lang$core$Basics$toString, _p46._0._0));
 	}
 };
 
@@ -23188,7 +23215,9 @@ var _user$project$BTreeVaried$toLength = function (_p4) {
 			case 'BoolVariety':
 				return _user$project$NodeTag$NothingVariety(_user$project$NodeTag$NothingNodeVal);
 			case 'MusicNoteVariety':
-				return _user$project$NodeTag$NothingVariety(_user$project$NodeTag$NothingNodeVal);
+				return _user$project$NodeTag$StringVariety(
+					_user$project$NodeTag$StringNodeVal(
+						_user$project$MusicNotePlayer$toFreqString(_p6._0._0)));
 			default:
 				return _user$project$NodeTag$NothingVariety(_user$project$NodeTag$NothingNodeVal);
 		}
@@ -23337,9 +23366,6 @@ var _user$project$TreeType$Varied = function (a) {
 var _user$project$TreeType$Uniform = function (a) {
 	return {ctor: 'Uniform', _0: a};
 };
-
-var _user$project$UniversalConstants$unsafeString = 'unsafe';
-var _user$project$UniversalConstants$nothingString = 'N/A';
 
 var _user$project$BTreeView$treeLineHighlightStyle = _elm_lang$core$Native_Utils.update(
 	_evancz$elm_graphics$Collage$defaultLine,

@@ -5,7 +5,7 @@ import BigInt exposing (BigInt, toString)
 
 import BTree exposing (BTree(..), TraversalOrder, Direction, depth, map, deDuplicateBy, singleton, sumMaybeSafeInt, sumBigInt, sumString, sortTo, sortByTo, sortWithTo, isEmpty, toNothingNodes)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
-import MusicNotePlayer exposing (MusicNotePlayer(..), sorter)
+import MusicNotePlayer exposing (MusicNotePlayer(..), sorter, toFreqString)
 import NodeValueOperation exposing (Operation, operateOnInt, operateOnBigInt, operateOnString, operateOnBool, operateOnMusicNote, operateOnNothing)
 import Lib exposing (IntFlex(..), digitCount, digitCountBigInt)
 import MaybeSafe exposing (MaybeSafe(..), compare, toMaybeSafeInt)
@@ -190,8 +190,11 @@ toLength bTreeUniform =
         UniformBool _ ->
             Nothing
 
-        UniformMusicNotePlayer _ ->
-            Nothing
+        UniformMusicNotePlayer (MusicNotePlayerTree _ bTree) ->
+            let
+                fn = \(MusicNoteNodeVal musicNotePlayer) -> StringNodeVal <| toFreqString <| musicNotePlayer
+            in
+                Just <| uniformStringTreeFrom <| map fn bTree
 
         UniformNothing _ ->
             Nothing

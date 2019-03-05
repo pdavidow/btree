@@ -5,7 +5,7 @@ import BigInt exposing (toString)
 
 import BTree exposing (BTree, map)
 import NodeTag exposing (NodeVariety(..), IntNode(..), BigIntNode(..), StringNode(..), BoolNode(..), MusicNoteNode(..), NothingNode(..))
-import MusicNotePlayer exposing (MusicNotePlayer(..))
+import MusicNotePlayer exposing (MusicNotePlayer(..), toFreqString)
 import MusicNote exposing (mbSorter)
 import NodeValueOperation exposing (Operation, operateOnInt, operateOnBigInt, operateOnString, operateOnBool, operateOnMusicNote, operateOnNothing)
 import Lib exposing (digitCount, digitCountBigInt)
@@ -32,8 +32,8 @@ toLength (BTreeVaried bTree) =
             BoolVariety _ ->
                 NothingVariety <| NothingNodeVal
 
-            MusicNoteVariety _ ->
-                NothingVariety <| NothingNodeVal
+            MusicNoteVariety (MusicNoteNodeVal musicNotePlayer) ->
+                StringVariety <| StringNodeVal <| toFreqString musicNotePlayer
 
             NothingVariety _ ->
                 NothingVariety <| NothingNodeVal
