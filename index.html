@@ -19,6 +19,8 @@
                 const {freq, id, startOffset, duration, isHarmonize, isLast} = note;
                 const soundOscillator = audioContext.createOscillator();
                 const hsoundOscillator = audioContext.createOscillator();
+                const lpanner = audioContext.createPanner();
+                const rpanner = audioContext.createPanner();
                 const silentOscillator = audioContext.createOscillator(); // hack for lack of .onstarted, start sound shifted to compensate
                 const timeShift = 0.05; //sec
                 const currentTime = audioContext.currentTime;
@@ -28,12 +30,23 @@
                 const soundStartTime = silentStopTime; // sec
                 const soundStopTime = soundStartTime + duration; // sec
 
-                soundOscillator.connect(audioContext.destination);
+                lpanner.setPosition(-1, 0, 0);
+                rpanner.setPosition(+1, 0, 0);
+                lpanner.connect(audioContext.destination);
+                rpanner.connect(audioContext.destination);
+
                 soundOscillator.frequency.value = freq;
                 if (isHarmonize) {
-                    hsoundOscillator.connect(audioContext.destination);
                     hsoundOscillator.frequency.value = (6/5) * freq; // minor third above. https://www.flutopedia.com/int2_smaller.htm
                 }
+
+                if (isHarmonize) {
+                    soundOscillator.connect(lpanner);
+                    hsoundOscillator.connect(rpanner);
+                } else {
+                    soundOscillator.connect(lpanner);
+                    soundOscillator.connect(rpanner);
+                }                    
 
                 silentOscillator.connect(audioContext.destination);
                 silentOscillator.frequency.value = 0; //silence
