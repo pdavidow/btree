@@ -24542,7 +24542,7 @@ var _user$project$Dashboard$viewHarmonyChoice = function (model) {
 							{ctor: '[]'}),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('Harmonize?'),
+							_0: _elm_lang$html$Html$text('Harmony'),
 							_1: {ctor: '[]'}
 						}
 					}),

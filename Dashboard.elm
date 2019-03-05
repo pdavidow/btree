@@ -365,7 +365,7 @@ viewHarmonyChoice model =
                 , disabled model.isPlayNotes 
                 ]
                 []
-            , text "Harmonize?"
+            , text "Harmony"
             ]
         ]
     ]
