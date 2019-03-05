@@ -113,7 +113,7 @@ bTreeUniformType_1 =
                             , Just <| uniformIntTreeFrom Empty
                             , Just <| uniformIntTreeFrom Empty
                             , Nothing
-                            , Nothing
+                            , Just <| uniformStringTreeFrom Empty
                             , Nothing
                             ]
                         )
@@ -192,7 +192,7 @@ bTreeUniformType_1 =
             ,  test "of non-empty.BTreeMusicNotePlayer.1" <|
                 \() ->
                     Expect.equal
-                        ( Nothing
+                        ( Just <| uniformStringTreeFrom <| singleton <| StringNodeVal <| "220 hz"
                         )
                         ( BTreeUniform.toLength <| uniformMusicNotePlayerTreeFrom defaultTreePlayerParams <| singleton <| MusicNoteNodeVal <| MusicNotePlayer.on <| MusicNote <| MidiNumber 57
                         )

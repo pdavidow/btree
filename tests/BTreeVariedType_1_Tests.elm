@@ -113,7 +113,7 @@ bTreeVariedType_1 =
                 \() ->
                     Expect.equal
                         ( BTreeVaried <| 
-                            singleton <| NothingVariety <| NothingNodeVal
+                            singleton <| StringVariety <| StringNodeVal "220 hz"
                         )
                         ( BTreeVaried.toLength <| BTreeVaried <|
                             singleton <| toMusicNoteVariety <| MusicNotePlayer.on <| MusicNote <| MidiNumber 57
