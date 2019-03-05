@@ -44,4 +44,5 @@ type Msg
     | DonePlayNote (String)
     | DonePlayNotes (())
     | SwitchToIntView (IntView)
+    | ToggleHarmonize
     | Reset

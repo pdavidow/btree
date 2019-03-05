@@ -87,6 +87,7 @@ initialModel =
     , masterTraversalOrder = InOrder
     , delta = 1
     , exponent = 2
+    , isHarmonize = False
     , isPlayNotes = False
     , isTreeMorphing = False
     , directionForSort = BTree.Left
@@ -529,6 +530,9 @@ update msg model =
         SwitchToIntView intView ->
             { model | intView = intView } ! []
 
+        ToggleHarmonize ->
+            { model | isHarmonize = not model.isHarmonize } ! []
+
         Reset ->
             let
                 tree = model.initialMusicNoteTree
@@ -683,7 +687,7 @@ playNotes model =
         { model
         | musicNoteTree = musicNoteTree
         , isPlayNotes = True
-        } ! [treeMusicPlay musicNoteTree]
+        } ! [treeMusicPlay model.isHarmonize musicNoteTree]
 
 
 stopPlayNotes : Model -> (Model, Cmd Msg)

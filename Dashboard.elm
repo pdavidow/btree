@@ -276,6 +276,9 @@ viewDashboardWithTreesUnderneath model =
             , span
                 [classes [T.pl4]]
                 (viewIntTreeChoice model)
+            , span
+                [classes [T.pl4]]
+                (viewHarmonyChoice model)                
             , button
                 [classes [T.fr, T.hover_bg_light_yellow, T.mv1, T.mr2], onClick Reset]
                 [text "Reset"]
@@ -345,5 +348,24 @@ viewIntTreeChoice model =
         [ radioIntView IntView model
         , radioIntView BigIntView model
         , radioIntView BothView model
+        ]
+    ]
+
+
+viewHarmonyChoice : Model -> List (Html Msg)
+viewHarmonyChoice model =
+    [ span
+        [ classes [T.ph2, T.pv2, T.mt2, T.mb2, T.f6, T.ba, T.br2] ]
+        [ label
+            [ classes [T.pa2] ]
+            [ input
+                [ type_ "checkbox"
+                , checked <| model.isHarmonize
+                , onClick ToggleHarmonize
+                , disabled model.isPlayNotes 
+                ]
+                []
+            , text "Harmonize?"
+            ]
         ]
     ]

@@ -16,8 +16,9 @@
             announceDonePlayNotes = () => app.ports.port_donePlayNotes.send(null);
 
             app.ports.port_playNote.subscribe((note) => {
-                const {freq, id, startOffset, duration, isLast} = note;
+                const {freq, id, startOffset, duration, isHarmonize, isLast} = note;
                 const soundOscillator = audioContext.createOscillator();
+                const hsoundOscillator = audioContext.createOscillator();
                 const silentOscillator = audioContext.createOscillator(); // hack for lack of .onstarted, start sound shifted to compensate
                 const timeShift = 0.05; //sec
                 const currentTime = audioContext.currentTime;
@@ -29,10 +30,13 @@
 
                 soundOscillator.connect(audioContext.destination);
                 soundOscillator.frequency.value = freq;
+                if (isHarmonize) {
+                    hsoundOscillator.connect(audioContext.destination);
+                    hsoundOscillator.frequency.value = (6/5) * freq; // minor third above. https://www.flutopedia.com/int2_smaller.htm
+                }
 
                 silentOscillator.connect(audioContext.destination);
                 silentOscillator.frequency.value = 0; //silence
-
 
                 silentOscillator.onended = () => announceStartPlayNote(id);
 
@@ -49,10 +53,13 @@
                 silentOscillator.start(silentStartTime);
                 silentOscillator.stop (silentStopTime);
                 soundOscillator.start(soundStartTime);
+                if (isHarmonize) hsoundOscillator.start(soundStartTime);
                 soundOscillator.stop (soundStopTime);
+                if (isHarmonize) hsoundOscillator.stop (soundStopTime);
 
                 nodeCache.push(silentOscillator);
                 nodeCache.push(soundOscillator);
+                if (isHarmonize) nodeCache.push(hsoundOscillator);
             });
 
             app.ports.port_disconnectAll.subscribe((unused) => {

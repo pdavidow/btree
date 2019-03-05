@@ -13,19 +13,19 @@ import NodeTag exposing (NodeVariety(..), MusicNoteNode(..))
 import TreePlayerParams exposing (TreePlayerParams, PlaySpeed, defaultTreePlayerParams, noteDurationFor)
 
 
-treeMusicPlay : MusicNotePlayerTree -> Cmd msg
-treeMusicPlay (MusicNotePlayerTree params bTree) =
+treeMusicPlay : Bool -> MusicNotePlayerTree -> Cmd msg
+treeMusicPlay isHarmonize (MusicNotePlayerTree params bTree) =
     bTree
         |> map (\(MusicNoteNodeVal player) -> player)
         |> flattenBy params.traversalOrder
         |> List.filter isPlayable
-        |> toAudioNotes params.playSpeed params.gapDuration
+        |> toAudioNotes isHarmonize params.playSpeed params.gapDuration
         |> List.map port_playNote
         |> Cmd.batch
 
 
-toAudioNotes : PlaySpeed -> Time -> List MusicNotePlayer -> List AudioNote
-toAudioNotes playSpeed gapDuration notePlayers =
+toAudioNotes : Bool -> PlaySpeed -> Time -> List MusicNotePlayer -> List AudioNote
+toAudioNotes isHarmonize playSpeed gapDuration notePlayers =
     let
         noteDuration = noteDurationFor playSpeed
         interval = noteDuration + gapDuration
@@ -38,7 +38,7 @@ toAudioNotes playSpeed gapDuration notePlayers =
                 stopOffset = startOffset + noteDuration
                 isLast = (index == lastIndex)
             in
-                audioNote params.mbNote params.mbId startOffset noteDuration isLast
+                audioNote params.mbNote params.mbId startOffset noteDuration isHarmonize isLast
     in
         List.indexedMap fn notePlayers
             |> Maybe.Extra.values

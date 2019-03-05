@@ -12,12 +12,13 @@ type alias AudioNote =
     , id : String
     , startOffset : Float -- sec
     , duration : Float -- sec
+    , isHarmonize : Bool
     , isLast : Bool
     }
 
 
-audioNote : Maybe MusicNote -> Maybe Uuid -> Time -> Time -> Bool -> Maybe AudioNote
-audioNote mbNote mbId startOffsetMsec durationMsec isLast =
+audioNote : Maybe MusicNote -> Maybe Uuid -> Time -> Time -> Bool -> Bool -> Maybe AudioNote
+audioNote mbNote mbId startOffsetMsec durationMsec isHarmonize isLast =
     let
         mbFreq = mbNote
             |> Maybe.andThen toFreq
@@ -33,6 +34,7 @@ audioNote mbNote mbId startOffsetMsec durationMsec isLast =
                      id
                      startOffset
                      duration
+                     isHarmonize
                      isLast
     in
         Maybe.map fn mbFreq

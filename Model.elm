@@ -30,6 +30,7 @@ type alias Model =
     , masterTraversalOrder : TraversalOrder
     , delta : Int
     , exponent : Int
+    , isHarmonize : Bool
     , isPlayNotes : Bool
     , isTreeMorphing : Bool
     , directionForSort : Direction

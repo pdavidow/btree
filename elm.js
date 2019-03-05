@@ -21685,18 +21685,18 @@ _user$project$MusicNote_ops[':-:'] = F2(
 			_elm_lang$core$Basics$negate(delta));
 	});
 
-var _user$project$AudioNote$AudioNote = F5(
-	function (a, b, c, d, e) {
-		return {freq: a, id: b, startOffset: c, duration: d, isLast: e};
+var _user$project$AudioNote$AudioNote = F6(
+	function (a, b, c, d, e, f) {
+		return {freq: a, id: b, startOffset: c, duration: d, isHarmonize: e, isLast: f};
 	});
-var _user$project$AudioNote$audioNote = F5(
-	function (mbNote, mbId, startOffsetMsec, durationMsec, isLast) {
+var _user$project$AudioNote$audioNote = F6(
+	function (mbNote, mbId, startOffsetMsec, durationMsec, isHarmonize, isLast) {
 		var fn = function (_p0) {
 			var _p1 = _p0;
 			var duration = _elm_lang$core$Time$inSeconds(durationMsec);
 			var startOffset = _elm_lang$core$Time$inSeconds(startOffsetMsec);
 			var id = A3(_elm_community$maybe_extra$Maybe_Extra$unwrap, '', _danyx23$elm_uuid$Uuid$toString, mbId);
-			return A5(_user$project$AudioNote$AudioNote, _p1._0, id, startOffset, duration, isLast);
+			return A6(_user$project$AudioNote$AudioNote, _p1._0, id, startOffset, duration, isHarmonize, isLast);
 		};
 		var mbFreq = A2(_elm_lang$core$Maybe$andThen, _user$project$MusicNote$toFreq, mbNote);
 		return A2(_elm_lang$core$Maybe$map, fn, mbFreq);
@@ -23807,7 +23807,9 @@ var _user$project$Model$Model = function (a) {
 																				return function (u) {
 																					return function (v) {
 																						return function (w) {
-																							return {intTree: a, bigIntTree: b, stringTree: c, boolTree: d, initialMusicNoteTree: e, musicNoteTree: f, variedTree: g, intTreeMorph: h, bigIntTreeMorph: i, stringTreeMorph: j, boolTreeMorph: k, musicNoteTreeMorph: l, variedTreeCache: m, masterPlaySpeed: n, masterTraversalOrder: o, delta: p, exponent: q, isPlayNotes: r, isTreeMorphing: s, directionForSort: t, treeRandomInsertStyle: u, intView: v, uuidSeed: w};
+																							return function (x) {
+																								return {intTree: a, bigIntTree: b, stringTree: c, boolTree: d, initialMusicNoteTree: e, musicNoteTree: f, variedTree: g, intTreeMorph: h, bigIntTreeMorph: i, stringTreeMorph: j, boolTreeMorph: k, musicNoteTreeMorph: l, variedTreeCache: m, masterPlaySpeed: n, masterTraversalOrder: o, delta: p, exponent: q, isHarmonize: r, isPlayNotes: s, isTreeMorphing: t, directionForSort: u, treeRandomInsertStyle: v, intView: w, uuidSeed: x};
+																							};
 																						};
 																					};
 																				};
@@ -23833,6 +23835,7 @@ var _user$project$Model$Model = function (a) {
 };
 
 var _user$project$Msg$Reset = {ctor: 'Reset'};
+var _user$project$Msg$ToggleHarmonize = {ctor: 'ToggleHarmonize'};
 var _user$project$Msg$SwitchToIntView = function (a) {
 	return {ctor: 'SwitchToIntView', _0: a};
 };
@@ -24462,6 +24465,92 @@ var _user$project$TreeCard$viewTrees = function (model) {
 		cards);
 };
 
+var _user$project$Dashboard$viewHarmonyChoice = function (model) {
+	return {
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$span,
+			{
+				ctor: '::',
+				_0: _justgage$tachyons_elm$Tachyons$classes(
+					{
+						ctor: '::',
+						_0: _justgage$tachyons_elm$Tachyons_Classes$ph2,
+						_1: {
+							ctor: '::',
+							_0: _justgage$tachyons_elm$Tachyons_Classes$pv2,
+							_1: {
+								ctor: '::',
+								_0: _justgage$tachyons_elm$Tachyons_Classes$mt2,
+								_1: {
+									ctor: '::',
+									_0: _justgage$tachyons_elm$Tachyons_Classes$mb2,
+									_1: {
+										ctor: '::',
+										_0: _justgage$tachyons_elm$Tachyons_Classes$f6,
+										_1: {
+											ctor: '::',
+											_0: _justgage$tachyons_elm$Tachyons_Classes$ba,
+											_1: {
+												ctor: '::',
+												_0: _justgage$tachyons_elm$Tachyons_Classes$br2,
+												_1: {ctor: '[]'}
+											}
+										}
+									}
+								}
+							}
+						}
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$label,
+					{
+						ctor: '::',
+						_0: _justgage$tachyons_elm$Tachyons$classes(
+							{
+								ctor: '::',
+								_0: _justgage$tachyons_elm$Tachyons_Classes$pa2,
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$input,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$type_('checkbox'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$checked(model.isHarmonize),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onClick(_user$project$Msg$ToggleHarmonize),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$disabled(model.isPlayNotes),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Harmonize?'),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}),
+		_1: {ctor: '[]'}
+	};
+};
 var _user$project$Dashboard$radioIntView = F2(
 	function (intView, model) {
 		var labelFor = function (intView) {
@@ -25470,39 +25559,55 @@ var _user$project$Dashboard$viewDashboardWithTreesUnderneath = function (model) 
 												_1: {
 													ctor: '::',
 													_0: A2(
-														_elm_lang$html$Html$button,
+														_elm_lang$html$Html$span,
 														{
 															ctor: '::',
 															_0: _justgage$tachyons_elm$Tachyons$classes(
 																{
 																	ctor: '::',
-																	_0: _justgage$tachyons_elm$Tachyons_Classes$fr,
-																	_1: {
+																	_0: _justgage$tachyons_elm$Tachyons_Classes$pl4,
+																	_1: {ctor: '[]'}
+																}),
+															_1: {ctor: '[]'}
+														},
+														_user$project$Dashboard$viewHarmonyChoice(model)),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_elm_lang$html$Html$button,
+															{
+																ctor: '::',
+																_0: _justgage$tachyons_elm$Tachyons$classes(
+																	{
 																		ctor: '::',
-																		_0: _justgage$tachyons_elm$Tachyons_Classes$hover_bg_light_yellow,
+																		_0: _justgage$tachyons_elm$Tachyons_Classes$fr,
 																		_1: {
 																			ctor: '::',
-																			_0: _justgage$tachyons_elm$Tachyons_Classes$mv1,
+																			_0: _justgage$tachyons_elm$Tachyons_Classes$hover_bg_light_yellow,
 																			_1: {
 																				ctor: '::',
-																				_0: _justgage$tachyons_elm$Tachyons_Classes$mr2,
-																				_1: {ctor: '[]'}
+																				_0: _justgage$tachyons_elm$Tachyons_Classes$mv1,
+																				_1: {
+																					ctor: '::',
+																					_0: _justgage$tachyons_elm$Tachyons_Classes$mr2,
+																					_1: {ctor: '[]'}
+																				}
 																			}
 																		}
-																	}
-																}),
-															_1: {
+																	}),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Events$onClick(_user$project$Msg$Reset),
+																	_1: {ctor: '[]'}
+																}
+															},
+															{
 																ctor: '::',
-																_0: _elm_lang$html$Html_Events$onClick(_user$project$Msg$Reset),
+																_0: _elm_lang$html$Html$text('Reset'),
 																_1: {ctor: '[]'}
-															}
-														},
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html$text('Reset'),
-															_1: {ctor: '[]'}
-														}),
-													_1: {ctor: '[]'}
+															}),
+														_1: {ctor: '[]'}
+													}
 												}
 											}
 										}
@@ -25762,7 +25867,7 @@ var _user$project$Generator$generatorDelta = A2(_elm_lang$core$Random$int, _user
 var _user$project$Ports$port_playNote = _elm_lang$core$Native_Platform.outgoingPort(
 	'port_playNote',
 	function (v) {
-		return {freq: v.freq, id: v.id, startOffset: v.startOffset, duration: v.duration, isLast: v.isLast};
+		return {freq: v.freq, id: v.id, startOffset: v.startOffset, duration: v.duration, isHarmonize: v.isHarmonize, isLast: v.isLast};
 	});
 var _user$project$Ports$port_disconnectAll = _elm_lang$core$Native_Platform.outgoingPort(
 	'port_disconnectAll',
@@ -25822,8 +25927,8 @@ var _user$project$TreeMusicPlayer$donePlayNote = F2(
 var _user$project$TreeMusicPlayer$donePlayNotes = function (musicNotePlayerTree) {
 	return A3(_user$project$TreeMusicPlayer$setPlayMode, false, _elm_lang$core$Maybe$Nothing, musicNotePlayerTree);
 };
-var _user$project$TreeMusicPlayer$toAudioNotes = F3(
-	function (playSpeed, gapDuration, notePlayers) {
+var _user$project$TreeMusicPlayer$toAudioNotes = F4(
+	function (isHarmonize, playSpeed, gapDuration, notePlayers) {
 		var lastIndex = _elm_lang$core$List$length(notePlayers) - 1;
 		var noteDuration = _user$project$TreePlayerParams$noteDurationFor(playSpeed);
 		var interval = noteDuration + gapDuration;
@@ -25834,36 +25939,38 @@ var _user$project$TreeMusicPlayer$toAudioNotes = F3(
 				var isLast = _elm_lang$core$Native_Utils.eq(index, lastIndex);
 				var startOffset = _elm_lang$core$Basics$toFloat(index) * interval;
 				var stopOffset = startOffset + noteDuration;
-				return A5(_user$project$AudioNote$audioNote, _p8.mbNote, _p8.mbId, startOffset, noteDuration, isLast);
+				return A6(_user$project$AudioNote$audioNote, _p8.mbNote, _p8.mbId, startOffset, noteDuration, isHarmonize, isLast);
 			});
 		return _elm_community$maybe_extra$Maybe_Extra$values(
 			A2(_elm_lang$core$List$indexedMap, fn, notePlayers));
 	});
-var _user$project$TreeMusicPlayer$treeMusicPlay = function (_p9) {
-	var _p10 = _p9;
-	var _p13 = _p10._0;
-	return _elm_lang$core$Platform_Cmd$batch(
-		A2(
-			_elm_lang$core$List$map,
-			_user$project$Ports$port_playNote,
-			A3(
-				_user$project$TreeMusicPlayer$toAudioNotes,
-				_p13.playSpeed,
-				_p13.gapDuration,
-				A2(
-					_elm_lang$core$List$filter,
-					_user$project$MusicNotePlayer$isPlayable,
+var _user$project$TreeMusicPlayer$treeMusicPlay = F2(
+	function (isHarmonize, _p9) {
+		var _p10 = _p9;
+		var _p13 = _p10._0;
+		return _elm_lang$core$Platform_Cmd$batch(
+			A2(
+				_elm_lang$core$List$map,
+				_user$project$Ports$port_playNote,
+				A4(
+					_user$project$TreeMusicPlayer$toAudioNotes,
+					isHarmonize,
+					_p13.playSpeed,
+					_p13.gapDuration,
 					A2(
-						_user$project$BTree$flattenBy,
-						_p13.traversalOrder,
+						_elm_lang$core$List$filter,
+						_user$project$MusicNotePlayer$isPlayable,
 						A2(
-							_user$project$BTree$map,
-							function (_p11) {
-								var _p12 = _p11;
-								return _p12._0;
-							},
-							_p10._1))))));
-};
+							_user$project$BTree$flattenBy,
+							_p13.traversalOrder,
+							A2(
+								_user$project$BTree$map,
+								function (_p11) {
+									var _p12 = _p11;
+									return _p12._0;
+								},
+								_p10._1))))));
+	});
 
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$batch(
@@ -25909,7 +26016,7 @@ var _user$project$Main$playNotes = function (model) {
 			{musicNoteTree: musicNoteTree, isPlayNotes: true}),
 		{
 			ctor: '::',
-			_0: _user$project$TreeMusicPlayer$treeMusicPlay(musicNoteTree),
+			_0: A2(_user$project$TreeMusicPlayer$treeMusicPlay, model.isHarmonize, musicNoteTree),
 			_1: {ctor: '[]'}
 		});
 };
@@ -26446,6 +26553,7 @@ var _user$project$Main$initialModel = {
 	masterTraversalOrder: _user$project$BTree$InOrder,
 	delta: 1,
 	exponent: 2,
+	isHarmonize: false,
 	isPlayNotes: false,
 	isTreeMorphing: false,
 	directionForSort: _user$project$BTree$Left,
@@ -26895,6 +27003,13 @@ var _user$project$Main$update = F2(
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{intView: _p6._0}),
+					{ctor: '[]'});
+			case 'ToggleHarmonize':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{isHarmonize: !model.isHarmonize}),
 					{ctor: '[]'});
 			default:
 				var seed = model.uuidSeed;
