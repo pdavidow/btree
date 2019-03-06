@@ -21978,23 +21978,15 @@ var _user$project$BTree$isElement = F2(
 			return _elm_lang$core$Native_Utils.eq(_p10._0, a) ? true : (A2(_user$project$BTree$isElement, a, _p10._1) || A2(_user$project$BTree$isElement, a, _p10._2));
 		}
 	});
-var _user$project$BTree$sumFloat = function (bTree) {
+var _user$project$BTree$depth = function (bTree) {
 	var _p11 = bTree;
 	if (_p11.ctor === 'Empty') {
-		return 0.0;
-	} else {
-		return (_p11._0 + _user$project$BTree$sumFloat(_p11._1)) + _user$project$BTree$sumFloat(_p11._2);
-	}
-};
-var _user$project$BTree$depth = function (bTree) {
-	var _p12 = bTree;
-	if (_p12.ctor === 'Empty') {
 		return 0;
 	} else {
 		return 1 + A2(
 			_elm_lang$core$Basics$max,
-			_user$project$BTree$depth(_p12._1),
-			_user$project$BTree$depth(_p12._2));
+			_user$project$BTree$depth(_p11._1),
+			_user$project$BTree$depth(_p11._2));
 	}
 };
 var _user$project$BTree$Node = F3(
@@ -22007,31 +21999,31 @@ var _user$project$BTree$singleton = function (v) {
 };
 var _user$project$BTree$insertWith_directed = F4(
 	function (direction, fn, x, bTree) {
-		var _p13 = bTree;
-		if (_p13.ctor === 'Empty') {
+		var _p12 = bTree;
+		if (_p12.ctor === 'Empty') {
 			return _user$project$BTree$singleton(x);
 		} else {
-			var _p17 = _p13._0;
-			var _p16 = _p13._2;
-			var _p15 = _p13._1;
+			var _p16 = _p12._0;
+			var _p15 = _p12._2;
+			var _p14 = _p12._1;
 			var insertRight = function (unit) {
 				return A3(
 					_user$project$BTree$Node,
-					_p17,
-					_p15,
-					A4(_user$project$BTree$insertWith_directed, direction, fn, x, _p16));
+					_p16,
+					_p14,
+					A4(_user$project$BTree$insertWith_directed, direction, fn, x, _p15));
 			};
 			var insertLeft = function (unit) {
 				return A3(
 					_user$project$BTree$Node,
-					_p17,
-					A4(_user$project$BTree$insertWith_directed, direction, fn, x, _p15),
-					_p16);
+					_p16,
+					A4(_user$project$BTree$insertWith_directed, direction, fn, x, _p14),
+					_p15);
 			};
-			var order = A2(fn, x, _p17);
-			var _p14 = {ctor: '_Tuple2', _0: order, _1: direction};
-			if (_p14._1.ctor === 'Right') {
-				switch (_p14._0.ctor) {
+			var order = A2(fn, x, _p16);
+			var _p13 = {ctor: '_Tuple2', _0: order, _1: direction};
+			if (_p13._1.ctor === 'Right') {
+				switch (_p13._0.ctor) {
 					case 'LT':
 						return insertRight(
 							{ctor: '_Tuple0'});
@@ -22043,7 +22035,7 @@ var _user$project$BTree$insertWith_directed = F4(
 							{ctor: '_Tuple0'});
 				}
 			} else {
-				switch (_p14._0.ctor) {
+				switch (_p13._0.ctor) {
 					case 'LT':
 						return insertLeft(
 							{ctor: '_Tuple0'});
@@ -22058,58 +22050,58 @@ var _user$project$BTree$insertWith_directed = F4(
 		}
 	});
 var _user$project$BTree$insertAsIs_directed = F2(
-	function (_p18, bTree) {
-		var _p19 = _p18;
-		var _p27 = _p19._0;
-		var _p26 = _p19._1;
-		var _p20 = bTree;
-		if (_p20.ctor === 'Empty') {
-			return _user$project$BTree$singleton(_p27);
+	function (_p17, bTree) {
+		var _p18 = _p17;
+		var _p26 = _p18._0;
+		var _p25 = _p18._1;
+		var _p19 = bTree;
+		if (_p19.ctor === 'Empty') {
+			return _user$project$BTree$singleton(_p26);
 		} else {
-			var _p25 = _p20._0;
-			var _p24 = _p20._2;
-			var _p23 = _p20._1;
+			var _p24 = _p19._0;
+			var _p23 = _p19._2;
+			var _p22 = _p19._1;
 			var $continue = function (unit) {
-				var _p21 = _p26;
-				if (_p21.ctor === 'Right') {
+				var _p20 = _p25;
+				if (_p20.ctor === 'Right') {
 					return A3(
 						_user$project$BTree$Node,
-						_p25,
-						_p23,
+						_p24,
+						_p22,
 						A2(
 							_user$project$BTree$insertAsIs_directed,
-							{ctor: '_Tuple2', _0: _p27, _1: _p26},
-							_p24));
+							{ctor: '_Tuple2', _0: _p26, _1: _p25},
+							_p23));
 				} else {
 					return A3(
 						_user$project$BTree$Node,
-						_p25,
+						_p24,
 						A2(
 							_user$project$BTree$insertAsIs_directed,
-							{ctor: '_Tuple2', _0: _p27, _1: _p26},
-							_p23),
-						_p24);
+							{ctor: '_Tuple2', _0: _p26, _1: _p25},
+							_p22),
+						_p23);
 				}
 			};
-			var _p22 = {ctor: '_Tuple2', _0: _p23, _1: _p24};
-			if (_p22._0.ctor === 'Empty') {
-				if (_p22._1.ctor === 'Empty') {
+			var _p21 = {ctor: '_Tuple2', _0: _p22, _1: _p23};
+			if (_p21._0.ctor === 'Empty') {
+				if (_p21._1.ctor === 'Empty') {
 					return $continue(
 						{ctor: '_Tuple0'});
 				} else {
 					return A3(
 						_user$project$BTree$Node,
-						_p25,
-						_user$project$BTree$singleton(_p27),
-						_p24);
+						_p24,
+						_user$project$BTree$singleton(_p26),
+						_p23);
 				}
 			} else {
-				if (_p22._1.ctor === 'Empty') {
+				if (_p21._1.ctor === 'Empty') {
 					return A3(
 						_user$project$BTree$Node,
-						_p25,
-						_p23,
-						_user$project$BTree$singleton(_p27));
+						_p24,
+						_p22,
+						_user$project$BTree$singleton(_p26));
 				} else {
 					return $continue(
 						{ctor: '_Tuple0'});
@@ -22126,15 +22118,15 @@ var _user$project$BTree$insertAsIsBy = F3(
 	});
 var _user$project$BTree$map = F2(
 	function (fn, bTree) {
-		var _p28 = bTree;
-		if (_p28.ctor === 'Empty') {
+		var _p27 = bTree;
+		if (_p27.ctor === 'Empty') {
 			return _user$project$BTree$Empty;
 		} else {
 			return A3(
 				_user$project$BTree$Node,
-				fn(_p28._0),
-				A2(_user$project$BTree$map, fn, _p28._1),
-				A2(_user$project$BTree$map, fn, _p28._2));
+				fn(_p27._0),
+				A2(_user$project$BTree$map, fn, _p27._1),
+				A2(_user$project$BTree$map, fn, _p27._2));
 		}
 	});
 var _user$project$BTree$toNothingNodes = function (bTree) {
@@ -22161,34 +22153,34 @@ var _user$project$BTree$isEmpty = function (bTree) {
 };
 var _user$project$BTree$toTreeDiagramTree = function (bTree) {
 	var toTreeDiagramTreeOfNonEmpty = function (bTree) {
-		var _p29 = bTree;
-		if (_p29.ctor === 'Empty') {
+		var _p28 = bTree;
+		if (_p28.ctor === 'Empty') {
 			return A2(
 				_brenden$elm_tree_diagram$TreeDiagram$node,
 				_elm_lang$core$Maybe$Nothing,
 				{ctor: '[]'});
 		} else {
-			var _p31 = _p29._2;
-			var _p30 = _p29._1;
-			var rightResult = _user$project$BTree$isEmpty(_p31) ? {ctor: '[]'} : {
-				ctor: '::',
-				_0: toTreeDiagramTreeOfNonEmpty(_p31),
-				_1: {ctor: '[]'}
-			};
-			var leftResult = _user$project$BTree$isEmpty(_p30) ? {ctor: '[]'} : {
+			var _p30 = _p28._2;
+			var _p29 = _p28._1;
+			var rightResult = _user$project$BTree$isEmpty(_p30) ? {ctor: '[]'} : {
 				ctor: '::',
 				_0: toTreeDiagramTreeOfNonEmpty(_p30),
+				_1: {ctor: '[]'}
+			};
+			var leftResult = _user$project$BTree$isEmpty(_p29) ? {ctor: '[]'} : {
+				ctor: '::',
+				_0: toTreeDiagramTreeOfNonEmpty(_p29),
 				_1: {ctor: '[]'}
 			};
 			var treeList = A2(_elm_lang$core$Basics_ops['++'], leftResult, rightResult);
 			return A2(
 				_brenden$elm_tree_diagram$TreeDiagram$node,
-				_elm_lang$core$Maybe$Just(_p29._0),
+				_elm_lang$core$Maybe$Just(_p28._0),
 				treeList);
 		}
 	};
-	var _p32 = bTree;
-	if (_p32.ctor === 'Empty') {
+	var _p31 = bTree;
+	if (_p31.ctor === 'Empty') {
 		return _elm_lang$core$Maybe$Nothing;
 	} else {
 		return _elm_lang$core$Maybe$Just(
@@ -22213,6 +22205,10 @@ var _user$project$BTree$sumBigInt = function (bTree) {
 		_elm_lang$core$List$foldl,
 		_gilbertkennen$bigint$BigInt$add,
 		_gilbertkennen$bigint$BigInt$fromInt(0),
+		_user$project$BTree$flatten(bTree));
+};
+var _user$project$BTree$sumFloat = function (bTree) {
+	return _elm_lang$core$List$sum(
 		_user$project$BTree$flatten(bTree));
 };
 var _user$project$BTree$isAllSafe = function (bTree) {
@@ -23784,6 +23780,58 @@ var _user$project$TreeRandomInsertStyle$treeRandomInsertStyleOptions = {
 	}
 };
 
+var _user$project$Ptrian$toNormalString = function (x) {
+	return A2(
+		_elm_lang$core$String$join,
+		' ',
+		A2(
+			_elm_lang$core$List$map,
+			_elm_lang$core$Basics$toString,
+			_elm_lang$core$List$concat(x)));
+};
+var _user$project$Ptrian$ptrian = function (depth) {
+	var f = F2(
+		function (level, acc) {
+			var rowlen = level;
+			var formula = function (k) {
+				if (_elm_lang$core$Native_Utils.eq(k, 1) || _elm_lang$core$Native_Utils.eq(k, rowlen)) {
+					return 1;
+				} else {
+					var priorRow = A2(
+						_elm_lang$core$Maybe$withDefault,
+						{ctor: '[]'},
+						_elm_community$list_extra$List_Extra$last(acc));
+					var upLeft = A2(
+						_elm_lang$core$Maybe$withDefault,
+						0,
+						A2(_elm_community$list_extra$List_Extra$getAt, k - 2, priorRow));
+					var upTop = A2(
+						_elm_lang$core$Maybe$withDefault,
+						0,
+						A2(_elm_community$list_extra$List_Extra$getAt, k - 1, priorRow));
+					return upLeft + upTop;
+				}
+			};
+			var row = A2(
+				_elm_lang$core$List$map,
+				formula,
+				A2(_elm_lang$core$List$range, 1, rowlen));
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				acc,
+				{
+					ctor: '::',
+					_0: row,
+					_1: {ctor: '[]'}
+				});
+		});
+	return A3(
+		_elm_lang$core$List$foldl,
+		f,
+		{ctor: '[]'},
+		A2(_elm_lang$core$List$range, 1, depth));
+};
+
 var _user$project$Model$Model = function (a) {
 	return function (b) {
 		return function (c) {
@@ -23808,7 +23856,9 @@ var _user$project$Model$Model = function (a) {
 																					return function (v) {
 																						return function (w) {
 																							return function (x) {
-																								return {intTree: a, bigIntTree: b, stringTree: c, boolTree: d, initialMusicNoteTree: e, musicNoteTree: f, variedTree: g, intTreeMorph: h, bigIntTreeMorph: i, stringTreeMorph: j, boolTreeMorph: k, musicNoteTreeMorph: l, variedTreeCache: m, masterPlaySpeed: n, masterTraversalOrder: o, delta: p, exponent: q, isHarmonize: r, isPlayNotes: s, isTreeMorphing: t, directionForSort: u, treeRandomInsertStyle: v, intView: w, uuidSeed: x};
+																								return function (y) {
+																									return {intTree: a, bigIntTree: b, stringTree: c, boolTree: d, initialMusicNoteTree: e, musicNoteTree: f, variedTree: g, intTreeMorph: h, bigIntTreeMorph: i, stringTreeMorph: j, boolTreeMorph: k, musicNoteTreeMorph: l, variedTreeCache: m, masterPlaySpeed: n, masterTraversalOrder: o, delta: p, exponent: q, isHarmonize: r, isPlayNotes: s, isTreeMorphing: t, directionForSort: u, treeRandomInsertStyle: v, intView: w, uuidSeed: x, pTriangleDepth: y};
+																								};
 																							};
 																						};
 																					};
@@ -23834,6 +23884,9 @@ var _user$project$Model$Model = function (a) {
 	};
 };
 
+var _user$project$Msg$PTriangleDepth = function (a) {
+	return {ctor: 'PTriangleDepth', _0: a};
+};
 var _user$project$Msg$Reset = {ctor: 'Reset'};
 var _user$project$Msg$ToggleHarmonize = {ctor: 'ToggleHarmonize'};
 var _user$project$Msg$SwitchToIntView = function (a) {
@@ -24465,6 +24518,79 @@ var _user$project$TreeCard$viewTrees = function (model) {
 		cards);
 };
 
+var _user$project$Dashboard$viewPtrian = function (model) {
+	return {
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$span,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Ptriangle depth: '),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$input,
+						{
+							ctor: '::',
+							_0: _justgage$tachyons_elm$Tachyons$classes(
+								{
+									ctor: '::',
+									_0: _justgage$tachyons_elm$Tachyons_Classes$f4,
+									_1: {
+										ctor: '::',
+										_0: _justgage$tachyons_elm$Tachyons_Classes$w3,
+										_1: {ctor: '[]'}
+									}
+								}),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$type_('number'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$min('1'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$value(
+											_elm_lang$core$Basics$toString(model.pTriangleDepth)),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onInput(_user$project$Msg$PTriangleDepth),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						},
+						{ctor: '[]'}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$label,
+							{
+								ctor: '::',
+								_0: _justgage$tachyons_elm$Tachyons$classes(
+									{
+										ctor: '::',
+										_0: _justgage$tachyons_elm$Tachyons_Classes$pa2,
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(
+									_user$project$Ptrian$toNormalString(
+										_user$project$Ptrian$ptrian(model.pTriangleDepth))),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
+			}),
+		_1: {ctor: '[]'}
+	};
+};
 var _user$project$Dashboard$viewHarmonyChoice = function (model) {
 	return {
 		ctor: '::',
@@ -25574,39 +25700,55 @@ var _user$project$Dashboard$viewDashboardWithTreesUnderneath = function (model) 
 													_1: {
 														ctor: '::',
 														_0: A2(
-															_elm_lang$html$Html$button,
+															_elm_lang$html$Html$span,
 															{
 																ctor: '::',
 																_0: _justgage$tachyons_elm$Tachyons$classes(
 																	{
 																		ctor: '::',
-																		_0: _justgage$tachyons_elm$Tachyons_Classes$fr,
-																		_1: {
+																		_0: _justgage$tachyons_elm$Tachyons_Classes$pl4,
+																		_1: {ctor: '[]'}
+																	}),
+																_1: {ctor: '[]'}
+															},
+															_user$project$Dashboard$viewPtrian(model)),
+														_1: {
+															ctor: '::',
+															_0: A2(
+																_elm_lang$html$Html$button,
+																{
+																	ctor: '::',
+																	_0: _justgage$tachyons_elm$Tachyons$classes(
+																		{
 																			ctor: '::',
-																			_0: _justgage$tachyons_elm$Tachyons_Classes$hover_bg_light_yellow,
+																			_0: _justgage$tachyons_elm$Tachyons_Classes$fr,
 																			_1: {
 																				ctor: '::',
-																				_0: _justgage$tachyons_elm$Tachyons_Classes$mv1,
+																				_0: _justgage$tachyons_elm$Tachyons_Classes$hover_bg_light_yellow,
 																				_1: {
 																					ctor: '::',
-																					_0: _justgage$tachyons_elm$Tachyons_Classes$mr2,
-																					_1: {ctor: '[]'}
+																					_0: _justgage$tachyons_elm$Tachyons_Classes$mv1,
+																					_1: {
+																						ctor: '::',
+																						_0: _justgage$tachyons_elm$Tachyons_Classes$mr2,
+																						_1: {ctor: '[]'}
+																					}
 																				}
 																			}
-																		}
-																	}),
-																_1: {
+																		}),
+																	_1: {
+																		ctor: '::',
+																		_0: _elm_lang$html$Html_Events$onClick(_user$project$Msg$Reset),
+																		_1: {ctor: '[]'}
+																	}
+																},
+																{
 																	ctor: '::',
-																	_0: _elm_lang$html$Html_Events$onClick(_user$project$Msg$Reset),
+																	_0: _elm_lang$html$Html$text('Reset'),
 																	_1: {ctor: '[]'}
-																}
-															},
-															{
-																ctor: '::',
-																_0: _elm_lang$html$Html$text('Reset'),
-																_1: {ctor: '[]'}
-															}),
-														_1: {ctor: '[]'}
+																}),
+															_1: {ctor: '[]'}
+														}
 													}
 												}
 											}
@@ -26559,7 +26701,8 @@ var _user$project$Main$initialModel = {
 	directionForSort: _user$project$BTree$Left,
 	treeRandomInsertStyle: _user$project$TreeRandomInsertStyle$Left,
 	intView: _user$project$IntView$IntView,
-	uuidSeed: _mgold$elm_random_pcg$Random_Pcg$initialSeed(0)
+	uuidSeed: _mgold$elm_random_pcg$Random_Pcg$initialSeed(0),
+	pTriangleDepth: 1
 };
 var _user$project$Main$init = function (jsSeed) {
 	var initialMusicNotes = A2(
@@ -27011,7 +27154,7 @@ var _user$project$Main$update = F2(
 						model,
 						{isHarmonize: !model.isHarmonize}),
 					{ctor: '[]'});
-			default:
+			case 'Reset':
 				var seed = model.uuidSeed;
 				var tree = model.initialMusicNoteTree;
 				return A2(
@@ -27025,6 +27168,15 @@ var _user$project$Main$update = F2(
 							{ctor: '_Tuple0'}),
 						_1: {ctor: '[]'}
 					});
+			default:
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							pTriangleDepth: _user$project$Main$intFromInput(_p6._0)
+						}),
+					{ctor: '[]'});
 		}
 	});
 var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(

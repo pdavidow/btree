@@ -46,3 +46,4 @@ type Msg
     | SwitchToIntView (IntView)
     | ToggleHarmonize
     | Reset
+    | PTriangleDepth String

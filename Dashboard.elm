@@ -18,6 +18,8 @@ import BTree exposing (Direction(..), TraversalOrder(..), traversalOrderOptions,
 import TreeCard exposing (viewTrees)
 import TreePlayerParams exposing (PlaySpeed(..), playSpeedOptions)
 import TreeRandomInsertStyle exposing (TreeRandomInsertStyle(..), treeRandomInsertStyleOptions)
+
+import Ptrian exposing (ptrian, toNormalString)
 ------------------------------------------------
 
 onTraversalOrderChange : Attribute Msg
@@ -278,7 +280,10 @@ viewDashboardWithTreesUnderneath model =
                 (viewIntTreeChoice model)
             , span
                 [classes [T.pl4]]
-                (viewHarmonyChoice model)                
+                (viewHarmonyChoice model)  
+            , span
+                [classes [T.pl4]]
+                (viewPtrian model)                                
             , button
                 [classes [T.fr, T.hover_bg_light_yellow, T.mv1, T.mr2], onClick Reset]
                 [text "Reset"]
@@ -367,5 +372,26 @@ viewHarmonyChoice model =
                 []
             , text "Harmony"
             ]
+        ]
+    ]
+
+
+viewPtrian : Model -> List (Html Msg)
+viewPtrian model =
+    [ span
+        []
+        [ text "Ptriangle depth: "
+        , input
+            [ classes [T.f4, T.w3]
+            , A.type_ "number"
+            , A.min "1"
+            , value (toString model.pTriangleDepth)
+            , onInput PTriangleDepth
+            ]
+            []
+        , label
+            [ classes [T.pa2] ]
+            [ text <| toNormalString <| ptrian model.pTriangleDepth
+            ]        
         ]
     ]

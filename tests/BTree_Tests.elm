@@ -12,11 +12,35 @@ import Basics.Extra exposing (maxSafeInteger)
 import Test exposing (..)
 import Expect
   
+
+import Ptrian exposing (ptrian, toNormalString)  
  
 bTree : Test
 bTree =
     describe "BTree module"
-        [ describe "BTree.singleton"
+
+        [ describe "ptrian 1"      
+            [ test "depth 1" <|
+                \() ->
+                    Expect.equal ([[1]]) (ptrian 1)
+            ]    
+        , describe "ptrian 3"      
+            [ test "depth 3" <|
+                \() ->
+                    Expect.equal ([[1], [1,1], [1,2,1]]) (ptrian 3)
+            ]               
+        , describe "ptrian 5"      
+            [ test "depth 5" <|
+                \() ->
+                    Expect.equal ([[1], [1,1], [1,2,1], [1,3,3,1], [1,4,6,4,1]]) (ptrian 5)
+            ]   
+        , describe "toNormalString"      
+            [ test "depth 5" <|
+                \() ->
+                    Expect.equal ("1 1 1 1 2 1") (toNormalString <| ptrian 3)
+            ]               
+
+        , describe "BTree.singleton"
             [ test "singleton.1" <|
                 \() ->
                     Expect.equal (Node 1 Empty Empty) (BTree.singleton 1)

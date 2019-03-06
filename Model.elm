@@ -8,6 +8,8 @@ import BTree exposing (Direction, TraversalOrder)
 import IntView exposing (IntView)
 import TreePlayerParams exposing (PlaySpeed)
 import TreeRandomInsertStyle exposing (TreeRandomInsertStyle)
+
+import Ptrian exposing (Ptrian)
 ------------------------------------------------
 
 type alias Model =
@@ -37,4 +39,6 @@ type alias Model =
     , treeRandomInsertStyle : TreeRandomInsertStyle
     , intView : IntView
     , uuidSeed : Seed
+
+    , pTriangleDepth : Int
     }

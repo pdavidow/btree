@@ -28,6 +28,7 @@ import NodeValueOperation exposing (Operation(..))
 import Generator exposing (generatorDelta, generatorExponent, generateIds, generatorTreeMusicNotes, generatorIntNodes, generatorBigIntNodes, generatorStringNodes, generatorBoolNodes, generatorNodeVarieties, generatorTuplesOfMusicNoteDirection, generatorTuplesOfIntNode_Direction, generatorTuplesOfBigIntNode_Direction, generatorTuplesOfStringNode_Direction, generatorTuplesOfBoolNode_Direction, generatorTuplesOfNodeVariety_Direction)
 import Dashboard exposing (viewDashboardWithTreesUnderneath)
 import TreeRandomInsertStyle exposing (TreeRandomInsertStyle)
+
 ------------------------------------------------
 
 initialModel: Model
@@ -94,6 +95,8 @@ initialModel =
     , treeRandomInsertStyle = TreeRandomInsertStyle.Left
     , intView = IntView
     , uuidSeed = initialSeed 0 -- placeholder
+
+    , pTriangleDepth = 1
     }
 
 
@@ -543,6 +546,9 @@ update msg model =
                 , musicNoteTree = tree
                 , uuidSeed = seed
                 } ! [port_disconnectAll ()]
+
+        PTriangleDepth s ->
+            { model | pTriangleDepth = intFromInput s } ! []
 
 
 directionForTreeRandomInsertStyle : TreeRandomInsertStyle -> Direction

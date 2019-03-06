@@ -90,12 +90,9 @@ sumBigInt bTree =
 
 sumFloat : BTree Float -> Float
 sumFloat bTree =
-    case bTree of
-        Empty ->
-            0.0
-
-        Node number left right ->
-            number + (sumFloat left) + (sumFloat right)
+    bTree
+        |> flatten
+        |> List.sum
 
 
 isAllSafe : BTree (MaybeSafe a) -> Bool
